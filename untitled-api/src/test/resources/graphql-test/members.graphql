@@ -1,0 +1,6 @@
+{
+  members {
+    memberId
+    name
+  }
+}

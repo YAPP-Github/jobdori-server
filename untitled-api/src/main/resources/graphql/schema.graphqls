@@ -1,0 +1,43 @@
+type Query {
+    """
+    회원 ID로 단일 회원을 조회합니다.
+    존재하지 않는 회원 ID면 404 에러를 반환합니다.
+    """
+    member(
+        """
+        회원 조회 요청입니다.
+        """
+        request: MemberGetRequest!
+    ): Member!
+
+    """
+    등록된 회원 목록을 조회합니다.
+    """
+    members: [Member!]!
+}
+
+"""
+회원 단건 조회 요청입니다.
+"""
+input MemberGetRequest {
+    """
+    조회할 회원 ID입니다.
+    예: member-1
+    """
+    memberId: String!
+}
+
+"""
+회원 정보입니다.
+"""
+type Member {
+    """
+    회원을 식별하는 ID입니다.
+    """
+    memberId: String!
+
+    """
+    회원 이름입니다.
+    """
+    name: String!
+}

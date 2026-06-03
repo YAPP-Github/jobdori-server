@@ -1,0 +1,6 @@
+query($request: MemberGetRequest!) {
+  member(request: $request) {
+    memberId
+    name
+  }
+}

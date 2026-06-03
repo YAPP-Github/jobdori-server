@@ -1,0 +1,17 @@
+spring.profiles.default: local
+spring.config:
+  import:
+    - classpath:/rdb.yml
+
+server:
+  port: 20000
+spring:
+  mvc:
+    servlet:
+      path: /api
+  graphql:
+    http:
+      path: /graphql
+    graphiql:
+      enabled: true
+      path: /graphiql

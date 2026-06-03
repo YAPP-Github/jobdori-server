@@ -1,2 +1,10 @@
-# 28th-Web-Team-1-BE
-YAPP 28기 웹 1팀 백엔드 리포지토리입니다.
+# Untitled
+
+- 정해지면 변경 예정 (WEB 1팀)
+
+## 기술 스택
+
+- Kotlin (JDK 25)
+- Spring Boot
+- Postgresql
+- GraphQL

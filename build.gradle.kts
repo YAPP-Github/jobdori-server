@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.jpa)
+    alias(libs.plugins.asciidoctor.jvm.convert)
 }
 
 allprojects {
@@ -32,6 +33,7 @@ subprojects {
     apply(plugin = "application")
     apply(plugin = "java-library")
     apply(plugin = "java-test-fixtures")
+    apply(plugin = "org.asciidoctor.jvm.convert")
 
     kotlin {
         jvmToolchain(25)
@@ -78,5 +80,13 @@ subprojects {
             showStackTraces = true
             events = setOf(FAILED)
         }
+    }
+
+    tasks.register<Test>("docsTest") {
+        group = "verification"
+        description = "Run Docs tests"
+        useJUnitPlatform()
+
+        systemProperty("kotest.tags", "docs-test")
     }
 }

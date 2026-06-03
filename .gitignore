@@ -4,6 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+untitled-api/src/docs/asciidoc/**/*.html
 
 ### STS ###
 .apt_generated

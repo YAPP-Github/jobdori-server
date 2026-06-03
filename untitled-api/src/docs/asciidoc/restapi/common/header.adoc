@@ -1,0 +1,7 @@
+[.api-table]
+[cols="24%,36%,14%,26%", options="header"]
+|===
+| Header | Description | Mandatory | Example
+| Authorization | 인증 토큰 | X | Bearer {{토큰}}
+| Request-Id | 요청 식별 ID | X | c64af254-d067-475c-b4ce-15a6f0a73f99
+|===

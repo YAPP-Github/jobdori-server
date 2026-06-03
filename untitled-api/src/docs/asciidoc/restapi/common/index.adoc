@@ -1,0 +1,134 @@
+[[common-headers]]
+=== 공통 헤더 정보
+
+include::./header.adoc[]
+
+=== API 응답 모델
+
+==== Success
+
+[.api-table]
+[cols="18%,16%,14%,52%", options="header"]
+|===
+| Path | Type | Mandatory | Description
+
+| `ok`
+| Boolean
+| Y
+| 성공(true), 실패(false)
+
+| `result`
+| Object
+| N
+| API 결과
+|===
+
+[.example-panel]
+====
+.Success Example
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "ok": true,
+  "result": {
+    "key": "value"
+  }
+}
+----
+====
+
+==== Error
+
+[.api-table]
+[cols="24%,16%,14%,46%", options="header"]
+|===
+| Path | Type | Mandatory | Description
+
+| `ok`
+| Boolean
+| Y
+| 성공(true), 실패(false)
+
+| `error`
+| Object
+| Y
+| 에러 정보
+
+| `error.code`
+| String
+| Y
+| 에러 코드 (에러 코드 문서 참고)
+
+| `error.details`
+| Array<Object>
+| N
+| 에러 상세 목록 (디버그용)
+
+| `error.details[].field`
+| String
+| Y
+| 필드명
+
+| `error.details[].reason`
+| String
+| Y
+| 에러 설명
+|===
+
+[.example-grid]
+--
+[.example-panel]
+====
+.Internal Server Error
+[source,http]
+----
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json
+
+{
+  "ok": false,
+  "error": {
+    "code": "internal_error"
+  }
+}
+----
+====
+
+[.example-panel]
+====
+.Invalid Arguments
+[source,http]
+----
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+
+{
+  "ok": false,
+  "error": {
+    "code": "invalid_arguments",
+    "details": [
+      {
+        "field": "title",
+        "reason": "Title must not be blank"
+      },
+      {
+        "field": "content",
+        "reason": "Content size must be between 0 and 500"
+      }
+    ]
+  }
+}
+----
+====
+--
+
+[[common-error-codes]]
+=== 공통 에러 코드
+
+모든 API에서 공통적으로 발생할 수 있는 에러 목록입니다. +
+각 API별로 발생할 수 있는 에러 정보는 각 API의 에러 코드 문서를 참고해주세요.
+
+include::./error.adoc[]

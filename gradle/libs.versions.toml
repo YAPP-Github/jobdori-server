@@ -6,6 +6,7 @@ kotest = "6.1.11"
 kotlin-logging = "8.0.01"
 spring-mockk = "5.0.1"
 kotlin-jdsl = "3.8.2"
+asciidoctor = "4.0.5"
 
 [libraries]
 # Kotlin
@@ -25,6 +26,8 @@ spring-boot-starter-graphql-test = { module = "org.springframework.boot:spring-b
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-h2console = { module = "org.springframework.boot:spring-boot-h2console" }
+spring-boot-restdocs = { module = "org.springframework.boot:spring-boot-restdocs" }
+spring-restdocs-mockmvc = { module = "org.springframework.restdocs:spring-restdocs-mockmvc" }
 
 # Jackson
 jackson-core = { module = "tools.jackson.core:jackson-core" }
@@ -55,3 +58,4 @@ kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotl
 kotlin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+asciidoctor-jvm-convert = { id = "org.asciidoctor.jvm.convert", version.ref = "asciidoctor" }

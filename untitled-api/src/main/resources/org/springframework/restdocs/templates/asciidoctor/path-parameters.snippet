@@ -1,0 +1,12 @@
+[cols="15%,15%,35%,35%"]
+|===
+|Parameter|Mandatory|Description|Etc
+
+{{#parameters}}
+|{{#tableCellContent}}`+{{name}}+`{{/tableCellContent}}
+|{{#tableCellContent}}{{#optional}}false{{/optional}}{{^optional}}`true`{{/optional}}{{/tableCellContent}}
+|{{#tableCellContent}}{{description}}{{/tableCellContent}}
+|{{#tableCellContent}}{{#remarks}}{{remarks}}{{/remarks}}{{/tableCellContent}}
+
+{{/parameters}}
+|===

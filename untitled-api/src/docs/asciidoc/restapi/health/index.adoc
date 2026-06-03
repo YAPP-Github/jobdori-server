@@ -1,0 +1,29 @@
+=== Health
+
+서버 헬스 체크 상태를 확인하는 API입니다.
+
+==== Readiness Health Check
+
+include::{snippets}/health-check/request-path.adoc[]
+
+===== Response Fields
+
+include::{snippets}/health-check/response-fields.adoc[]
+
+===== Examples
+
+====== HTTP Request
+
+include::{snippets}/health-check/http-request.adoc[]
+
+====== HTTP Response
+
+include::{snippets}/health-check/http-response.adoc[]
+
+====== Curl
+
+include::{snippets}/health-check/curl-request.adoc[]
+
+===== Error Codes
+
+include::{snippets}/health-check/error-codes.adoc[]

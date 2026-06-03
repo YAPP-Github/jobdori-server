@@ -1,5 +1,3 @@
-import org.gradle.internal.execution.caching.CachingState.enabled
-
 dependencies {
     // Core
     implementation(project(":untitled-domain"))
@@ -14,6 +12,10 @@ dependencies {
 
     // Validation
     implementation(libs.spring.boot.starter.validation)
+
+    // Spring Rest Docs
+    testImplementation(libs.spring.boot.restdocs)
+    testImplementation(libs.spring.restdocs.mockmvc)
 }
 
 tasks.bootJar {
@@ -22,6 +24,37 @@ tasks.bootJar {
 
 tasks.jar {
     enabled = true
+}
+
+tasks.docsTest {
+    outputs.dir("build/generated-snippets")
+}
+
+tasks.asciidoctor {
+    inputs.dir("build/generated-snippets")
+    setOutputDir(file("build/docs/asciidoc"))
+    dependsOn(tasks.docsTest)
+    baseDirFollowsSourceFile()
+
+    sources {
+        include("index.adoc")
+        include("restapi/index.adoc")
+        include("graphql/index.adoc")
+    }
+
+    attributes(
+        mapOf("snippets" to file("build/generated-snippets")),
+    )
+
+    resources {
+        from("src/docs/asciidoc") {
+            include("css/**")
+        }
+    }
+
+    doFirst {
+        project.delete(file("build/docs/asciidoc"))
+    }
 }
 
 application {

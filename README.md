@@ -7,4 +7,4 @@
 - Kotlin (JDK 25)
 - Spring Boot
 - Postgresql
-- GraphQL
+- REST API, GraphQL

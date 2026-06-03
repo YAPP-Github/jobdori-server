@@ -1,5 +1,7 @@
 package com.untitled.api.application.health
 
+import com.untitled.api.support.rest.ApiResponse
+import com.untitled.common.error.CommonErrorCode
 import org.springframework.boot.availability.ApplicationAvailability
 import org.springframework.boot.availability.LivenessState
 import org.springframework.boot.availability.ReadinessState
@@ -14,19 +16,21 @@ class HealthCheckApi(
 ) {
 
     @GetMapping("/health/liveness")
-    fun livenessProbe(): ResponseEntity<Nothing> {
+    fun livenessProbe(): ResponseEntity<ApiResponse<Nothing?>> {
         if (applicationAvailability.livenessState != LivenessState.CORRECT) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build()
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.Companion.fail(CommonErrorCode.E503_SERVICE_UNAVAILABLE))
         }
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok(ApiResponse.OK)
     }
 
     @GetMapping("/health/readiness")
-    fun readinessProbe(): ResponseEntity<Nothing> {
+    fun readinessProbe(): ResponseEntity<ApiResponse<Nothing?>> {
         if (applicationAvailability.readinessState != ReadinessState.ACCEPTING_TRAFFIC) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build()
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.Companion.fail(CommonErrorCode.E503_SERVICE_UNAVAILABLE))
         }
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok(ApiResponse.OK)
     }
 
 }

@@ -1,0 +1,32 @@
+ifndef::snippets[]
+:snippets: build/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:docinfo: shared
+:docinfodir: ..
+:stylesdir: ../css
+:stylesheet: docs.css
+:linkcss:
+:toc: left
+:toclevels: 2
+:sectnums:
+:sectnumlevels: 3
+
+[discrete]
+=== link:../index.html[> Back to Home]
+
+[[introduction]]
+= REST API Reference
+
+[.doc-lead]
+REST API 사용에 필요한 공통 규칙, 응답 모델, 엔드포인트별 예제를 제공합니다.
+
+== Overview
+
+include::./common/index.adoc[]
+
+== APIs
+
+include::./health/index.adoc[]

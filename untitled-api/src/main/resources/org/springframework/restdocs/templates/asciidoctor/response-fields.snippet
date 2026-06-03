@@ -1,0 +1,14 @@
+[cols="15%,15%,15%,35%,20%"]
+|===
+|Path|Type|Mandatory|Description|Etc
+
+{{#fields}}
+|{{#tableCellContent}}`+{{path}}+`{{/tableCellContent}}
+|{{#tableCellContent}}`+{{type}}+`{{/tableCellContent}}
+|{{#tableCellContent}}{{#optional}}false{{/optional}}{{^optional}}`true`{{/optional}}{{/tableCellContent}}
+|{{#tableCellContent}}{{description}}{{/tableCellContent}}
+|{{#tableCellContent}}{{#remarks}}{{remarks}}{{/remarks}}{{/tableCellContent}}
+
+{{/fields}}
+
+|===

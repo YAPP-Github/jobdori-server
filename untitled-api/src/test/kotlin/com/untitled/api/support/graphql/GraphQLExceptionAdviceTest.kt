@@ -1,7 +1,7 @@
 package com.untitled.api.support.graphql
 
 import com.untitled.common.error.ErrorCode
-import com.untitled.domain.domain.member.MemberNotFoundException
+import com.untitled.domain.domain.sample.SampleNotFoundException
 import graphql.execution.ExecutionStepInfo
 import graphql.execution.ResultPath
 import graphql.language.Field
@@ -30,8 +30,8 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         val exception = ConstraintViolationException(
             setOf(
                 constraintViolation(
-                    field = "memberId",
-                    message = "memberId is blank",
+                    field = "sampleId",
+                    message = "sampleId is blank",
                 )
             )
         )
@@ -48,8 +48,8 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
             "code" to ErrorCode.E400_INVALID_ARGUMENTS.code,
             "details" to listOf(
                 mapOf(
-                    "field" to "memberId",
-                    "reason" to "memberId is blank",
+                    "field" to "sampleId",
+                    "reason" to "sampleId is blank",
                 ),
             ),
         )
@@ -57,16 +57,16 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
     "BindException은 invalid_arguments와 fieldErrors를 GraphQL error로 변환한다" {
         // given
-        val bindingResult = BeanPropertyBindingResult(mapOf("memberId" to ""), "request")
+        val bindingResult = BeanPropertyBindingResult(mapOf("sampleId" to ""), "request")
         bindingResult.addError(
             FieldError(
                 "request",
-                "memberId",
+                "sampleId",
                 "",
                 false,
                 null,
                 null,
-                "memberId is blank",
+                "sampleId is blank",
             )
         )
         val exception = BindException(bindingResult)
@@ -83,8 +83,8 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
             "code" to ErrorCode.E400_INVALID_ARGUMENTS.code,
             "details" to listOf(
                 mapOf(
-                    "field" to "memberId",
-                    "reason" to "memberId is blank",
+                    "field" to "sampleId",
+                    "reason" to "sampleId is blank",
                 ),
             ),
         )
@@ -92,7 +92,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
     "BaseException에 details가 없으면 code만 extensions에 포함한다" {
         // given
-        val exception = MemberNotFoundException(message = "Member not found. memberId=member-1")
+        val exception = SampleNotFoundException(message = "Sample not found. sampleId=1")
         val env = dataFetchingEnvironment()
 
         // when
@@ -103,7 +103,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
-            "code" to ErrorCode.E404_MEMBER_NOT_FOUND.code,
+            "code" to ErrorCode.E404_SAMPLE_NOT_FOUND.code,
         )
     }
 
@@ -127,7 +127,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 })
 
 private val SOURCE_LOCATION = SourceLocation(1, 2)
-private val RESULT_PATH = listOf("member", "name")
+private val RESULT_PATH = listOf("sample", "name")
 
 private fun constraintViolation(
     field: String,
@@ -146,7 +146,7 @@ private fun constraintViolation(
 }
 
 private fun dataFetchingEnvironment(): DataFetchingEnvironment {
-    val field = Field.newField("member")
+    val field = Field.newField("sample")
         .sourceLocation(SOURCE_LOCATION)
         .build()
     val executionStepInfo = mockk<ExecutionStepInfo>()

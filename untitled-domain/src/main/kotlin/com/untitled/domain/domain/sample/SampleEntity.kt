@@ -1,4 +1,4 @@
-package com.untitled.domain.domain.member
+package com.untitled.domain.domain.sample
 
 import com.untitled.domain.support.jpa.AuditableEntity
 import jakarta.persistence.Entity
@@ -7,7 +7,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 
 @Entity
-class MemberEntity(
+class SampleEntity(
     var name: String,
 ) : AuditableEntity() {
 
@@ -15,8 +15,12 @@ class MemberEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 
-    fun toMember(): Member {
-        return Member(
+    fun update(name: String) {
+        this.name = name
+    }
+
+    fun toSample(): Sample {
+        return Sample(
             id = this.id,
             name = this.name,
         )

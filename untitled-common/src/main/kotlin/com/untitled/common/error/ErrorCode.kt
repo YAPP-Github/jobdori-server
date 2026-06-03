@@ -18,10 +18,10 @@ enum class ErrorCode(
     /**
      * 404 Not Found
      */
-    E404_MEMBER_NOT_FOUND(
+    E404_SAMPLE_NOT_FOUND(
         httpStatusCode = 404,
-        code = "member_not_found",
-        description = "회원을 찾을 수 없는 경우",
+        code = "sample_not_found",
+        description = "샘플을 찾을 수 없는 경우",
     ),
 
     /**

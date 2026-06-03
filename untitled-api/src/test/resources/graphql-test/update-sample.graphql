@@ -1,0 +1,6 @@
+mutation($request: SampleUpdateRequest!) {
+  updateSample(request: $request) {
+    sampleId
+    name
+  }
+}

@@ -1,13 +1,13 @@
-package com.untitled.domain.domain.member
+package com.untitled.domain.domain.sample
 
 import com.untitled.common.error.BaseException
 import com.untitled.common.error.ErrorCode
 
-data class MemberNotFoundException(
+data class SampleNotFoundException(
     override val message: String,
     override val cause: Throwable? = null,
 ) : BaseException(
     message = message,
-    errorCode = ErrorCode.E404_MEMBER_NOT_FOUND,
+    errorCode = ErrorCode.E404_SAMPLE_NOT_FOUND,
     cause = cause,
 )

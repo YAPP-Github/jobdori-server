@@ -1,4 +1,4 @@
-package com.untitled.domain.domain.member
+package com.untitled.domain.domain.sample
 
 import com.linecorp.kotlinjdsl.dsl.jpql.jpql
 import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
@@ -7,16 +7,16 @@ import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository
 
 @Repository
-class MemberCustomRepositoryImpl(
+class SampleCustomRepositoryImpl(
     private val entityManager: EntityManager,
     private val jpqlRenderContext: JpqlRenderContext,
-) : MemberCustomRepository {
+) : SampleCustomRepository {
 
-    override fun findByName(name: String): MemberEntity? {
+    override fun findByName(name: String): SampleEntity? {
         val query = jpql {
-            select(entity(MemberEntity::class))
-                .from(entity(MemberEntity::class))
-                .whereAnd(path(MemberEntity::name).eq(name))
+            select(entity(SampleEntity::class))
+                .from(entity(SampleEntity::class))
+                .whereAnd(path(SampleEntity::name).eq(name))
         }
 
         return entityManager.createQuery(query, jpqlRenderContext)

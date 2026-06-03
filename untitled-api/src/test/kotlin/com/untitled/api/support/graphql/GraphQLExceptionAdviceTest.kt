@@ -1,6 +1,7 @@
 package com.untitled.api.support.graphql
 
-import com.untitled.common.error.ErrorCode
+import com.untitled.common.error.CommonErrorCode
+import com.untitled.domain.domain.sample.SampleErrorCode
 import com.untitled.domain.domain.sample.SampleNotFoundException
 import graphql.execution.ExecutionStepInfo
 import graphql.execution.ResultPath
@@ -45,7 +46,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
-            "code" to ErrorCode.E400_INVALID_ARGUMENTS.code,
+            "code" to CommonErrorCode.E400_INVALID_ARGUMENTS.code,
             "details" to listOf(
                 mapOf(
                     "field" to "sampleId",
@@ -80,7 +81,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
-            "code" to ErrorCode.E400_INVALID_ARGUMENTS.code,
+            "code" to CommonErrorCode.E400_INVALID_ARGUMENTS.code,
             "details" to listOf(
                 mapOf(
                     "field" to "sampleId",
@@ -103,7 +104,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
-            "code" to ErrorCode.E404_SAMPLE_NOT_FOUND.code,
+            "code" to SampleErrorCode.E404_SAMPLE_NOT_FOUND.code,
         )
     }
 
@@ -120,7 +121,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
-            "code" to ErrorCode.E500_INTERNAL_ERROR.code,
+            "code" to CommonErrorCode.E500_INTERNAL_ERROR.code,
         )
     }
 

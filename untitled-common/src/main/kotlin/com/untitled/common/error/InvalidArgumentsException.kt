@@ -5,6 +5,6 @@ data class InvalidArgumentsException(
     override val cause: Throwable? = null,
 ) : BaseException(
     message = message,
-    errorCode = ErrorCode.E400_INVALID_ARGUMENTS,
+    errorCode = CommonErrorCode.E400_INVALID_ARGUMENTS,
     cause = cause,
 )

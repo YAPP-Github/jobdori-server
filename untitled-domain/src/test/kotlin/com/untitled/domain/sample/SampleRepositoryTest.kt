@@ -40,7 +40,7 @@ class SampleRepositoryTest(
 
         // then
         result shouldNotBe null
-        result!!.name shouldBe "무제"
+        result?.name shouldBe "무제"
     }
 
     "존재하지 않는 이름으로 조회하면 null을 반환합니다" {

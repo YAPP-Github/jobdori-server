@@ -1,6 +1,8 @@
 package com.untitled.api.support.graphql
 
 import com.untitled.common.error.BaseException
+import com.untitled.common.error.CommonErrorCode
+import com.untitled.common.error.ErrorDetail
 import com.untitled.common.error.ErrorCode
 import com.untitled.common.logger.LoggerExtension.log
 import graphql.GraphQLError
@@ -20,9 +22,9 @@ class GraphQLExceptionAdvice {
         env: DataFetchingEnvironment,
     ): GraphQLError {
         return generateGraphQLError(
-            errorCode = ErrorCode.E400_INVALID_ARGUMENTS,
+            errorCode = CommonErrorCode.E400_INVALID_ARGUMENTS,
             details = exception.constraintViolations.map {
-                GraphQLValidationErrorDetail(
+                ErrorDetail(
                     field = it.propertyPath.lastOrNull()?.name.orEmpty(),
                     reason = it.message,
                 )
@@ -37,9 +39,9 @@ class GraphQLExceptionAdvice {
         env: DataFetchingEnvironment,
     ): GraphQLError {
         return generateGraphQLError(
-            errorCode = ErrorCode.E400_INVALID_ARGUMENTS,
+            errorCode = CommonErrorCode.E400_INVALID_ARGUMENTS,
             details = exception.fieldErrors.map {
-                GraphQLValidationErrorDetail(
+                ErrorDetail(
                     field = it.field,
                     reason = it.defaultMessage.orEmpty(),
                 )
@@ -67,14 +69,14 @@ class GraphQLExceptionAdvice {
     ): GraphQLError {
         log.error(exception) { exception.message }
         return generateGraphQLError(
-            errorCode = ErrorCode.E500_INTERNAL_ERROR,
+            errorCode = CommonErrorCode.E500_INTERNAL_ERROR,
             env = env,
         )
     }
 
     private fun generateGraphQLError(
         errorCode: ErrorCode,
-        details: List<GraphQLValidationErrorDetail> = emptyList(),
+        details: List<ErrorDetail> = emptyList(),
         env: DataFetchingEnvironment,
     ): GraphQLError {
         return GraphQLError.newError().errorType(toGraphQlErrorType(errorCode)).message("{{TBD}}") // TODO
@@ -84,7 +86,7 @@ class GraphQLExceptionAdvice {
 
     private fun generateExtensions(
         errorCode: ErrorCode,
-        details: List<GraphQLValidationErrorDetail> = emptyList(),
+        details: List<ErrorDetail> = emptyList(),
     ): Map<String, Any> = buildMap {
         put("code", errorCode.code)
         if (details.isNotEmpty()) {

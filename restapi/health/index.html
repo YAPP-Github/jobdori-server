@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>Common API</title>
+<title>Health</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -440,43 +440,29 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_common_api">Common API</h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_health_check_api">Health Check API</h3>
+<h3 id="_health">Health</h3>
 <div class="paragraph">
 <p>서버 헬스 체크 상태를 확인하는 API입니다.</p>
 </div>
 <div class="sect3">
-<h4 id="_request">[Request]</h4>
-<div class="listingblock">
+<h4 id="_readiness_health_check">Readiness Health Check</h4>
+<div class="exampleblock endpoint-card">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /health/readiness HTTP/1.1
-Host: localhost:8000</code></pre>
+<div class="paragraph endpoint-line">
+<p><span class="http-method">GET</span> <span class="endpoint-path">/api/health/readiness</span></p>
 </div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_response">[Response]</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 11
-
-{"ok":true}</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_response_body_fields">[Response Body Fields]</h5>
-<table class="tableblock frame-all grid-all stretch">
+<h5 id="_response_fields">Response Fields</h5>
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 15%;">
-<col style="width: 15%;">
-<col style="width: 15%;">
-<col style="width: 35%;">
 <col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
 </colgroup>
 <thead>
 <tr>
@@ -498,27 +484,49 @@ Content-Length: 11
 </tbody>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_examples">Examples</h5>
+<div class="sect5">
+<h6 id="_http_request">HTTP Request</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /api/health/readiness HTTP/1.1
+Host: localhost:8000</code></pre>
 </div>
-<div class="sect3">
-<h4 id="_error_codes">[Error Codes]</h4>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.
-</td>
-</tr>
-</table>
 </div>
-<table class="tableblock frame-all grid-all stretch">
+</div>
+<div class="sect5">
+<h6 id="_http_response">HTTP Response</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 11
+
+{"ok":true}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_curl">Curl</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8000/api/health/readiness' -i -X GET</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_error_codes">Error Codes</h5>
+<div class="paragraph api-note">
+<p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 2.2556%;">
-<col style="width: 7.5187%;">
-<col style="width: 37.5939%;">
-<col style="width: 52.6318%;">
+<col style="width: 16%;">
+<col style="width: 22%;">
+<col style="width: 24%;">
+<col style="width: 38%;">
 </colgroup>
 <thead>
 <tr>
@@ -538,22 +546,13 @@ Content-Length: 11
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="_curl_request_http_example">[Curl Request HTTP Example]</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8000/health/readiness' -i -X GET</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version unspecified<br>
-Last updated 2026-06-03 18:07:27 UTC
+Last updated 2026-06-04 15:42:14 UTC
 </div>
 </div>
 </body>

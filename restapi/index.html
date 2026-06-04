@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>REST API 연동 문서</title>
+<title>REST API Reference</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -443,18 +443,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel0">
-<li><a href="#introduction">REST API 연동 문서</a>
+<li><a href="#introduction">REST API Reference</a>
 <ul class="sectlevel1">
-<li><a href="#_공통_정보">1. 공통 정보</a>
+<li><a href="#_overview">1. Overview</a>
 <ul class="sectlevel2">
 <li><a href="#common-headers">1.1. 공통 헤더 정보</a></li>
 <li><a href="#_api_응답_모델">1.2. API 응답 모델</a></li>
 <li><a href="#common-error-codes">1.3. 공통 에러 코드</a></li>
 </ul>
 </li>
-<li><a href="#_common_api">2. Common API</a>
+<li><a href="#_apis">2. APIs</a>
 <ul class="sectlevel2">
-<li><a href="#_health_check_api">2.1. Health Check API</a></li>
+<li><a href="#_health">2.1. Health</a></li>
 </ul>
 </li>
 </ul>
@@ -468,18 +468,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h3 id="_back_to_home" class="discrete"><a href="../index.html">&gt; Back to Home</a></h3>
 </div>
 </div>
-<h1 id="introduction" class="sect0">REST API 연동 문서</h1>
+<h1 id="introduction" class="sect0">REST API Reference</h1>
+<div class="openblock partintro doc-lead">
+<div class="content">
+REST API 사용에 필요한 공통 규칙, 응답 모델, 엔드포인트별 예제를 제공합니다.
+</div>
+</div>
 <div class="sect1">
-<h2 id="_공통_정보">1. 공통 정보</h2>
+<h2 id="_overview">1. Overview</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="common-headers">1.1. 공통 헤더 정보</h3>
-<table class="tableblock frame-all grid-all stretch">
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 5.2631%;">
-<col style="width: 31.5789%;">
-<col style="width: 31.5789%;">
-<col style="width: 31.5791%;">
+<col style="width: 24%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+<col style="width: 26%;">
 </colgroup>
 <thead>
 <tr>
@@ -508,13 +513,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="_api_응답_모델">1.2. API 응답 모델</h3>
 <div class="sect3">
-<h4 id="_success_response">1.2.1. Success Response</h4>
-<table class="tableblock frame-all grid-all stretch">
+<h4 id="_success">1.2.1. Success</h4>
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 10%;">
-<col style="width: 10%;">
-<col style="width: 10%;">
-<col style="width: 70%;">
+<col style="width: 18%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 52%;">
 </colgroup>
 <thead>
 <tr>
@@ -539,11 +544,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 </tbody>
 </table>
-<div class="sect4">
-<h5 id="_api_success_example">API Success Example</h5>
-<div class="listingblock">
+<div class="exampleblock example-panel">
 <div class="content">
-<pre>HTTP/1.1 200 OK
+<div class="listingblock">
+<div class="title">Success Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
@@ -551,19 +557,20 @@ Content-Type: application/json
   "result": {
     "key": "value"
   }
-}</pre>
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_error_response">1.2.2. Error Response</h4>
-<table class="tableblock frame-all grid-all stretch">
+<h4 id="_error">1.2.2. Error</h4>
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 15%;">
-<col style="width: 10%;">
-<col style="width: 55%;">
+<col style="width: 24%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 46%;">
 </colgroup>
 <thead>
 <tr>
@@ -612,11 +619,14 @@ Content-Type: application/json
 </tr>
 </tbody>
 </table>
-<div class="sect4">
-<h5 id="_api_fail_example_1">API Fail Example (1)</h5>
-<div class="listingblock">
+<div class="openblock example-grid">
 <div class="content">
-<pre>HTTP/1.1 500 Internal Server Error
+<div class="exampleblock example-panel">
+<div class="content">
+<div class="listingblock">
+<div class="title">Internal Server Error</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-http hljs" data-lang="http">HTTP/1.1 500 Internal Server Error
 Content-Type: application/json
 
 {
@@ -624,15 +634,17 @@ Content-Type: application/json
   "error": {
     "code": "internal_error"
   }
-}</pre>
+}</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_api_fail_example_2">API Fail Example (2)</h5>
-<div class="listingblock">
+</div>
+<div class="exampleblock example-panel">
 <div class="content">
-<pre>HTTP/1.1 400 Bad Request
+<div class="listingblock">
+<div class="title">Invalid Arguments</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
 Content-Type: application/json
 
 {
@@ -650,7 +662,10 @@ Content-Type: application/json
       }
     ]
   }
-}</pre>
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -702,42 +717,31 @@ Content-Type: application/json
 </div>
 </div>
 <div class="sect1">
-<h2 id="_common_api">2. Common API</h2>
+<h2 id="_apis">2. APIs</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_health_check_api">2.1. Health Check API</h3>
+<h3 id="_health">2.1. Health</h3>
 <div class="paragraph">
 <p>서버 헬스 체크 상태를 확인하는 API입니다.</p>
 </div>
 <div class="sect3">
-<h4 id="_request">2.1.1. [Request]</h4>
-<div class="listingblock">
+<h4 id="_readiness_health_check">2.1.1. Readiness Health Check</h4>
+<div class="exampleblock endpoint-card">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /health/readiness HTTP/1.1
-Host: localhost:8000</code></pre>
+<div class="paragraph endpoint-line">
+<p><span class="http-method">GET</span> <span class="endpoint-path">/api/health/readiness</span></p>
 </div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_response">2.1.2. [Response]</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 11
-
-{"ok":true}</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_response_body_fields">[Response Body Fields]</h5>
-<table class="tableblock frame-all grid-all stretch">
+<h5 id="_response_fields">Response Fields</h5>
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 15%;">
-<col style="width: 15%;">
-<col style="width: 15%;">
-<col style="width: 35%;">
 <col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
 </colgroup>
 <thead>
 <tr>
@@ -759,27 +763,49 @@ Content-Length: 11
 </tbody>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_examples">Examples</h5>
+<div class="sect5">
+<h6 id="_http_request">HTTP Request</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/health/readiness HTTP/1.1
+Host: localhost:8000</code></pre>
 </div>
-<div class="sect3">
-<h4 id="_error_codes">2.1.3. [Error Codes]</h4>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.
-</td>
-</tr>
-</table>
 </div>
-<table class="tableblock frame-all grid-all stretch">
+</div>
+<div class="sect5">
+<h6 id="_http_response">HTTP Response</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 11
+
+{"ok":true}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_curl">Curl</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8000/api/health/readiness' -i -X GET</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_error_codes">Error Codes</h5>
+<div class="paragraph api-note">
+<p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 2.2556%;">
-<col style="width: 7.5187%;">
-<col style="width: 37.5939%;">
-<col style="width: 52.6318%;">
+<col style="width: 16%;">
+<col style="width: 22%;">
+<col style="width: 24%;">
+<col style="width: 38%;">
 </colgroup>
 <thead>
 <tr>
@@ -799,13 +825,6 @@ Content-Length: 11
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="_curl_request_http_example">2.1.4. [Curl Request HTTP Example]</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8000/health/readiness' -i -X GET</code></pre>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -814,7 +833,7 @@ Content-Length: 11
 <div id="footer">
 <div id="footer-text">
 Version unspecified<br>
-Last updated 2026-06-03 18:07:27 UTC
+Last updated 2026-06-04 15:42:14 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

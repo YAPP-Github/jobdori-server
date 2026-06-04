@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>공통 정보</title>
+<title>공통 헤더 정보</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -440,17 +440,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_공통_정보">공통 정보</h2>
-<div class="sectionbody">
 <div class="sect2">
 <h3 id="common-headers">공통 헤더 정보</h3>
-<table class="tableblock frame-all grid-all stretch">
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 5.2631%;">
-<col style="width: 31.5789%;">
-<col style="width: 31.5789%;">
-<col style="width: 31.5791%;">
+<col style="width: 24%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+<col style="width: 26%;">
 </colgroup>
 <thead>
 <tr>
@@ -479,13 +476,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="_api_응답_모델">API 응답 모델</h3>
 <div class="sect3">
-<h4 id="_success_response">Success Response</h4>
-<table class="tableblock frame-all grid-all stretch">
+<h4 id="_success">Success</h4>
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 10%;">
-<col style="width: 10%;">
-<col style="width: 10%;">
-<col style="width: 70%;">
+<col style="width: 18%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 52%;">
 </colgroup>
 <thead>
 <tr>
@@ -510,11 +507,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 </tbody>
 </table>
-<div class="sect4">
-<h5 id="_api_success_example">API Success Example</h5>
-<div class="listingblock">
+<div class="exampleblock example-panel">
 <div class="content">
-<pre>HTTP/1.1 200 OK
+<div class="listingblock">
+<div class="title">Success Example</div>
+<div class="content">
+<pre class="highlight"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
@@ -522,19 +520,20 @@ Content-Type: application/json
   "result": {
     "key": "value"
   }
-}</pre>
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_error_response">Error Response</h4>
-<table class="tableblock frame-all grid-all stretch">
+<h4 id="_error">Error</h4>
+<table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 15%;">
-<col style="width: 10%;">
-<col style="width: 55%;">
+<col style="width: 24%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 46%;">
 </colgroup>
 <thead>
 <tr>
@@ -583,11 +582,14 @@ Content-Type: application/json
 </tr>
 </tbody>
 </table>
-<div class="sect4">
-<h5 id="_api_fail_example_1">API Fail Example (1)</h5>
-<div class="listingblock">
+<div class="openblock example-grid">
 <div class="content">
-<pre>HTTP/1.1 500 Internal Server Error
+<div class="exampleblock example-panel">
+<div class="content">
+<div class="listingblock">
+<div class="title">Internal Server Error</div>
+<div class="content">
+<pre class="highlight"><code class="language-http" data-lang="http">HTTP/1.1 500 Internal Server Error
 Content-Type: application/json
 
 {
@@ -595,15 +597,17 @@ Content-Type: application/json
   "error": {
     "code": "internal_error"
   }
-}</pre>
+}</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_api_fail_example_2">API Fail Example (2)</h5>
-<div class="listingblock">
+</div>
+<div class="exampleblock example-panel">
 <div class="content">
-<pre>HTTP/1.1 400 Bad Request
+<div class="listingblock">
+<div class="title">Invalid Arguments</div>
+<div class="content">
+<pre class="highlight"><code class="language-http" data-lang="http">HTTP/1.1 400 Bad Request
 Content-Type: application/json
 
 {
@@ -621,7 +625,10 @@ Content-Type: application/json
       }
     ]
   }
-}</pre>
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -671,12 +678,10 @@ Content-Type: application/json
 </table>
 </div>
 </div>
-</div>
-</div>
 <div id="footer">
 <div id="footer-text">
 Version unspecified<br>
-Last updated 2026-06-03 18:07:27 UTC
+Last updated 2026-06-04 15:42:14 UTC
 </div>
 </div>
 </body>

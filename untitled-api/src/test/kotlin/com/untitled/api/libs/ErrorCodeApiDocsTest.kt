@@ -15,7 +15,7 @@ internal class ErrorCodeApiDocsTest : StringSpec({
         }
         var asciidoctorText =
             """
-                [cols="5%,30%,30%", options="header"]
+                [cols="10%,20%,60%", options="header"]
                 |===
                 | Status Code | Error Code | Description
 

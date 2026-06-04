@@ -8,7 +8,7 @@ include::./header.adoc[]
 ==== Success
 
 [.api-table]
-[cols="18%,16%,14%,52%", options="header"]
+[cols="30%,15%,13%,42%", options="header"]
 |===
 | Path | Type | Mandatory | Description
 
@@ -43,7 +43,7 @@ Content-Type: application/json
 ==== Error
 
 [.api-table]
-[cols="24%,16%,14%,46%", options="header"]
+[cols="40%,15%,13%,42%", options="header"]
 |===
 | Path | Type | Mandatory | Description
 

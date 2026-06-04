@@ -1,3 +1,6 @@
+import java.time.LocalDate
+import java.time.ZoneId
+
 dependencies {
     // Core
     implementation(project(":untitled-domain"))
@@ -43,7 +46,10 @@ tasks.asciidoctor {
     }
 
     attributes(
-        mapOf("snippets" to file("build/generated-snippets")),
+        mapOf(
+            "snippets" to file("build/generated-snippets"),
+            "revnumber" to LocalDate.now(ZoneId.of("Asia/Seoul")).toString()
+        ),
     )
 
     resources {

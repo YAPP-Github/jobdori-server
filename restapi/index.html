@@ -53,10 +53,10 @@ REST API 사용에 필요한 공통 규칙, 응답 모델, 엔드포인트별 �
 <h3 id="common-headers">1.1. 공통 헤더 정보</h3>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 24%;">
-<col style="width: 36%;">
-<col style="width: 14%;">
-<col style="width: 26%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 13%;">
+<col style="width: 47%;">
 </colgroup>
 <thead>
 <tr>
@@ -70,13 +70,13 @@ REST API 사용에 필요한 공통 규칙, 응답 모델, 엔드포인트별 �
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Authorization</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bearer {{토큰}}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">N</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bearer 4B561A51-7773-4CA4-8E67-851EF4E85145</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Request-Id</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">요청 식별 ID</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">N</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">c64af254-d067-475c-b4ce-15a6f0a73f99</p></td>
 </tr>
 </tbody>
@@ -88,10 +88,10 @@ REST API 사용에 필요한 공통 규칙, 응답 모델, 엔드포인트별 �
 <h4 id="_success">1.2.1. Success</h4>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 18%;">
-<col style="width: 16%;">
-<col style="width: 14%;">
-<col style="width: 52%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 13%;">
+<col style="width: 42%;">
 </colgroup>
 <thead>
 <tr>
@@ -139,10 +139,10 @@ Content-Type: application/json
 <h4 id="_error">1.2.2. Error</h4>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 24%;">
-<col style="width: 16%;">
-<col style="width: 14%;">
-<col style="width: 46%;">
+<col style="width: 36.3636%;">
+<col style="width: 13.6363%;">
+<col style="width: 11.8181%;">
+<col style="width: 38.182%;">
 </colgroup>
 <thead>
 <tr>
@@ -251,9 +251,9 @@ Content-Type: application/json
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 7.6923%;">
-<col style="width: 46.1538%;">
-<col style="width: 46.1539%;">
+<col style="width: 11.1111%;">
+<col style="width: 22.2222%;">
+<col style="width: 66.6667%;">
 </colgroup>
 <thead>
 <tr>
@@ -372,18 +372,16 @@ Content-Length: 11
 <div class="paragraph api-note">
 <p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch api-table">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 16%;">
-<col style="width: 22%;">
-<col style="width: 24%;">
-<col style="width: 38%;">
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 45%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">TypeMessage</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -391,7 +389,6 @@ Content-Length: 11
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>503</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>service_unavailable</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>E503_SERVICE_UNAVAILABLE</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">서비스 상태가 아닌 경우 발생합니다</p></td>
 </tr>
 </tbody>

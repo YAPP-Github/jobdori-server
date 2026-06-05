@@ -6,9 +6,7 @@ endif::[]
 :icons: font
 :source-highlighter: highlightjs
 :docinfo: shared
-:docinfodir: .
-:stylesdir: css
-:stylesheet: docs.css
+:stylesheet: index.css
 :linkcss:
 :toc: left
 :toclevels: 3

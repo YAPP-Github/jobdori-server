@@ -18,13 +18,13 @@ kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = 
 
 # Spring Boot
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
 spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
-spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 spring-boot-starter-graphql = { module = "org.springframework.boot:spring-boot-starter-graphql" }
 spring-boot-starter-graphql-test = { module = "org.springframework.boot:spring-boot-starter-graphql-test" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
-spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-h2console = { module = "org.springframework.boot:spring-boot-h2console" }
 spring-boot-restdocs = { module = "org.springframework.boot:spring-boot-restdocs" }
 spring-restdocs-mockmvc = { module = "org.springframework.restdocs:spring-restdocs-mockmvc" }
@@ -47,7 +47,7 @@ h2 = { module = "com.h2database:h2" }
 postgresql = { module = "org.postgresql:postgresql" }
 
 # Test
-kotest-runner-junit6 = { module = "io.kotest:kotest-runner-junit6", version.ref = "kotest" }
+kotest-runner-junit = { module = "io.kotest:kotest-runner-junit6", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-extensions-spring = { module = "io.kotest:kotest-extensions-spring", version.ref = "kotest" }
 springmockk = { module = "com.ninja-squad:springmockk", version.ref = "spring-mockk" }

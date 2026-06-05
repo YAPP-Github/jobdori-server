@@ -26,10 +26,6 @@ This file provides guidance to Codex when working with code in this repository.
 ./gradlew :untitled-api:asciidoctor
 ```
 
-- API 서버 기본 포트는 `20000`이다.
-- REST API 기본 servlet path는 `/api`이다.
-- GraphQL endpoint는 `/graphql`, GraphiQL은 `/graphiql`이다.
-
 ## 모듈 구조
 
 3개 모듈의 단방향 의존 구조:
@@ -46,16 +42,13 @@ untitled-api → untitled-domain → untitled-common
 
 - **언어/프레임워크**: Kotlin 2.3.21 + Spring Boot 4.0.6 + JDK 25
 - **ORM**: Spring Data JPA + Kotlin JDSL
-- **DB**: H2 (local/test), PostgreSQL
+- **DB**: PostgreSQL
 - **API**: Spring WebMVC REST API + Spring GraphQL
 - **문서화**: Spring REST Docs + Asciidoctor
-- **테스트**: Kotest 6.1.11 + SpringMockK 5.0.1
+- **테스트**: Kotest + SpringMockK
 
 ## 작업 규칙
 
 - 모듈 의존 방향(`api → domain → common`)을 깨지 않는다.
-- API 계층에는 transport/request/response/resolver 관심사를 두고, JPA 엔티티와 Repository는 domain 모듈에 둔다.
-- common 모듈은 특정 API나 도메인에 종속되지 않는 공통 코드만 포함한다.
-- 새 테스트는 변경 범위에 가장 가까운 모듈에 추가하고, Spring 통합 테스트가 필요한 경우에만 Spring context를 사용한다.
 - REST API 변경 시 필요한 경우 `untitled-api/src/docs/asciidoc` 문서와 REST Docs 테스트를 함께 갱신한다.
 - GraphQL API 변경 시 `untitled-api/src/main/resources/graphql/schema.graphqls`와 `untitled-api/src/test/resources/graphql-test`의 query/mutation 파일을 함께 확인한다.

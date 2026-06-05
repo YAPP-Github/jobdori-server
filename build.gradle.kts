@@ -60,7 +60,7 @@ subprojects {
 
         // Test
         testImplementation(libs.spring.boot.starter.test)
-        testImplementation(libs.kotest.runner.junit6)
+        testImplementation(libs.kotest.runner.junit)
         testImplementation(libs.kotest.assertions.core)
         testImplementation(libs.kotest.extensions.spring)
         testImplementation(libs.springmockk)

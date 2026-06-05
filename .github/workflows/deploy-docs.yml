@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-  workflow_dispatch:
 
 jobs:
   asciidoctor:
@@ -21,7 +20,7 @@ jobs:
           cache: gradle
 
       - name: Build Asciidoctor file
-        run: ./gradlew clean :untitled-api:asciidoctor
+        run: ./gradlew :untitled-api:asciidoctor
 
       - name: Deploy Github Pages
         uses: peaceiris/actions-gh-pages@v4

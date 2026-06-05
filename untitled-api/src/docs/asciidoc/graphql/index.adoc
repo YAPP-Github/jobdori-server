@@ -7,8 +7,8 @@ endif::[]
 :source-highlighter: highlightjs
 :docinfo: shared
 :docinfodir: ..
-:stylesdir: ../css
-:stylesheet: docs.css
+:stylesdir: ..
+:stylesheet: index.css
 :linkcss:
 :toc: left
 :toclevels: 2

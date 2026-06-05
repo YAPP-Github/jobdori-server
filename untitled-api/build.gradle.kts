@@ -54,7 +54,7 @@ tasks.asciidoctor {
 
     resources {
         from("src/docs/asciidoc") {
-            include("css/**")
+            include("index.css")
         }
     }
 

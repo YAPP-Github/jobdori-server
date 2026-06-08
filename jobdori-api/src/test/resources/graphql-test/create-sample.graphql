@@ -1,0 +1,6 @@
+mutation($request: SampleCreateRequest!) {
+    createSample(request: $request) {
+        sampleId
+        name
+    }
+}

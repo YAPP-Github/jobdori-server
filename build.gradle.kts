@@ -13,7 +13,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.untitled"
+    group = "com.jobdori"
 
     repositories {
         mavenCentral()
@@ -21,7 +21,7 @@ allprojects {
 }
 
 application {
-    mainClass.set("com.untitled")
+    mainClass.set("com.jobdori")
 }
 
 subprojects {

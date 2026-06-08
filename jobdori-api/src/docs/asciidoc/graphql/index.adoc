@@ -1,0 +1,41 @@
+ifndef::snippets[]
+:snippets: build/generated-snippets
+endif::[]
+:doctype: book
+:last-update-label!:
+:icons: font
+:source-highlighter: highlightjs
+:docinfo: shared
+:docinfodir: ..
+:stylesdir: ..
+:stylesheet: index.css
+:linkcss:
+:toc: left
+:toclevels: 2
+:sectnums:
+:sectnumlevels: 3
+
+[discrete]
+=== link:../index.html[> Back to Home]
+
+[[introduction]]
+= GraphQL API Reference
+
+[.doc-lead]
+GraphQL 엔드포인트와 GraphiQL 접근 정보를 제공합니다.
+
+== 엔드포인트
+
+- 도메인은 각 환경 별 도메인 문서 참고 바랍니다.
+
+[.api-table]
+[cols="24%,76%",options="header"]
+|===
+| 구분 | URL
+
+| GraphiQL
+| `/api/graphiql`
+
+| GraphQL API
+| `/api/graphql`
+|===

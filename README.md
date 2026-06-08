@@ -1,6 +1,6 @@
-# Untitled
+# Jobdori
 
-- 정해지면 변경 예정 (WEB 1팀)
+- 잡도리 (WEB 1팀)
 
 ## 기술 스택
 

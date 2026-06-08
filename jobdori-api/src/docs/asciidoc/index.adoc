@@ -1,0 +1,36 @@
+ifndef::snippets[]
+:snippets: build/generated-snippets
+endif::[]
+:doctype: book
+:last-update-label!:
+:icons: font
+:source-highlighter: highlightjs
+:docinfo: shared
+:stylesheet: index.css
+:linkcss:
+:toc: left
+:toclevels: 3
+:sectnums:
+:sectnumlevels: 3
+
+[[introduction]]
+= Jobdori API Docs
+
+== 문서 바로가기
+
+[.landing-grid]
+--
+[.landing-card]
+====
+REST API
+
+link:./restapi/index.html[REST API 문서 열기]
+====
+
+[.landing-card]
+====
+GraphQL
+
+link:./graphql/index.html[GraphQL API 문서 열기]
+====
+--

@@ -1,5 +1,5 @@
-rootProject.name = "untitled"
+rootProject.name = "jobdori"
 
-include("untitled-api")
-include("untitled-domain")
-include("untitled-common")
+include("jobdori-api")
+include("jobdori-domain")
+include("jobdori-common")

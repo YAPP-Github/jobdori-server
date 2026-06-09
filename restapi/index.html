@@ -298,43 +298,42 @@ Content-Type: application/json
 </div>
 <div class="sect3">
 <h4 id="_readiness_health_check">2.1.1. Readiness Health Check</h4>
-<div class="literalblock">
+<div class="exampleblock endpoint-card">
 <div class="content">
-<pre>[.endpoint-card]
-    ====
-    [.endpoint-line]
-    [.http-method]#GET# [.endpoint-path]#/api/health/readiness#</pre>
+<div class="paragraph endpoint-line">
+<p><span class="http-method">GET</span> <span class="endpoint-path">/api/health/readiness</span></p>
 </div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>====</pre>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_response_fields">Response Fields</h5>
-<div class="literalblock">
-<div class="content">
-<pre>[.api-table]
-    [cols="20%,16%,14%,36%,14%",options="header"]
-    |===
-    |Path|Type|Mandatory|Description|Etc</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>|`+ok+`
-|`+Boolean+`
-|`true`
-|API 처리 성공 여부
-|</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>|===</pre>
-</div>
-</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ok</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API 처리 성공 여부</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect4">
 <h5 id="_examples">Examples</h5>
@@ -370,31 +369,30 @@ Content-Length: 11
 </div>
 <div class="sect4">
 <h5 id="_error_codes">Error Codes</h5>
-<div class="literalblock">
-<div class="content">
-<pre>[.api-note]
-    공통 에러 코드는 link:#common-error-codes[공통 에러 코드]를 참고해 주세요.</pre>
+<div class="paragraph api-note">
+<p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
 </div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[cols="20%,35%,45%",options="header"]
-|===
-|HTTP Status|Code|설명</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>|`+503+`
-|`+service_unavailable+`
-|서비스 상태가 아닌 경우 발생합니다</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>|===</pre>
-</div>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 45%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Status</th>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>503</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>service_unavailable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">서비스 상태가 아닌 경우 발생합니다</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -403,7 +401,7 @@ Content-Length: 11
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-06-09<br>
+Version 2026-06-10<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

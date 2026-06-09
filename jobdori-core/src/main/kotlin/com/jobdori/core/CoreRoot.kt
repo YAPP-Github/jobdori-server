@@ -1,8 +1,8 @@
-package com.jobdori.domain
+package com.jobdori.core
 
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 
-@ComponentScan(basePackageClasses = [DomainRoot::class])
+@ComponentScan(basePackageClasses = [CoreRoot::class])
 @Configuration
-class DomainRoot
+class CoreRoot

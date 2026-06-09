@@ -1,4 +1,4 @@
-package com.jobdori.domain.support.jpa
+package com.jobdori.infrastructure.support.jpa
 
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.MappedSuperclass

@@ -1,4 +1,4 @@
-package com.jobdori.domain.support.spring
+package com.jobdori.core.support.spring
 
 import com.jobdori.common.json.JsonUtils
 import org.springframework.context.annotation.Bean

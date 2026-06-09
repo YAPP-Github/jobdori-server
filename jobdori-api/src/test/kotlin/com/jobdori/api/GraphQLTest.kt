@@ -1,6 +1,6 @@
 package com.jobdori.api
 
-import com.jobdori.domain.support.spring.JsonConfig
+import com.jobdori.core.support.spring.JsonConfig
 import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest
 import org.springframework.context.annotation.Import
 import org.springframework.core.annotation.AliasFor

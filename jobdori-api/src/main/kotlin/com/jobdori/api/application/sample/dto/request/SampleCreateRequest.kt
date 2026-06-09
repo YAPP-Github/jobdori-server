@@ -1,4 +1,4 @@
-package com.jobdori.api.application.sample
+package com.jobdori.api.application.sample.dto.request
 
 import jakarta.validation.constraints.NotBlank
 

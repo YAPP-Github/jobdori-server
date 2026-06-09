@@ -1,6 +1,9 @@
-package com.jobdori.api.application.sample
+package com.jobdori.api.application.sample.resolver
 
-import com.jobdori.domain.domain.sample.SampleNotFoundException
+import com.jobdori.api.application.sample.SampleStore
+import com.jobdori.api.application.sample.dto.request.SampleGetRequest
+import com.jobdori.api.application.sample.dto.response.SampleResponse
+import com.jobdori.core.domain.sample.error.SampleNotFoundException
 import jakarta.validation.Valid
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.QueryMapping

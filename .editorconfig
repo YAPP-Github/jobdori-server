@@ -17,3 +17,6 @@ ij_kotlin_packages_to_use_import_on_demand = none-of-wildcard
 
 [{*.yml,*.yaml}]
 indent_size = 2
+
+[*.snippet]
+ij_formatter_enabled = false

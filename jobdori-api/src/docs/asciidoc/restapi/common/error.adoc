@@ -1,4 +1,4 @@
-[cols="10%,20%,60%",options="header"]
+[cols="10%,20%,60%", options="header"]
 |===
 | Status Code | Error Code | Description
 | 400 | invalid_arguments | 필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우

@@ -1,8 +1,0 @@
-[cols="10%,20%,60%", options="header"]
-|===
-| Status Code | Error Code | Description
-| 400 | invalid_arguments | 필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우
-| 405 | method_not_allowed | 허용하지 않는 HTTP Method인 경우
-| 500 | internal_error | 서버 내부적으로 문제 발생 시
-| 503 | service_unavailable | 현재 서비스를 이용할 수 없는 경우
-|===

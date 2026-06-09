@@ -20,10 +20,10 @@ jobs:
           cache: gradle
 
       - name: Build Asciidoctor file
-        run: ./gradlew :untitled-api:asciidoctor
+        run: ./gradlew :jobdori-api:asciidoctor
 
       - name: Deploy Github Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./untitled-api/build/docs/asciidoc
+          publish_dir: ./jobdori-api/build/docs/asciidoc

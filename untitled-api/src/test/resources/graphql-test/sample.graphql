@@ -1,6 +1,0 @@
-query($request: SampleGetRequest!) {
-  sample(request: $request) {
-    sampleId
-    name
-  }
-}

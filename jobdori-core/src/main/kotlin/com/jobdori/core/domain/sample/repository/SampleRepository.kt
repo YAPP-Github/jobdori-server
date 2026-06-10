@@ -1,6 +1,6 @@
 package com.jobdori.core.domain.sample.repository
 
-import com.jobdori.core.domain.sample.model.Sample
+import com.jobdori.core.domain.sample.Sample
 
 interface SampleRepository {
     fun save(sample: Sample): Sample

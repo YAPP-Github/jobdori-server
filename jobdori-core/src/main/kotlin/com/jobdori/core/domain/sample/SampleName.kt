@@ -1,4 +1,4 @@
-package com.jobdori.core.domain.sample.vo
+package com.jobdori.core.domain.sample
 
 /**
  * 샘플 이름 값 객체(Value Object).

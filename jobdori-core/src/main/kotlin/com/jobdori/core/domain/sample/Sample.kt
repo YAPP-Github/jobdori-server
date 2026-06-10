@@ -1,6 +1,4 @@
-package com.jobdori.core.domain.sample.model
-
-import com.jobdori.core.domain.sample.vo.SampleName
+package com.jobdori.core.domain.sample
 
 data class Sample(
     val id: Long,

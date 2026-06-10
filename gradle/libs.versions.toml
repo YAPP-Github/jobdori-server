@@ -28,6 +28,8 @@ spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-
 spring-boot-h2console = { module = "org.springframework.boot:spring-boot-h2console" }
 spring-boot-restdocs = { module = "org.springframework.boot:spring-boot-restdocs" }
 spring-restdocs-mockmvc = { module = "org.springframework.restdocs:spring-restdocs-mockmvc" }
+spring-web = { module = "org.springframework:spring-web" }
+spring-tx = { module = "org.springframework:spring-tx" }
 
 # Jackson
 jackson-core = { module = "tools.jackson.core:jackson-core" }

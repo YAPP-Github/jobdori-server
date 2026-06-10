@@ -1,6 +1,5 @@
-package com.jobdori.api.libs
+package com.jobdori.api.support.docs
 
-import com.jobdori.api.libs.RestDocsUtils.withApiServletPath
 import org.springframework.restdocs.generate.RestDocumentationGenerator
 import org.springframework.restdocs.operation.Operation
 import org.springframework.restdocs.snippet.TemplatedSnippet
@@ -16,7 +15,7 @@ class PageHeaderSnippet(description: String) : TemplatedSnippet(
 
         model["method"] = operation.request.method
         val path = operation.attributes[RestDocumentationGenerator.ATTRIBUTE_NAME_URL_TEMPLATE] as String
-        model["path"] = withApiServletPath(path)
+        model["path"] = RestDocsUtils.withApiServletPath(path)
 
         return model
     }

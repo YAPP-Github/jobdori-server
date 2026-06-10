@@ -1,7 +1,10 @@
 dependencies {
+    // Modules
     api(project(":jobdori-common"))
-    implementation(libs.spring.boot.starter)
-    implementation("org.springframework:spring-tx")// spring-context + spring-tx (@Service/@Transactional)
+
+    // Spring
+    api(libs.spring.boot.starter)
+    implementation(libs.spring.tx)
 }
 
 tasks.bootJar { enabled = false }

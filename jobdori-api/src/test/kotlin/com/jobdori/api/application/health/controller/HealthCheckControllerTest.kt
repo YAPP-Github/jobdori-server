@@ -1,27 +1,25 @@
-package com.jobdori.api.application.health
+package com.jobdori.api.application.health.controller
 
 import com.jobdori.api.ApiTest
 import com.jobdori.api.DocsTest
-import com.jobdori.api.application.health.controller.HealthCheckController
-import com.jobdori.api.libs.ErrorCodeSnippet.Companion.errorCodeSnippet
-import com.jobdori.api.libs.PageHeaderSnippet.Companion.pageHeaderSnippet
-import com.jobdori.api.libs.RestDocsUtils.getDocumentRequest
+import com.jobdori.api.support.docs.ErrorCodeSnippet
+import com.jobdori.api.support.docs.PageHeaderSnippet
+import com.jobdori.api.support.docs.RestDocsUtils
 import com.jobdori.common.error.CommonErrorCode
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
 import io.mockk.every
 import org.springframework.boot.availability.ApplicationAvailability
 import org.springframework.boot.availability.ReadinessState
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.payload.JsonFieldType
-import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
-import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 
 @DocsTest
 @ApiTest(HealthCheckController::class)
-internal class HealthCheckApiDocsTest(
+internal class HealthCheckControllerTest(
     private val mockMvc: MockMvc,
     @MockkBean
     private val applicationAvailability: ApplicationAvailability,
@@ -40,15 +38,16 @@ internal class HealthCheckApiDocsTest(
             }
             .andDo {
                 handle(
-                    document(
+                    MockMvcRestDocumentation.document(
                         "health-check",
-                        getDocumentRequest(),
-                        pageHeaderSnippet(),
-                        errorCodeSnippet(
+                        RestDocsUtils.getDocumentRequest(),
+                        PageHeaderSnippet.pageHeaderSnippet(),
+                        ErrorCodeSnippet.errorCodeSnippet(
                             CommonErrorCode.E503_SERVICE_UNAVAILABLE to "서비스 상태가 아닌 경우 발생합니다",
                         ),
-                        responseFields(
-                            fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
+                        PayloadDocumentation.responseFields(
+                            PayloadDocumentation.fieldWithPath("ok").type(JsonFieldType.BOOLEAN)
+                                .description("API 처리 성공 여부"),
                         ),
                     ),
                 )

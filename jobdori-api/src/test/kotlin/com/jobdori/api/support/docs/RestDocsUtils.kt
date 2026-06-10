@@ -1,4 +1,4 @@
-package com.jobdori.api.libs
+package com.jobdori.api.support.docs
 
 import org.springframework.restdocs.operation.OperationRequest
 import org.springframework.restdocs.operation.OperationRequestFactory

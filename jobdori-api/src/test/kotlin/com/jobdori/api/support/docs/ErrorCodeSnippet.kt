@@ -1,4 +1,4 @@
-package com.jobdori.api.libs
+package com.jobdori.api.support.docs
 
 import com.jobdori.common.error.ErrorCode
 import org.springframework.restdocs.operation.Operation

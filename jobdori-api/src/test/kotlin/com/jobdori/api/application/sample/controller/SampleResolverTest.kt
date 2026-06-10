@@ -1,9 +1,8 @@
-package com.jobdori.api.application.sample
+package com.jobdori.api.application.sample.controller
 
 import com.jobdori.api.GraphQLTest
+import com.jobdori.api.application.sample.SampleStore
 import com.jobdori.api.application.sample.dto.response.SampleResponse
-import com.jobdori.api.application.sample.controller.SampleMutationResolver
-import com.jobdori.api.application.sample.controller.SampleQueryResolver
 import com.jobdori.core.application.sample.service.UpdateSampleService
 import com.jobdori.core.application.sample.service.command.UpdateSampleCommand
 import com.jobdori.core.application.sample.service.result.SampleResult

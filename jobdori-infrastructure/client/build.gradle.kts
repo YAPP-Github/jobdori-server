@@ -1,8 +1,9 @@
 dependencies {
+    // Modules
     api(project(":jobdori-core"))
 
-    implementation(libs.spring.boot.starter)
-    implementation("org.springframework:spring-web")   // RestClient
+    // RestClient
+    implementation(libs.spring.web)
 }
 
 tasks.bootJar { enabled = false }

@@ -2,6 +2,10 @@
 
 - 잡도리 (WEB 1팀)
 
+## 링크
+
+- [API Docs](https://yapp-github.github.io/jobdori-server)
+
 ## 기술 스택
 
 - Kotlin 2.3.21 (JDK 25)
@@ -44,13 +48,4 @@ jobdori-api ⇢(runtimeOnly) jobdori-infrastructure
 
 # 전체 테스트
 ./gradlew test
-
-# 모듈별 테스트
-./gradlew :jobdori-api:test
-./gradlew :jobdori-core:test
-./gradlew :jobdori-infrastructure:test
-./gradlew :jobdori-common:test
-
-# REST Docs 문서 생성
-./gradlew :jobdori-api:asciidoctor
 ```

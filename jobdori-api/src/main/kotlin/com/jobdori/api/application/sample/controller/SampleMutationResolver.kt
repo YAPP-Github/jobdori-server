@@ -1,4 +1,4 @@
-package com.jobdori.api.application.sample.resolver
+package com.jobdori.api.application.sample.controller
 
 import com.jobdori.api.application.sample.SampleStore
 import com.jobdori.api.application.sample.dto.request.SampleCreateRequest

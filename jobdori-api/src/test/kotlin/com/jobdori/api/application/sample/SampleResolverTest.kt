@@ -1,10 +1,18 @@
 package com.jobdori.api.application.sample
 
 import com.jobdori.api.GraphQLTest
+import com.jobdori.api.application.sample.dto.response.SampleResponse
+import com.jobdori.api.application.sample.controller.SampleMutationResolver
+import com.jobdori.api.application.sample.controller.SampleQueryResolver
+import com.jobdori.core.application.sample.service.UpdateSampleService
+import com.jobdori.core.application.sample.service.command.UpdateSampleCommand
+import com.jobdori.core.application.sample.service.result.SampleResult
+import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.shouldBe
+import io.mockk.every
 import org.springframework.graphql.test.tester.GraphQlTester
 import org.springframework.graphql.test.tester.entity
 
@@ -14,6 +22,8 @@ import org.springframework.graphql.test.tester.entity
 )
 internal class SampleResolverTest(
     private val graphQlTester: GraphQlTester,
+    @MockkBean
+    private val updateSampleService: UpdateSampleService,
 ) : StringSpec({
 
     beforeEach {
@@ -49,6 +59,12 @@ internal class SampleResolverTest(
     }
 
     "샘플을 수정한다" {
+        // given: UpdateSampleService가 수정 결과를 반환하도록 stub
+        every {
+            updateSampleService.update(UpdateSampleCommand(sampleId = 1L, name = "수정 후 샘플"))
+        } returns SampleResult(sampleId = 1L, name = "수정 후 샘플")
+
+        // when & then
         graphQlTester.documentName("update-sample")
             .variable("request", mapOf("sampleId" to 1L, "name" to "수정 후 샘플"))
             .execute()

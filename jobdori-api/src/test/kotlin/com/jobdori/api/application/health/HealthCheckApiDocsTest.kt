@@ -2,6 +2,7 @@ package com.jobdori.api.application.health
 
 import com.jobdori.api.ApiTest
 import com.jobdori.api.DocsTest
+import com.jobdori.api.application.health.controller.HealthCheckController
 import com.jobdori.api.libs.ErrorCodeSnippet.Companion.errorCodeSnippet
 import com.jobdori.api.libs.PageHeaderSnippet.Companion.pageHeaderSnippet
 import com.jobdori.api.libs.RestDocsUtils.getDocumentRequest
@@ -19,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 
 @DocsTest
-@ApiTest(HealthCheckApi::class)
+@ApiTest(HealthCheckController::class)
 internal class HealthCheckApiDocsTest(
     private val mockMvc: MockMvc,
     @MockkBean

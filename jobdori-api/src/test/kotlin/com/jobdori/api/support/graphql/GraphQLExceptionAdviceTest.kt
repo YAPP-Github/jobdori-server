@@ -1,8 +1,8 @@
 package com.jobdori.api.support.graphql
 
 import com.jobdori.common.error.CommonErrorCode
-import com.jobdori.domain.domain.sample.SampleErrorCode
-import com.jobdori.domain.domain.sample.SampleNotFoundException
+import com.jobdori.core.domain.sample.error.SampleErrorCode
+import com.jobdori.core.domain.sample.error.SampleNotFoundException
 import graphql.execution.ExecutionStepInfo
 import graphql.execution.ResultPath
 import graphql.language.Field

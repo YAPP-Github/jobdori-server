@@ -3,7 +3,11 @@ import java.time.ZoneId
 
 dependencies {
     // Core
-    implementation(project(":jobdori-domain"))
+    implementation(project(":jobdori-core"))
+    implementation(project(":jobdori-common"))
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    runtimeOnly(project(":jobdori-infrastructure:persistence"))   // ★ 직접 호출 차단 (implementation 금지)
+    runtimeOnly(project(":jobdori-infrastructure:client"))
 
     // Web
     implementation(libs.spring.boot.starter.webmvc)

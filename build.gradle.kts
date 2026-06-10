@@ -69,6 +69,7 @@ subprojects {
     tasks.withType<Test> {
         group = "verification"
         useJUnitPlatform()
+        failOnNoDiscoveredTests = false   // 테스트가 아직 없는 모듈(core 등) 허용
 
         testClassesDirs = sourceSets.named("test").get().output.classesDirs
         classpath = sourceSets.named("test").get().runtimeClasspath

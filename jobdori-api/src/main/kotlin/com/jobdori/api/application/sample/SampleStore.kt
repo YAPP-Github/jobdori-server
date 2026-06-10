@@ -1,5 +1,7 @@
 package com.jobdori.api.application.sample
 
+import com.jobdori.api.application.sample.dto.response.SampleResponse
+
 internal object SampleStore {
 
     private val samples = mutableListOf(

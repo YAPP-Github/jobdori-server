@@ -29,8 +29,6 @@ This file provides guidance to Codex when working with code in this repository.
 
 ## 모듈 구조
 
-ISSUE-007 이후 4개 모듈의 계층형 + 의존성 역전 구조:
-
 ```
 컴파일 의존:
 jobdori-api → jobdori-core → jobdori-common
@@ -52,7 +50,7 @@ jobdori-api ⇢(runtimeOnly) jobdori-infrastructure
 
 ## 기술 스택
 
-- **언어/프레임워크**: Kotlin 2.3.21 + Spring Boot 4.0.6 + JDK 25
+- **언어/프레임워크**: Kotlin 2 + Spring Boot 4 + JDK 25
 - **ORM**: Spring Data JPA + Kotlin JDSL
 - **DB**: PostgreSQL
 - **API**: Spring WebMVC REST API + Spring GraphQL

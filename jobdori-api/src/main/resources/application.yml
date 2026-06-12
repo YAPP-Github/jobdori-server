@@ -5,7 +5,7 @@ spring.config:
     - classpath:/ai.yml
 
 server:
-  port: 20000
+  port: ${SERVER_PORT:20000}
 spring:
   mvc:
     servlet:

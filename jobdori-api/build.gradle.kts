@@ -1,11 +1,12 @@
 import java.time.LocalDate
 import java.time.ZoneId
+import org.gradle.api.tasks.bundling.Zip
 
 dependencies {
     // Modules
     implementation(project(":jobdori-core"))
     implementation(project(":jobdori-common"))
-    runtimeOnly(project(":jobdori-infrastructure:persistence"))   // ★ 직접 호출 차단 (implementation 금지)
+    runtimeOnly(project(":jobdori-infrastructure:persistence"))
     runtimeOnly(project(":jobdori-infrastructure:client"))
 
     // Web
@@ -26,10 +27,23 @@ dependencies {
 
 tasks.bootJar {
     enabled = true
+    archiveFileName.set("application.jar")
 }
 
 tasks.jar {
     enabled = true
+}
+
+tasks.register<Zip>("elasticBeanstalkBundle") {
+    group = "distribution"
+    description = "Build the Elastic Beanstalk application source bundle"
+    dependsOn(tasks.bootJar)
+
+    archiveFileName.set("jobdori-api-elastic-beanstalk.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
+
+    from(tasks.bootJar.flatMap { it.archiveFile })
+    from(project.file("Procfile"))
 }
 
 tasks.docsTest {

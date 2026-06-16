@@ -18,7 +18,7 @@
 <li><a href="#introduction">REST API Reference</a>
 <ul class="sectlevel1">
 <li><a href="#_overview">1. Overview</a>
-<ul class="sectlevel2">
+<ul class="sectlevel3">
 <li><a href="#common-headers">1.1. 공통 헤더 정보</a></li>
 <li><a href="#_api_응답_모델">1.2. API 응답 모델</a></li>
 <li><a href="#common-error-codes">1.3. 공통 에러 코드</a></li>
@@ -26,7 +26,33 @@
 </li>
 <li><a href="#_apis">2. APIs</a>
 <ul class="sectlevel2">
-<li><a href="#_health">2.1. Health</a></li>
+<li><a href="#_common_apis">2.1. Common APIs</a>
+<ul class="sectlevel3">
+<li><a href="#_health_check">2.1.1. Health Check</a></li>
+</ul>
+</li>
+<li><a href="#_auth_apis">2.2. Auth APIs</a>
+<ul class="sectlevel3">
+<li><a href="#_sign_up">2.2.1. Sign Up</a></li>
+<li><a href="#_login">2.2.2. Login</a></li>
+<li><a href="#_refresh_access_token">2.2.3. Refresh Access Token</a></li>
+<li><a href="#_logout">2.2.4. Logout</a></li>
+</ul>
+</li>
+<li><a href="#_user_apis">2.3. User APIs</a>
+<ul class="sectlevel3">
+<li><a href="#_get_my_user">2.3.1. Get My User</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_개발용_apis">3. 개발용 APIs</a>
+<ul class="sectlevel2">
+<li><a href="#_auth_apis_2">3.1. Auth APIs</a>
+<ul class="sectlevel3">
+<li><a href="#_issue_test_token">3.1.1. Issue Test Token</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -49,8 +75,8 @@ REST API 사용에 필요한 공통 규칙, 응답 모델, 엔드포인트별 �
 <div class="sect1">
 <h2 id="_overview">1. Overview</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="common-headers">1.1. 공통 헤더 정보</h3>
+<div class="sect3">
+<h4 id="common-headers">1.1. 공통 헤더 정보</h4>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 15%;">
@@ -69,9 +95,15 @@ REST API 사용에 필요한 공통 규칙, 응답 모델, 엔드포인트별 �
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Authorization</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰 (액세스 토큰)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">N</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Bearer 4B561A51-7773-4CA4-8E67-851EF4E85145</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cookie</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증 쿠키 (<code>access_token</code>, <code>refresh_token</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">N</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">access_token=access-token; refresh_token=refresh-token</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Request-Id</p></td>
@@ -82,10 +114,10 @@ REST API 사용에 필요한 공통 규칙, 응답 모델, 엔드포인트별 �
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_api_응답_모델">1.2. API 응답 모델</h3>
 <div class="sect3">
-<h4 id="_success">1.2.1. Success</h4>
+<h4 id="_api_응답_모델">1.2. API 응답 모델</h4>
+<div class="sect5">
+<h6 id="_success">Success</h6>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 30%;">
@@ -135,8 +167,8 @@ Content-Type: application/json
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_error">1.2.2. Error</h4>
+<div class="sect5">
+<h6 id="_error">Error</h6>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 36.3636%;">
@@ -243,8 +275,8 @@ Content-Type: application/json
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="common-error-codes">1.3. 공통 에러 코드</h3>
+<div class="sect3">
+<h4 id="common-error-codes">1.3. 공통 에러 코드</h4>
 <div class="paragraph">
 <p>모든 API에서 공통적으로 발생할 수 있는 에러 목록입니다.<br>
 각 API별로 발생할 수 있는 에러 정보는 각 API의 에러 코드 문서를 참고해주세요.</p>
@@ -267,6 +299,16 @@ Content-Type: application/json
 <td class="tableblock halign-left valign-top"><p class="tableblock">400</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_arguments</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">401</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">invalid_auth_token</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 없거나 유효하지 않은 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">401</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">token_expired</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 만료된 경우 (Refresh Access Token API 호출 필요)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">405</p></td>
@@ -292,16 +334,16 @@ Content-Type: application/json
 <h2 id="_apis">2. APIs</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_health">2.1. Health</h3>
-<div class="paragraph">
-<p>서버 헬스 체크 상태를 확인하는 API입니다.</p>
-</div>
+<h3 id="_common_apis">2.1. Common APIs</h3>
 <div class="sect3">
-<h4 id="_readiness_health_check">2.1.1. Readiness Health Check</h4>
+<h4 id="_health_check">2.1.1. Health Check</h4>
+<div class="paragraph">
+<p>서버가 요청을 처리할 준비가 되었는지 확인하는 API입니다.</p>
+</div>
 <div class="exampleblock endpoint-card">
 <div class="content">
 <div class="paragraph endpoint-line">
-<p><span class="http-method">GET</span> <span class="endpoint-path">/api/health/readiness</span></p>
+<p><span class="http-method">GET</span> <span class="endpoint-path">/api/health</span></p>
 </div>
 </div>
 </div>
@@ -341,8 +383,8 @@ Content-Type: application/json
 <h6 id="_http_request">HTTP Request</h6>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/health/readiness HTTP/1.1
-Host: localhost:8000</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/health HTTP/1.1
+Host: dev.api.jobdori.o-r.kr</code></pre>
 </div>
 </div>
 </div>
@@ -352,9 +394,11 @@ Host: localhost:8000</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 11
+Content-Length: 17
 
-{"ok":true}</code></pre>
+{
+  "ok" : true
+}</code></pre>
 </div>
 </div>
 </div>
@@ -362,7 +406,7 @@ Content-Length: 11
 <h6 id="_curl">Curl</h6>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8000/api/health/readiness' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://dev.api.jobdori.o-r.kr/api/health' -i -X GET</code></pre>
 </div>
 </div>
 </div>
@@ -396,12 +440,874 @@ Content-Length: 11
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_auth_apis">2.2. Auth APIs</h3>
+<div class="sect3">
+<h4 id="_sign_up">2.2.1. Sign Up</h4>
+<div class="paragraph">
+<p>신규 유저로 가입하는 API입니다.</p>
+</div>
+<div class="exampleblock endpoint-card">
+<div class="content">
+<div class="paragraph endpoint-line">
+<p><span class="http-method">POST</span> <span class="endpoint-path">/api/auth/signup</span></p>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_request_fields">Request Fields</h6>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>provider</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증 제공자</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GOOGLE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>authorizationCode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAuth 인가 코드</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect5">
+<h6 id="_response_fields_2">Response Fields</h6>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ok</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API 처리 성공 여부</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.accessToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Access 토큰</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.refreshToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Refresh 토큰</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect5">
+<h6 id="_response_headers">Response Headers</h6>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Set-Cookie</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>access_token</code>, <code>refresh_token</code> 쿠키</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect5">
+<h6 id="_examples_2">Examples</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/signup HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 73
+Host: dev.api.jobdori.o-r.kr
+
+{
+  "provider" : "GOOGLE",
+  "authorizationCode" : "authorization-code"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Set-Cookie: access_token=access-token; Path=/; Max-Age=111833397; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=113041197; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Content-Type: application/json
+Content-Length: 110
+
+{
+  "ok" : true,
+  "result" : {
+    "accessToken" : "access-token",
+    "refreshToken" : "refresh-token"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_error_codes_2">Error Codes</h6>
+<div class="paragraph api-note">
+<p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 45%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Status</th>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>409</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>already_signed_up</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이미 가입된 계정으로 회원가입을 시도한 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_login">2.2.2. Login</h4>
+<div class="paragraph">
+<p>기존 가입된 유저로 로그인하는 API입니다.</p>
+</div>
+<div class="exampleblock endpoint-card">
+<div class="content">
+<div class="paragraph endpoint-line">
+<p><span class="http-method">POST</span> <span class="endpoint-path">/api/auth/login</span></p>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_request_fields_2">Request Fields</h5>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>provider</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증 제공자</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GOOGLE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>authorizationCode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAuth 인가 코드</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_response_fields_3">Response Fields</h5>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ok</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API 처리 성공 여부</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.accessToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Access 토큰</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.refreshToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Refresh 토큰</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_response_headers_2">Response Headers</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Set-Cookie</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>access_token</code>, <code>refresh_token</code> 쿠키</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_examples_3">Examples</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/login HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 73
+Host: dev.api.jobdori.o-r.kr
+
+{
+  "provider" : "GOOGLE",
+  "authorizationCode" : "authorization-code"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Set-Cookie: access_token=access-token; Path=/; Max-Age=111833396; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=113041196; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Content-Type: application/json
+Content-Length: 110
+
+{
+  "ok" : true,
+  "result" : {
+    "accessToken" : "access-token",
+    "refreshToken" : "refresh-token"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_error_codes_3">Error Codes</h5>
+<div class="paragraph api-note">
+<p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 45%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Status</th>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>user_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">가입된 사용자가 아닌 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_refresh_access_token">2.2.3. Refresh Access Token</h4>
+<div class="paragraph">
+<p>Refresh 토큰으로 새로운 Access 토큰을 발급하는 API입니다.</p>
+</div>
+<div class="exampleblock endpoint-card">
+<div class="content">
+<div class="paragraph endpoint-line">
+<p><span class="http-method">POST</span> <span class="endpoint-path">/api/auth/refresh</span></p>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_request_cookies">Request Cookies</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>refresh_token</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Refresh 토큰</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_response_fields_4">Response Fields</h5>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ok</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API 처리 성공 여부</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.accessToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Access 토큰</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_response_headers_3">Response Headers</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Set-Cookie</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>access_token</code> 쿠키</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_examples_4">Examples</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/refresh HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: dev.api.jobdori.o-r.kr
+Cookie: refresh_token=refresh-token</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Set-Cookie: access_token=new-access-token; Path=/; Max-Age=111833396; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Content-Type: application/json
+Content-Length: 76
+
+{
+  "ok" : true,
+  "result" : {
+    "accessToken" : "new-access-token"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_logout">2.2.4. Logout</h4>
+<div class="paragraph">
+<p>인증 쿠키를 만료하는 API입니다.</p>
+</div>
+<div class="exampleblock endpoint-card">
+<div class="content">
+<div class="paragraph endpoint-line">
+<p><span class="http-method">POST</span> <span class="endpoint-path">/api/auth/logout</span></p>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_request_cookies_2">Request Cookies</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>refresh_token</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Refresh 토큰</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_response_fields_5">Response Fields</h5>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ok</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API 처리 성공 여부</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_response_headers_4">Response Headers</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Set-Cookie</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">만료된 <code>access_token</code>, <code>refresh_token</code> 쿠키</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_examples_5">Examples</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/logout HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: dev.api.jobdori.o-r.kr
+Cookie: refresh_token=refresh-token</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Set-Cookie: access_token=; Path=/; Max-Age=0; Expires=Thu, 1 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=; Path=/; Max-Age=0; Expires=Thu, 1 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Content-Type: application/json
+Content-Length: 17
+
+{
+  "ok" : true
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_user_apis">2.3. User APIs</h3>
+<div class="sect3">
+<h4 id="_get_my_user">2.3.1. Get My User</h4>
+<div class="paragraph">
+<p>인증된 사용자의 정보를 조회하는 API입니다.</p>
+</div>
+<div class="exampleblock endpoint-card">
+<div class="content">
+<div class="paragraph endpoint-line">
+<p><span class="http-method">GET</span> <span class="endpoint-path">/api/users/me</span></p>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_response_fields_6">Response Fields</h6>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ok</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API 처리 성공 여부</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.userId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사용자 ID(UUID)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect5">
+<h6 id="_examples_6">Examples</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/users/me HTTP/1.1
+Authorization: Bearer access-token
+Host: dev.api.jobdori.o-r.kr</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 91
+
+{
+  "ok" : true,
+  "result" : {
+    "userId" : "3f5c9d79-2255-4b76-bd31-013cd01d49d6"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_error_codes_4">Error Codes</h6>
+<div class="paragraph api-note">
+<p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 45%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Status</th>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>user_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사용자를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_개발용_apis">3. 개발용 APIs</h2>
+<div class="sectionbody">
+<div class="paragraph api-note">
+<p>개발 편의성을 위한 API들로 개발 환경에서만 사용할 수 있습니다.</p>
+</div>
+<div class="sect2">
+<h3 id="_auth_apis_2">3.1. Auth APIs</h3>
+<div class="sect3">
+<h4 id="_issue_test_token">3.1.1. Issue Test Token</h4>
+<div class="paragraph">
+<p>개발용 테스트 유저의 Access 토큰과 Refresh 토큰을 발급하는 API입니다.</p>
+</div>
+<div class="paragraph">
+<p>토큰 만료 시각을 생략하면 서버 기본 만료 설정을 사용합니다.</p>
+</div>
+<div class="exampleblock endpoint-card">
+<div class="content">
+<div class="paragraph endpoint-line">
+<p><span class="http-method">GET</span> <span class="endpoint-path">/api/test/tokens</span></p>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_query_parameters">Query Parameters</h5>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 22%;">
+<col style="width: 14%;">
+<col style="width: 44%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>accessTokenExpiresAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">테스트 Access 토큰 만료 시각. ISO local date-time 형식이며 생략 시 서버 기본값을 사용합니다.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>refreshTokenExpiresAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">테스트 Refresh 토큰 만료 시각. ISO local date-time 형식이며 생략 시 서버 기본값을 사용합니다.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_response_fields_7">Response Fields</h5>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 16%;">
+<col style="width: 14%;">
+<col style="width: 36%;">
+<col style="width: 14%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Mandatory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Etc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ok</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API 처리 성공 여부</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.accessToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">테스트 Access 토큰</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.refreshToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">테스트 Refresh 토큰</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_response_headers_5">Response Headers</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Set-Cookie</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>access_token</code>, <code>refresh_token</code> 쿠키</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_examples_7">Examples</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/test/tokens?accessTokenExpiresAt=2030-01-01T00:00&amp;refreshTokenExpiresAt=2030-01-15T00:00 HTTP/1.1
+Host: dev.api.jobdori.o-r.kr</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Set-Cookie: access_token=access-token; Path=/; Max-Age=111831596; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=113041196; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Content-Type: application/json
+Content-Length: 110
+
+{
+  "ok" : true,
+  "result" : {
+    "accessToken" : "access-token",
+    "refreshToken" : "refresh-token"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_error_codes_5">Error Codes</h5>
+<div class="paragraph api-note">
+<p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 45%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Status</th>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>400</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>invalid_arguments</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">만료 시간이 현재보다 이전인 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-06-13<br>
+Version 2026-06-17<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

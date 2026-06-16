@@ -1,0 +1,23 @@
+==== Logout
+
+로그아웃 API입니다.
+
+include::{snippets}/auth-logout/request-path.adoc[]
+
+===== Request Cookies
+
+include::{snippets}/auth-logout/request-cookies.adoc[]
+
+===== Response Fields
+
+include::{snippets}/auth-logout/response-fields.adoc[]
+
+===== Response Headers
+
+include::{snippets}/auth-logout/response-headers.adoc[]
+
+===== Examples
+
+include::{snippets}/auth-logout/http-request.adoc[]
+
+include::{snippets}/auth-logout/http-response.adoc[]

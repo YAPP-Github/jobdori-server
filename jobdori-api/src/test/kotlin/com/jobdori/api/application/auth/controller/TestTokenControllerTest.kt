@@ -85,6 +85,7 @@ internal class TestTokenControllerTest(
                 document(
                     "dev-test-token",
                     RestDocsUtils.getDocumentRequest(),
+                    RestDocsUtils.getDocumentResponse(),
                     PageHeaderSnippet.pageHeaderSnippet(),
                     queryParameters(
                         parameterWithName("accessTokenExpiresAt").optional()

@@ -6,6 +6,7 @@ import com.jobdori.api.application.auth.dto.request.SignUpRequest
 import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
+import com.jobdori.api.support.docs.RestDocsUtils.convertToString
 import com.jobdori.api.support.docs.RestDocsUtils.remarks
 import com.jobdori.common.json.JsonUtils
 import com.jobdori.core.application.auth.LoginService
@@ -89,10 +90,11 @@ internal class AuthControllerTest(
                 document(
                     "auth-signup",
                     RestDocsUtils.getDocumentRequest(),
+                    RestDocsUtils.getDocumentResponse(),
                     PageHeaderSnippet.pageHeaderSnippet(),
                     requestFields(
                         fieldWithPath("provider").type(JsonFieldType.STRING).description("인증 제공자")
-                            .attributes(remarks("GOOGLE")),
+                            .attributes(remarks(convertToString(UserIdentifyProvider::class.java))),
                         fieldWithPath("authorizationCode").type(JsonFieldType.STRING).description("OAuth 인가 코드")
                     ),
                     responseFields(
@@ -143,10 +145,11 @@ internal class AuthControllerTest(
                 document(
                     "auth-login",
                     RestDocsUtils.getDocumentRequest(),
+                    RestDocsUtils.getDocumentResponse(),
                     PageHeaderSnippet.pageHeaderSnippet(),
                     requestFields(
                         fieldWithPath("provider").type(JsonFieldType.STRING).description("인증 제공자")
-                            .attributes(remarks("GOOGLE")),
+                            .attributes(remarks(convertToString(UserIdentifyProvider::class.java))),
                         fieldWithPath("authorizationCode").type(JsonFieldType.STRING).description("OAuth 인가 코드")
                     ),
                     responseFields(
@@ -184,6 +187,7 @@ internal class AuthControllerTest(
                 document(
                     "auth-refresh",
                     RestDocsUtils.getDocumentRequest(),
+                    RestDocsUtils.getDocumentResponse(),
                     PageHeaderSnippet.pageHeaderSnippet(),
                     requestCookies(
                         cookieWithName("refresh_token").description("Refresh 토큰"),
@@ -218,6 +222,7 @@ internal class AuthControllerTest(
                     document(
                         "auth-logout",
                         RestDocsUtils.getDocumentRequest(),
+                        RestDocsUtils.getDocumentResponse(),
                         PageHeaderSnippet.pageHeaderSnippet(),
                         requestCookies(
                             cookieWithName("refresh_token").description("Refresh 토큰"),

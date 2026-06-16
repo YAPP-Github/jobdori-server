@@ -11,7 +11,7 @@ endif::[]
 :stylesheet: index.css
 :linkcss:
 :toc: left
-:toclevels: 2
+:toclevels: 3
 :sectnums:
 :sectnumlevels: 3
 
@@ -30,4 +30,15 @@ include::./common/index.adoc[]
 
 == APIs
 
+=== Common APIs
+
 include::./health/index.adoc[]
+include::./auth/index.adoc[]
+include::./user/index.adoc[]
+
+== 개발용 APIs
+
+[.api-note]
+개발 편의성을 위한 API들로 개발 환경에서만 사용할 수 있습니다.
+
+include::./dev/index.adoc[]

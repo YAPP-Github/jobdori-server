@@ -10,7 +10,7 @@ type Query {
 """
 type User {
     """
-    사용자를 식별하는 외부 노출 UUID입니다.
+    사용자를 식별하는 ID입니다.
     """
     userId: ID!
 }

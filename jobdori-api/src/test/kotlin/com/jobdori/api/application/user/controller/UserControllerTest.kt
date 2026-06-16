@@ -49,10 +49,11 @@ internal class UserControllerTest(
                 document(
                     "user-me",
                     RestDocsUtils.getDocumentRequest(),
+                    RestDocsUtils.getDocumentResponse(),
                     PageHeaderSnippet.pageHeaderSnippet(),
                     responseFields(
                         fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
-                        fieldWithPath("result.userId").type(JsonFieldType.STRING).description("사용자 ID(UUID)"),
+                        fieldWithPath("result.userId").type(JsonFieldType.STRING).description("사용자 ID"),
                     ),
                     ErrorCodeSnippet.errorCodeSnippet(
                         UserErrorCode.E404_USER_NOT_FOUND,

@@ -1,0 +1,19 @@
+==== Get My User
+
+인증된 사용자의 정보를 조회하는 API입니다.
+
+include::{snippets}/user-me/request-path.adoc[]
+
+====== Response Fields
+
+include::{snippets}/user-me/response-fields.adoc[]
+
+====== Examples
+
+include::{snippets}/user-me/http-request.adoc[]
+
+include::{snippets}/user-me/http-response.adoc[]
+
+====== Error Codes
+
+include::{snippets}/user-me/error-codes.adoc[]

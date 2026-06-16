@@ -1,0 +1,9 @@
+=== Auth APIs
+
+include::./signup.adoc[]
+
+include::./login.adoc[]
+
+include::./refresh.adoc[]
+
+include::./logout.adoc[]

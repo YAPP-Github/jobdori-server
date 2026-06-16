@@ -41,6 +41,7 @@ internal class HealthCheckControllerTest(
                     MockMvcRestDocumentation.document(
                         "health-check",
                         RestDocsUtils.getDocumentRequest(),
+                        RestDocsUtils.getDocumentResponse(),
                         PageHeaderSnippet.pageHeaderSnippet(),
                         ErrorCodeSnippet.errorCodeSnippet(
                             CommonErrorCode.E503_SERVICE_UNAVAILABLE to "서비스 상태가 아닌 경우 발생합니다",

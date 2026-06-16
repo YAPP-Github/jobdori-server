@@ -5,8 +5,10 @@ import org.springframework.restdocs.operation.OperationRequestFactory
 import org.springframework.restdocs.operation.OperationResponse
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor
 import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor
+import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor
 import org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris
 import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest
+import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
 import org.springframework.restdocs.snippet.Attributes
 import java.net.URI
@@ -29,9 +31,15 @@ object RestDocsUtils {
         return preprocessRequest(
             modifyUris()
                 .scheme("http")
-                .host("localhost")
-                .port(8000),
+                .host("dev.api.jobdori.o-r.kr")
+                .removePort(),
             apiServletPath(),
+            prettyPrint(),
+        )
+    }
+
+    fun getDocumentResponse(): OperationResponsePreprocessor {
+        return preprocessResponse(
             prettyPrint(),
         )
     }

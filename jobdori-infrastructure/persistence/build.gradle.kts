@@ -14,6 +14,9 @@ dependencies {
     runtimeOnly(libs.h2)
     implementation(libs.spring.boot.h2console)
     runtimeOnly(libs.postgresql)
+
+    // Test
+    testImplementation(testFixtures(project(":jobdori-core")))
 }
 
 allOpen {

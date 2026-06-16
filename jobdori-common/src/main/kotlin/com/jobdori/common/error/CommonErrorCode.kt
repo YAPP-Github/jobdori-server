@@ -11,6 +11,16 @@ enum class CommonErrorCode(
         code = "invalid_arguments",
         description = "필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우",
     ),
+    E401_INVALID_AUTH_TOKEN(
+        httpStatusCode = 401,
+        code = "invalid_auth_token",
+        description = "인증 토큰이 없거나 유효하지 않은 경우",
+    ),
+    E401_TOKEN_EXPIRED(
+        httpStatusCode = 401,
+        code = "token_expired",
+        description = "인증 토큰이 만료된 경우 (Refresh Access Token API 호출 필요)",
+    ),
     E405_METHOD_NOT_ALLOWED(
         httpStatusCode = 405,
         code = "method_not_allowed",

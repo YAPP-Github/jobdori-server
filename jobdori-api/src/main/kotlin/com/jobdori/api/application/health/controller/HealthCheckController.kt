@@ -26,7 +26,7 @@ class HealthCheckController(
         return ResponseEntity.ok(ApiResponse.OK)
     }
 
-    @GetMapping("/readiness")
+    @GetMapping("", "/readiness")
     fun readinessProbe(): ResponseEntity<ApiResponse<Nothing?>> {
         if (applicationAvailability.readinessState != ReadinessState.ACCEPTING_TRAFFIC) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)

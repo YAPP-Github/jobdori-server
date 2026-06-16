@@ -25,12 +25,12 @@ internal class HealthCheckControllerTest(
     private val applicationAvailability: ApplicationAvailability,
 ) : StringSpec({
 
-    "Readiness Health Check API" {
+    "Health Check API" {
         // given
         every { applicationAvailability.readinessState } returns ReadinessState.ACCEPTING_TRAFFIC
 
         // when & then
-        mockMvc.get("/health/readiness")
+        mockMvc.get("/health")
             .andExpect {
                 status { isOk() }
 

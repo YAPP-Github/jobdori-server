@@ -1,6 +1,6 @@
 package com.jobdori.api.support.auth
 
-import com.jobdori.core.application.auth.error.InvalidAuthTokenException
+import com.jobdori.core.domain.auth.error.InvalidAuthTokenException
 
 object BearerTokenExtractor {
 

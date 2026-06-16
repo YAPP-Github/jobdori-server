@@ -2,8 +2,8 @@ package com.jobdori.api.support.auth.graphql
 
 import com.jobdori.api.support.auth.BearerTokenExtractor
 import com.jobdori.api.support.auth.UserId
-import com.jobdori.core.application.auth.AuthUserReadService
-import com.jobdori.core.application.auth.error.InvalidAuthTokenException
+import com.jobdori.core.application.auth.AccessTokenService
+import com.jobdori.core.domain.auth.error.InvalidAuthTokenException
 import graphql.schema.DataFetchingEnvironment
 import org.springframework.core.MethodParameter
 import org.springframework.graphql.data.method.HandlerMethodArgumentResolver
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class UserIdArgumentGraphqlResolver(
-    private val authUserReadService: AuthUserReadService,
+    private val accessTokenService: AccessTokenService,
 ) : HandlerMethodArgumentResolver {
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
@@ -31,7 +31,7 @@ class UserIdArgumentGraphqlResolver(
 
         val accessToken = BearerTokenExtractor.extract(authorization)
 
-        val userId = authUserReadService.getUserId(accessToken)
+        val userId = accessTokenService.getUserId(accessToken)
 
         environment.graphQlContext.put(AuthGraphQlContext.USER_ID, userId)
         return userId

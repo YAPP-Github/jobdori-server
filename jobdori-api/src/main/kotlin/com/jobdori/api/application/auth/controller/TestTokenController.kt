@@ -6,7 +6,7 @@ import com.jobdori.api.support.auth.AuthCookieUtils.REFRESH_TOKEN_COOKIE
 import com.jobdori.api.support.auth.AuthCookieUtils.tokenCookie
 import com.jobdori.api.support.rest.ApiResponse
 import com.jobdori.common.error.InvalidArgumentsException
-import com.jobdori.core.application.auth.token.AuthTokenProvider
+import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.repository.UserRepository
 import org.springframework.context.annotation.Profile

@@ -18,6 +18,7 @@ class GoogleAuthProcessor(
             GoogleAuthorizationCode(
                 value = command.authorizationCode,
             ),
+            redirectUrl = command.redirectUri,
         )
         return googleOAuthUserClient.getUserId(accessToken)
     }

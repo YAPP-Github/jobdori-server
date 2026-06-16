@@ -1,7 +1,7 @@
 package com.jobdori.api.application.auth.dto.response
 
-import com.jobdori.core.application.auth.token.AuthToken
-import com.jobdori.core.application.auth.token.AuthTokenPair
+import com.jobdori.core.domain.auth.AuthToken
+import com.jobdori.core.domain.auth.AuthTokenPair
 
 data class AuthTokenResponse(
     val accessToken: String,

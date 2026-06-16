@@ -9,8 +9,8 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
+@Table(name = "user_v1")
 @Entity
-@Table(name = "users")
 class UserEntity(
     @Column(nullable = false, unique = true, updatable = false)
     var publicId: String,

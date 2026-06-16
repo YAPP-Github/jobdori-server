@@ -10,6 +10,7 @@ class MockGoogleOAuthClient : GoogleOAuthTokenClient, GoogleOAuthUserClient {
 
     override fun exchangeAuthorizationCode(
         authorizationCode: GoogleAuthorizationCode,
+        redirectUrl: String,
     ): GoogleAccessToken {
         // TODO: 구현해야함
         return GoogleAccessToken("dummy-google-access-token")

@@ -1,6 +1,6 @@
 package com.jobdori.api.support.auth
 
-import com.jobdori.core.application.auth.error.InvalidAuthTokenException
+import com.jobdori.core.domain.auth.error.InvalidAuthTokenException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe

@@ -2,8 +2,8 @@ package com.jobdori.api.support.auth.rest
 
 import com.jobdori.api.support.auth.Authenticated
 import com.jobdori.api.support.auth.BearerTokenExtractor
-import com.jobdori.core.application.auth.AuthUserReadService
-import com.jobdori.core.application.auth.error.InvalidAuthTokenException
+import com.jobdori.core.application.auth.AccessTokenService
+import com.jobdori.core.domain.auth.error.InvalidAuthTokenException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.ObjectProvider
@@ -14,7 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 
 @Component
 class AuthHandlerInterceptor(
-    private val authUserReadServiceProvider: ObjectProvider<AuthUserReadService>,
+    private val accessTokenServiceProvider: ObjectProvider<AccessTokenService>,
 ) : HandlerInterceptor {
 
     override fun preHandle(
@@ -29,7 +29,7 @@ class AuthHandlerInterceptor(
         val accessToken = BearerTokenExtractor.extract(
             request.getHeader(HttpHeaders.AUTHORIZATION),
         )
-        val authUserReader = authUserReadServiceProvider.getIfAvailable()
+        val authUserReader = accessTokenServiceProvider.getIfAvailable()
             ?: throw InvalidAuthTokenException("인증 사용자 조회 서비스를 사용할 수 없습니다")
 
         val userId = authUserReader.getUserId(accessToken)

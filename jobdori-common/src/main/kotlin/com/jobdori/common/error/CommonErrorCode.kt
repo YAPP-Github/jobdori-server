@@ -19,12 +19,7 @@ enum class CommonErrorCode(
     E401_TOKEN_EXPIRED(
         httpStatusCode = 401,
         code = "token_expired",
-        description = "인증 토큰이 만료된 경우 (Refresh Access Token API 호출 필요)",
-    ),
-    E405_METHOD_NOT_ALLOWED(
-        httpStatusCode = 405,
-        code = "method_not_allowed",
-        description = "허용하지 않는 HTTP Method인 경우",
+        description = "인증 토큰이 만료된 경우 (액세스 토큰 갱신 필요)",
     ),
     E500_INTERNAL_ERROR(
         httpStatusCode = 500,

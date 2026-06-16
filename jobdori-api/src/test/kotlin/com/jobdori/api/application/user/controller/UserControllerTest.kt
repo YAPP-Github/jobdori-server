@@ -5,7 +5,7 @@ import com.jobdori.api.DocsTest
 import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
-import com.jobdori.core.application.auth.AuthUserReadService
+import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.error.UserErrorCode
 import com.jobdori.core.domain.user.service.UserReader
@@ -26,13 +26,13 @@ import org.springframework.test.web.servlet.get
 internal class UserControllerTest(
     private val mockMvc: MockMvc,
     @MockkBean
-    private val authUserReadService: AuthUserReadService,
+    private val accessTokenService: AccessTokenService,
     @MockkBean
     private val userReader: UserReader,
 ) : StringSpec({
 
     "인증된 사용자 정보를 조회한다" {
-        every { authUserReadService.getUserId("access-token") } returns 1L
+        every { accessTokenService.getUserId("access-token") } returns 1L
         every { userReader.getUser(1L) } returns User(
             id = 1L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",

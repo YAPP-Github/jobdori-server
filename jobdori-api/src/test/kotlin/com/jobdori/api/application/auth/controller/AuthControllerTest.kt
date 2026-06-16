@@ -9,14 +9,13 @@ import com.jobdori.api.support.docs.RestDocsUtils
 import com.jobdori.api.support.docs.RestDocsUtils.convertToString
 import com.jobdori.api.support.docs.RestDocsUtils.remarks
 import com.jobdori.common.json.JsonUtils
-import com.jobdori.core.application.auth.LoginService
-import com.jobdori.core.application.auth.RefreshAccessTokenService
-import com.jobdori.core.application.auth.SignUpService
+import com.jobdori.core.application.auth.AuthService
+import com.jobdori.core.application.auth.RefreshTokenService
 import com.jobdori.core.application.auth.command.AuthCommand
-import com.jobdori.core.application.auth.error.AuthErrorCode
-import com.jobdori.core.application.auth.token.AuthToken
-import com.jobdori.core.application.auth.token.AuthTokenPair
-import com.jobdori.core.domain.user.UserIdentifyProvider
+import com.jobdori.core.domain.auth.AuthToken
+import com.jobdori.core.domain.auth.AuthTokenPair
+import com.jobdori.core.domain.auth.error.AuthErrorCode
+import com.jobdori.core.domain.user.UserIdentityProvider
 import com.jobdori.core.domain.user.error.UserErrorCode
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
@@ -43,20 +42,19 @@ import java.time.Instant
 internal class AuthControllerTest(
     private val mockMvc: MockMvc,
     @MockkBean
-    private val signUpService: SignUpService,
+    private val authService: AuthService,
     @MockkBean
-    private val loginService: LoginService,
-    @MockkBean
-    private val refreshAccessTokenService: RefreshAccessTokenService,
+    private val refreshTokenService: RefreshTokenService,
 ) : StringSpec({
 
     val command = AuthCommand(
-        provider = UserIdentifyProvider.GOOGLE,
+        provider = UserIdentityProvider.GOOGLE,
         authorizationCode = "authorization-code",
+        redirectUri = "https://jobdori.com/auth/callback",
     )
 
     "회원가입 후 인증 토큰을 발급한다" {
-        every { signUpService.signUp(command) } returns AuthTokenPair(
+        every { authService.signUp(command) } returns AuthTokenPair(
             accessToken = AuthToken(
                 value = "access-token",
                 tokenId = "access-token-id",
@@ -73,8 +71,9 @@ internal class AuthControllerTest(
             contentType = MediaType.APPLICATION_JSON
             content = JsonUtils.toJson(
                 SignUpRequest(
-                    provider = UserIdentifyProvider.GOOGLE,
+                    provider = UserIdentityProvider.GOOGLE,
                     authorizationCode = "authorization-code",
+                    redirectUri = "https://jobdori.com/auth/callback",
                 ),
             )
 
@@ -94,8 +93,9 @@ internal class AuthControllerTest(
                     PageHeaderSnippet.pageHeaderSnippet(),
                     requestFields(
                         fieldWithPath("provider").type(JsonFieldType.STRING).description("인증 제공자")
-                            .attributes(remarks(convertToString(UserIdentifyProvider::class.java))),
-                        fieldWithPath("authorizationCode").type(JsonFieldType.STRING).description("OAuth 인가 코드")
+                            .attributes(remarks(convertToString(UserIdentityProvider::class.java))),
+                        fieldWithPath("authorizationCode").type(JsonFieldType.STRING).description("OAuth 인가 코드"),
+                        fieldWithPath("redirectUri").type(JsonFieldType.STRING).description("OAuth 리다이렉트 URI"),
                     ),
                     responseFields(
                         fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
@@ -105,14 +105,17 @@ internal class AuthControllerTest(
                     responseHeaders(
                         headerWithName(HttpHeaders.SET_COOKIE).description("`access_token`, `refresh_token` 쿠키"),
                     ),
-                    ErrorCodeSnippet.errorCodeSnippet(AuthErrorCode.E409_ALREADY_SIGNED_UP),
+                    ErrorCodeSnippet.errorCodeSnippet(
+                        AuthErrorCode.INVALID_OAUTH_AUTHORIZATION_CODE,
+                        UserErrorCode.E409_USER_ALREADY_EXISTS,
+                    ),
                 ),
             )
         }
     }
 
     "로그인 후 인증 토큰을 발급한다" {
-        every { loginService.login(command) } returns AuthTokenPair(
+        every { authService.login(command) } returns AuthTokenPair(
             accessToken = AuthToken(
                 value = "access-token",
                 tokenId = "access-token-id",
@@ -129,8 +132,9 @@ internal class AuthControllerTest(
             contentType = MediaType.APPLICATION_JSON
             content = JsonUtils.toJson(
                 SignUpRequest(
-                    provider = UserIdentifyProvider.GOOGLE,
+                    provider = UserIdentityProvider.GOOGLE,
                     authorizationCode = "authorization-code",
+                    redirectUri = "https://jobdori.com/auth/callback",
                 ),
             )
         }.andExpect {
@@ -149,8 +153,9 @@ internal class AuthControllerTest(
                     PageHeaderSnippet.pageHeaderSnippet(),
                     requestFields(
                         fieldWithPath("provider").type(JsonFieldType.STRING).description("인증 제공자")
-                            .attributes(remarks(convertToString(UserIdentifyProvider::class.java))),
-                        fieldWithPath("authorizationCode").type(JsonFieldType.STRING).description("OAuth 인가 코드")
+                            .attributes(remarks(convertToString(UserIdentityProvider::class.java))),
+                        fieldWithPath("authorizationCode").type(JsonFieldType.STRING).description("OAuth 인가 코드"),
+                        fieldWithPath("redirectUri").type(JsonFieldType.STRING).description("OAuth 리다이렉트 URI"),
                     ),
                     responseFields(
                         fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
@@ -160,14 +165,17 @@ internal class AuthControllerTest(
                     responseHeaders(
                         headerWithName(HttpHeaders.SET_COOKIE).description("`access_token`, `refresh_token` 쿠키"),
                     ),
-                    ErrorCodeSnippet.errorCodeSnippet(UserErrorCode.E404_USER_NOT_FOUND to "가입된 사용자가 아닌 경우"),
+                    ErrorCodeSnippet.errorCodeSnippet(
+                        AuthErrorCode.INVALID_OAUTH_AUTHORIZATION_CODE to AuthErrorCode.INVALID_OAUTH_AUTHORIZATION_CODE.description,
+                        UserErrorCode.E404_USER_NOT_FOUND to "가입된 사용자가 아닌 경우"
+                    ),
                 ),
             )
         }
     }
 
     "Refresh 토큰으로 Access 토큰을 재발급한다" {
-        every { refreshAccessTokenService.refresh("refresh-token") } returns AuthToken(
+        every { refreshTokenService.refresh("refresh-token") } returns AuthToken(
             value = "new-access-token",
             tokenId = "new-access-token-id",
             expiresAt = Instant.parse("2030-01-01T00:30:00Z"),
@@ -205,7 +213,7 @@ internal class AuthControllerTest(
     }
 
     "로그아웃 시 인증 쿠키를 만료한다" {
-        justRun { refreshAccessTokenService.validate("refresh-token") }
+        justRun { refreshTokenService.validate("refresh-token") }
 
         mockMvc.post("/v1/auth/logout") {
             contentType = MediaType.APPLICATION_JSON

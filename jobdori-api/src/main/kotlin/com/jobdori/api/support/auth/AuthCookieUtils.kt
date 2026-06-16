@@ -1,6 +1,6 @@
 package com.jobdori.api.support.auth
 
-import com.jobdori.core.application.auth.token.AuthToken
+import com.jobdori.core.domain.auth.AuthToken
 import org.springframework.http.ResponseCookie
 import java.time.Instant
 

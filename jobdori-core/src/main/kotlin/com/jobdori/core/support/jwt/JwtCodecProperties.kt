@@ -5,7 +5,7 @@ import java.util.Base64
 
 @ConfigurationProperties("jwt.codec")
 class JwtCodecProperties(
-    secret: String,
+    private val secret: String,
 ) {
 
     val decodedSecret: ByteArray = runCatching {

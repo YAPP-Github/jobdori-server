@@ -3,7 +3,7 @@ package com.jobdori.api.application.user.controller
 import com.jobdori.api.GraphQLTest
 import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
-import com.jobdori.core.application.auth.AuthUserReadService
+import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.service.UserReader
 import com.ninjasquad.springmockk.MockkBean
@@ -24,11 +24,11 @@ internal class UserQueryResolverTest(
     @MockkBean
     private val userReader: UserReader,
     @MockkBean
-    private val authUserReadService: AuthUserReadService,
+    private val accessTokenService: AccessTokenService,
 ) : StringSpec({
 
     "인증된 사용자 정보를 조회한다" {
-        every { authUserReadService.getUserId("access-token") } returns 1L
+        every { accessTokenService.getUserId("access-token") } returns 1L
         every { userReader.getUser(1L) } returns User(
             id = 1L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
@@ -39,7 +39,7 @@ internal class UserQueryResolverTest(
             .execute()
             .path("myUser.userId").entity<String>().isEqualTo("3f5c9d79-2255-4b76-bd31-013cd01d49d6")
 
-        verify(exactly = 1) { authUserReadService.getUserId("access-token") }
+        verify(exactly = 1) { accessTokenService.getUserId("access-token") }
         verify(exactly = 1) { userReader.getUser(1L) }
     }
 

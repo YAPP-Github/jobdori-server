@@ -7,6 +7,7 @@ interface GoogleOAuthTokenClient {
 
     fun exchangeAuthorizationCode(
         authorizationCode: GoogleAuthorizationCode,
+        redirectUrl: String,
     ): GoogleAccessToken
 
 }

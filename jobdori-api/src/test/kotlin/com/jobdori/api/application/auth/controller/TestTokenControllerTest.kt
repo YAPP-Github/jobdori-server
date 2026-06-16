@@ -6,9 +6,9 @@ import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
 import com.jobdori.common.error.CommonErrorCode
-import com.jobdori.core.application.auth.token.AuthToken
-import com.jobdori.core.application.auth.token.AuthTokenPair
-import com.jobdori.core.application.auth.token.AuthTokenProvider
+import com.jobdori.core.domain.auth.AuthToken
+import com.jobdori.core.domain.auth.AuthTokenPair
+import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.repository.UserRepository
 import com.ninjasquad.springmockk.MockkBean

@@ -477,6 +477,13 @@ Content-Length: 17
 <td class="tableblock halign-left valign-top"><p class="tableblock">OAuth 인가 코드</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redirectUri</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAuth 리다이렉트 URI</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -551,20 +558,21 @@ Content-Length: 17
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/auth/signup HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 73
+Content-Length: 138
 Host: dev.api.jobdori.o-r.kr
 
 {
   "provider" : "GOOGLE",
-  "authorizationCode" : "authorization-code"
+  "authorizationCode" : "authorization-code",
+  "redirectUri" : "http://dev.api.jobdori.o-r.kr/auth/callback"
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=111735640; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112943440; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=111651448; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112859248; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 110
 
@@ -657,6 +665,13 @@ Content-Length: 110
 <td class="tableblock halign-left valign-top"><p class="tableblock">OAuth 인가 코드</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redirectUri</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAuth 리다이렉트 URI</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -731,20 +746,21 @@ Content-Length: 110
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/auth/login HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 73
+Content-Length: 138
 Host: dev.api.jobdori.o-r.kr
 
 {
   "provider" : "GOOGLE",
-  "authorizationCode" : "authorization-code"
+  "authorizationCode" : "authorization-code",
+  "redirectUri" : "http://dev.api.jobdori.o-r.kr/auth/callback"
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=111735640; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112943440; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=111651447; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112859247; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 110
 
@@ -898,7 +914,7 @@ Cookie: refresh_token=refresh-token</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=new-access-token; Path=/; Max-Age=111735640; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=new-access-token; Path=/; Max-Age=111651447; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 76
 
@@ -1257,8 +1273,8 @@ Host: dev.api.jobdori.o-r.kr</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=111733839; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112943439; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=111649646; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112859246; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 110
 
@@ -1306,7 +1322,7 @@ Content-Length: 110
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-06-18<br>
+Version 2026-06-19<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

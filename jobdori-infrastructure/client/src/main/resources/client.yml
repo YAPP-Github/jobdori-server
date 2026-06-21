@@ -1,5 +1,20 @@
 openai:
-  api-key: 123
+  api-key: ${OPENAI_API_KEY}
+
+google:
+  oauth:
+    client-id: ${GOOGLE_OAUTH_CLIENT_ID}
+    client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET}
+
+---
+spring.config:
+  activate:
+    on-profile:
+      - local
+      - test
+
+openai:
+  api-key: ${OPENAI_API_KEY:dummy}
 
 google:
   oauth:

@@ -20,6 +20,7 @@ spring.config:
     on-profile:
       - local
       - test
+      - dev # 개발 DB로 바꿔야함 (임시 세팅)
 
 spring:
   jpa:

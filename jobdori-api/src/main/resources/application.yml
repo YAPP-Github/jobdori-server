@@ -3,18 +3,10 @@ spring.config:
   import:
     - classpath:/rdb.yml
     - classpath:/client.yml
+    - classpath:core.yml
 
 server:
   port: ${SERVER_PORT:20000}
-
-auth:
-  token:
-    access-token-ttl: 30m
-    refresh-token-ttl: 14d
-
-jwt:
-  codec:
-    secret: ${JWT_SECRET}
 
 spring:
   mvc:
@@ -27,14 +19,3 @@ spring:
       enabled: true
       path: /graphiql
 
-
----
-spring:
-  config:
-    activate:
-      on-profile: local
-
-
-jwt:
-  codec:
-    secret: h2JOe+yl110wJIY0Sz7gma9puyErnVv272wU+021MII=

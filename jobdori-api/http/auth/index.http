@@ -1,4 +1,4 @@
-@authorizationCode = google-authorization-code
+@authorizationCode = 4/0AdkVLPwFak749i-uxBgg8at3T8JFpjuhx22nPjxZ_LvcujOHHvoMaiTZ54v_kbwM0JN2yQ
 @refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMmYwMTJhOS0zZDRmLTQwZDktYWM4MC01YjA0MDRlZGI5NmEiLCJqdGkiOiJiZTQyYTlmNC01YTcwLTQzMmYtYjUzZC0yN2M3YTEyODQ0OGIiLCJpYXQiOjE3ODE2MTczNDQsImV4cCI6MTc4MjgyNjk0NCwidG9rZW5fdHlwZSI6IlJFRlJFU0gifQ.kydzx8dZ4pB6kwTdsmU0O0Km3S27bxF2KyUKw6ozkmU
 
 ### Sign up
@@ -7,7 +7,8 @@ Content-Type: application/json
 
 {
     "provider": "GOOGLE",
-    "authorizationCode": "{{authorizationCode}}"
+    "authorizationCode": "{{authorizationCode}}",
+    "redirectUri": "http://localhost:3000/google-oauth-code-test-tool.html"
 }
 
 ### Login
@@ -16,7 +17,8 @@ Content-Type: application/json
 
 {
     "provider": "GOOGLE",
-    "authorizationCode": "{{authorizationCode}}"
+    "authorizationCode": "{{authorizationCode}}",
+    "redirectUri": "http://localhost:3000/google-oauth-code-test-tool.html"
 }
 
 ### Refresh access token

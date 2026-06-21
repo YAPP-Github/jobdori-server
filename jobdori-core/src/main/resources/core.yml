@@ -1,0 +1,20 @@
+auth:
+  token:
+    access-token-ttl: 30m
+    refresh-token-ttl: 14d
+
+jwt:
+  codec:
+    secret: ${JWT_CODEC_SECRET}
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+        - local
+        - test
+
+jwt:
+  codec:
+    secret: h2JOe+yl110wJIY0Sz7gma9puyErnVv272wU+021MII=

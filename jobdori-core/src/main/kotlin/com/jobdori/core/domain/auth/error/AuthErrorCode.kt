@@ -13,6 +13,11 @@ enum class AuthErrorCode(
         code = "invalid_authorization_code",
         description = "유효하지 않은 OAuth 인증 코드인 경우"
     ),
+    OAUTH_ACCESS_DENIED(
+        httpStatusCode = 400,
+        code = "oauth_access_denied",
+        description = "OAuth 인증 또는 동의가 거부된 경우",
+    ),
     E409_ALREADY_SIGNED_UP(
         httpStatusCode = 409,
         code = "already_signed_up",

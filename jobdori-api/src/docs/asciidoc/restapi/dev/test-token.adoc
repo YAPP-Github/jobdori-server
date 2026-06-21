@@ -1,0 +1,27 @@
+==== Issue Test Token
+
+개발용 테스트 유저의 Access 토큰과 Refresh 토큰을 발급하는 API입니다.
+
+include::{snippets}/dev-test-token/request-path.adoc[]
+
+===== Query Parameters
+
+include::{snippets}/dev-test-token/query-parameters.adoc[]
+
+===== Response Fields
+
+include::{snippets}/dev-test-token/response-fields.adoc[]
+
+===== Response Headers
+
+include::{snippets}/dev-test-token/response-headers.adoc[]
+
+===== Examples
+
+include::{snippets}/dev-test-token/http-request.adoc[]
+
+include::{snippets}/dev-test-token/http-response.adoc[]
+
+===== Error Codes
+
+include::{snippets}/dev-test-token/error-codes.adoc[]

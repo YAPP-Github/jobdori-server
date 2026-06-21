@@ -25,12 +25,12 @@ internal class HealthCheckControllerTest(
     private val applicationAvailability: ApplicationAvailability,
 ) : StringSpec({
 
-    "Readiness Health Check API" {
+    "Health Check API" {
         // given
         every { applicationAvailability.readinessState } returns ReadinessState.ACCEPTING_TRAFFIC
 
         // when & then
-        mockMvc.get("/health/readiness")
+        mockMvc.get("/health")
             .andExpect {
                 status { isOk() }
 
@@ -41,6 +41,7 @@ internal class HealthCheckControllerTest(
                     MockMvcRestDocumentation.document(
                         "health-check",
                         RestDocsUtils.getDocumentRequest(),
+                        RestDocsUtils.getDocumentResponse(),
                         PageHeaderSnippet.pageHeaderSnippet(),
                         ErrorCodeSnippet.errorCodeSnippet(
                             CommonErrorCode.E503_SERVICE_UNAVAILABLE to "서비스 상태가 아닌 경우 발생합니다",

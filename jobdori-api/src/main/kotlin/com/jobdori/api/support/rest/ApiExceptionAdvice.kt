@@ -85,9 +85,9 @@ class ApiExceptionAdvice {
 
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
-    fun handleHttpRequestMethodNotSupportedException(exception: HttpRequestMethodNotSupportedException): ApiResponse<Nothing> {
+    fun handleHttpRequestMethodNotSupportedException(exception: HttpRequestMethodNotSupportedException): ResponseEntity<ApiResponse<Nothing>> {
         log.warn { exception.message }
-        return ApiResponse.fail(CommonErrorCode.E405_METHOD_NOT_ALLOWED)
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build()
     }
 
     @ExceptionHandler(BaseException::class)

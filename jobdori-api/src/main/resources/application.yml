@@ -6,6 +6,16 @@ spring.config:
 
 server:
   port: ${SERVER_PORT:20000}
+
+auth:
+  token:
+    access-token-ttl: 30m
+    refresh-token-ttl: 14d
+
+jwt:
+  codec:
+    secret: ${JWT_SECRET}
+
 spring:
   mvc:
     servlet:
@@ -16,3 +26,15 @@ spring:
     graphiql:
       enabled: true
       path: /graphiql
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+
+jwt:
+  codec:
+    secret: h2JOe+yl110wJIY0Sz7gma9puyErnVv272wU+021MII=

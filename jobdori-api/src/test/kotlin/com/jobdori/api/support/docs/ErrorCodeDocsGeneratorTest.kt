@@ -1,0 +1,39 @@
+package com.jobdori.api.support.docs
+
+import com.jobdori.api.DocsTest
+import com.jobdori.common.error.CommonErrorCode
+import io.kotest.core.spec.style.FunSpec
+import java.io.File
+
+@DocsTest
+internal class ErrorCodeDocsGeneratorTest : FunSpec({
+
+    test("에러코드 Asciidoctor 생성") {
+        val file = File("src/docs/asciidoc/restapi/common/error.adoc")
+        if (!file.exists()) {
+            file.createNewFile()
+        }
+        var asciidoctorText =
+            """
+                [cols="10%,20%,60%", options="header"]
+                |===
+                | Status Code | Error Code | Description
+
+                """.trimIndent()
+
+        CommonErrorCode.entries
+            .sortedBy { errorCode -> errorCode.httpStatusCode }
+            .forEach { errorCode ->
+                asciidoctorText +=
+                    """
+                        | ${errorCode.httpStatusCode} | ${errorCode.code} | ${errorCode.description}
+
+                        """.trimIndent()
+            }
+
+        asciidoctorText += "|===\n".trim()
+
+        file.printWriter().use { out -> out.println(asciidoctorText) }
+    }
+
+})

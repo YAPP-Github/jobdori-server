@@ -1,8 +1,6 @@
-=== Health
+==== Health Check
 
-서버 헬스 체크 상태를 확인하는 API입니다.
-
-==== Readiness Health Check
+서버가 요청을 처리할 준비가 되었는지 확인하는 API입니다.
 
 include::{snippets}/health-check/request-path.adoc[]
 

@@ -1,0 +1,25 @@
+==== Refresh Access Token
+
+Refresh 토큰으로 새로운 Access 토큰을 발급하는 API입니다.
+
+Access 토큰 만료로 `token_expired` 에러가 발생한 경우 호출해서 신규 액세스 토큰을 발급합니다.
+
+include::{snippets}/auth-refresh/request-path.adoc[]
+
+===== Request Cookies
+
+include::{snippets}/auth-refresh/request-cookies.adoc[]
+
+===== Response Fields
+
+include::{snippets}/auth-refresh/response-fields.adoc[]
+
+===== Response Headers
+
+include::{snippets}/auth-refresh/response-headers.adoc[]
+
+===== Examples
+
+include::{snippets}/auth-refresh/http-request.adoc[]
+
+include::{snippets}/auth-refresh/http-response.adoc[]

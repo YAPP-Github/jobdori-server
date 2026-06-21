@@ -1,97 +1,16 @@
 type Query {
     """
-    샘플 ID로 단일 샘플을 조회합니다.
-    존재하지 않는 샘플 ID면 404 에러를 반환합니다.
+    인증된 사용자의 정보를 조회합니다.
     """
-    sample(
-        """
-        샘플 조회 요청입니다.
-        """
-        request: SampleGetRequest!
-    ): Sample!
-
-    """
-    등록된 샘플 목록을 조회합니다.
-    """
-    samples: [Sample!]!
+    myUser: User!
 }
 
 """
-샘플 생성/수정/삭제 요청입니다.
+사용자 정보입니다.
 """
-type Mutation {
+type User {
     """
-    샘플을 생성합니다.
+    사용자를 식별하는 ID입니다.
     """
-    createSample(request: SampleCreateRequest!): Sample!
-
-    """
-    샘플 이름을 수정합니다.
-    """
-    updateSample(request: SampleUpdateRequest!): Sample!
-
-    """
-    샘플을 삭제합니다.
-    """
-    deleteSample(request: SampleDeleteRequest!): Boolean!
-}
-
-"""
-샘플 단건 조회 요청입니다.
-"""
-input SampleGetRequest {
-    """
-    조회할 샘플 ID입니다.
-    """
-    sampleId: ID!
-}
-
-"""
-샘플 생성 요청입니다.
-"""
-input SampleCreateRequest {
-    """
-    샘플 이름입니다.
-    """
-    name: String!
-}
-
-"""
-샘플 수정 요청입니다.
-"""
-input SampleUpdateRequest {
-    """
-    수정할 샘플 ID입니다.
-    """
-    sampleId: ID!
-
-    """
-    샘플 이름입니다.
-    """
-    name: String!
-}
-
-"""
-샘플 삭제 요청입니다.
-"""
-input SampleDeleteRequest {
-    """
-    삭제할 샘플 ID입니다.
-    """
-    sampleId: ID!
-}
-
-"""
-샘플 정보입니다.
-"""
-type Sample {
-    """
-    샘플을 식별하는 ID입니다.
-    """
-    sampleId: ID!
-
-    """
-    샘플 이름입니다.
-    """
-    name: String!
+    userId: ID!
 }

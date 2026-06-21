@@ -1,0 +1,3 @@
+=== Auth APIs
+
+include::./test-token.adoc[]

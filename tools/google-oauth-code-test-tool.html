@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google OAuth Code Tester</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #1f2937;
+            background: #f6f7fb;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 32px;
+        }
+
+        main {
+            width: min(760px, 100%);
+            background: #ffffff;
+            border: 1px solid #d8dee9;
+            border-radius: 8px;
+            box-shadow: 0 16px 48px rgb(31 41 55 / 10%);
+            padding: 28px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            line-height: 1.25;
+        }
+
+        p {
+            margin: 0 0 20px;
+            color: #4b5563;
+            line-height: 1.55;
+        }
+
+        label {
+            display: grid;
+            gap: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px 14px;
+            font: inherit;
+            color: #111827;
+            background: #ffffff;
+        }
+
+        textarea {
+            min-height: 104px;
+            resize: vertical;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button,
+        a.button {
+            appearance: none;
+            border: 0;
+            border-radius: 6px;
+            padding: 11px 16px;
+            background: #2563eb;
+            color: white;
+            font: inherit;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: #475569;
+        }
+
+        .result {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+        code {
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Google OAuth Code Tester</h1>
+    <p>
+        Register this page URL as an authorized redirect URI in Google Cloud Console,
+        then use it to get a one-time authorization code for local API testing.
+    </p>
+
+    <form id="oauth-form">
+        <label>
+            Google OAuth Client ID
+            <input id="client-id" autocomplete="off" placeholder="000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com" required>
+        </label>
+
+        <label>
+            Redirect URI
+            <input id="redirect-uri" autocomplete="off" required>
+        </label>
+
+        <label>
+            Scope
+            <input id="scope" value="openid profile email" required>
+        </label>
+
+        <div class="actions">
+            <button type="submit">Open Google OAuth</button>
+            <button class="secondary" id="copy-redirect-uri" type="button">Copy Redirect URI</button>
+        </div>
+    </form>
+
+    <section class="result hidden" id="code-result">
+        <h2>Authorization Code</h2>
+        <p>Use this value as <code>authorizationCode</code> in your API request.</p>
+        <textarea id="authorization-code" readonly></textarea>
+        <div class="actions">
+            <button id="copy-code" type="button">Copy Code</button>
+            <a class="button" href="./google-oauth-code-test-tool.html">Reset</a>
+        </div>
+    </section>
+
+    <section class="result hidden" id="error-result">
+        <h2>OAuth Error</h2>
+        <p class="error" id="oauth-error"></p>
+        <p id="oauth-error-description"></p>
+    </section>
+</main>
+
+<script>
+    const form = document.querySelector("#oauth-form");
+    const clientIdInput = document.querySelector("#client-id");
+    const redirectUriInput = document.querySelector("#redirect-uri");
+    const scopeInput = document.querySelector("#scope");
+    const codeResult = document.querySelector("#code-result");
+    const authorizationCode = document.querySelector("#authorization-code");
+    const errorResult = document.querySelector("#error-result");
+    const oauthError = document.querySelector("#oauth-error");
+    const oauthErrorDescription = document.querySelector("#oauth-error-description");
+
+    const params = new URLSearchParams(window.location.search);
+    const currentRedirectUri = `${window.location.origin}${window.location.pathname}`;
+
+    redirectUriInput.value = currentRedirectUri;
+    clientIdInput.value = localStorage.getItem("googleOAuthClientId") || "";
+    scopeInput.value = localStorage.getItem("googleOAuthScope") || "openid profile email";
+
+    const returnedCode = params.get("code");
+    const returnedError = params.get("error");
+
+    if (returnedCode) {
+        authorizationCode.value = returnedCode;
+        codeResult.classList.remove("hidden");
+    }
+
+    if (returnedError) {
+        oauthError.textContent = returnedError;
+        oauthErrorDescription.textContent = params.get("error_description") || "";
+        errorResult.classList.remove("hidden");
+    }
+
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const clientId = clientIdInput.value.trim();
+        const redirectUri = redirectUriInput.value.trim();
+        const scope = scopeInput.value.trim();
+        const state = crypto.randomUUID();
+
+        localStorage.setItem("googleOAuthClientId", clientId);
+        localStorage.setItem("googleOAuthScope", scope);
+        sessionStorage.setItem("googleOAuthState", state);
+
+        const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+        authUrl.searchParams.set("client_id", clientId);
+        authUrl.searchParams.set("redirect_uri", redirectUri);
+        authUrl.searchParams.set("response_type", "code");
+        authUrl.searchParams.set("scope", scope);
+        authUrl.searchParams.set("state", state);
+        authUrl.searchParams.set("access_type", "offline");
+        authUrl.searchParams.set("prompt", "consent");
+
+        window.location.href = authUrl.toString();
+    });
+
+    document.querySelector("#copy-redirect-uri").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(redirectUriInput.value);
+    });
+
+    document.querySelector("#copy-code").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(authorizationCode.value);
+    });
+</script>
+</body>
+</html>

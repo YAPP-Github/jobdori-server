@@ -2,7 +2,7 @@ spring.profiles.default: local
 spring.config:
   import:
     - classpath:/rdb.yml
-    - classpath:/ai.yml
+    - classpath:/client.yml
 
 server:
   port: ${SERVER_PORT:20000}

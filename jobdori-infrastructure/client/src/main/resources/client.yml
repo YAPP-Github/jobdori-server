@@ -1,0 +1,7 @@
+openai:
+  api-key: 123
+
+google:
+  oauth:
+    client-id: ${GOOGLE_OAUTH_CLIENT_ID:dummy-google-client-id}
+    client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET:dummy-google-client-secret}

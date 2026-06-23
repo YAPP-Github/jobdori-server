@@ -1,5 +1,7 @@
 {
   myUser {
     userId
+    name
+    profileImageUrl
   }
 }

@@ -47,10 +47,21 @@ internal class TestTokenControllerTest(
         val user = User(
             id = 1L,
             publicId = "00000000-0000-0000-0000-000000000001",
+            name = "잡도리",
+            profileImageUrl = null,
         )
 
         every { userRepository.findByPublicId(user.publicId) } returns null
-        every { userRepository.save(User(id = 0L, publicId = user.publicId)) } returns user
+        every {
+            userRepository.save(
+                User(
+                    id = 0L,
+                    publicId = user.publicId,
+                    name = "잡도리",
+                    profileImageUrl = null,
+                ),
+            )
+        } returns user
         every {
             authTokenProvider.issue(
                 userPublicId = user.publicId,
@@ -106,7 +117,16 @@ internal class TestTokenControllerTest(
             )
         }
 
-        verify(exactly = 1) { userRepository.save(User(id = 0L, publicId = user.publicId)) }
+        verify(exactly = 1) {
+            userRepository.save(
+                User(
+                    id = 0L,
+                    publicId = user.publicId,
+                    name = "잡도리",
+                    profileImageUrl = null,
+                ),
+            )
+        }
     }
 
 })

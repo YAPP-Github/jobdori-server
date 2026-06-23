@@ -2,6 +2,7 @@ package com.jobdori.core.application.auth
 
 import com.jobdori.core.application.auth.command.AuthCommand
 import com.jobdori.core.application.auth.oauth.google.GoogleAuthProcessor
+import com.jobdori.core.application.auth.oauth.google.model.GoogleUserInfo
 import com.jobdori.core.application.auth.result.AuthResult
 import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
@@ -22,33 +23,36 @@ class AuthService(
 ) {
 
     fun login(command: AuthCommand): AuthResult {
-        val providerUserId = getProviderUserId(command)
+        val googleUserInfo = getGoogleUserInfo(command)
+        val providerUserId = googleUserInfo.id
         val userIdentity = userIdentityReader.findIdentity(
             provider = command.provider,
             providerUserId = providerUserId,
         )
-        val user = getOrCreateUser(userIdentity = userIdentity, command = command, providerUserId = providerUserId)
+        val user = getOrCreateUser(userIdentity = userIdentity, command = command, googleUserInfo = googleUserInfo)
         return AuthResult(
             tokenPair = authTokenProvider.issue(user.publicId),
             isNewUser = userIdentity == null,
         )
     }
 
-    private fun getProviderUserId(command: AuthCommand): String {
+    private fun getGoogleUserInfo(command: AuthCommand): GoogleUserInfo {
         return when (command.provider) {
-            UserIdentityProvider.GOOGLE -> googleAuthProcessor.getGoogleUserId(command).value
+            UserIdentityProvider.GOOGLE -> googleAuthProcessor.getGoogleUserInfo(command)
         }
     }
 
     private fun getOrCreateUser(
         userIdentity: UserIdentity?,
         command: AuthCommand,
-        providerUserId: String,
+        googleUserInfo: GoogleUserInfo,
     ): User {
         if (userIdentity == null) {
             return userCreator.create(
                 provider = command.provider,
-                providerUserId = providerUserId,
+                providerUserId = googleUserInfo.id,
+                name = googleUserInfo.name,
+                profileImageUrl = googleUserInfo.profileImageUrl,
             )
         }
         return userReader.getUser(userIdentity.userId)

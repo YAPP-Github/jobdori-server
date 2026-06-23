@@ -31,7 +31,7 @@ class UserIdentityEntity(
     @Column(nullable = false, length = 30)
     var provider: UserIdentityProvider,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     var providerUserId: String,
 ) : AuditableEntity() {
 

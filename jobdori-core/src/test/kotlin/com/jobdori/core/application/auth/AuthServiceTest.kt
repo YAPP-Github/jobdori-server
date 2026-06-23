@@ -2,7 +2,7 @@ package com.jobdori.core.application.auth
 
 import com.jobdori.core.application.auth.command.AuthCommand
 import com.jobdori.core.application.auth.oauth.google.GoogleAuthProcessor
-import com.jobdori.core.application.auth.oauth.google.model.GoogleUserId
+import com.jobdori.core.application.auth.oauth.google.model.GoogleUserInfo
 import com.jobdori.core.application.auth.result.AuthResult
 import com.jobdori.core.domain.auth.AuthToken
 import com.jobdori.core.domain.auth.AuthTokenPair
@@ -57,7 +57,11 @@ class AuthServiceTest : StringSpec({
 
     "Google 식별 정보로 사용자를 조회하고 JWT를 발급한다" {
         // given
-        every { googleAuthProcessor.getGoogleUserId(command) } returns GoogleUserId("google-user-id")
+        every { googleAuthProcessor.getGoogleUserInfo(command) } returns GoogleUserInfo(
+            id = "google-user-id",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
+        )
         every {
             userIdentityReader.findIdentity(
                 provider = UserIdentityProvider.GOOGLE,
@@ -72,6 +76,8 @@ class AuthServiceTest : StringSpec({
         every { userReader.getUser(10L) } returns User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
         every { authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns tokenPair
 
@@ -87,7 +93,11 @@ class AuthServiceTest : StringSpec({
 
     "가입되지 않은 Google 사용자는 자동 가입 후 JWT를 발급한다" {
         // given
-        every { googleAuthProcessor.getGoogleUserId(command) } returns GoogleUserId("google-user-id")
+        every { googleAuthProcessor.getGoogleUserInfo(command) } returns GoogleUserInfo(
+            id = "google-user-id",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
+        )
         every {
             userIdentityReader.findIdentity(
                 provider = UserIdentityProvider.GOOGLE,
@@ -98,10 +108,14 @@ class AuthServiceTest : StringSpec({
             userCreator.create(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
+                name = "홍길동",
+                profileImageUrl = "https://lh3.googleusercontent.com/profile",
             )
         } returns User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
         every { authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns tokenPair
 
@@ -114,7 +128,12 @@ class AuthServiceTest : StringSpec({
         // then
         verifyOrder {
             userIdentityReader.findIdentity(UserIdentityProvider.GOOGLE, "google-user-id")
-            userCreator.create(UserIdentityProvider.GOOGLE, "google-user-id")
+            userCreator.create(
+                provider = UserIdentityProvider.GOOGLE,
+                providerUserId = "google-user-id",
+                name = "홍길동",
+                profileImageUrl = "https://lh3.googleusercontent.com/profile",
+            )
             authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6")
         }
     }

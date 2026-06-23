@@ -36,6 +36,8 @@ internal class UserControllerTest(
         every { userReader.getUser(1L) } returns User(
             id = 1L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
 
         mockMvc.get("/v1/users/me") {
@@ -44,6 +46,8 @@ internal class UserControllerTest(
             status { isOk() }
             jsonPath("$.ok") { value(true) }
             jsonPath("$.result.userId") { value("3f5c9d79-2255-4b76-bd31-013cd01d49d6") }
+            jsonPath("$.result.name") { value("홍길동") }
+            jsonPath("$.result.profileImageUrl") { value("https://lh3.googleusercontent.com/profile") }
         }.andDo {
             handle(
                 document(
@@ -54,6 +58,8 @@ internal class UserControllerTest(
                     responseFields(
                         fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
                         fieldWithPath("result.userId").type(JsonFieldType.STRING).description("사용자 ID"),
+                        fieldWithPath("result.name").type(JsonFieldType.STRING).description("사용자 이름"),
+                        fieldWithPath("result.profileImageUrl").type(JsonFieldType.STRING).description("사용자 프로필 이미지 URL"),
                     ),
                     ErrorCodeSnippet.errorCodeSnippet(
                         UserErrorCode.E404_USER_NOT_FOUND,

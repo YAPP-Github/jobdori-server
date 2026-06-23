@@ -1,6 +1,6 @@
 ==== Login
 
-기존 가입된 유저로 로그인하는 API입니다.
+가입된 유저는 로그인하고, 미가입 유저는 자동 가입 후 로그인하는 API입니다.
 
 include::{snippets}/auth-login/request-path.adoc[]
 

@@ -1,15 +1,5 @@
-@authorizationCode = 4/0AdkVLPwFak749i-uxBgg8at3T8JFpjuhx22nPjxZ_LvcujOHHvoMaiTZ54v_kbwM0JN2yQ
+@authorizationCode = 4/0AdkVLPyEChTaO40FQVcNIgDDxE-RK4Dye-m5pfmh-d_pfkDkkvqicZoXEmuOvo3tC1rvdA
 @refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMmYwMTJhOS0zZDRmLTQwZDktYWM4MC01YjA0MDRlZGI5NmEiLCJqdGkiOiJiZTQyYTlmNC01YTcwLTQzMmYtYjUzZC0yN2M3YTEyODQ0OGIiLCJpYXQiOjE3ODE2MTczNDQsImV4cCI6MTc4MjgyNjk0NCwidG9rZW5fdHlwZSI6IlJFRlJFU0gifQ.kydzx8dZ4pB6kwTdsmU0O0Km3S27bxF2KyUKw6ozkmU
-
-### Sign up
-POST {{host}}/v1/auth/signup
-Content-Type: application/json
-
-{
-    "provider": "GOOGLE",
-    "authorizationCode": "{{authorizationCode}}",
-    "redirectUri": "http://localhost:3000/google-oauth-code-test-tool.html"
-}
 
 ### Login
 POST {{host}}/v1/auth/login

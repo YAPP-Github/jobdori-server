@@ -12,8 +12,14 @@ import jakarta.persistence.Table
 @Table(name = "user_v1")
 @Entity
 class UserEntity(
-    @Column(nullable = false, unique = true, updatable = false)
+    @Column(nullable = false, length = 50, unique = true, updatable = false)
     var publicId: String,
+
+    @Column(nullable = false, length = 50)
+    var name: String,
+
+    @Column(length = 300)
+    var profileImageUrl: String?,
 ) : AuditableEntity() {
 
     @Id
@@ -23,11 +29,15 @@ class UserEntity(
     fun toUser() = User(
         id = id,
         publicId = publicId,
+        name = name,
+        profileImageUrl = profileImageUrl,
     )
 
     companion object {
         fun from(user: User) = UserEntity(
             publicId = user.publicId,
+            name = user.name,
+            profileImageUrl = user.profileImageUrl,
         ).also { it.id = user.id }
     }
 

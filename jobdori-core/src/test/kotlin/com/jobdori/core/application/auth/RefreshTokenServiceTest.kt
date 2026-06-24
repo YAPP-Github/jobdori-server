@@ -43,6 +43,8 @@ class RefreshAccessTokenServiceTest : StringSpec({
         every { userReader.getUser("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
         every { authTokenProvider.issueAccessToken("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns accessToken
 

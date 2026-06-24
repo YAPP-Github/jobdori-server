@@ -32,12 +32,16 @@ internal class UserQueryResolverTest(
         every { userReader.getUser(1L) } returns User(
             id = 1L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
 
         authenticatedTester(graphQlTester)
             .documentName("my-user")
             .execute()
             .path("myUser.userId").entity<String>().isEqualTo("3f5c9d79-2255-4b76-bd31-013cd01d49d6")
+            .path("myUser.name").entity<String>().isEqualTo("홍길동")
+            .path("myUser.profileImageUrl").entity<String>().isEqualTo("https://lh3.googleusercontent.com/profile")
 
         verify(exactly = 1) { accessTokenService.getUserId("access-token") }
         verify(exactly = 1) { userReader.getUser(1L) }

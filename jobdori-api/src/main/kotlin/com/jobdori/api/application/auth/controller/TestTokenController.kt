@@ -36,7 +36,11 @@ class TestTokenController(
         )
 
         val user = userRepository.findByPublicId(TEST_USER_PUBLIC_ID)
-            ?: userRepository.save(User.newInstance(TEST_USER_PUBLIC_ID))
+            ?: userRepository.save(User.newInstance(
+                publicId = TEST_USER_PUBLIC_ID,
+                name = "잡도리",
+                profileImageUrl = null
+            ))
 
         val tokenPair = authTokenProvider.issue(
             userPublicId = user.publicId,

@@ -19,6 +19,8 @@ class UserCreator(
     fun create(
         provider: UserIdentityProvider,
         providerUserId: String,
+        name: String,
+        profileImageUrl: String?,
     ): User {
         val existingIdentity = userIdentityRepository.existsByProviderAndProviderUserId(
             provider = provider,
@@ -28,7 +30,12 @@ class UserCreator(
             throw UserAlreadyExistsException("이미 가입된 게정입니다 [provider=$provider,providerUserId=$providerUserId]")
         }
 
-        val user = userRepository.save(User.newInstance())
+        val user = userRepository.save(
+            User.newInstance(
+                name = name,
+                profileImageUrl = profileImageUrl,
+            ),
+        )
         userIdentityRepository.save(
             UserIdentity.newInstance(
                 user = user,

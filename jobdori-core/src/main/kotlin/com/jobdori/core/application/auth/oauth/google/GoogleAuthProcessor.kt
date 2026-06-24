@@ -4,7 +4,7 @@ import com.jobdori.core.application.auth.command.AuthCommand
 import com.jobdori.core.application.auth.oauth.google.client.GoogleOAuthTokenClient
 import com.jobdori.core.application.auth.oauth.google.client.GoogleOAuthUserClient
 import com.jobdori.core.application.auth.oauth.google.model.GoogleAuthorizationCode
-import com.jobdori.core.application.auth.oauth.google.model.GoogleUserId
+import com.jobdori.core.application.auth.oauth.google.model.GoogleUserInfo
 import org.springframework.stereotype.Component
 
 @Component
@@ -13,14 +13,14 @@ class GoogleAuthProcessor(
     private val googleOAuthUserClient: GoogleOAuthUserClient,
 ) {
 
-    fun getGoogleUserId(command: AuthCommand): GoogleUserId {
+    fun getGoogleUserInfo(command: AuthCommand): GoogleUserInfo {
         val accessToken = googleOAuthTokenClient.exchangeAuthorizationCode(
             GoogleAuthorizationCode(
                 value = command.authorizationCode,
             ),
             redirectUrl = command.redirectUri,
         )
-        return googleOAuthUserClient.getUserId(accessToken)
+        return googleOAuthUserClient.getUserInfo(accessToken)
     }
 
 }

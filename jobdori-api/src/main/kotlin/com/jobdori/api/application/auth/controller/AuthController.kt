@@ -1,8 +1,8 @@
 package com.jobdori.api.application.auth.controller
 
 import com.jobdori.api.application.auth.dto.request.LoginRequest
-import com.jobdori.api.application.auth.dto.request.SignUpRequest
 import com.jobdori.api.application.auth.dto.response.AuthTokenResponse
+import com.jobdori.api.application.auth.dto.response.LoginResponse
 import com.jobdori.api.support.auth.AuthCookieUtils.ACCESS_TOKEN_COOKIE
 import com.jobdori.api.support.auth.AuthCookieUtils.REFRESH_TOKEN_COOKIE
 import com.jobdori.api.support.auth.AuthCookieUtils.expiredCookie
@@ -24,26 +24,16 @@ class AuthController(
     private val refreshTokenService: RefreshTokenService,
 ) {
 
-    @PostMapping("/v1/auth/signup")
-    fun signUp(
-        @RequestBody @Valid request: SignUpRequest,
-    ): ResponseEntity<ApiResponse<AuthTokenResponse>> {
-        val tokenPair = authService.signUp(request.toCommand())
-        return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, tokenCookie(ACCESS_TOKEN_COOKIE, tokenPair.accessToken).toString())
-            .header(HttpHeaders.SET_COOKIE, tokenCookie(REFRESH_TOKEN_COOKIE, tokenPair.refreshToken).toString())
-            .body(ApiResponse.ok(AuthTokenResponse.from(tokenPair)))
-    }
-
     @PostMapping("/v1/auth/login")
     fun login(
         @RequestBody @Valid request: LoginRequest,
-    ): ResponseEntity<ApiResponse<AuthTokenResponse>> {
-        val tokenPair = authService.login(request.toCommand())
+    ): ResponseEntity<ApiResponse<LoginResponse>> {
+        val authResult = authService.login(request.toCommand())
+        val tokenPair = authResult.tokenPair
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, tokenCookie(ACCESS_TOKEN_COOKIE, tokenPair.accessToken).toString())
             .header(HttpHeaders.SET_COOKIE, tokenCookie(REFRESH_TOKEN_COOKIE, tokenPair.refreshToken).toString())
-            .body(ApiResponse.ok(AuthTokenResponse.from(tokenPair)))
+            .body(ApiResponse.ok(LoginResponse.from(authResult)))
     }
 
     @PostMapping("/v1/auth/refresh")

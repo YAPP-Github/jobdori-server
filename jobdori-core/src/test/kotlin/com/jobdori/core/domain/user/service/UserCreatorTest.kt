@@ -35,6 +35,8 @@ class UserCreatorTest : StringSpec({
         every { userRepository.save(capture(userSlot)) } returns User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
         every {
             userIdentityRepository.save(
@@ -56,13 +58,19 @@ class UserCreatorTest : StringSpec({
         service.create(
             provider = UserIdentityProvider.GOOGLE,
             providerUserId = "google-user-id",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         ) shouldBe User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
 
         // then
         userSlot.captured.id shouldBe 0L
+        userSlot.captured.name shouldBe "홍길동"
+        userSlot.captured.profileImageUrl shouldBe "https://lh3.googleusercontent.com/profile"
         verify(exactly = 1) { userRepository.save(any()) }
         verify(exactly = 1) { userIdentityRepository.save(any()) }
     }
@@ -81,6 +89,8 @@ class UserCreatorTest : StringSpec({
             service.create(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
+                name = "홍길동",
+                profileImageUrl = "https://lh3.googleusercontent.com/profile",
             )
         }
 

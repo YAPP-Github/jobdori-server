@@ -5,7 +5,7 @@ import com.jobdori.common.json.JsonUtils
 import com.jobdori.common.logger.LoggerExtension.log
 import com.jobdori.core.application.auth.oauth.google.client.GoogleOAuthUserClient
 import com.jobdori.core.application.auth.oauth.google.model.GoogleAccessToken
-import com.jobdori.core.application.auth.oauth.google.model.GoogleUserId
+import com.jobdori.core.application.auth.oauth.google.model.GoogleUserInfo
 import com.jobdori.infrastructure.client.oauth.google.dto.GoogleUserInfoResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -19,7 +19,7 @@ class GoogleOAuthUserClientImpl : GoogleOAuthUserClient {
         .baseUrl("https://openidconnect.googleapis.com")
         .build()
 
-    override fun getUserId(accessToken: GoogleAccessToken): GoogleUserId {
+    override fun getUserInfo(accessToken: GoogleAccessToken): GoogleUserInfo {
         return try {
             val response = restClient.get()
                 .uri("/v1/userinfo")
@@ -28,7 +28,11 @@ class GoogleOAuthUserClientImpl : GoogleOAuthUserClient {
                 .body<GoogleUserInfoResponse>()
                 ?: throw InternalServerException(message = "Failed to fetch Google OAuth user info (access_token: ${accessToken.value})")
 
-            GoogleUserId(response.sub)
+            GoogleUserInfo(
+                id = response.sub,
+                name = response.name,
+                profileImageUrl = response.picture,
+            )
         } catch (exception: RestClientResponseException) {
             log.warn(exception) {
                 """

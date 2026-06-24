@@ -2,18 +2,17 @@ package com.jobdori.core.application.auth
 
 import com.jobdori.core.application.auth.command.AuthCommand
 import com.jobdori.core.application.auth.oauth.google.GoogleAuthProcessor
-import com.jobdori.core.application.auth.oauth.google.model.GoogleUserId
+import com.jobdori.core.application.auth.oauth.google.model.GoogleUserInfo
+import com.jobdori.core.application.auth.result.AuthResult
 import com.jobdori.core.domain.auth.AuthToken
 import com.jobdori.core.domain.auth.AuthTokenPair
 import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.UserIdentity
 import com.jobdori.core.domain.user.UserIdentityProvider
-import com.jobdori.core.domain.user.error.UserNotFoundException
 import com.jobdori.core.domain.user.service.UserCreator
 import com.jobdori.core.domain.user.service.UserIdentityReader
 import com.jobdori.core.domain.user.service.UserReader
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -56,34 +55,13 @@ class AuthServiceTest : StringSpec({
         ),
     )
 
-    "Google 사용자 ID를 조회하고 가입 처리한 뒤 JWT를 발급한다" {
-        // given
-        every { googleAuthProcessor.getGoogleUserId(command) } returns GoogleUserId("google-user-id")
-        every {
-            userCreator.create(
-                provider = UserIdentityProvider.GOOGLE,
-                providerUserId = "google-user-id",
-            )
-        } returns User(
-            id = 10L,
-            publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
-        )
-        every { authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns tokenPair
-
-        // when & then
-        service.signUp(command) shouldBe tokenPair
-
-        // then
-        verifyOrder {
-            googleAuthProcessor.getGoogleUserId(command)
-            userCreator.create(UserIdentityProvider.GOOGLE, "google-user-id")
-            authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6")
-        }
-    }
-
     "Google 식별 정보로 사용자를 조회하고 JWT를 발급한다" {
         // given
-        every { googleAuthProcessor.getGoogleUserId(command) } returns GoogleUserId("google-user-id")
+        every { googleAuthProcessor.getGoogleUserInfo(command) } returns GoogleUserInfo(
+            id = "google-user-id",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
+        )
         every {
             userIdentityReader.findIdentity(
                 provider = UserIdentityProvider.GOOGLE,
@@ -98,34 +76,66 @@ class AuthServiceTest : StringSpec({
         every { userReader.getUser(10L) } returns User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
         every { authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns tokenPair
 
         // when & then
-        service.login(command) shouldBe tokenPair
+        service.login(command) shouldBe AuthResult(
+            tokenPair = tokenPair,
+            isNewUser = false,
+        )
 
         // then
         verify(exactly = 1) { authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6") }
     }
 
-    "가입되지 않은 Google 사용자는 로그인할 수 없다" {
+    "가입되지 않은 Google 사용자는 자동 가입 후 JWT를 발급한다" {
         // given
-        every { googleAuthProcessor.getGoogleUserId(command) } returns GoogleUserId("google-user-id")
+        every { googleAuthProcessor.getGoogleUserInfo(command) } returns GoogleUserInfo(
+            id = "google-user-id",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
+        )
         every {
             userIdentityReader.findIdentity(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
             )
         } returns null
+        every {
+            userCreator.create(
+                provider = UserIdentityProvider.GOOGLE,
+                providerUserId = "google-user-id",
+                name = "홍길동",
+                profileImageUrl = "https://lh3.googleusercontent.com/profile",
+            )
+        } returns User(
+            id = 10L,
+            publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            name = "홍길동",
+            profileImageUrl = "https://lh3.googleusercontent.com/profile",
+        )
+        every { authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns tokenPair
 
         // when & then
-        shouldThrow<UserNotFoundException> {
-            service.login(command)
-        }
+        service.login(command) shouldBe AuthResult(
+            tokenPair = tokenPair,
+            isNewUser = true,
+        )
 
         // then
-        verify(exactly = 0) { authTokenProvider.issue(any()) }
+        verifyOrder {
+            userIdentityReader.findIdentity(UserIdentityProvider.GOOGLE, "google-user-id")
+            userCreator.create(
+                provider = UserIdentityProvider.GOOGLE,
+                providerUserId = "google-user-id",
+                name = "홍길동",
+                profileImageUrl = "https://lh3.googleusercontent.com/profile",
+            )
+            authTokenProvider.issue("3f5c9d79-2255-4b76-bd31-013cd01d49d6")
+        }
     }
 
 })
-

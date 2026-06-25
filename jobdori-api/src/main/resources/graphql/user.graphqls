@@ -1,0 +1,26 @@
+extend type Query {
+    """
+    인증된 사용자의 정보를 조회합니다.
+    """
+    myUser: User!
+}
+
+"""
+사용자 정보입니다.
+"""
+type User {
+    """
+    사용자를 식별하는 ID입니다.
+    """
+    userId: ID!
+
+    """
+    사용자 이름입니다.
+    """
+    name: String!
+
+    """
+    사용자 프로필 이미지 URL입니다.
+    """
+    profileImageUrl: String
+}

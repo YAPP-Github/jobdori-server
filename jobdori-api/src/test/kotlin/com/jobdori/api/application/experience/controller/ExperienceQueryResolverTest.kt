@@ -1,0 +1,173 @@
+package com.jobdori.api.application.experience.controller
+
+import com.jobdori.api.GraphQLTest
+import com.jobdori.api.application.common.dto.response.CursorResponse
+import com.jobdori.api.application.experience.dto.response.ExperienceListResponse
+import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
+import com.jobdori.api.application.experience.dto.response.ExperienceResponse
+import com.jobdori.api.application.experience.service.ExperienceService
+import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
+import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
+import com.jobdori.core.application.auth.AccessTokenService
+import com.jobdori.core.application.workspace.service.WorkspaceAccessValidationService
+import com.jobdori.core.domain.experience.Experience
+import com.jobdori.core.domain.experience.ExperienceContents
+import com.jobdori.core.domain.experience.ExperienceProject
+import com.jobdori.core.domain.experience.ExperienceProjectStatus
+import com.jobdori.core.domain.experience.ExperienceStatus
+import com.jobdori.core.domain.experience.service.ExperienceProjectReader
+import com.jobdori.core.domain.workspace.Workspace
+import com.ninjasquad.springmockk.MockkBean
+import io.kotest.core.spec.style.StringSpec
+import io.mockk.every
+import io.mockk.verify
+import org.springframework.context.annotation.Import
+import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester
+import org.springframework.graphql.test.tester.GraphQlTester
+import org.springframework.graphql.test.tester.entity
+import java.math.BigDecimal
+
+@GraphQLTest(ExperienceQueryResolver::class)
+@Import(UserIdArgumentGraphqlResolver::class)
+internal class ExperienceQueryResolverTest(
+    private val graphQlTester: GraphQlTester,
+    @MockkBean
+    private val workspaceAccessValidationService: WorkspaceAccessValidationService,
+    @MockkBean
+    private val accessTokenService: AccessTokenService,
+    @MockkBean
+    private val experienceService: ExperienceService,
+    @MockkBean
+    private val experienceProjectReader: ExperienceProjectReader,
+) : StringSpec({
+
+    "경험 목록은 GraphQL에서 cursor와 size를 받고 Resolver 내부에서는 CursorRequest로 처리한다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        every {
+            workspaceAccessValidationService.validateAccessible(
+                workspaceId = "workspace-id",
+                userId = 1L,
+            )
+        } returns Workspace(
+            id = 1L,
+            publicId = "workspace-id",
+            ownerUserId = 1L,
+        )
+        every { experienceService.getAll(1L, null, null, 2, false) } returns ExperienceListResponse(
+            experiences = listOf(
+                ExperienceResponse.from(
+                    experience = graphQlExperience(5L, ExperienceContents.star("s", "t", "a", "r")),
+                    project = null,
+                ),
+                ExperienceResponse.from(
+                    experience = graphQlExperience(4L, ExperienceContents.free("free")),
+                    project = null,
+                ),
+            ),
+            cursor = CursorResponse(nextCursor = "4"),
+        )
+
+        authenticatedTester(graphQlTester)
+            .documentName("experiences")
+            .execute()
+            .path("experiences.experiences[0].experienceId").entity<String>().isEqualTo("5")
+            .path("experiences.experiences[1].experienceId").entity<String>().isEqualTo("4")
+            .path("experiences.cursor.nextCursor").entity<String>().isEqualTo("4")
+            .path("experiences.cursor.hasNext").entity<Boolean>().isEqualTo(true)
+
+        verify(exactly = 1) { accessTokenService.getUserId("access-token") }
+        verify(exactly = 1) {
+            workspaceAccessValidationService.validateAccessible(
+                workspaceId = "workspace-id",
+                userId = 1L,
+            )
+        }
+        verify(exactly = 0) { experienceProjectReader.getProject(any(), any()) }
+        verify(exactly = 0) { experienceProjectReader.getProjects(any(), any<Collection<Long>>()) }
+    }
+
+    "경험 목록에서 project를 요청하면 프로젝트를 한 번에 조회한다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        every {
+            workspaceAccessValidationService.validateAccessible(
+                workspaceId = "workspace-id",
+                userId = 1L,
+            )
+        } returns Workspace(
+            id = 1L,
+            publicId = "workspace-id",
+            ownerUserId = 1L,
+        )
+        val project = ExperienceProject(
+            id = 3L,
+            workspaceId = 1L,
+            name = "신규 브랜드 런칭 캠페인",
+            summary = "신규 서비스의 초기 인지도 확보 캠페인",
+            period = null,
+            role = "Growth Marketer",
+            displayOrder = BigDecimal.ZERO,
+            status = ExperienceProjectStatus.ACTIVE,
+        )
+        every { experienceService.getAll(1L, null, null, 2, true) } returns ExperienceListResponse(
+            experiences = listOf(
+                ExperienceResponse.from(
+                    experience = graphQlExperience(5L, ExperienceContents.star("s", "t", "a", "r")),
+                    project = ExperienceProjectResponse.from(project),
+                ),
+                ExperienceResponse.from(
+                    experience = graphQlExperience(4L, ExperienceContents.free("free")),
+                    project = ExperienceProjectResponse.from(project),
+                ),
+            ),
+            cursor = CursorResponse(nextCursor = "4"),
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                {
+                  experiences(workspaceId: "workspace-id", cursor: null, size: 2) {
+                    experiences {
+                      experienceId
+                      project {
+                        projectId
+                        name
+                      }
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("experiences.experiences[0].project.projectId").entity<String>().isEqualTo("3")
+            .path("experiences.experiences[0].project.name").entity<String>().isEqualTo("신규 브랜드 런칭 캠페인")
+            .path("experiences.experiences[1].project.projectId").entity<String>().isEqualTo("3")
+
+        verify(exactly = 1) { experienceService.getAll(1L, null, null, 2, true) }
+        verify(exactly = 0) { experienceProjectReader.getProject(any(), any()) }
+    }
+
+})
+
+private fun authenticatedTester(graphQlTester: GraphQlTester): GraphQlTester {
+    val builder = graphQlTester.mutate() as ExecutionGraphQlServiceTester.Builder<*>
+    return builder.configureExecutionInput { _, executionInputBuilder ->
+        executionInputBuilder.graphQLContext(
+            mapOf(AuthGraphQlContext.AUTHORIZATION to "Bearer access-token"),
+        ).build()
+    }.build()
+}
+
+private fun graphQlExperience(
+    id: Long,
+    contents: ExperienceContents,
+) = Experience(
+    id = id,
+    workspaceId = 1L,
+    projectId = 3L,
+    tags = emptyList(),
+    title = "경험 $id",
+    contents = contents,
+    displayOrder = BigDecimal.ZERO,
+    status = ExperienceStatus.ACTIVE,
+)

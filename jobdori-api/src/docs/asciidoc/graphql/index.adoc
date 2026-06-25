@@ -51,20 +51,34 @@ query MyUser {
 
 [source,graphql]
 ----
-query Experiences($cursor: String, $size: Int!) {
-  experiences(cursor: $cursor, size: $size) {
+query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
       tags
+      contents {
+        type
+        star {
+          situation
+          task
+          action
+          result
+        }
+        free {
+          content
+        }
+      }
       project {
-        id
+        projectId
         name
         role
       }
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }
 ----
@@ -74,6 +88,7 @@ Variables:
 [source,json]
 ----
 {
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "cursor": null,
   "size": 20
 }
@@ -83,16 +98,29 @@ Variables:
 
 [source,graphql]
 ----
-query ProjectExperiences($projectId: ID!, $cursor: String, $size: Int!) {
-  projectExperiences(projectId: $projectId, cursor: $cursor, size: $size) {
+query ProjectExperiences($workspaceId: ID!, $projectId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, projectId: $projectId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
       tags
-      displayOrder
+      contents {
+        type
+        star {
+          situation
+          task
+          action
+          result
+        }
+        free {
+          content
+        }
+      }
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }
 ----
@@ -102,6 +130,7 @@ Variables:
 [source,json]
 ----
 {
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "projectId": 3,
   "cursor": null,
   "size": 20
@@ -112,10 +141,10 @@ Variables:
 
 [source,graphql]
 ----
-query ExperienceProjects($cursor: String, $size: Int!) {
-  experienceProjects(cursor: $cursor, size: $size) {
+query ExperienceProjects($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experienceProjects(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     projects {
-      id
+      projectId
       name
       summary
       role
@@ -124,8 +153,10 @@ query ExperienceProjects($cursor: String, $size: Int!) {
         endAt
       }
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }
 ----
@@ -135,6 +166,7 @@ Variables:
 [source,json]
 ----
 {
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "cursor": null,
   "size": 20
 }
@@ -148,15 +180,17 @@ GraphQL은 클라이언트가 필요한 필드만 선택해서 조회합니다.
 
 [source,graphql]
 ----
-query Experiences($cursor: String, $size: Int!) {
-  experiences(cursor: $cursor, size: $size) {
+query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
       tags
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }
 ----
@@ -165,18 +199,20 @@ query Experiences($cursor: String, $size: Int!) {
 
 [source,graphql]
 ----
-query Experiences($cursor: String, $size: Int!) {
-  experiences(cursor: $cursor, size: $size) {
+query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
       project {
-        id
+        projectId
         name
       }
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }
 ----
@@ -201,18 +237,20 @@ query Experiences($cursor: String, $size: Int!) {
 | 한 번에 조회할 개수입니다.
 |===
 
-응답의 `hasNext`가 `true`이면 `nextCursor` 값을 다음 요청의 `cursor`로 전달합니다.
+응답의 `+cursor.hasNext+`가 `+true+`이면 `+cursor.nextCursor+` 값을 다음 요청의 `+cursor+`로 전달합니다.
 
 [source,graphql]
 ----
-query Experiences($cursor: String, $size: Int!) {
-  experiences(cursor: $cursor, size: $size) {
+query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }
 ----
@@ -222,6 +260,7 @@ query Experiences($cursor: String, $size: Int!) {
 [source,json]
 ----
 {
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "cursor": null,
   "size": 20
 }
@@ -232,6 +271,7 @@ query Experiences($cursor: String, $size: Int!) {
 [source,json]
 ----
 {
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "cursor": "5",
   "size": 20
 }
@@ -244,3 +284,11 @@ query Experiences($cursor: String, $size: Int!) {
 === User
 
 include::./user/user-error.adoc[]
+
+=== Workspace
+
+include::./workspace/workspace-error.adoc[]
+
+=== Experience
+
+include::./experience/experience-error.adoc[]

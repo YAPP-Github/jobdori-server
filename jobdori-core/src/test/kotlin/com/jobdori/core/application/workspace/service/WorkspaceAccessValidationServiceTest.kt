@@ -25,7 +25,7 @@ class WorkspaceAccessValidationServiceTest : StringSpec({
 
         // when & then
         workspaceAccessValidationService.validateAccessible(
-            workspacePublicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            workspaceId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
             userId = 10L,
         ) shouldBe workspace
     }
@@ -41,7 +41,7 @@ class WorkspaceAccessValidationServiceTest : StringSpec({
         // when & then
         shouldThrow<WorkspaceAccessDeniedException> {
             workspaceAccessValidationService.validateAccessible(
-                workspacePublicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+                workspaceId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
                 userId = 10L,
             )
         }

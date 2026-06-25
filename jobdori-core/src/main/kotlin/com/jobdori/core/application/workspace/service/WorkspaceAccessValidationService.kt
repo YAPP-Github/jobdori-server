@@ -12,11 +12,11 @@ class WorkspaceAccessValidationService(
 ) {
 
     @Transactional(readOnly = true)
-    fun validateAccessible(workspacePublicId: String, userId: Long): Workspace {
-        val workspace = workspaceReader.getWorkspace(workspacePublicId)
+    fun validateAccessible(workspaceId: String, userId: Long): Workspace {
+        val workspace = workspaceReader.getWorkspace(workspaceId)
 
         if (!workspace.isOwner(userId)) {
-            throw WorkspaceAccessDeniedException("워크스페이스 접근 권한이 없습니다 [workspacePublicId=$workspacePublicId, userId=$userId]")
+            throw WorkspaceAccessDeniedException("워크스페이스 접근 권한이 없습니다 [workspaceId=$workspaceId, userId=$userId]")
         }
 
         return workspace

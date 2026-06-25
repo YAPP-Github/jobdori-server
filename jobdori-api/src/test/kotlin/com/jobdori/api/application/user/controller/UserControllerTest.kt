@@ -59,7 +59,8 @@ internal class UserControllerTest(
                         fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
                         fieldWithPath("result.userId").type(JsonFieldType.STRING).description("사용자 ID"),
                         fieldWithPath("result.name").type(JsonFieldType.STRING).description("사용자 이름"),
-                        fieldWithPath("result.profileImageUrl").type(JsonFieldType.STRING).description("사용자 프로필 이미지 URL"),
+                        fieldWithPath("result.profileImageUrl").type(JsonFieldType.STRING)
+                            .description("사용자 프로필 이미지 URL").optional(),
                     ),
                     ErrorCodeSnippet.errorCodeSnippet(
                         UserErrorCode.E404_USER_NOT_FOUND,

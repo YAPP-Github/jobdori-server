@@ -1,6 +1,7 @@
 import java.time.LocalDate
 import java.time.ZoneId
 import org.gradle.api.tasks.bundling.Zip
+import org.gradle.internal.execution.caching.CachingState.enabled
 
 dependencies {
     // Modules
@@ -19,6 +20,10 @@ dependencies {
 
     // Validation
     implementation(libs.spring.boot.starter.validation)
+
+    // Monitoring
+    implementation(libs.sentry.logback)
+    implementation(libs.sentry.spring.boot.starter)
 
     // Spring Rest Docs
     testImplementation(libs.spring.boot.restdocs)

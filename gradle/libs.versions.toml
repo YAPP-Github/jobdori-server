@@ -7,6 +7,7 @@ kotlin-logging = "8.0.01"
 spring-mockk = "5.0.1"
 kotlin-jdsl = "3.8.2"
 asciidoctor = "4.0.5"
+sentry = "8.45.0"
 
 [libraries]
 # Kotlin
@@ -15,6 +16,10 @@ kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8" }
 
 # Logging
 kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+
+# Monitoring
+sentry-spring-boot-starter = { module = "io.sentry:sentry-spring-boot-4", version.ref = "sentry" }
+sentry-logback = { module = "io.sentry:sentry-logback", version.ref = "sentry" }
 
 # Spring Boot
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }

@@ -19,3 +19,24 @@ spring:
       enabled: true
       path: /graphiql
 
+sentry:
+  enabled: true
+  dsn: ${SENTRY_DSN:}
+  logging:
+    enabled: true
+    minimum-event-level: warn
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+        - local
+        - test
+
+sentry:
+  enabled: false
+  logging:
+    enabled: false
+
+

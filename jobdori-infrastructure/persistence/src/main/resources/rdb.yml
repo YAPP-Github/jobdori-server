@@ -20,7 +20,6 @@ spring.config:
     on-profile:
       - local
       - test
-      - dev # 개발 DB로 바꿔야함 (임시 세팅)
 
 spring:
   jpa:
@@ -43,3 +42,29 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+
+---
+spring.config:
+  activate:
+    on-profile:
+      - dev # 개발 DB로 바꿔야함 (임시 세팅)
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  datasource:
+    url: jdbc:h2:mem:jobori;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: false
+

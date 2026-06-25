@@ -1,0 +1,10 @@
+[.api-table]
+[cols="22%,16%,22%,40%",options="header"]
+|===
+| Code | HTTP Status | GraphQL Classification | Description
+
+| user_not_found
+| 404
+| NOT_FOUND
+| 인증된 사용자 정보를 찾을 수 없는 경우
+|===

@@ -1,0 +1,30 @@
+[.api-table]
+[cols="22%,16%,22%,40%",options="header"]
+|===
+| Code | HTTP Status | GraphQL Classification | Description
+
+| invalid_arguments
+| 400
+| BAD_REQUEST
+| 필수 파라미터가 없거나 파라미터가 유효하지 않은 경우
+
+| invalid_auth_token
+| 401
+| UNAUTHORIZED
+| 인증 토큰이 없거나 유효하지 않은 경우
+
+| token_expired
+| 401
+| UNAUTHORIZED
+| 인증 토큰이 만료된 경우
+
+| internal_error
+| 500
+| INTERNAL_ERROR
+| 서버 내부 오류가 발생한 경우
+
+| service_unavailable
+| 503
+| INTERNAL_ERROR
+| 현재 서비스를 이용할 수 없는 경우
+|===

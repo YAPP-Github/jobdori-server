@@ -6,6 +6,9 @@ dependencies {
     api(libs.jackson.core)
     api(libs.jackson.databind)
     api(libs.jackson.module.kotlin)
+
+    // PDF
+    implementation(libs.pdfbox)
 }
 
 tasks.bootJar {

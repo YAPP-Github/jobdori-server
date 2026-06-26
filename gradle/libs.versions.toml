@@ -8,6 +8,7 @@ spring-mockk = "5.0.1"
 kotlin-jdsl = "3.9.0"
 asciidoctor = "4.0.5"
 sentry = "8.46.0"
+pdfbox = "3.0.5"
 
 [libraries]
 # Kotlin
@@ -43,6 +44,9 @@ jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" 
 
 # Commons
 commons-lang3 = { module = "org.apache.commons:commons-lang3" }
+
+# PDF
+pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 
 # Kotlin JDSL
 kotlin-jdsl-jpql-dsl = { module = "com.linecorp.kotlin-jdsl:jpql-dsl", version.ref = "kotlin-jdsl" }

@@ -1,13 +1,13 @@
 [versions]
-kotlin = "2.3.21"
-spring-boot = "4.0.6"
+kotlin = "2.4.0"
+spring-boot = "4.1.0"
 spring-dependency-management = "1.1.7"
-kotest = "6.1.11"
-kotlin-logging = "8.0.01"
+kotest = "6.2.1"
+kotlin-logging = "8.0.4"
 spring-mockk = "5.0.1"
-kotlin-jdsl = "3.8.2"
+kotlin-jdsl = "3.9.0"
 asciidoctor = "4.0.5"
-sentry = "8.45.0"
+sentry = "8.46.0"
 
 [libraries]
 # Kotlin

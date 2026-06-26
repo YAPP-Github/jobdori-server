@@ -35,6 +35,8 @@
 <li><a href="#_도메인별_에러_코드">3. 도메인별 에러 코드</a>
 <ul class="sectlevel2">
 <li><a href="#_user">3.1. User</a></li>
+<li><a href="#_workspace">3.2. Workspace</a></li>
+<li><a href="#_experience">3.3. Experience</a></li>
 </ul>
 </li>
 </ul>
@@ -336,15 +338,13 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 22%;">
-<col style="width: 16%;">
-<col style="width: 22%;">
-<col style="width: 40%;">
+<col style="width: 28%;">
+<col style="width: 28%;">
+<col style="width: 44%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">GraphQL Classification</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
@@ -352,31 +352,26 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_arguments</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">400</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">BAD_REQUEST</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수 파라미터가 없거나 파라미터가 유효하지 않은 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_auth_token</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">401</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">UNAUTHORIZED</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 없거나 유효하지 않은 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">token_expired</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">401</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">UNAUTHORIZED</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 만료된 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">internal_error</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">INTERNAL_ERROR</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">서버 내부 오류가 발생한 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">service_unavailable</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">503</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">INTERNAL_ERROR</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">현재 서비스를 이용할 수 없는 경우</p></td>
 </tr>
@@ -412,8 +407,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($cursor: String, $size: Int!) {
-  experiences(cursor: $cursor, size: $size) {
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
       id
       title
@@ -436,6 +431,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "cursor": null,
   "size": 20
 }</code></pre>
@@ -446,8 +442,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ProjectExperiences($projectId: ID!, $cursor: String, $size: Int!) {
-  projectExperiences(projectId: $projectId, cursor: $cursor, size: $size) {
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ProjectExperiences($workspaceId: ID!, $projectId: ID!, $cursor: String, $size: Int!) {
+  projectExperiences(workspaceId: $workspaceId, projectId: $projectId, cursor: $cursor, size: $size) {
     experiences {
       id
       title
@@ -466,6 +462,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "projectId": 3,
   "cursor": null,
   "size": 20
@@ -477,8 +474,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ExperienceProjects($cursor: String, $size: Int!) {
-  experienceProjects(cursor: $cursor, size: $size) {
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ExperienceProjects($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experienceProjects(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     projects {
       id
       name
@@ -501,6 +498,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "cursor": null,
   "size": 20
 }</code></pre>
@@ -517,8 +515,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($cursor: String, $size: Int!) {
-  experiences(cursor: $cursor, size: $size) {
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
       id
       title
@@ -535,8 +533,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($cursor: String, $size: Int!) {
-  experiences(cursor: $cursor, size: $size) {
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
       id
       title
@@ -591,8 +589,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($cursor: String, $size: Int!) {
-  experiences(cursor: $cursor, size: $size) {
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
+  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
       id
       title
@@ -609,6 +607,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "cursor": null,
   "size": 20
 }</code></pre>
@@ -620,6 +619,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
   "cursor": "5",
   "size": 20
 }</code></pre>
@@ -638,15 +638,13 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <h3 id="_user">3.1. User</h3>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
-<col style="width: 22%;">
-<col style="width: 16%;">
-<col style="width: 22%;">
-<col style="width: 40%;">
+<col style="width: 28%;">
+<col style="width: 28%;">
+<col style="width: 44%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">GraphQL Classification</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
@@ -654,9 +652,66 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">user_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">404</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증된 사용자 정보를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_workspace">3.2. Workspace</h3>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 28%;">
+<col style="width: 44%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">GraphQL Classification</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FORBIDDEN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_experience">3.3. Experience</h3>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 28%;">
+<col style="width: 44%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">GraphQL Classification</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
 </table>

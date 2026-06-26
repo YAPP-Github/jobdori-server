@@ -9,6 +9,8 @@ import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.repository.UserRepository
+import com.jobdori.core.domain.workspace.Workspace
+import com.jobdori.core.domain.workspace.repository.WorkspaceRepository
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
@@ -22,6 +24,7 @@ import java.time.ZoneId
 @RestController
 class TestTokenController(
     private val userRepository: UserRepository,
+    private val workspaceRepository: WorkspaceRepository,
     private val authTokenProvider: AuthTokenProvider,
 ) {
 
@@ -41,6 +44,7 @@ class TestTokenController(
                 name = "잡도리",
                 profileImageUrl = null
             ))
+        ensureTestWorkspace(user)
 
         val tokenPair = authTokenProvider.issue(
             userPublicId = user.publicId,
@@ -52,6 +56,13 @@ class TestTokenController(
             .header(HttpHeaders.SET_COOKIE, tokenCookie(ACCESS_TOKEN_COOKIE, tokenPair.accessToken).toString())
             .header(HttpHeaders.SET_COOKIE, tokenCookie(REFRESH_TOKEN_COOKIE, tokenPair.refreshToken).toString())
             .body(ApiResponse.ok(AuthTokenResponse.from(tokenPair)))
+    }
+
+    private fun ensureTestWorkspace(user: User) {
+        if (workspaceRepository.findAllByOwnerUserId(user.id).isNotEmpty()) {
+            return
+        }
+        workspaceRepository.save(Workspace.newInstance(ownerUserId = user.id))
     }
 
     private fun validateExpiresAt(

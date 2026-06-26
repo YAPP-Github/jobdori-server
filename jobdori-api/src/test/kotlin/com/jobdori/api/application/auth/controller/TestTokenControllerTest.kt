@@ -11,9 +11,13 @@ import com.jobdori.core.domain.auth.AuthTokenPair
 import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.repository.UserRepository
+import com.jobdori.core.domain.workspace.Workspace
+import com.jobdori.core.domain.workspace.repository.WorkspaceRepository
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
+import io.mockk.slot
 import io.mockk.verify
 import org.springframework.http.HttpHeaders
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
@@ -35,6 +39,8 @@ internal class TestTokenControllerTest(
     private val mockMvc: MockMvc,
     @MockkBean
     private val userRepository: UserRepository,
+    @MockkBean
+    private val workspaceRepository: WorkspaceRepository,
     @MockkBean
     private val authTokenProvider: AuthTokenProvider,
 ) : StringSpec({
@@ -62,6 +68,13 @@ internal class TestTokenControllerTest(
                 ),
             )
         } returns user
+        every { workspaceRepository.findAllByOwnerUserId(ownerUserId = 1L) } returns emptyList()
+        val workspaceSlot = slot<Workspace>()
+        every { workspaceRepository.save(capture(workspaceSlot)) } returns Workspace(
+            id = 10L,
+            publicId = "8f13f49e-132a-47b7-b704-d7eec18fd44b",
+            ownerUserId = 1L,
+        )
         every {
             authTokenProvider.issue(
                 userPublicId = user.publicId,
@@ -127,6 +140,9 @@ internal class TestTokenControllerTest(
                 ),
             )
         }
+        verify(exactly = 1) { workspaceRepository.findAllByOwnerUserId(ownerUserId = 1L) }
+        verify(exactly = 1) { workspaceRepository.save(any()) }
+        workspaceSlot.captured.ownerUserId shouldBe 1L
     }
 
 })

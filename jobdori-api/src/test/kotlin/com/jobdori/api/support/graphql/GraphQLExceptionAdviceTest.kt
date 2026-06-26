@@ -43,6 +43,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
         // then
         error.errorType shouldBe ErrorType.BAD_REQUEST
+        error.message shouldBe CommonErrorCode.E400_INVALID_ARGUMENTS.message
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
@@ -78,6 +79,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
         // then
         error.errorType shouldBe ErrorType.BAD_REQUEST
+        error.message shouldBe CommonErrorCode.E400_INVALID_ARGUMENTS.message
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
@@ -101,6 +103,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
         // then
         error.errorType shouldBe ErrorType.NOT_FOUND
+        error.message shouldBe SampleErrorCode.E404_SAMPLE_NOT_FOUND.message
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
@@ -118,6 +121,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
         // then
         error.errorType shouldBe ErrorType.INTERNAL_ERROR
+        error.message shouldBe CommonErrorCode.E500_INTERNAL_ERROR.message
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(

@@ -15,6 +15,7 @@ class ErrorCodeSnippet(
                 "httpStatus" to entry.errorCode.httpStatusCode,
                 "code" to entry.errorCode.code,
                 "name" to entry.errorCode.name,
+                "message" to entry.errorCode.message,
                 "description" to (entry.description ?: entry.errorCode.description),
             )
         },

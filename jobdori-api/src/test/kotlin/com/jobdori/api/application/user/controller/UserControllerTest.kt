@@ -5,6 +5,7 @@ import com.jobdori.api.DocsTest
 import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
+import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.error.UserErrorCode
@@ -93,6 +94,7 @@ internal class UserControllerTest(
                 status { isUnauthorized() }
                 jsonPath("$.ok") { value(false) }
                 jsonPath("$.error.code") { value("invalid_auth_token") }
+                jsonPath("$.error.message") { value(CommonErrorCode.E401_INVALID_AUTH_TOKEN.message) }
             }
     }
 

@@ -211,6 +211,12 @@ Content-Type: application/json
 <td class="tableblock halign-left valign-top"><p class="tableblock">에러 코드 (에러 코드 문서 참고)</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>error.message</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Y</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사용자에게 노출 가능한 에러 메시지</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>error.details</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Array&lt;Object&gt;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">N</p></td>
@@ -243,7 +249,8 @@ Content-Type: application/json
 {
   "ok": false,
   "error": {
-    "code": "internal_error"
+    "code": "internal_error",
+    "message": "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
   }
 }</code></pre>
 </div>
@@ -262,6 +269,7 @@ Content-Type: application/json
   "ok": false,
   "error": {
     "code": "invalid_arguments",
+    "message": "입력한 내용을 다시 확인해 주세요.",
     "details": [
       {
         "field": "title",
@@ -290,14 +298,16 @@ Content-Type: application/json
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 11.1111%;">
-<col style="width: 22.2222%;">
-<col style="width: 66.6667%;">
+<col style="width: 10%;">
+<col style="width: 20%;">
+<col style="width: 30%;">
+<col style="width: 40%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Status Code</th>
 <th class="tableblock halign-left valign-top">Error Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
@@ -305,26 +315,31 @@ Content-Type: application/json
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">400</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_arguments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">입력한 내용을 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">401</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_auth_token</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증이 필요합니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 없거나 유효하지 않은 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">401</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">token_expired</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증이 만료되었습니다. 다시 로그인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 만료된 경우 (액세스 토큰 갱신 필요)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">internal_error</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">서버 내부적으로 문제 발생 시</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">503</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">service_unavailable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">현재 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">현재 서비스를 이용할 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -420,14 +435,16 @@ Content-Length: 17
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -435,6 +452,7 @@ Content-Length: 17
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>503</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>service_unavailable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">현재 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">서비스 상태가 아닌 경우 발생합니다</p></td>
 </tr>
 </tbody>
@@ -597,8 +615,8 @@ Host: dev.api.jobdori.o-r.kr
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=110957349; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112165149; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=110956436; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112164236; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 135
 
@@ -620,14 +638,16 @@ Content-Length: 135
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -635,6 +655,7 @@ Content-Length: 135
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>400</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>invalid_authorization_code</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증 코드가 올바르지 않습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유효하지 않은 OAuth 인증 코드인 경우</p></td>
 </tr>
 </tbody>
@@ -760,7 +781,7 @@ Cookie: refresh_token=refresh-token</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=new-access-token; Path=/; Max-Age=110957348; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=new-access-token; Path=/; Max-Age=110956436; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 76
 
@@ -1011,14 +1032,16 @@ Content-Length: 279
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -1026,6 +1049,7 @@ Content-Length: 279
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>user_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사용자를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유저를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1243,14 +1267,16 @@ Content-Length: 279
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -1258,16 +1284,19 @@ Content-Length: 279
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_access_denied</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>experience_project_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">연결할 경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1534,14 +1563,16 @@ Content-Length: 645
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -1549,21 +1580,25 @@ Content-Length: 645
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_access_denied</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>experience_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>experience_project_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">변경할 경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1692,14 +1727,16 @@ Content-Length: 1046
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -1707,16 +1744,19 @@ Content-Length: 1046
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_access_denied</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>experience_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1934,14 +1974,16 @@ Content-Length: 17
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -1949,11 +1991,13 @@ Content-Length: 17
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_access_denied</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2196,14 +2240,16 @@ Content-Length: 299
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -2211,16 +2257,19 @@ Content-Length: 299
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_access_denied</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>experience_project_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2343,14 +2392,16 @@ Content-Length: 365
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -2358,16 +2409,19 @@ Content-Length: 365
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_access_denied</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>experience_project_not_found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2533,8 +2587,8 @@ Host: dev.api.jobdori.o-r.kr</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=110955547; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112165147; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=110954634; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=112164234; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 110
 
@@ -2555,14 +2609,16 @@ Content-Length: 110
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 45%;">
+<col style="width: 15%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP Status</th>
 <th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">메시지</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
@@ -2570,6 +2626,7 @@ Content-Length: 110
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>400</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>invalid_arguments</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">입력한 내용을 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">만료 시간이 현재보다 이전인 경우</p></td>
 </tr>
 </tbody>

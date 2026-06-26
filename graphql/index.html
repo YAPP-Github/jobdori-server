@@ -276,8 +276,7 @@ GraphQL API 사용에 필요한 공통 규칙, 응답 모델, Query별 예제를
       "message": "인증이 필요합니다.",
       "path": ["experiences"],
       "extensions": {
-        "code": "invalid_auth_token",
-        "classification": "UNAUTHORIZED"
+        "code": "invalid_auth_token"
       }
     }
   ],
@@ -295,7 +294,7 @@ GraphQL API 사용에 필요한 공통 규칙, 응답 모델, Query별 예제를
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "errors": [
     {
-      "message": "요청 값이 올바르지 않습니다.",
+      "message": "입력한 내용을 다시 확인해 주세요.",
       "path": ["experiences"],
       "extensions": {
         "code": "invalid_arguments",
@@ -304,8 +303,7 @@ GraphQL API 사용에 필요한 공통 규칙, 응답 모델, Query별 예제를
             "field": "size",
             "reason": "1 이상이어야 합니다."
           }
-        ],
-        "classification": "BAD_REQUEST"
+        ]
       }
     }
   ],
@@ -339,40 +337,40 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
-<col style="width: 28%;">
-<col style="width: 44%;">
+<col style="width: 36%;">
+<col style="width: 36%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">GraphQL Classification</th>
+<th class="tableblock halign-left valign-top">Message</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_arguments</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">BAD_REQUEST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">필수 파라미터가 없거나 파라미터가 유효하지 않은 경우</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">입력한 내용을 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_auth_token</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UNAUTHORIZED</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증이 필요합니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 없거나 유효하지 않은 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">token_expired</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UNAUTHORIZED</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 만료된 경우</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증이 만료되었습니다. 다시 로그인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 만료된 경우 (액세스 토큰 갱신 필요)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">internal_error</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">INTERNAL_ERROR</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">서버 내부 오류가 발생한 경우</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">서버 내부적으로 문제 발생 시</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">service_unavailable</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">INTERNAL_ERROR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">현재 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">현재 서비스를 이용할 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -639,21 +637,26 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
-<col style="width: 28%;">
-<col style="width: 44%;">
+<col style="width: 36%;">
+<col style="width: 36%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">GraphQL Classification</th>
+<th class="tableblock halign-left valign-top">Message</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">user_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">인증된 사용자 정보를 찾을 수 없는 경우</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사용자를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">유저를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user_already_exists</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이미 가입된 사용자입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이미 가입한 유저인 경우</p></td>
 </tr>
 </tbody>
 </table>
@@ -663,25 +666,25 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
-<col style="width: 28%;">
-<col style="width: 44%;">
+<col style="width: 36%;">
+<col style="width: 36%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">GraphQL Classification</th>
+<th class="tableblock halign-left valign-top">Message</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">FORBIDDEN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -692,25 +695,25 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
-<col style="width: 28%;">
-<col style="width: 44%;">
+<col style="width: 36%;">
+<col style="width: 36%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">GraphQL Classification</th>
+<th class="tableblock halign-left valign-top">Message</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>

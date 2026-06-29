@@ -8,19 +8,19 @@ import jakarta.validation.constraints.Size
 data class StarExperienceContentsRequest(
     @field:NotBlank
     @field:Size(max = 1000)
-    val situation: String,
+    val situation: String = "",
 
     @field:NotBlank
     @field:Size(max = 1000)
-    val task: String,
+    val task: String = "",
 
     @field:NotBlank
     @field:Size(max = 1000)
-    val action: String,
+    val action: String = "",
 
     @field:NotBlank
     @field:Size(max = 1000)
-    val result: String,
+    val result: String = "",
 ) {
 
     @JsonIgnore

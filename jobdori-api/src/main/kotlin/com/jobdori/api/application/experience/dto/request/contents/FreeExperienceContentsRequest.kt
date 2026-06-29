@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size
 data class FreeExperienceContentsRequest(
     @field:NotBlank
     @field:Size(max = 3000)
-    val content: String,
+    val content: String = "",
 ) {
 
     @JsonIgnore

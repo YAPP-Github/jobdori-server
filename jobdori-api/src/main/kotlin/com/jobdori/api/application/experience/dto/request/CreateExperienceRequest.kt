@@ -1,10 +1,10 @@
 package com.jobdori.api.application.experience.dto.request
 
 import com.jobdori.api.application.experience.dto.request.contents.ExperienceContentsRequest
+import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
-import jakarta.validation.Valid
 
 data class CreateExperienceRequest(
     @field:Positive
@@ -15,7 +15,7 @@ data class CreateExperienceRequest(
 
     @field:NotBlank
     @field:Size(max = 150)
-    val title: String,
+    val title: String = "",
 
     @field:Valid
     val contents: ExperienceContentsRequest,

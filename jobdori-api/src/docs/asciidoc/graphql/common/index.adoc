@@ -125,8 +125,7 @@ GraphQL 요청이 실패하면 `errors` 필드에 오류 정보가 포함됩니�
       "message": "인증이 필요합니다.",
       "path": ["experiences"],
       "extensions": {
-        "code": "invalid_auth_token",
-        "classification": "UNAUTHORIZED"
+        "code": "invalid_auth_token"
       }
     }
   ],
@@ -143,7 +142,7 @@ GraphQL 요청이 실패하면 `errors` 필드에 오류 정보가 포함됩니�
 {
   "errors": [
     {
-      "message": "요청 값이 올바르지 않습니다.",
+      "message": "입력한 내용을 다시 확인해 주세요.",
       "path": ["experiences"],
       "extensions": {
         "code": "invalid_arguments",
@@ -152,8 +151,7 @@ GraphQL 요청이 실패하면 `errors` 필드에 오류 정보가 포함됩니�
             "field": "size",
             "reason": "1 이상이어야 합니다."
           }
-        ],
-        "classification": "BAD_REQUEST"
+        ]
       }
     }
   ],

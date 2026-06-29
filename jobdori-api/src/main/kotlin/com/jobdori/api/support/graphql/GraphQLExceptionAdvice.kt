@@ -79,7 +79,7 @@ class GraphQLExceptionAdvice {
         details: List<ErrorDetail> = emptyList(),
         env: DataFetchingEnvironment,
     ): GraphQLError {
-        return GraphQLError.newError().errorType(toGraphQlErrorType(errorCode)).message("{{TBD}}") // TODO
+        return GraphQLError.newError().errorType(toGraphQlErrorType(errorCode)).message(errorCode.message)
             .extensions(generateExtensions(errorCode, details)).location(env.field.sourceLocation)
             .path(env.executionStepInfo.path).build()
     }

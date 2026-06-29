@@ -12,6 +12,7 @@ data class ApiResponse<T>(
 
     data class ApiError(
         val code: String,
+        val message: String,
         @field:JsonInclude(JsonInclude.Include.NON_EMPTY)
         val details: List<ErrorDetail> = emptyList(),
     )
@@ -27,6 +28,7 @@ data class ApiResponse<T>(
             ok = false,
             error = ApiError(
                 code = error.code,
+                message = error.message,
                 details = details,
             ),
             result = null,

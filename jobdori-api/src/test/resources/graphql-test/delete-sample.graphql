@@ -1,3 +1,0 @@
-mutation($request: SampleDeleteRequest!) {
-    deleteSample(request: $request)
-}

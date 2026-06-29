@@ -1,5 +1,6 @@
 openai:
   api-key: ${OPENAI_API_KEY}
+  base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
 
 google:
   oauth:
@@ -15,6 +16,7 @@ spring.config:
 
 openai:
   api-key: ${OPENAI_API_KEY:dummy}
+  base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
 
 google:
   oauth:

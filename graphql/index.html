@@ -408,17 +408,31 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
   experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
       tags
+      contents {
+        type
+        star {
+          situation
+          task
+          action
+          result
+        }
+        free {
+          content
+        }
+      }
       project {
-        id
+        projectId
         name
         role
       }
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }</code></pre>
 </div>
@@ -441,15 +455,28 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ProjectExperiences($workspaceId: ID!, $projectId: ID!, $cursor: String, $size: Int!) {
-  projectExperiences(workspaceId: $workspaceId, projectId: $projectId, cursor: $cursor, size: $size) {
+  experiences(workspaceId: $workspaceId, projectId: $projectId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
       tags
-      displayOrder
+      contents {
+        type
+        star {
+          situation
+          task
+          action
+          result
+        }
+        free {
+          content
+        }
+      }
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }</code></pre>
 </div>
@@ -475,7 +502,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ExperienceProjects($workspaceId: ID!, $cursor: String, $size: Int!) {
   experienceProjects(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     projects {
-      id
+      projectId
       name
       summary
       role
@@ -484,8 +511,10 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
         endAt
       }
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }</code></pre>
 </div>
@@ -516,12 +545,14 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
   experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
       tags
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }</code></pre>
 </div>
@@ -534,15 +565,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
   experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
       project {
-        id
+        projectId
         name
       }
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }</code></pre>
 </div>
@@ -583,18 +616,20 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tbody>
 </table>
 <div class="paragraph">
-<p>응답의 <code>hasNext`가 `true`이면 `nextCursor</code> 값을 다음 요청의 `cursor`로 전달합니다.</p>
+<p>응답의 <code>cursor.hasNext+`가 `+true+`이면 `+cursor.nextCursor</code> 값을 다음 요청의 `cursor`로 전달합니다.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
   experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
     experiences {
-      id
+      experienceId
       title
     }
-    hasNext
-    nextCursor
+    cursor {
+      hasNext
+      nextCursor
+    }
   }
 }</code></pre>
 </div>
@@ -724,7 +759,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-06-29<br>
+Version 2026-06-30<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

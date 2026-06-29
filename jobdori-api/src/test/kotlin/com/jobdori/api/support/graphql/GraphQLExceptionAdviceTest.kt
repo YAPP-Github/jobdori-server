@@ -1,8 +1,8 @@
 package com.jobdori.api.support.graphql
 
 import com.jobdori.common.error.CommonErrorCode
-import com.jobdori.core.domain.sample.error.SampleErrorCode
-import com.jobdori.core.domain.sample.error.SampleNotFoundException
+import com.jobdori.core.domain.user.error.UserErrorCode
+import com.jobdori.core.domain.user.error.UserNotFoundException
 import graphql.execution.ExecutionStepInfo
 import graphql.execution.ResultPath
 import graphql.language.Field
@@ -95,7 +95,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
     "BaseException에 details가 없으면 code만 extensions에 포함한다" {
         // given
-        val exception = SampleNotFoundException(message = "Sample not found. sampleId=1")
+        val exception = UserNotFoundException(message = "User not found. sampleId=1")
         val env = dataFetchingEnvironment()
 
         // when
@@ -103,11 +103,11 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
         // then
         error.errorType shouldBe ErrorType.NOT_FOUND
-        error.message shouldBe SampleErrorCode.E404_SAMPLE_NOT_FOUND.message
+        error.message shouldBe UserErrorCode.E404_USER_NOT_FOUND.message
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
-            "code" to SampleErrorCode.E404_SAMPLE_NOT_FOUND.code,
+            "code" to UserErrorCode.E404_USER_NOT_FOUND.code,
         )
     }
 

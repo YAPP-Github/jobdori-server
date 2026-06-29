@@ -5,12 +5,14 @@ import com.jobdori.api.support.auth.Authenticated
 import com.jobdori.api.support.auth.UserId
 import com.jobdori.api.support.rest.ApiResponse
 import com.jobdori.core.domain.user.service.UserReader
+import com.jobdori.core.domain.workspace.service.WorkspaceReader
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UserController(
     private val userReader: UserReader,
+    private val workspaceReader: WorkspaceReader,
 ) {
 
     @GetMapping("/v1/users/me")
@@ -19,7 +21,8 @@ class UserController(
         @UserId userId: Long,
     ): ApiResponse<UserResponse> {
         val user = userReader.getUser(userId)
-        return ApiResponse.ok(UserResponse.from(user))
+        val workspaces = workspaceReader.getWorkspaces(ownerUserId = user.id)
+        return ApiResponse.ok(UserResponse.from(user, workspaces))
     }
 
 }

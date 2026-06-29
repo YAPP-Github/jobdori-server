@@ -8,7 +8,6 @@ import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.UserIdentity
 import com.jobdori.core.domain.user.UserIdentityProvider
-import com.jobdori.core.domain.user.service.UserCreator
 import com.jobdori.core.domain.user.service.UserIdentityReader
 import com.jobdori.core.domain.user.service.UserReader
 import org.springframework.stereotype.Service
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service
 @Service
 class AuthService(
     private val googleAuthProcessor: GoogleAuthProcessor,
-    private val userCreator: UserCreator,
+    private val authSignUpService: AuthSignUpService,
     private val userIdentityReader: UserIdentityReader,
     private val userReader: UserReader,
     private val authTokenProvider: AuthTokenProvider,
@@ -48,7 +47,7 @@ class AuthService(
         googleUserInfo: GoogleUserInfo,
     ): User {
         if (userIdentity == null) {
-            return userCreator.create(
+            return authSignUpService.signUp(
                 provider = command.provider,
                 providerUserId = googleUserInfo.id,
                 name = googleUserInfo.name,

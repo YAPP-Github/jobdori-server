@@ -1,0 +1,30 @@
+"""
+기간입니다.
+"""
+type Period {
+    """
+    기간 시작일입니다.
+    """
+    startAt: String
+
+    """
+    기간 종료일입니다.
+    """
+    endAt: String
+}
+
+
+"""
+커서 정보입니다.
+"""
+type Cursor {
+    """
+    다음 페이지를 조회할 때 사용할 커서입니다.
+    """
+    nextCursor: String
+
+    """
+    다음 페이지 존재 여부입니다.
+    """
+    hasNext: Boolean!
+}

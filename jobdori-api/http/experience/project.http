@@ -1,0 +1,35 @@
+@projectId = 1
+
+### Create experience project
+POST {{host}}/v1/workspaces/{{workspaceId}}/experience-projects
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "name": "채용 플랫폼 리뉴얼",
+    "summary": "이력서 작성 경험을 개선하고 지원 전환율을 높인 프로젝트",
+    "period": {
+        "startAt": "2025-01-01",
+        "endAt": "2025-06-30"
+    },
+    "role": "Backend Developer"
+}
+
+### Update experience project
+PATCH {{host}}/v1/workspaces/{{workspaceId}}/experience-projects/{{projectId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "name": "채용 플랫폼 리뉴얼",
+    "summary": "이력서 작성 경험과 지원 전환 퍼널을 개선한 프로젝트",
+    "period": {
+        "startAt": "2025-01-01",
+        "endAt": "2025-07-31"
+    },
+    "role": "Backend Engineer"
+}
+
+### Delete experience project
+DELETE {{host}}/v1/workspaces/{{workspaceId}}/experience-projects/{{projectId}}
+Authorization: Bearer {{accessToken}}

@@ -14,7 +14,7 @@ class WorkspaceReader(
     @Transactional(readOnly = true)
     fun getWorkspace(publicId: String): Workspace {
         return workspaceRepository.findByPublicId(publicId)
-            ?: throw WorkspaceNotFoundException("등록되지 않은 워크스페이스 입니다. [workspacePublicId=$publicId]")
+            ?: throw WorkspaceNotFoundException("등록되지 않은 워크스페이스 입니다. [workspaceId=$publicId]")
     }
 
     @Transactional(readOnly = true)

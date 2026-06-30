@@ -7,7 +7,6 @@ import com.jobdori.api.application.experience.service.ExperienceService
 import com.jobdori.api.support.auth.Authenticated
 import com.jobdori.api.support.auth.UserId
 import com.jobdori.api.support.rest.ApiResponse
-import com.jobdori.core.application.workspace.service.WorkspaceAccessValidationService
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ExperienceController(
-    private val workspaceAccessValidationService: WorkspaceAccessValidationService,
     private val experienceService: ExperienceService,
 ) {
 
@@ -29,12 +27,9 @@ class ExperienceController(
         @PathVariable workspaceId: String,
         @RequestBody @Valid request: CreateExperienceRequest,
     ): ApiResponse<ExperienceResponse> {
-        val workspace = workspaceAccessValidationService.validateAccessible(
-            workspaceId = workspaceId,
-            userId = userId,
-        )
         val response = experienceService.create(
-            workspaceId = workspace.id,
+            userId = userId,
+            workspaceId = workspaceId,
             projectId = request.projectId,
             tags = request.tags,
             title = request.title,
@@ -52,12 +47,9 @@ class ExperienceController(
         @PathVariable experienceId: Long,
         @RequestBody @Valid request: UpdateExperienceRequest,
     ): ApiResponse<ExperienceResponse> {
-        val workspace = workspaceAccessValidationService.validateAccessible(
-            workspaceId = workspaceId,
-            userId = userId,
-        )
         val response = experienceService.modify(
-            workspaceId = workspace.id,
+            userId = userId,
+            workspaceId = workspaceId,
             experienceId = experienceId,
             projectId = request.projectId,
             tags = request.tags,
@@ -75,12 +67,9 @@ class ExperienceController(
         @PathVariable workspaceId: String,
         @PathVariable experienceId: Long,
     ): ApiResponse<Nothing?> {
-        val workspace = workspaceAccessValidationService.validateAccessible(
-            workspaceId = workspaceId,
-            userId = userId,
-        )
         experienceService.remove(
-            workspaceId = workspace.id,
+            userId = userId,
+            workspaceId = workspaceId,
             experienceId = experienceId,
         )
 

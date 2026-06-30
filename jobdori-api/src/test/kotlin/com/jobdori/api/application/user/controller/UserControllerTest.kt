@@ -2,6 +2,8 @@ package com.jobdori.api.application.user.controller
 
 import com.jobdori.api.ApiTest
 import com.jobdori.api.DocsTest
+import com.jobdori.api.application.user.dto.response.UserResponse
+import com.jobdori.api.application.user.service.UserService
 import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
@@ -9,9 +11,7 @@ import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.error.UserErrorCode
-import com.jobdori.core.domain.user.service.UserReader
 import com.jobdori.core.domain.workspace.Workspace
-import com.jobdori.core.domain.workspace.service.WorkspaceReader
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
 import io.mockk.every
@@ -31,24 +31,24 @@ internal class UserControllerTest(
     @MockkBean
     private val accessTokenService: AccessTokenService,
     @MockkBean
-    private val userReader: UserReader,
-    @MockkBean
-    private val workspaceReader: WorkspaceReader,
+    private val userService: UserService,
 ) : StringSpec({
 
     "인증된 사용자 정보를 조회한다" {
         every { accessTokenService.getUserId("access-token") } returns 1L
-        every { userReader.getUser(1L) } returns User(
-            id = 1L,
-            publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
-            name = "홍길동",
-            profileImageUrl = "https://lh3.googleusercontent.com/profile",
-        )
-        every { workspaceReader.getWorkspaces(ownerUserId = 1L) } returns listOf(
-            Workspace(
-                id = 10L,
-                publicId = "8f13f49e-132a-47b7-b704-d7eec18fd44b",
-                ownerUserId = 1L,
+        every { userService.getMyUser(1L) } returns UserResponse.from(
+            user = User(
+                id = 1L,
+                publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+                name = "홍길동",
+                profileImageUrl = "https://lh3.googleusercontent.com/profile",
+            ),
+            workspaces = listOf(
+                Workspace(
+                    id = 10L,
+                    publicId = "8f13f49e-132a-47b7-b704-d7eec18fd44b",
+                    ownerUserId = 1L,
+                ),
             ),
         )
 
@@ -84,8 +84,7 @@ internal class UserControllerTest(
             )
         }
 
-        verify(exactly = 1) { userReader.getUser(1L) }
-        verify(exactly = 1) { workspaceReader.getWorkspaces(ownerUserId = 1L) }
+        verify(exactly = 1) { userService.getMyUser(1L) }
     }
 
     "인증 토큰이 없으면 사용자 정보를 조회할 수 없다" {

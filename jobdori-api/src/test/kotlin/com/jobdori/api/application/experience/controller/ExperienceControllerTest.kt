@@ -17,7 +17,6 @@ import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorCode
 import com.jobdori.common.json.JsonUtils
 import com.jobdori.core.application.auth.AccessTokenService
-import com.jobdori.core.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
@@ -26,7 +25,6 @@ import com.jobdori.core.domain.experience.ExperienceProjectStatus
 import com.jobdori.core.domain.experience.ExperienceStatus
 import com.jobdori.core.domain.experience.error.ExperienceErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
-import com.jobdori.core.domain.workspace.Workspace
 import com.jobdori.core.domain.workspace.error.WorkspaceErrorCode
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
@@ -54,25 +52,14 @@ internal class ExperienceControllerTest(
     @MockkBean
     private val accessTokenService: AccessTokenService,
     @MockkBean
-    private val workspaceAccessValidationService: WorkspaceAccessValidationService,
-    @MockkBean
     private val experienceService: ExperienceService,
 ) : StringSpec({
 
     beforeTest {
         every { accessTokenService.getUserId("access-token") } returns 1L
         every {
-            workspaceAccessValidationService.validateAccessible(
-                workspaceId = "workspace-id",
-                userId = 1L,
-            )
-        } returns Workspace(
-            id = 1L,
-            publicId = "workspace-id",
-            ownerUserId = 1L,
-        )
-        every {
             experienceService.create(
+                userId = any(),
                 workspaceId = any(),
                 projectId = any(),
                 tags = any(),
@@ -83,16 +70,17 @@ internal class ExperienceControllerTest(
             ExperienceResponse.from(
                 experience = experience(
                     id = 100L,
-                    projectId = arg(1),
-                    tags = arg(2),
-                    title = arg(3),
-                    contents = arg(4),
+                    projectId = arg(2),
+                    tags = arg(3),
+                    title = arg(4),
+                    contents = arg(5),
                 ),
-                project = ExperienceProjectResponse.from(project(id = arg(1))),
+                project = ExperienceProjectResponse.from(project(id = arg(2))),
             )
         }
         every {
             experienceService.modify(
+                userId = any(),
                 workspaceId = any(),
                 experienceId = any(),
                 projectId = any(),
@@ -101,19 +89,19 @@ internal class ExperienceControllerTest(
                 contents = any(),
             )
         } answers {
-            val projectId = arg<Long?>(2) ?: 3L
+            val projectId = arg<Long?>(3) ?: 3L
             ExperienceResponse.from(
                 experience = experience(
-                    id = arg(1),
+                    id = arg(2),
                     projectId = projectId,
-                    tags = arg<List<String>?>(3) ?: listOf("브랜드런칭", "퍼포먼스마케팅"),
-                    title = arg<String?>(4) ?: "런칭 캠페인 메시지 A/B 테스트",
-                    contents = arg<ExperienceContents?>(5) ?: ExperienceContents.free(""),
+                    tags = arg<List<String>?>(4) ?: listOf("브랜드런칭", "퍼포먼스마케팅"),
+                    title = arg<String?>(5) ?: "런칭 캠페인 메시지 A/B 테스트",
+                    contents = arg<ExperienceContents?>(6) ?: ExperienceContents.free(""),
                 ),
                 project = ExperienceProjectResponse.from(project(id = projectId)),
             )
         }
-        every { experienceService.remove(any(), any()) } returns Unit
+        every { experienceService.remove(any(), any<String>(), any()) } returns Unit
     }
 
     "경험을 생성한다" {
@@ -168,9 +156,13 @@ internal class ExperienceControllerTest(
 
         verify(exactly = 1) { accessTokenService.getUserId("access-token") }
         verify(exactly = 1) {
-            workspaceAccessValidationService.validateAccessible(
-                workspaceId = "workspace-id",
+            experienceService.create(
                 userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 3L,
+                tags = listOf("브랜드런칭", "퍼포먼스마케팅"),
+                title = "런칭 캠페인 메시지 A/B 테스트",
+                contents = any(),
             )
         }
     }

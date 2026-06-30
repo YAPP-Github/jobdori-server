@@ -7,15 +7,21 @@ import com.jobdori.core.application.auth.oauth.google.client.GoogleOAuthUserClie
 import com.jobdori.core.application.auth.oauth.google.model.GoogleAccessToken
 import com.jobdori.core.application.auth.oauth.google.model.GoogleUserInfo
 import com.jobdori.infrastructure.client.oauth.google.dto.GoogleUserInfoResponse
+import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.body
+import java.time.Duration
 
 @Component
 class GoogleOAuthUserClientImpl : GoogleOAuthUserClient {
 
     private val restClient = RestClient.builder()
+        .requestFactory(SimpleClientHttpRequestFactory().apply {
+            setConnectTimeout(Duration.ofSeconds(3))
+            setReadTimeout(Duration.ofSeconds(5))
+        })
         .baseUrl("https://openidconnect.googleapis.com")
         .build()
 

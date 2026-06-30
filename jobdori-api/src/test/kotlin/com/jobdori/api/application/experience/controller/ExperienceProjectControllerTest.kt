@@ -5,6 +5,8 @@ import com.jobdori.api.DocsTest
 import com.jobdori.api.application.common.dto.request.PeriodRequest
 import com.jobdori.api.application.experience.dto.request.CreateExperienceProjectRequest
 import com.jobdori.api.application.experience.dto.request.UpdateExperienceProjectRequest
+import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
+import com.jobdori.api.application.experience.service.ExperienceProjectService
 import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
@@ -13,14 +15,9 @@ import com.jobdori.common.error.ErrorCode
 import com.jobdori.common.json.JsonUtils
 import com.jobdori.common.model.Period
 import com.jobdori.core.application.auth.AccessTokenService
-import com.jobdori.core.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.core.domain.experience.ExperienceProject
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
 import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
-import com.jobdori.core.domain.experience.service.ExperienceProjectCreator
-import com.jobdori.core.domain.experience.service.ExperienceProjectModifier
-import com.jobdori.core.domain.experience.service.ExperienceProjectRemover
-import com.jobdori.core.domain.workspace.Workspace
 import com.jobdori.core.domain.workspace.error.WorkspaceErrorCode
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
@@ -49,29 +46,14 @@ internal class ExperienceProjectControllerTest(
     @MockkBean
     private val accessTokenService: AccessTokenService,
     @MockkBean
-    private val workspaceAccessValidationService: WorkspaceAccessValidationService,
-    @MockkBean
-    private val experienceProjectCreator: ExperienceProjectCreator,
-    @MockkBean
-    private val experienceProjectModifier: ExperienceProjectModifier,
-    @MockkBean
-    private val experienceProjectRemover: ExperienceProjectRemover,
+    private val experienceProjectService: ExperienceProjectService,
 ) : StringSpec({
 
     beforeTest {
         every { accessTokenService.getUserId("access-token") } returns 1L
         every {
-            workspaceAccessValidationService.validateAccessible(
-                workspaceId = "workspace-id",
-                userId = 1L,
-            )
-        } returns Workspace(
-            id = 1L,
-            publicId = "workspace-id",
-            ownerUserId = 1L,
-        )
-        every {
-            experienceProjectCreator.create(
+            experienceProjectService.create(
+                userId = any(),
                 workspaceId = any(),
                 name = any(),
                 summary = any(),
@@ -79,14 +61,17 @@ internal class ExperienceProjectControllerTest(
                 role = any(),
             )
         } answers {
-            experienceProject(
-                id = 100L,
-                role = arg(4),
-                period = arg(3),
+            ExperienceProjectResponse.from(
+                experienceProject(
+                    id = 100L,
+                    role = arg(5),
+                    period = arg(4),
+                ),
             )
         }
         every {
-            experienceProjectModifier.modify(
+            experienceProjectService.modify(
+                userId = any(),
                 workspaceId = any(),
                 projectId = any(),
                 name = any(),
@@ -95,16 +80,18 @@ internal class ExperienceProjectControllerTest(
                 role = any(),
             )
         } answers {
-            experienceProject(
-                id = arg(1),
-                role = arg<String?>(5) ?: "Growth Marketer",
-                period = arg<Period?>(4) ?: Period(
-                    startAt = LocalDate.of(2025, 1, 1),
-                    endAt = LocalDate.of(2025, 4, 30),
+            ExperienceProjectResponse.from(
+                experienceProject(
+                    id = arg(2),
+                    role = arg<String?>(6) ?: "Growth Marketer",
+                    period = arg<Period?>(5) ?: Period(
+                        startAt = LocalDate.of(2025, 1, 1),
+                        endAt = LocalDate.of(2025, 4, 30),
+                    ),
                 ),
             )
         }
-        every { experienceProjectRemover.remove(any(), any()) } returns Unit
+        every { experienceProjectService.remove(any(), any(), any()) } returns Unit
     }
 
     "경험 프로젝트를 생성한다" {
@@ -146,9 +133,16 @@ internal class ExperienceProjectControllerTest(
 
         verify(exactly = 1) { accessTokenService.getUserId("access-token") }
         verify(exactly = 1) {
-            workspaceAccessValidationService.validateAccessible(
-                workspaceId = "workspace-id",
+            experienceProjectService.create(
                 userId = 1L,
+                workspaceId = "workspace-id",
+                name = "신규 브랜드 런칭 캠페인",
+                summary = "신규 서비스의 초기 인지도 확보 캠페인",
+                period = Period(
+                    startAt = LocalDate.of(2025, 1, 1),
+                    endAt = LocalDate.of(2025, 4, 30),
+                ),
+                role = "Growth Marketer",
             )
         }
     }

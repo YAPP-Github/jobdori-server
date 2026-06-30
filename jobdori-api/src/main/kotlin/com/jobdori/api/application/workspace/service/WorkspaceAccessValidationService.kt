@@ -1,17 +1,15 @@
-package com.jobdori.core.application.workspace.service
+package com.jobdori.api.application.workspace.service
 
 import com.jobdori.core.domain.workspace.Workspace
 import com.jobdori.core.domain.workspace.error.WorkspaceAccessDeniedException
 import com.jobdori.core.domain.workspace.service.WorkspaceReader
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class WorkspaceAccessValidationService(
     private val workspaceReader: WorkspaceReader,
 ) {
 
-    @Transactional(readOnly = true)
     fun validateAccessible(workspaceId: String, userId: Long): Workspace {
         val workspace = workspaceReader.getWorkspace(workspaceId)
 

@@ -1,6 +1,6 @@
-package com.jobdori.core.application.workspace.service
+package com.jobdori.api.application.workspace.service
 
-import com.jobdori.core.domain.workspace.WorkspaceFixture
+import com.jobdori.core.domain.workspace.Workspace
 import com.jobdori.core.domain.workspace.error.WorkspaceAccessDeniedException
 import com.jobdori.core.domain.workspace.service.WorkspaceReader
 import io.kotest.assertions.throwables.shouldThrow
@@ -16,7 +16,7 @@ class WorkspaceAccessValidationServiceTest : StringSpec({
 
     "워크스페이스가 존재하고 소유자이면 워크스페이스를 반환한다" {
         // given
-        val workspace = WorkspaceFixture.create(
+        val workspace = Workspace(
             id = 1L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
             ownerUserId = 10L,
@@ -32,7 +32,7 @@ class WorkspaceAccessValidationServiceTest : StringSpec({
 
     "워크스페이스 소유자가 아니면 예외가 발생한다" {
         // given
-        every { workspaceReader.getWorkspace("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns WorkspaceFixture.create(
+        every { workspaceReader.getWorkspace("3f5c9d79-2255-4b76-bd31-013cd01d49d6") } returns Workspace(
             id = 1L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
             ownerUserId = 20L,

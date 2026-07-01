@@ -14,6 +14,8 @@ pdfbox = "3.0.5"
 # Kotlin
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8" }
+# Test - HTTP mock (Spring Boot 4 BOM이 okhttp를 관리하지 않아 버전 고정)
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version = "4.12.0" }
 
 # Logging
 kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }

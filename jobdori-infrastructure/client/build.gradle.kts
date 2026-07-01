@@ -4,6 +4,8 @@ dependencies {
 
     // RestClient
     implementation(libs.spring.web)
+    // Test
+    testImplementation(libs.mockwebserver)
 }
 
 tasks.bootJar { enabled = false }

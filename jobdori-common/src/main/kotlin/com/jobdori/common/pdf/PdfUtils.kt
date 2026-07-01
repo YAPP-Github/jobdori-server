@@ -34,7 +34,7 @@ object PdfUtils {
     fun extractText(input: ByteArray): String {
         return try {
             Loader.loadPDF(input).use { document ->
-                PDFTextStripper().getText(document)
+                normalizeExtractedText(PDFTextStripper().getText(document))
             }
         } catch (exception: Exception) {
             throw IllegalArgumentException("PDF 텍스트 추출 중 에러가 발생하였습니다.", exception)
@@ -48,11 +48,29 @@ object PdfUtils {
     fun extractText(file: File): String {
         return try {
             Loader.loadPDF(file).use { document ->
-                PDFTextStripper().getText(document)
+                normalizeExtractedText(PDFTextStripper().getText(document))
             }
         } catch (exception: Exception) {
             throw IllegalArgumentException("PDF 텍스트 추출 중 에러가 발생하였습니다. file: (${file.name})", exception)
         }
     }
+
+    private fun normalizeExtractedText(text: String): String {
+        return text
+            .replace("\r\n", "\n")
+            .replace("\r", "\n")
+            .replace(NOISE_CHARACTERS_REGEX, " ")
+            .replace(PRIVATE_USE_CHARACTERS_REGEX, "")
+            .lines()
+            .joinToString("\n") { line ->
+                line
+                    .replace(HORIZONTAL_SPACES_REGEX, " ")
+                    .trimEnd()
+            }
+    }
+
+    private val NOISE_CHARACTERS_REGEX = Regex("[!%#]")
+    private val PRIVATE_USE_CHARACTERS_REGEX = Regex("[\\uE000-\\uF8FF]")
+    private val HORIZONTAL_SPACES_REGEX = Regex("[\\t ]+")
 
 }

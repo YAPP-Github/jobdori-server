@@ -2,6 +2,7 @@
 |===
 | Status Code | Error Code | Message | Description
 
+| 400 | file_size_exceeded | 파일 크기 제한을 초과했습니다. | 업로드한 파일 크기가 허용된 최대 크기를 초과한 경우
 | 400 | invalid_arguments | 입력한 내용을 다시 확인해 주세요. | 필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우
 | 401 | invalid_auth_token | 인증이 필요합니다. | 인증 토큰이 없거나 유효하지 않은 경우
 | 401 | token_expired | 인증이 만료되었습니다. 다시 로그인해 주세요. | 인증 토큰이 만료된 경우 (액세스 토큰 갱신 필요)

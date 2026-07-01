@@ -82,6 +82,17 @@ internal class PdfUtilsTest : StringSpec({
         result.trim() shouldBe "File PDF"
     }
 
+    "extractText는 PDF 추출 노이즈 문자를 공백으로 정규화한다" {
+        // given
+        val input = samplePdfBytes("Walk!Mission!&!Reward!System#Ops", "Startup%Backend%Engineer")
+
+        // when
+        val result = PdfUtils.extractText(input)
+
+        // then
+        result shouldBe "Walk Mission & Reward System Ops\nStartup Backend Engineer\n"
+    }
+
     "extractText는 PDF 파싱 실패 시 IllegalArgumentException을 던진다" {
         // given
         val input = "not pdf".toByteArray()

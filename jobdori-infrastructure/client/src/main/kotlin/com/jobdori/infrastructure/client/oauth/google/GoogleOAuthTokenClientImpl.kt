@@ -10,11 +10,13 @@ import com.jobdori.core.domain.auth.error.InvalidOAuthAuthorizationCodeException
 import com.jobdori.infrastructure.client.oauth.google.dto.GoogleOAuthErrorResponse
 import com.jobdori.infrastructure.client.oauth.google.dto.GoogleTokenResponse
 import org.springframework.http.MediaType
+import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.body
+import java.time.Duration
 
 @Component
 class GoogleOAuthTokenClientImpl(
@@ -22,6 +24,10 @@ class GoogleOAuthTokenClientImpl(
 ) : GoogleOAuthTokenClient {
 
     private val restClient = RestClient.builder()
+        .requestFactory(SimpleClientHttpRequestFactory().apply {
+            setConnectTimeout(Duration.ofSeconds(3))
+            setReadTimeout(Duration.ofSeconds(5))
+        })
         .baseUrl("https://oauth2.googleapis.com")
         .build()
 

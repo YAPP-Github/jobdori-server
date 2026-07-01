@@ -1,0 +1,26 @@
+[.api-table]
+[cols="28%,36%,36%",options="header"]
+|===
+| Code | Message | Description
+
+| invalid_arguments
+| 입력한 내용을 다시 확인해 주세요.
+| 필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우
+
+| invalid_auth_token
+| 인증이 필요합니다.
+| 인증 토큰이 없거나 유효하지 않은 경우
+
+| token_expired
+| 인증이 만료되었습니다. 다시 로그인해 주세요.
+| 인증 토큰이 만료된 경우 (액세스 토큰 갱신 필요)
+
+| internal_error
+| 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.
+| 서버 내부적으로 문제 발생 시
+
+| service_unavailable
+| 현재 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.
+| 현재 서비스를 이용할 수 없는 경우
+
+|===

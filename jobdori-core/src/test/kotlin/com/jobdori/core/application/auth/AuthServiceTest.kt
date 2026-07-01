@@ -10,7 +10,6 @@ import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.UserIdentity
 import com.jobdori.core.domain.user.UserIdentityProvider
-import com.jobdori.core.domain.user.service.UserCreator
 import com.jobdori.core.domain.user.service.UserIdentityReader
 import com.jobdori.core.domain.user.service.UserReader
 import io.kotest.core.spec.style.StringSpec
@@ -24,14 +23,14 @@ import java.time.Instant
 class AuthServiceTest : StringSpec({
 
     val googleAuthProcessor = mockk<GoogleAuthProcessor>()
-    val userCreator = mockk<UserCreator>()
+    val authSignUpService = mockk<AuthSignUpService>()
     val authTokenProvider = mockk<AuthTokenProvider>()
     val userIdentityReader = mockk<UserIdentityReader>()
     val userReader = mockk<UserReader>()
 
     val service = AuthService(
         googleAuthProcessor = googleAuthProcessor,
-        userCreator = userCreator,
+        authSignUpService = authSignUpService,
         userIdentityReader = userIdentityReader,
         userReader = userReader,
         authTokenProvider = authTokenProvider,
@@ -105,7 +104,7 @@ class AuthServiceTest : StringSpec({
             )
         } returns null
         every {
-            userCreator.create(
+            authSignUpService.signUp(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
                 name = "홍길동",
@@ -128,7 +127,7 @@ class AuthServiceTest : StringSpec({
         // then
         verifyOrder {
             userIdentityReader.findIdentity(UserIdentityProvider.GOOGLE, "google-user-id")
-            userCreator.create(
+            authSignUpService.signUp(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
                 name = "홍길동",

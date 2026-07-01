@@ -1,0 +1,13 @@
+[.api-table]
+[cols="28%,28%,44%",options="header"]
+|===
+| Code | GraphQL Classification | Description
+
+| experience_not_found
+| NOT_FOUND
+| 경험을 찾을 수 없는 경우
+
+| experience_project_not_found
+| NOT_FOUND
+| 경험 프로젝트를 찾을 수 없는 경우
+|===

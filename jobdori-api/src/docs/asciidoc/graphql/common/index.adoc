@@ -1,0 +1,172 @@
+[[graphql-common-headers]]
+=== Endpoints
+
+- 도메인은 각 환경 별 도메인 문서 참고 바랍니다.
+
+[.api-table]
+[cols="24%,76%",options="header"]
+|===
+| 구분 | URL
+
+| GraphiQL
+| `/api/graphiql`
+
+| `GraphQL` API
+| `/api/graphql`
+|===
+=== 공통 헤더 정보
+
+GraphQL API도 REST API와 동일하게 HTTP Header로 인증 정보를 전달합니다.
+
+include::./header.adoc[]
+
+==== 설정 방법
+
+GraphiQL에서 인증이 필요한 Query를 테스트할 때는 Headers 영역에 다음 JSON을 입력합니다.
+
+[source,json]
+----
+{
+  "Authorization": "Bearer 4B561A51-7773-4CA4-8E67-851EF4E85145",
+  "Request-Id": "c64af254-d067-475c-b4ce-15a6f0a73f99"
+}
+----
+
+=== GraphQL 응답 모델
+
+GraphQL 응답은 성공 시 `data` 필드를 포함합니다.
+
+[.api-table]
+[cols="30%,15%,13%,42%",options="header"]
+|===
+| Path | Type | Mandatory | Description
+
+| `data`
+| Object
+| Y
+| Query 실행 결과
+|===
+
+[.example-panel]
+====
+.Success Example
+[source,json]
+----
+{
+  "data": {
+    "myUser": {
+      "userId": "1",
+      "name": "홍길동",
+      "profileImageUrl": null
+    }
+  }
+}
+----
+====
+
+GraphQL 요청이 실패하면 `errors` 필드에 오류 정보가 포함됩니다. 클라이언트는 `errors[].extensions.code` 값을 기준으로 오류를 분기합니다.
+
+[.api-table]
+[cols="36%,18%,13%,33%",options="header"]
+|===
+| Path | Type | Mandatory | Description
+
+| `errors`
+| Array<Object>
+| Y
+| GraphQL 오류 목록
+
+| `errors[].message`
+| String
+| Y
+| 오류 메시지
+
+| `errors[].path`
+| Array<String>
+| N
+| 오류가 발생한 GraphQL field path
+
+| `errors[].extensions.code`
+| String
+| Y
+| 애플리케이션 에러 코드
+
+| `errors[].extensions.details`
+| Array<Object>
+| N
+| 필드별 상세 오류 목록
+
+| `errors[].extensions.details[].field`
+| String
+| Y
+| 필드명
+
+| `errors[].extensions.details[].reason`
+| String
+| Y
+| 오류 설명
+
+| `data`
+| Object
+| N
+| 부분 성공 데이터. 전체 실패 시 `null`
+|===
+
+[.example-grid]
+--
+[.example-panel]
+====
+.Unauthorized
+[source,json]
+----
+{
+  "errors": [
+    {
+      "message": "인증이 필요합니다.",
+      "path": ["experiences"],
+      "extensions": {
+        "code": "invalid_auth_token"
+      }
+    }
+  ],
+  "data": null
+}
+----
+====
+
+[.example-panel]
+====
+.Invalid Arguments
+[source,json]
+----
+{
+  "errors": [
+    {
+      "message": "입력한 내용을 다시 확인해 주세요.",
+      "path": ["experiences"],
+      "extensions": {
+        "code": "invalid_arguments",
+        "details": [
+          {
+            "field": "size",
+            "reason": "1 이상이어야 합니다."
+          }
+        ]
+      }
+    }
+  ],
+  "data": null
+}
+----
+====
+--
+
+NOTE: GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려갈 수 있습니다. 클라이언트는 HTTP status만 보지 말고 `errors[].extensions.code`를 기준으로 처리해야 합니다.
+
+[[graphql-common-error-codes]]
+=== 공통 에러 코드
+
+모든 GraphQL Query에서 공통적으로 발생할 수 있는 에러 코드입니다. +
+각 Query별로 발생할 수 있는 에러 정보는 각 Query의 에러 코드 문서를 참고해주세요.
+
+include::./error.adoc[]

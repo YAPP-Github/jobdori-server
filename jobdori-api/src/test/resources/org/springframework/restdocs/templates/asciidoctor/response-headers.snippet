@@ -1,0 +1,13 @@
+[.api-table]
+[cols="22%,14%,44%,20%",options="header"]
+|===
+|Header|Mandatory|Description|Etc
+
+{{#headers}}
+|{{#tableCellContent}}`+{{name}}+`{{/tableCellContent}}
+|{{#tableCellContent}}{{#optional}}false{{/optional}}{{^optional}}`true`{{/optional}}{{/tableCellContent}}
+|{{#tableCellContent}}{{description}}{{/tableCellContent}}
+|{{#tableCellContent}}{{#remarks}}{{remarks}}{{/remarks}}{{/tableCellContent}}
+
+{{/headers}}
+|===

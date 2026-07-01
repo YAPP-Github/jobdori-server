@@ -1,0 +1,10 @@
+{
+  me {
+    userId
+    name
+    profileImageUrl
+    workspaces {
+      workspaceId
+    }
+  }
+}

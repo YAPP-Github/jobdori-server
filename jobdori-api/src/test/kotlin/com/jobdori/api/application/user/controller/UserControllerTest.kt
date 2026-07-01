@@ -2,13 +2,16 @@ package com.jobdori.api.application.user.controller
 
 import com.jobdori.api.ApiTest
 import com.jobdori.api.DocsTest
+import com.jobdori.api.application.user.dto.response.UserResponse
+import com.jobdori.api.application.user.service.UserService
 import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
+import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.error.UserErrorCode
-import com.jobdori.core.domain.user.service.UserReader
+import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
 import io.mockk.every
@@ -28,16 +31,25 @@ internal class UserControllerTest(
     @MockkBean
     private val accessTokenService: AccessTokenService,
     @MockkBean
-    private val userReader: UserReader,
+    private val userService: UserService,
 ) : StringSpec({
 
     "인증된 사용자 정보를 조회한다" {
         every { accessTokenService.getUserId("access-token") } returns 1L
-        every { userReader.getUser(1L) } returns User(
-            id = 1L,
-            publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
-            name = "홍길동",
-            profileImageUrl = "https://lh3.googleusercontent.com/profile",
+        every { userService.getMyUser(1L) } returns UserResponse.from(
+            user = User(
+                id = 1L,
+                publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+                name = "홍길동",
+                profileImageUrl = "https://lh3.googleusercontent.com/profile",
+            ),
+            workspaces = listOf(
+                Workspace(
+                    id = 10L,
+                    publicId = "8f13f49e-132a-47b7-b704-d7eec18fd44b",
+                    ownerUserId = 1L,
+                ),
+            ),
         )
 
         mockMvc.get("/v1/users/me") {
@@ -48,6 +60,7 @@ internal class UserControllerTest(
             jsonPath("$.result.userId") { value("3f5c9d79-2255-4b76-bd31-013cd01d49d6") }
             jsonPath("$.result.name") { value("홍길동") }
             jsonPath("$.result.profileImageUrl") { value("https://lh3.googleusercontent.com/profile") }
+            jsonPath("$.result.workspaces[0].workspaceId") { value("8f13f49e-132a-47b7-b704-d7eec18fd44b") }
         }.andDo {
             handle(
                 document(
@@ -59,7 +72,10 @@ internal class UserControllerTest(
                         fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
                         fieldWithPath("result.userId").type(JsonFieldType.STRING).description("사용자 ID"),
                         fieldWithPath("result.name").type(JsonFieldType.STRING).description("사용자 이름"),
-                        fieldWithPath("result.profileImageUrl").type(JsonFieldType.STRING).description("사용자 프로필 이미지 URL"),
+                        fieldWithPath("result.profileImageUrl").type(JsonFieldType.STRING)
+                            .description("사용자 프로필 이미지 URL").optional(),
+                        fieldWithPath("result.workspaces").type(JsonFieldType.ARRAY).description("사용자가 속한 워크스페이스 목록"),
+                        fieldWithPath("result.workspaces[].workspaceId").type(JsonFieldType.STRING).description("워크스페이스 ID"),
                     ),
                     ErrorCodeSnippet.errorCodeSnippet(
                         UserErrorCode.E404_USER_NOT_FOUND,
@@ -68,7 +84,7 @@ internal class UserControllerTest(
             )
         }
 
-        verify(exactly = 1) { userReader.getUser(1L) }
+        verify(exactly = 1) { userService.getMyUser(1L) }
     }
 
     "인증 토큰이 없으면 사용자 정보를 조회할 수 없다" {
@@ -77,6 +93,7 @@ internal class UserControllerTest(
                 status { isUnauthorized() }
                 jsonPath("$.ok") { value(false) }
                 jsonPath("$.error.code") { value("invalid_auth_token") }
+                jsonPath("$.error.message") { value(CommonErrorCode.E401_INVALID_AUTH_TOKEN.message) }
             }
     }
 

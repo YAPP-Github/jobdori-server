@@ -1,0 +1,9 @@
+"""
+워크스페이스 정보입니다.
+"""
+type Workspace {
+    """
+    워크스페이스를 식별하는 ID입니다.
+    """
+    workspaceId: ID!
+}

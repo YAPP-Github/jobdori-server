@@ -1,5 +1,13 @@
 @authorizationCode = 4/0AdkVLPyEChTaO40FQVcNIgDDxE-RK4Dye-m5pfmh-d_pfkDkkvqicZoXEmuOvo3tC1rvdA
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMmYwMTJhOS0zZDRmLTQwZDktYWM4MC01YjA0MDRlZGI5NmEiLCJqdGkiOiJiZTQyYTlmNC01YTcwLTQzMmYtYjUzZC0yN2M3YTEyODQ0OGIiLCJpYXQiOjE3ODE2MTczNDQsImV4cCI6MTc4MjgyNjk0NCwidG9rZW5fdHlwZSI6IlJFRlJFU0gifQ.kydzx8dZ4pB6kwTdsmU0O0Km3S27bxF2KyUKw6ozkmU
+
+### Issue test token pair
+GET {{host}}/test-tokens
+
+> {%
+    client.global.set("accessToken", response.body.result.accessToken);
+    client.global.set("refreshToken", response.body.result.refreshToken);
+%}
+
 
 ### Login
 POST {{host}}/v1/auth/login
@@ -11,9 +19,18 @@ Content-Type: application/json
     "redirectUri": "http://localhost:3000/google-oauth-code-test-tool.html"
 }
 
+> {%
+    client.global.set("accessToken", response.body.result.accessToken);
+    client.global.set("refreshToken", response.body.result.refreshToken);
+%}
+
 ### Refresh access token
 POST {{host}}/v1/auth/refresh
 Cookie: refresh_token={{refreshToken}}
+
+> {%
+    client.global.set("accessToken", response.body.result.accessToken);
+%}
 
 ### Logout
 POST {{host}}/v1/auth/logout

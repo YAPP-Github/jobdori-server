@@ -15,6 +15,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import tools.jackson.databind.exc.MismatchedInputException
 
@@ -74,6 +75,13 @@ class ApiExceptionAdvice {
                 ),
             )
         )
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MaxUploadSizeExceededException::class)
+    fun handleMaxUploadSizeExceededException(exception: MaxUploadSizeExceededException): ApiResponse<Nothing> {
+        log.warn(exception) { exception.message }
+        return ApiResponse.fail(CommonErrorCode.E400_FILE_SIZE_EXCEEDED)
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

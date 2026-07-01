@@ -3,6 +3,7 @@ package com.jobdori.common.error
 data class InvalidArgumentsException(
     override val message: String,
     override val cause: Throwable? = null,
+    override val details: List<ErrorDetail> = emptyList(),
 ) : BaseException(
     message = message,
     errorCode = CommonErrorCode.E400_INVALID_ARGUMENTS,

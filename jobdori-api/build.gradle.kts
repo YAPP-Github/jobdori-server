@@ -1,7 +1,5 @@
 import java.time.LocalDate
 import java.time.ZoneId
-import org.gradle.api.tasks.bundling.Zip
-import org.gradle.internal.execution.caching.CachingState.enabled
 
 dependencies {
     // Modules
@@ -28,6 +26,7 @@ dependencies {
     // Spring Rest Docs
     testImplementation(libs.spring.boot.restdocs)
     testImplementation(libs.spring.restdocs.mockmvc)
+    testImplementation(libs.pdfbox)
 }
 
 tasks.bootJar {

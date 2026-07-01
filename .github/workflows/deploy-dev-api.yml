@@ -127,3 +127,67 @@ jobs:
           fi
 
           echo "Deployed ${version_label} to ${ENVIRONMENT_NAME}"
+
+      - name: Notify Discord
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${DISCORD_WEBHOOK_URL}" ]]; then
+            echo "::warning::DISCORD_WEBHOOK_URL secret is not configured. Skipping Discord notification."
+            exit 0
+          fi
+
+          case "${JOB_STATUS}" in
+            success)
+              title="Dev API deployment succeeded"
+              color=5763719
+              ;;
+            cancelled)
+              title="Dev API deployment cancelled"
+              color=9807270
+              ;;
+            *)
+              title="Dev API deployment failed"
+              color=15548997
+              ;;
+          esac
+
+          export title color
+
+          payload="$(python3 - <<'PY'
+          import json
+          import os
+
+          payload = {
+              "embeds": [
+                  {
+                      "title": os.environ["title"],
+                      "url": os.environ["RUN_URL"],
+                      "color": int(os.environ["color"]),
+                      "fields": [
+                          {"name": "Environment", "value": "dev", "inline": True},
+                          {"name": "Status", "value": os.environ["JOB_STATUS"], "inline": True},
+                          {"name": "Branch", "value": os.environ["GITHUB_REF_NAME"], "inline": True},
+                          {"name": "Actor", "value": os.environ["GITHUB_ACTOR"], "inline": True},
+                          {"name": "Run", "value": f"[#{os.environ['GITHUB_RUN_NUMBER']}]({os.environ['RUN_URL']})", "inline": True},
+                      ],
+                  }
+              ]
+          }
+          print(json.dumps(payload))
+          PY
+          )"
+
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --header "Content-Type: application/json" \
+            --data "${payload}" \
+            "${DISCORD_WEBHOOK_URL}" \
+            || echo "::warning::Failed to send Discord deployment notification."

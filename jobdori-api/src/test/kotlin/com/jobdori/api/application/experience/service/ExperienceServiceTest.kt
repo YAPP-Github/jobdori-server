@@ -12,6 +12,7 @@ import com.jobdori.core.domain.experience.service.ExperienceModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.experience.service.ExperienceRemover
+import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
@@ -62,9 +63,11 @@ class ExperienceServiceTest : StringSpec({
             experienceCreator.create(
                 workspaceId = 1L,
                 projectId = 3L,
-                tags = listOf("Kotlin"),
-                title = "경험",
-                contents = contents,
+                command = ExperienceCreateCommand(
+                    tags = listOf("Kotlin"),
+                    title = "경험",
+                    contents = contents,
+                ),
             )
         } returns experience
 

@@ -102,7 +102,7 @@ class ApiExceptionAdvice {
     fun handleBaseException(exception: BaseException): ResponseEntity<ApiResponse<Nothing>> {
         log.error(exception) { exception.message }
         return ResponseEntity.status(exception.errorCode.httpStatusCode)
-            .body(ApiResponse.fail(error = exception.errorCode))
+            .body(ApiResponse.fail(error = exception.errorCode, details = exception.details))
     }
 
     @ExceptionHandler(Throwable::class)

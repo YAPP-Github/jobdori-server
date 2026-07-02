@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-class ExperienceImportController(
+class ExperienceImportPdfController(
     private val experiencePdfImportService: ExperiencePdfImportService,
 ) {
 
     @Authenticated
     @PostMapping(
-        "/v1/workspaces/{workspaceId}/experiences/imports/pdf",
-        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+        "/v1/workspaces/{workspaceId}/experiences/import/pdfs",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
     )
-    fun importExperiencesByPdf(
+    fun extractText(
         @RequestPart file: MultipartFile,
         @PathVariable workspaceId: String,
         @UserId userId: Long,

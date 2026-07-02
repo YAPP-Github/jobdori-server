@@ -9,6 +9,7 @@ import com.jobdori.core.domain.experience.service.ExperienceProjectCreator
 import com.jobdori.core.domain.experience.service.ExperienceProjectModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader
 import com.jobdori.core.domain.experience.service.ExperienceProjectRemover
+import com.jobdori.core.domain.experience.service.ExperienceReader
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,6 +19,7 @@ class ExperienceProjectService(
     private val experienceProjectReader: ExperienceProjectReader,
     private val experienceProjectModifier: ExperienceProjectModifier,
     private val experienceProjectRemover: ExperienceProjectRemover,
+    private val experienceReader: ExperienceReader,
 ) {
 
     fun createProject(
@@ -86,6 +88,7 @@ class ExperienceProjectService(
         workspaceId: String,
         cursor: String?,
         size: Int,
+        includeExperienceCount: Boolean = false,
     ): ExperienceProjectListResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -96,10 +99,52 @@ class ExperienceProjectService(
             cursor = cursor,
             size = size,
         )
+        val experienceCounts = if (includeExperienceCount) {
+            experienceReader.getExperienceCountsByProjectIds(
+                workspaceId = workspace.id,
+                projectIds = result.items.map { it.id },
+            )
+        } else {
+            emptyMap()
+        }
 
         return ExperienceProjectListResponse(
-            projects = result.items.map(ExperienceProjectResponse::from),
+            projects = result.items.map { project ->
+                ExperienceProjectResponse.from(
+                    project = project,
+                    experienceCount = experienceCounts[project.id]?.toInt() ?: if (includeExperienceCount) 0 else null,
+                )
+            },
             cursor = CursorResponse(nextCursor = result.nextCursor),
+        )
+    }
+
+    fun getProject(
+        userId: Long,
+        workspaceId: String,
+        projectId: Long,
+        includeExperienceCount: Boolean = false,
+    ): ExperienceProjectResponse {
+        val workspace = workspaceAccessValidationService.validateAccessible(
+            workspaceId = workspaceId,
+            userId = userId,
+        )
+        val project = experienceProjectReader.getProject(
+            workspaceId = workspace.id,
+            projectId = projectId,
+        )
+        val experienceCount = if (includeExperienceCount) {
+            experienceReader.getExperienceCountsByProjectIds(
+                workspaceId = workspace.id,
+                projectIds = listOf(project.id),
+            )[project.id]?.toInt() ?: 0
+        } else {
+            null
+        }
+
+        return ExperienceProjectResponse.from(
+            project = project,
+            experienceCount = experienceCount,
         )
     }
 

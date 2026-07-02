@@ -36,6 +36,38 @@ extend type Query {
     ): Experiences!
 
     """
+    경험 프로젝트 단건을 조회합니다.
+    """
+    experienceProject(
+        """
+        경험 프로젝트가 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        조회할 경험 프로젝트 ID입니다.
+        """
+        id: ID!
+    ): ExperienceProject!
+
+    """
+    경험 프로젝트 목록을 조회합니다.
+    """
+    experienceProjects(
+        """
+        경험 프로젝트 목록을 조회할 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
+        """
+        cursor: String,
+        """
+        한 번에 조회할 경험 프로젝트 개수입니다. (1 이상 30 이하)
+        """
+        size: Int!
+    ): ExperienceProjects!
+
+    """
     경험 목록을 검색합니다.
     """
     searchExperiences(
@@ -56,24 +88,6 @@ extend type Query {
         """
         size: Int!
     ): Experiences!
-
-    """
-    경험 프로젝트 목록을 조회합니다.
-    """
-    experienceProjects(
-        """
-        경험 프로젝트 목록을 조회할 워크스페이스 ID입니다.
-        """
-        workspaceId: ID!,
-        """
-        다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
-        """
-        cursor: String,
-        """
-        한 번에 조회할 경험 프로젝트 개수입니다. (1 이상 30 이하)
-        """
-        size: Int!
-    ): ExperienceProjects!
 }
 
 """
@@ -219,6 +233,11 @@ type ExperienceProject {
     경험 프로젝트에서 맡은 역할입니다.
     """
     role: String
+
+    """
+    경험 프로젝트에 연결된 활성 경험 개수입니다.
+    """
+    experienceCount: Int
 }
 
 """

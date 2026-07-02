@@ -18,8 +18,8 @@ import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
-import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.request.RequestDocumentation.partWithName
+import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.request.RequestDocumentation.requestParts
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.multipart
@@ -51,7 +51,7 @@ internal class ExperienceImportControllerTest(
             )
         } returns Unit
 
-        mockMvc.multipart("/v1/workspaces/{workspaceId}/experiences/imports/pdf", "workspace-id") {
+        mockMvc.multipart("/v1/workspaces/{workspaceId}/experience-imports", "workspace-id") {
             header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
             file(file)
         }.andExpect {

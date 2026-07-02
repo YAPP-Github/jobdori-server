@@ -36,6 +36,7 @@ class GoogleOAuthUserClientImpl : GoogleOAuthUserClient {
 
             GoogleUserInfo(
                 id = response.sub,
+                email = response.email,
                 name = response.name,
                 profileImageUrl = response.picture,
             )

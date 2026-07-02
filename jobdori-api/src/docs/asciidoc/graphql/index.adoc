@@ -41,6 +41,7 @@ GraphiQL에서는 아래 GraphQL 문서를 그대로 입력해서 실행할 수 
 query MyUser {
   myUser {
     userId
+    email
     name
     profileImageUrl
   }

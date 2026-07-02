@@ -40,6 +40,7 @@ internal class UserControllerTest(
             user = User(
                 id = 1L,
                 publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+                email = "hong@example.com",
                 name = "홍길동",
                 profileImageUrl = "https://lh3.googleusercontent.com/profile",
             ),
@@ -58,6 +59,7 @@ internal class UserControllerTest(
             status { isOk() }
             jsonPath("$.ok") { value(true) }
             jsonPath("$.result.userId") { value("3f5c9d79-2255-4b76-bd31-013cd01d49d6") }
+            jsonPath("$.result.email") { value("hong@example.com") }
             jsonPath("$.result.name") { value("홍길동") }
             jsonPath("$.result.profileImageUrl") { value("https://lh3.googleusercontent.com/profile") }
             jsonPath("$.result.workspaces[0].workspaceId") { value("8f13f49e-132a-47b7-b704-d7eec18fd44b") }
@@ -71,6 +73,7 @@ internal class UserControllerTest(
                     responseFields(
                         fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
                         fieldWithPath("result.userId").type(JsonFieldType.STRING).description("사용자 ID"),
+                        fieldWithPath("result.email").type(JsonFieldType.STRING).description("사용자 이메일"),
                         fieldWithPath("result.name").type(JsonFieldType.STRING).description("사용자 이름"),
                         fieldWithPath("result.profileImageUrl").type(JsonFieldType.STRING)
                             .description("사용자 프로필 이미지 URL").optional(),

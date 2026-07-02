@@ -50,6 +50,7 @@ class AuthService(
             return authSignUpService.signUp(
                 provider = command.provider,
                 providerUserId = googleUserInfo.id,
+                email = googleUserInfo.email,
                 name = googleUserInfo.name,
                 profileImageUrl = googleUserInfo.profileImageUrl,
             )

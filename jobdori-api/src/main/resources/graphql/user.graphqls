@@ -15,6 +15,11 @@ type User {
     userId: ID!
 
     """
+    사용자 이메일입니다.
+    """
+    email: String!
+
+    """
     사용자 이름입니다.
     """
     name: String!

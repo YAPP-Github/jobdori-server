@@ -25,8 +25,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.multipart
 
 @DocsTest
-@ApiTest(ExperienceImportController::class)
-internal class ExperienceImportControllerTest(
+@ApiTest(ExperienceImportPdfController::class)
+internal class ExperienceImportPdfControllerTest(
     private val mockMvc: MockMvc,
     @MockkBean
     private val accessTokenService: AccessTokenService,
@@ -51,7 +51,7 @@ internal class ExperienceImportControllerTest(
             )
         } returns Unit
 
-        mockMvc.multipart("/v1/workspaces/{workspaceId}/experiences/imports/pdf", "workspace-id") {
+        mockMvc.multipart("/v1/workspaces/{workspaceId}/experiences/import/pdfs", "workspace-id") {
             header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
             file(file)
         }.andExpect {

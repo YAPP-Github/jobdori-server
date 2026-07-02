@@ -5,6 +5,7 @@ import com.jobdori.api.application.experience.dto.request.ListExperienceRequest
 import com.jobdori.api.application.experience.dto.request.SearchExperienceRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceListResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectListResponse
+import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.experience.service.ExperienceProjectService
 import com.jobdori.api.application.experience.service.ExperienceService
@@ -70,11 +71,26 @@ class ExperienceQueryResolver(
         @UserId userId: Long,
         @Argument workspaceId: String,
         @Arguments cursorRequest: ListExperienceProjectRequest,
+        env: DataFetchingEnvironment,
     ): ExperienceProjectListResponse = experienceProjectService.getProjects(
         userId = userId,
         workspaceId = workspaceId,
         cursor = cursorRequest.cursor,
         size = cursorRequest.size,
+        includeExperienceCount = env.selectionSet.contains("projects/experienceCount"),
+    )
+
+    @QueryMapping
+    fun experienceProject(
+        @UserId userId: Long,
+        @Argument workspaceId: String,
+        @Argument id: Long,
+        env: DataFetchingEnvironment,
+    ): ExperienceProjectResponse = experienceProjectService.getProject(
+        userId = userId,
+        workspaceId = workspaceId,
+        projectId = id,
+        includeExperienceCount = env.selectionSet.contains("experienceCount"),
     )
 
 }

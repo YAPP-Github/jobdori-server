@@ -9,15 +9,17 @@ data class ExperienceProjectResponse(
     val summary: String,
     val period: PeriodResponse?,
     val role: String?,
+    val experienceCount: Int? = null,
 ) {
 
     companion object {
-        fun from(project: ExperienceProject) = ExperienceProjectResponse(
+        fun from(project: ExperienceProject, experienceCount: Int? = null) = ExperienceProjectResponse(
             projectId = project.id,
             name = project.name,
             summary = project.summary,
             period = project.period?.let(PeriodResponse::from),
             role = project.role,
+            experienceCount = experienceCount,
         )
     }
 

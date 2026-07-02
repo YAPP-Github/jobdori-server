@@ -94,4 +94,19 @@ class ExperienceRepositoryImpl(
         return entities.map { it.toDomain() }
     }
 
+    override fun countByWorkspaceIdAndProjectIds(
+        workspaceId: Long,
+        projectIds: Collection<Long>,
+    ): Map<Long, Long> {
+        if (projectIds.isEmpty()) {
+            return emptyMap()
+        }
+
+        return jpaRepository.countByWorkspaceIdAndProjectIdsAndStatus(
+            workspaceId = workspaceId,
+            projectIds = projectIds,
+            status = ExperienceStatus.ACTIVE,
+        ).associate { it.projectId to it.experienceCount }
+    }
+
 }

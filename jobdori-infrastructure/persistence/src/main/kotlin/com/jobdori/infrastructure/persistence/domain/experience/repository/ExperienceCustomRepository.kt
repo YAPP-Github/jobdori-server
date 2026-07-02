@@ -2,6 +2,7 @@ package com.jobdori.infrastructure.persistence.domain.experience.repository
 
 import com.jobdori.core.domain.experience.ExperienceStatus
 import com.jobdori.infrastructure.persistence.domain.experience.entity.ExperienceEntity
+import com.jobdori.infrastructure.persistence.domain.experience.entity.ExperienceProjectCount
 import org.springframework.data.domain.Pageable
 
 interface ExperienceCustomRepository {
@@ -13,5 +14,11 @@ interface ExperienceCustomRepository {
         cursorId: Long?,
         pageable: Pageable,
     ): List<ExperienceEntity>
+
+    fun countByWorkspaceIdAndProjectIdsAndStatus(
+        workspaceId: Long,
+        projectIds: Collection<Long>,
+        status: ExperienceStatus,
+    ): List<ExperienceProjectCount>
 
 }

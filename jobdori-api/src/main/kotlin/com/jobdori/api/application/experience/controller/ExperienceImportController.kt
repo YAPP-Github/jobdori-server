@@ -26,7 +26,7 @@ class ExperienceImportController(
         @PathVariable workspaceId: String,
         @UserId userId: Long,
     ): ApiResponse<Nothing?> {
-        experiencePdfImportService.importExperiencesByPdf(file = file, workspaceId = workspaceId, userId = userId)
+        experiencePdfImportService.importExperiences(file = file, workspaceId = workspaceId, userId = userId)
         return ApiResponse.OK
     }
 

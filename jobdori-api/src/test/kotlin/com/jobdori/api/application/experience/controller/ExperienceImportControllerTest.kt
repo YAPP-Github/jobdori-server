@@ -44,7 +44,7 @@ internal class ExperienceImportControllerTest(
 
         every { accessTokenService.getUserId("access-token") } returns 1L
         every {
-            experiencePdfImportService.importExperiencesByPdf(
+            experiencePdfImportService.importExperiences(
                 file = any(),
                 workspaceId = "workspace-id",
                 userId = 1L,
@@ -79,7 +79,7 @@ internal class ExperienceImportControllerTest(
 
         verify(exactly = 1) { accessTokenService.getUserId("access-token") }
         verify(exactly = 1) {
-            experiencePdfImportService.importExperiencesByPdf(
+            experiencePdfImportService.importExperiences(
                 file = file,
                 workspaceId = "workspace-id",
                 userId = 1L,

@@ -148,6 +148,69 @@ class ExperienceServiceTest : StringSpec({
         verify(exactly = 0) { experienceProjectReader.getProjects(any(), any<Collection<Long>>()) }
     }
 
+    "경험 검색에서 project를 요청하면 프로젝트를 한 번에 조회해 응답에 연결한다" {
+        // given
+        val experiences = listOf(
+            experience(id = 2L, projectId = 3L, title = "Kotlin 성능 개선"),
+            experience(id = 1L, projectId = 4L, title = "검색 API 개선"),
+        )
+        every {
+            experienceReader.searchExperiences(
+                workspaceId = 1L,
+                keyword = "개선",
+                cursor = null,
+                size = 2,
+            )
+        } returns SliceResult(items = experiences, nextCursor = "1")
+        every {
+            experienceProjectReader.getProjects(
+                workspaceId = 1L,
+                projectIds = listOf(3L, 4L),
+            )
+        } returns mapOf(3L to project(id = 3L), 4L to project(id = 4L))
+
+        // when
+        val response = experienceService.searchExperiences(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            keyword = "개선",
+            cursor = null,
+            size = 2,
+            includeProjects = true,
+        )
+
+        // then
+        response.experiences.map { it.project?.projectId } shouldContainExactly listOf(3L, 4L)
+        response.cursor.nextCursor shouldBe "1"
+    }
+
+    "경험 검색에서 project를 요청하지 않으면 프로젝트를 조회하지 않는다" {
+        // given
+        val experiences = listOf(experience(id = 1L, projectId = 3L, title = "Kotlin 성능 개선"))
+        every {
+            experienceReader.searchExperiences(
+                workspaceId = 1L,
+                keyword = "Kotlin",
+                cursor = null,
+                size = 2,
+            )
+        } returns SliceResult(items = experiences, nextCursor = null)
+
+        // when
+        val response = experienceService.searchExperiences(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            keyword = "Kotlin",
+            cursor = null,
+            size = 2,
+            includeProjects = false,
+        )
+
+        // then
+        response.experiences.single().project.shouldBeNull()
+        verify(exactly = 0) { experienceProjectReader.getProjects(any(), any<Collection<Long>>()) }
+    }
+
     "경험 수정 시 변경 대상 프로젝트를 먼저 확인하고 수정 결과의 프로젝트를 응답에 연결한다" {
         // given
         val contents = ExperienceContents.free("수정 내용")

@@ -135,6 +135,56 @@ internal class ExperienceQueryResolverTest(
         verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any()) }
     }
 
+    "검색어가 포함된 경험 목록을 조회한다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        every {
+            experienceService.searchExperiences(
+                1L,
+                "workspace-id",
+                "kotlin",
+                null,
+                2,
+                false,
+            )
+        } returns ExperienceListResponse(
+            experiences = listOf(
+                ExperienceResponse.from(
+                    experience = graphQlExperience(
+                        id = 5L,
+                        contents = ExperienceContents.free("kotlin coroutine 개선"),
+                        tags = emptyList(),
+                    ),
+                    project = null,
+                ),
+            ),
+            cursor = CursorResponse(nextCursor = null),
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                {
+                  searchExperiences(workspaceId: "workspace-id", keyword: "kotlin", cursor: null, size: 2) {
+                    experiences {
+                      experienceId
+                      title
+                    }
+                    cursor {
+                      nextCursor
+                      hasNext
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("searchExperiences.experiences[0].experienceId").entity<String>().isEqualTo("5")
+            .path("searchExperiences.experiences[0].title").entity<String>().isEqualTo("경험 5")
+            .path("searchExperiences.cursor.hasNext").entity<Boolean>().isEqualTo(false)
+
+        verify(exactly = 1) { experienceService.searchExperiences(1L, "workspace-id", "kotlin", null, 2, false) }
+    }
+
 })
 
 private fun authenticatedTester(graphQlTester: GraphQlTester): GraphQlTester {

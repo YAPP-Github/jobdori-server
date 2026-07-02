@@ -17,4 +17,11 @@ interface ExperienceRepository {
         size: Int,
     ): List<Experience>
 
+    fun searchAllByWorkspaceId(
+        workspaceId: Long,
+        keyword: String,
+        cursorId: Long?,
+        size: Int,
+    ): List<Experience>
+
 }

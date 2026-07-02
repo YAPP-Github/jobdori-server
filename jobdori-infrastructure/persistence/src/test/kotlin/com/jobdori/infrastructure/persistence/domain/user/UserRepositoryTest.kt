@@ -29,6 +29,7 @@ class UserRepositoryTest(
         userRepository.findById(entity.id) shouldBe User(
             id = entity.id,
             publicId = entity.publicId,
+            email = entity.email,
             name = entity.name,
             profileImageUrl = entity.profileImageUrl,
         )
@@ -42,6 +43,7 @@ class UserRepositoryTest(
         userRepository.findByPublicId(entity.publicId) shouldBe User(
             id = entity.id,
             publicId = entity.publicId,
+            email = entity.email,
             name = entity.name,
             profileImageUrl = entity.profileImageUrl,
         )
@@ -62,6 +64,7 @@ class UserRepositoryTest(
         users[0].also {
             it.id shouldBe saved.id
             it.publicId shouldBe saved.publicId
+            it.email shouldBe saved.email
             it.name shouldBe saved.name
             it.profileImageUrl shouldBe saved.profileImageUrl
         }

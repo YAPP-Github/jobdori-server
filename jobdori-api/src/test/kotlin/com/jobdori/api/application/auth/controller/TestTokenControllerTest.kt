@@ -53,6 +53,7 @@ internal class TestTokenControllerTest(
         val user = User(
             id = 1L,
             publicId = "00000000-0000-0000-0000-000000000001",
+            email = "test@jobdori.com",
             name = "잡도리",
             profileImageUrl = null,
         )
@@ -63,6 +64,7 @@ internal class TestTokenControllerTest(
                 User(
                     id = 0L,
                     publicId = user.publicId,
+                    email = "test@jobdori.com",
                     name = "잡도리",
                     profileImageUrl = null,
                 ),
@@ -135,6 +137,7 @@ internal class TestTokenControllerTest(
                 User(
                     id = 0L,
                     publicId = user.publicId,
+                    email = "test@jobdori.com",
                     name = "잡도리",
                     profileImageUrl = null,
                 ),

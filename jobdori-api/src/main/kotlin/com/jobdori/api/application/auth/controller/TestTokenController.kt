@@ -39,11 +39,14 @@ class TestTokenController(
         )
 
         val user = userRepository.findByPublicId(TEST_USER_PUBLIC_ID)
-            ?: userRepository.save(User.newInstance(
-                publicId = TEST_USER_PUBLIC_ID,
-                name = "잡도리",
-                profileImageUrl = null
-            ))
+            ?: userRepository.save(
+                User.newInstance(
+                    publicId = TEST_USER_PUBLIC_ID,
+                    email = TEST_USER_EMAIL,
+                    name = "잡도리",
+                    profileImageUrl = null,
+                ),
+            )
         ensureTestWorkspace(user)
 
         val tokenPair = authTokenProvider.issue(
@@ -81,6 +84,7 @@ class TestTokenController(
 
     private companion object {
         const val TEST_USER_PUBLIC_ID = "00000000-0000-0000-0000-000000000001"
+        const val TEST_USER_EMAIL = "test@jobdori.com"
     }
 
 }

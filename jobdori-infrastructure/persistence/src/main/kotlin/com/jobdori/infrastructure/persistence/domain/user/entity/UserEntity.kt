@@ -15,6 +15,9 @@ class UserEntity(
     @Column(nullable = false, length = 50, unique = true, updatable = false)
     var publicId: String,
 
+    @Column(nullable = false, length = 320)
+    var email: String,
+
     @Column(nullable = false, length = 50)
     var name: String,
 
@@ -29,6 +32,7 @@ class UserEntity(
     fun toUser() = User(
         id = id,
         publicId = publicId,
+        email = email,
         name = name,
         profileImageUrl = profileImageUrl,
     )
@@ -36,6 +40,7 @@ class UserEntity(
     companion object {
         fun from(user: User) = UserEntity(
             publicId = user.publicId,
+            email = user.email,
             name = user.name,
             profileImageUrl = user.profileImageUrl,
         ).also { it.id = user.id }

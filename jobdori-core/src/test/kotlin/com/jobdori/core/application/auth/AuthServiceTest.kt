@@ -58,6 +58,7 @@ class AuthServiceTest : StringSpec({
         // given
         every { googleAuthProcessor.getGoogleUserInfo(command) } returns GoogleUserInfo(
             id = "google-user-id",
+            email = "hong@example.com",
             name = "홍길동",
             profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
@@ -75,6 +76,7 @@ class AuthServiceTest : StringSpec({
         every { userReader.getUser(10L) } returns User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            email = "hong@example.com",
             name = "홍길동",
             profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
@@ -94,6 +96,7 @@ class AuthServiceTest : StringSpec({
         // given
         every { googleAuthProcessor.getGoogleUserInfo(command) } returns GoogleUserInfo(
             id = "google-user-id",
+            email = "hong@example.com",
             name = "홍길동",
             profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
@@ -107,12 +110,14 @@ class AuthServiceTest : StringSpec({
             authSignUpService.signUp(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
+                email = "hong@example.com",
                 name = "홍길동",
                 profileImageUrl = "https://lh3.googleusercontent.com/profile",
             )
         } returns User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            email = "hong@example.com",
             name = "홍길동",
             profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
@@ -130,6 +135,7 @@ class AuthServiceTest : StringSpec({
             authSignUpService.signUp(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
+                email = "hong@example.com",
                 name = "홍길동",
                 profileImageUrl = "https://lh3.googleusercontent.com/profile",
             )

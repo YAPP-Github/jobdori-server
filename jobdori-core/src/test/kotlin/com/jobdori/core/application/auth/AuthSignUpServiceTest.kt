@@ -25,6 +25,7 @@ class AuthSignUpServiceTest : StringSpec({
         val user = User(
             id = 10L,
             publicId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            email = "hong@example.com",
             name = "홍길동",
             profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
@@ -32,6 +33,7 @@ class AuthSignUpServiceTest : StringSpec({
             userCreator.create(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
+                email = "hong@example.com",
                 name = "홍길동",
                 profileImageUrl = "https://lh3.googleusercontent.com/profile",
             )
@@ -46,6 +48,7 @@ class AuthSignUpServiceTest : StringSpec({
         service.signUp(
             provider = UserIdentityProvider.GOOGLE,
             providerUserId = "google-user-id",
+            email = "hong@example.com",
             name = "홍길동",
             profileImageUrl = "https://lh3.googleusercontent.com/profile",
         ) shouldBe user
@@ -54,6 +57,7 @@ class AuthSignUpServiceTest : StringSpec({
             userCreator.create(
                 provider = UserIdentityProvider.GOOGLE,
                 providerUserId = "google-user-id",
+                email = "hong@example.com",
                 name = "홍길동",
                 profileImageUrl = "https://lh3.googleusercontent.com/profile",
             )

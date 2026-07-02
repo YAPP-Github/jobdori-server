@@ -36,6 +36,7 @@ internal class UserQueryResolverTest(
         every { userService.getMe(1L) } returns UserGraphQlResponse(
             id = 1L,
             userId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            email = "hong@example.com",
             name = "홍길동",
             profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
@@ -47,6 +48,7 @@ internal class UserQueryResolverTest(
             .documentName("me")
             .execute()
             .path("me.userId").entity<String>().isEqualTo("3f5c9d79-2255-4b76-bd31-013cd01d49d6")
+            .path("me.email").entity<String>().isEqualTo("hong@example.com")
             .path("me.name").entity<String>().isEqualTo("홍길동")
             .path("me.profileImageUrl").entity<String>().isEqualTo("https://lh3.googleusercontent.com/profile")
             .path("me.workspaces[0].workspaceId").entity<String>()
@@ -62,6 +64,7 @@ internal class UserQueryResolverTest(
         every { userService.getMe(1L) } returns UserGraphQlResponse(
             id = 1L,
             userId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
+            email = "hong@example.com",
             name = "홍길동",
             profileImageUrl = "https://lh3.googleusercontent.com/profile",
         )
@@ -70,6 +73,7 @@ internal class UserQueryResolverTest(
             .documentName("me-without-workspaces")
             .execute()
             .path("me.userId").entity<String>().isEqualTo("3f5c9d79-2255-4b76-bd31-013cd01d49d6")
+            .path("me.email").entity<String>().isEqualTo("hong@example.com")
             .path("me.name").entity<String>().isEqualTo("홍길동")
             .path("me.profileImageUrl").entity<String>().isEqualTo("https://lh3.googleusercontent.com/profile")
 

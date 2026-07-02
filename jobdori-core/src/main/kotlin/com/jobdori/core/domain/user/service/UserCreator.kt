@@ -19,6 +19,7 @@ class UserCreator(
     fun create(
         provider: UserIdentityProvider,
         providerUserId: String,
+        email: String,
         name: String,
         profileImageUrl: String?,
     ): User {
@@ -32,6 +33,7 @@ class UserCreator(
 
         val user = userRepository.save(
             User.newInstance(
+                email = email,
                 name = name,
                 profileImageUrl = profileImageUrl,
             ),

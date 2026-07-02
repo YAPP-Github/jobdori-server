@@ -1,6 +1,7 @@
 {
   me {
     userId
+    email
     name
     profileImageUrl
   }

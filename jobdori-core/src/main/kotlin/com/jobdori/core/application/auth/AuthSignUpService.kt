@@ -17,12 +17,14 @@ class AuthSignUpService(
     fun signUp(
         provider: UserIdentityProvider,
         providerUserId: String,
+        email: String,
         name: String,
         profileImageUrl: String?,
     ): User {
         val user = userCreator.create(
             provider = provider,
             providerUserId = providerUserId,
+            email = email,
             name = name,
             profileImageUrl = profileImageUrl,
         )

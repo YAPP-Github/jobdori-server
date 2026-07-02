@@ -24,7 +24,7 @@ class ExperiencePdfImportService(
     private val pdfValidationService: PdfValidationService,
 ) {
 
-    fun importExperiencesByPdf(file: MultipartFile, workspaceId: String, userId: Long) {
+    fun importExperiences(file: MultipartFile, workspaceId: String, userId: Long) {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,

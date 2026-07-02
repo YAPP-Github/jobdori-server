@@ -53,7 +53,7 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
         every { pdfValidationService.validate(file = file, userId = 1L) } returns pdfBytes
         every { experienceImportService.saveAll(workspaceId = 1L, groups = any()) } returns Unit
 
-        service.importExperiencesByPdf(file = file, workspaceId = "workspace-id", userId = 1L)
+        service.importExperiences(file = file, workspaceId = "workspace-id", userId = 1L)
 
         verify(exactly = 1) { pdfValidationService.validate(file = file, userId = 1L) }
         verify(exactly = 1) { experienceImportService.saveAll(workspaceId = 1L, groups = any()) }
@@ -72,7 +72,7 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
         } throws InvalidArgumentsException(message = "유효한 PDF 파일을 첨부해 주세요")
 
         val exception = shouldThrow<InvalidArgumentsException> {
-            service.importExperiencesByPdf(file = file, workspaceId = "workspace-id", userId = 1L)
+            service.importExperiences(file = file, workspaceId = "workspace-id", userId = 1L)
         }
 
         exception.message shouldBe "유효한 PDF 파일을 첨부해 주세요"

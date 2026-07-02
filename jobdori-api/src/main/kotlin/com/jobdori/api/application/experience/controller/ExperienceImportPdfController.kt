@@ -18,15 +18,15 @@ class ExperienceImportPdfController(
 
     @Authenticated
     @PostMapping(
-        "/v1/workspaces/{workspaceId}/experiences/import/pdfs",
+        "/v1/workspaces/{workspaceId}/experience-imports",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
     )
-    fun extractText(
+    fun importExperiences(
         @RequestPart file: MultipartFile,
         @PathVariable workspaceId: String,
         @UserId userId: Long,
     ): ApiResponse<Nothing?> {
-        experiencePdfImportService.importExperiencesByPdf(file = file, workspaceId = workspaceId, userId = userId)
+        experiencePdfImportService.importExperiences(file = file, workspaceId = workspaceId, userId = userId)
         return ApiResponse.OK
     }
 

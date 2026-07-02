@@ -1,7 +1,6 @@
 package com.jobdori.api.application.experience.service
 
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
-import com.jobdori.common.error.ErrorDetail
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.model.Period
 import com.jobdori.common.pdf.PdfUtils
@@ -9,15 +8,20 @@ import com.jobdori.core.application.experience.command.ImportedExperienceCommand
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
 import com.jobdori.core.domain.experience.service.command.ExperienceProjectCreateCommand
-import com.jobdori.core.application.experience.ExperienceImportService as CoreExperienceImportService
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
+import com.jobdori.core.application.experience.ExperienceImportService as CoreExperienceImportService
 
 @Service
 class ExperiencePdfImportService(
     private val experienceImportService: CoreExperienceImportService,
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
+    private val pdfValidationService: PdfValidationService,
 ) {
 
     fun importExperiencesByPdf(file: MultipartFile, workspaceId: String, userId: Long) {
@@ -26,19 +30,13 @@ class ExperiencePdfImportService(
             userId = userId,
         )
 
-        val pdfBytes = file.bytes
+        val pdfBytes = pdfValidationService.validate(file = file, userId = userId)
         val text = try {
-            PdfUtils.extractText(pdfBytes)
+            extractTextWithTimeout(pdfBytes)
         } catch (exception: IllegalArgumentException) {
             throw InvalidArgumentsException(
-                message = "유효한 PDF 파일을 첨부해 주세요 [userId=${userId},originFileName=${file.originalFilename}]",
+                message = "PDF 파일 추출에 실패하였습니다 [userId=${userId},originFileName=${file.originalFilename}]",
                 cause = exception,
-                details = listOf(
-                    ErrorDetail(
-                        field = "file",
-                        reason = "유효한 PDF 파일이 아닙니다"
-                    )
-                )
             )
         }
 
@@ -49,6 +47,25 @@ class ExperiencePdfImportService(
             workspaceId = workspace.id,
             groups = commandGroups,
         )
+    }
+
+    private fun extractTextWithTimeout(pdfBytes: ByteArray): String {
+        return try {
+            CompletableFuture.supplyAsync {
+                PdfUtils.extractText(
+                    input = pdfBytes,
+                    maxPageCount = MAX_PDF_PAGE_COUNT,
+                    maxTextLength = MAX_PDF_TEXT_LENGTH,
+                )
+            }.get(PDF_PARSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        } catch (exception: ExecutionException) {
+            throw IllegalArgumentException("PDF 텍스트 추출 중 에러가 발생하였습니다.", exception.cause ?: exception)
+        } catch (exception: TimeoutException) {
+            throw IllegalArgumentException("PDF 텍스트 추출 시간이 제한을 초과했습니다.", exception)
+        } catch (exception: InterruptedException) {
+            Thread.currentThread().interrupt()
+            throw IllegalArgumentException("PDF 텍스트 추출이 중단되었습니다.", exception)
+        }
     }
 
     private fun mockImportedExperienceCommandGroups(): List<ImportedExperienceCommandGroup> {
@@ -78,8 +95,7 @@ class ExperiencePdfImportService(
                         tags = listOf("REST Docs", "Kotest", "SpringMockK"),
                         title = "문서화 테스트 기반 API 검증",
                         contents = ExperienceContents.free(
-                            "REST Docs 테스트를 작성해 요청/응답 스펙과 인증 헤더를 함께 검증했습니다. " +
-                                "컨트롤러 변경 시 문서와 테스트가 같이 깨지도록 만들어 API 계약을 유지했습니다.",
+                            "REST Docs 테스트를 작성해 요청/응답 스펙과 인증 헤더를 함께 검증했습니다. " + "컨트롤러 변경 시 문서와 테스트가 같이 깨지도록 만들어 API 계약을 유지했습니다.",
                         ),
                     ),
                 ),
@@ -109,8 +125,7 @@ class ExperiencePdfImportService(
                         tags = listOf("Kotlin", "Command", "Domain"),
                         title = "추출 결과를 생성 커맨드로 정규화",
                         contents = ExperienceContents.free(
-                            "AI 추출 결과를 바로 저장 모델에 묶지 않고 ExperienceProjectCreateCommand와 " +
-                                "ExperienceCreateCommand 조합으로 정규화해 저장 계층과 추출 계층의 결합을 줄였습니다.",
+                            "AI 추출 결과를 바로 저장 모델에 묶지 않고 ExperienceProjectCreateCommand와 " + "ExperienceCreateCommand 조합으로 정규화해 저장 계층과 추출 계층의 결합을 줄였습니다.",
                         ),
                     ),
                     ExperienceCreateCommand(
@@ -153,6 +168,12 @@ class ExperiencePdfImportService(
                 ),
             ),
         )
+    }
+
+    companion object {
+        private const val MAX_PDF_PAGE_COUNT = 50
+        private const val MAX_PDF_TEXT_LENGTH = 200_000
+        private const val PDF_PARSE_TIMEOUT_SECONDS = 10L
     }
 
 }

@@ -18,10 +18,10 @@ class ExperienceImportController(
 
     @Authenticated
     @PostMapping(
-        "/v1/workspaces/{workspaceId}/experiences/imports/pdf",
-        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+        "/v1/workspaces/{workspaceId}/experience-imports",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
     )
-    fun importExperiencesByPdf(
+    fun importExperiences(
         @RequestPart file: MultipartFile,
         @PathVariable workspaceId: String,
         @UserId userId: Long,

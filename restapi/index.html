@@ -626,8 +626,8 @@ Host: dev.api.jobdori.o-r.kr
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=110441574; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=111649374; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=110441364; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=111649164; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 135
 
@@ -792,7 +792,7 @@ Cookie: refresh_token=refresh-token</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=new-access-token; Path=/; Max-Age=110441574; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=new-access-token; Path=/; Max-Age=110441364; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 76
 
@@ -2836,7 +2836,7 @@ Content-Length: 17
 <div class="exampleblock endpoint-card">
 <div class="content">
 <div class="paragraph endpoint-line">
-<p><span class="http-method">POST</span> <span class="endpoint-path">/api/v1/workspaces/{workspaceId}/experiences/import/pdfs</span></p>
+<p><span class="http-method">POST</span> <span class="endpoint-path">/api/v1/workspaces/{workspaceId}/experience-imports</span></p>
 </div>
 </div>
 </div>
@@ -2895,7 +2895,7 @@ Content-Length: 17
 <h5 id="_examples_12">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/workspaces/workspace-id/experiences/import/pdfs HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/workspaces/workspace-id/experience-imports HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
 Authorization: Bearer access-token
 Host: dev.api.jobdori.o-r.kr
@@ -2921,7 +2921,7 @@ Content-Length: 17
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://dev.api.jobdori.o-r.kr/api/v1/workspaces/workspace-id/experiences/import/pdfs' -i -X POST \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://dev.api.jobdori.o-r.kr/api/v1/workspaces/workspace-id/experience-imports' -i -X POST \
     -H 'Content-Type: multipart/form-data;charset=UTF-8' \
     -H 'Authorization: Bearer access-token' \
     -F 'file=@resume.pdf;type=application/pdf'</code></pre>
@@ -3067,8 +3067,8 @@ Host: dev.api.jobdori.o-r.kr</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=110439773; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=111649373; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=110439563; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=111649163; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 110
 

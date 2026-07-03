@@ -11,6 +11,7 @@ import com.jobdori.api.application.experience.service.ExperienceProjectService
 import com.jobdori.api.application.experience.service.ExperienceService
 import com.jobdori.api.support.auth.UserId
 import graphql.schema.DataFetchingEnvironment
+import jakarta.validation.Valid
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.Arguments
 import org.springframework.graphql.data.method.annotation.QueryMapping
@@ -55,7 +56,7 @@ class ExperienceQueryResolver(
     fun searchExperiences(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Arguments request: SearchExperienceRequest,
+        @Valid @Arguments request: SearchExperienceRequest,
         env: DataFetchingEnvironment,
     ): ExperienceListResponse = experienceService.searchExperiences(
         userId = userId,

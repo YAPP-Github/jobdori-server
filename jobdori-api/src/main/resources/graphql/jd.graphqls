@@ -1,0 +1,131 @@
+extend type Query {
+    """
+    등록된 JD 단건을 조회합니다.
+    """
+    jd(
+        """
+        조회할 JD의 ID입니다.
+        """
+        id: ID!
+    ): Jd
+
+    """
+    인증된 사용자의 JD 목록을 조회합니다.
+    """
+    jds: [Jd!]!
+}
+
+extend type Mutation {
+    """
+    JD를 URL(크롤) 또는 붙여넣기(본문)로 등록합니다.
+    본문에 여러 공고가 있으면 저장하지 않고 후보 목록(candidates)을 반환하고,
+    하나면 7필드(기업명·포지션·소개·업무·필요/우대경험·전형절차)를 추출·저장해 jd를 반환합니다.
+    크롤/추출 실패 시 오류를 반환합니다.
+    """
+    registerJd(
+        """
+        등록 입력입니다. sourceUrl(크롤) 또는 body(붙여넣기) 중 정확히 하나를 채웁니다.
+        """
+        request: JdRegisterRequest!
+    ): JdRegisterResult!
+}
+
+"""
+JD 등록 입력입니다. sourceUrl 또는 body 중 정확히 하나여야 합니다.
+"""
+input JdRegisterRequest {
+    """
+    등록할 JD 공고의 URL입니다. (크롤 등록)
+    """
+    sourceUrl: String
+
+    """
+    붙여넣은 JD 본문입니다. (붙여넣기 등록)
+    """
+    body: String
+}
+
+"""
+JD 등록 결과입니다. 단일 공고면 jd, 다중 공고면 candidates가 채워집니다.
+"""
+type JdRegisterResult {
+    """
+    등록된 JD입니다. (단일 공고)
+    """
+    jd: Jd
+
+    """
+    저장되지 않은 공고 후보 목록입니다. (다중 공고 — 하나를 골라 body로 재등록)
+    """
+    candidates: [JdCandidate!]
+}
+
+"""
+다중 공고 후보입니다.
+"""
+type JdCandidate {
+    """
+    공고 제목입니다. (없으면 빈 문자열)
+    """
+    title: String!
+
+    """
+    공고 원문 본문입니다. (재등록 시 body로 전달)
+    """
+    body: String!
+}
+
+"""
+JD입니다.
+"""
+type Jd {
+    """
+    JD를 식별하는 ID입니다.
+    """
+    jdId: ID!
+
+    """
+    원본 공고 URL입니다. (붙여넣기 등록이면 null)
+    """
+    sourceUrl: String
+
+    """
+    기업 이름입니다. (추출 실패 시 빈 문자열)
+    """
+    companyName: String!
+
+    """
+    포지션 이름입니다. (추출 실패 시 빈 문자열)
+    """
+    positionTitle: String!
+
+    """
+    기업/팀 소개입니다.
+    """
+    companyIntro: String!
+
+    """
+    업무 내용 목록입니다.
+    """
+    responsibilities: [String!]!
+
+    """
+    필요 경험(자격요건) 목록입니다.
+    """
+    requiredExperiences: [String!]!
+
+    """
+    우대 경험 목록입니다.
+    """
+    preferredExperiences: [String!]!
+
+    """
+    전형 절차 목록입니다.
+    """
+    hiringProcess: [String!]!
+
+    """
+    등록일입니다. (ISO-8601)
+    """
+    createdAt: String
+}

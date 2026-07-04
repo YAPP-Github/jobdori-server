@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>프롬프트 테스트 · Jobdori</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 820px; margin: 0 auto; padding: 24px; line-height: 1.5; }
+    h1 { font-size: 1.3rem; margin: 0 0 4px; }
+    .hint { color: #888; font-size: .85rem; margin: 0 0 20px; }
+    label { display: block; font-weight: 600; font-size: .85rem; margin: 14px 0 4px; }
+    select, textarea, input[type=file] { width: 100%; padding: 8px; font: inherit; border: 1px solid #999; border-radius: 6px; background: transparent; color: inherit; }
+    textarea { min-height: 120px; resize: vertical; }
+    .row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .row > div { flex: 1; min-width: 180px; }
+    button { margin-top: 18px; padding: 10px 20px; font: inherit; font-weight: 600; border: 0; border-radius: 6px; background: #2d6cdf; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: default; }
+    .meta { font-size: .8rem; color: #888; margin: 16px 0 6px; }
+    pre { background: #00000010; padding: 14px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin: 0; }
+    .err { color: #d33; }
+    .ok { color: #2a2; }
+  </style>
+</head>
+<body>
+  <h1>프롬프트 테스트 API</h1>
+  <p class="hint">DB의 프롬프트를 골라 실제 OpenAI 호출 결과를 확인합니다. (POST /api/test-prompts · local/dev/test 전용)</p>
+
+  <label>프롬프트 타입</label>
+  <select id="promptType">
+    <option value="JD_MULTI_POSTING_SPLIT">JD_MULTI_POSTING_SPLIT (다중 공고 분할 · structured)</option>
+    <option value="JD_META_EXTRACTION" selected>JD_META_EXTRACTION (기업·직무·정제본문·태그 · structured)</option>
+    <option value="JD_APPLICATION_STRATEGY">JD_APPLICATION_STRATEGY (지원 전략 · text)</option>
+    <option value="EXPERIENCE_STAR_EXTRACTION">EXPERIENCE_STAR_EXTRACTION (경험 STAR · structured)</option>
+    <option value="RESUME_EXPERIENCE_REWRITE">RESUME_EXPERIENCE_REWRITE (이력서 문장 · text)</option>
+  </select>
+
+  <label>userPrompt (입력 텍스트)</label>
+  <textarea id="userPrompt" placeholder="JD 본문, 경험 원문 등 입력...">네이버 백엔드 개발자 채용. 자격요건: Kotlin/Java 3년, Spring. 우대: Kafka, AWS.</textarea>
+
+  <div class="row">
+    <div>
+      <label>PDF 첨부 (선택 · 텍스트 추출)</label>
+      <input type="file" id="files" accept="application/pdf" multiple>
+    </div>
+    <div>
+      <label>structured 오버라이드 (선택)</label>
+      <select id="structured">
+        <option value="">자동 (jsonSchema 유무)</option>
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="send">호출</button>
+
+  <div class="meta" id="meta"></div>
+  <pre id="out">결과가 여기에 표시됩니다.</pre>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    $('send').addEventListener('click', async () => {
+      const btn = $('send'), out = $('out'), meta = $('meta');
+      const fd = new FormData();
+      fd.append('promptType', $('promptType').value);
+      const up = $('userPrompt').value.trim();
+      if (up) fd.append('userPrompt', up);
+      for (const f of $('files').files) fd.append('files', f);
+      if ($('structured').value) fd.append('structured', $('structured').value);
+
+      btn.disabled = true; meta.textContent = '호출 중...'; out.textContent = '';
+      const t0 = performance.now();
+      try {
+        // 같은 오리진(/api/prompt-test.html)에서 서빙되므로 상대경로로 호출
+        const res = await fetch('test-prompts', { method: 'POST', body: fd });
+        const json = await res.json();
+        const ms = Math.round(performance.now() - t0);
+        const r = json.result;
+        if (json.ok && r) {
+          meta.innerHTML = `<span class="ok">HTTP ${res.status}</span> · ${ms}ms · model=${r.model} · structured=${r.structured}`;
+          const output = typeof r.output === 'string' ? r.output : JSON.stringify(r.output, null, 2);
+          out.textContent = '[output]\n' + output + '\n\n[systemPrompt]\n' + r.systemPrompt;
+        } else {
+          meta.innerHTML = `<span class="err">HTTP ${res.status} · 실패</span> · ${ms}ms`;
+          out.textContent = JSON.stringify(json, null, 2);
+        }
+      } catch (e) {
+        meta.innerHTML = `<span class="err">요청 실패</span>`;
+        out.textContent = String(e) + '\n\n서비스가 :20000 에 떠 있는지, 이 페이지를 http://localhost:20000/api/prompt-test.html 로 열었는지 확인하세요.';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

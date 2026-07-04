@@ -1,0 +1,51 @@
+-- 로컬/테스트/개발(H2, create-drop) 전용 시드. 프롬프트 테스트(POST /api/test-prompts)용.
+-- prod(postgres)에서는 spring.sql.init.mode 기본값(embedded)이라 실행되지 않는다.
+-- JD 프롬프트/스키마/파라미터는 docs/plans/2026-06-24-jd-and-common-ai/02-jd-feature.md §프롬프트&JSON Schema 시드를 따른다.
+--   (문서 INSERT 템플릿은 UUID PK지만, 현재 엔티티는 Long IDENTITY라 여기선 Long id로 시드.)
+-- 경험 도메인(EXPERIENCE_STAR_EXTRACTION·RESUME_EXPERIENCE_REWRITE) 시드는 로컬 테스트 편의를 위해 함께 둔다.
+-- 구조화 스키마는 OpenAI strict(json_schema, strict=true): 모든 object에 additionalProperties=false, required 전체 명시.
+
+INSERT INTO ai_models_v1 (id, name, vendor, created_at, updated_at)
+VALUES (1, 'gpt-4o-mini', 'OPEN_AI', now(), now());
+
+-- 용도별 파라미터 (문서 §시드)
+INSERT INTO ai_model_configs_v1 (id, ai_model_id, name, description, parameters, created_at, updated_at)
+VALUES
+  (1, 1, 'jd_multi_posting_split', 'JD 다중 공고 분할',           '{"temperature":0.0}' FORMAT JSON, now(), now()),
+  (2, 1, 'jd_meta',                'JD 메타(기업명·직무명·정제본문·태그) 추출', '{"temperature":0.2}' FORMAT JSON, now(), now()),
+  (3, 1, 'jd_application_strategy','JD 지원 전략 생성',           '{"temperature":0.6}' FORMAT JSON, now(), now()),
+  (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}' FORMAT JSON, now(), now()),
+  (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}'  FORMAT JSON, now(), now());
+
+-- 1) JD 다중 공고 분할 (문서 JD-B.6)
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (1, 1, 'JD_MULTI_POSTING_SPLIT',
+'당신은 채용 공고 텍스트 파서다. 입력 텍스트에 서로 다른 채용 공고가 여러 개 들어 있으면 각각을 분리해 배열로 반환한다. 각 항목은 그 공고의 제목(title, 없으면 빈 문자열)과 본문(body, 원문 그대로 — 다른 공고 내용을 섞지 마라)으로 구성한다. 공고가 하나뿐이면 원문 전체를 담은 항목 1개만 반환한다. 목차·네비·푸터 등 공고가 아닌 텍스트는 무시한다. 원문에 없는 내용을 지어내지 마라. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["postings"],"properties":{"postings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["title","body"],"properties":{"title":{"type":"string"},"body":{"type":"string"}}}}}}',
+null, now(), now());
+
+-- 2) JD 메타 추출 (문서 Task 5.2)
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (2, 2, 'JD_META_EXTRACTION',
+'당신은 채용 공고(JD) 분석 전문가다. 입력된 JD 본문에서 다음을 추출한다. (1) 기업명(companyName)·직무명(jobTitle) — 본문에 명시가 없으면 빈 문자열(지어내지 마라). (2) 정제 본문(cleanedBody) — 메뉴·광고·중복·깨진 줄 등 비본문 노이즈를 제거하고 문단과 항목(자격요건·우대사항 등)을 읽기 좋게 정리한 본문. 내용을 요약하거나 지어내지 말고 원문 정보를 보존하되 형식만 다듬는다. (3) 역량 태그(tags) — JD가 요구하는 핵심 역량 키워드 3~5개 배열. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["companyName","jobTitle","cleanedBody","tags"],"properties":{"companyName":{"type":"string"},"jobTitle":{"type":"string"},"cleanedBody":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}}}',
+null, now(), now());
+
+-- 3) JD 지원 전략 생성 (문서 Task 6.3) — generateText, json_schema NULL
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (3, 3, 'JD_APPLICATION_STRATEGY',
+'당신은 취업 코치다. 입력된 JD 본문을 분석해 지원자에게 지원 전략을 대화체로 조언한다. 반드시 아래 3단계 흐름의 자연스러운 한국어 문단(2~4문장)으로만 답하라(불릿·머리말·JSON 금지). (1) "JD는 ~한 업무를 ~하게 하는 사람을 원해요"처럼 JD가 원하는 핵심 인재상을 요약한다. (2) "그러니까 ~한 경험을 ~하게 표현해서"처럼 지원자가 어떤 경험을 어떻게 강조하면 좋을지 조언한다. (3) "지원하는 게 좋겠어요"처럼 격려로 마무리한다. JD에 없는 사실을 지어내지 마라.',
+null, null, now(), now());
+
+-- 4) 경험 STAR 재구조화 (동료 담당 — 로컬 테스트 편의)
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (4, 4, 'EXPERIENCE_STAR_EXTRACTION',
+'당신은 채용 도메인 경력 분석가다. 입력된 이력/경력 원문을 분석해 (1) 인적사항·학력·자격/어학 섹션을 분류하고, (2) 경력/프로젝트는 각 경험 단위로 STAR(Situation·Task·Action·Result)로 재구조화하며, (3) 회사·기간·맥락 단서로 경험 카드를 프로젝트 단위로 그룹핑한다. 원문에 없는 사실을 절대 지어내지 마라. 불확실하면 해당 필드를 빈 문자열로 둔다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","properties":{"personalInfo":{"type":"object","properties":{"name":{"type":"string"},"phone":{"type":"string"},"email":{"type":"string"}},"required":["name","phone","email"],"additionalProperties":false},"education":{"type":"array","items":{"type":"object","properties":{"school":{"type":"string"},"degree":{"type":"string"},"period":{"type":"string"}},"required":["school","degree","period"],"additionalProperties":false}},"certifications":{"type":"array","items":{"type":"string"}},"projects":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"period":{"type":"string"},"role":{"type":"string"},"company":{"type":"string"},"experiences":{"type":"array","items":{"type":"object","properties":{"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"},"competencyTags":{"type":"array","items":{"type":"string"}}},"required":["situation","task","action","result","competencyTags"],"additionalProperties":false}}},"required":["name","period","role","company","experiences"],"additionalProperties":false}}},"required":["personalInfo","education","certifications","projects"],"additionalProperties":false}',
+null, now(), now());
+
+-- 5) 경험 문장 자동 작성 (동료 담당 — 로컬 테스트 편의) — text 모드. {tone}은 호출 시 치환.
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (5, 5, 'RESUME_EXPERIENCE_REWRITE',
+'당신은 IT/직무 이력서 작성 코치다. 입력으로 받은 원본 STAR(상황·과제·행동·결과)와 대상 JD의 핵심 역량을 바탕으로, 해당 경험을 이력서에 들어갈 한 문단으로 재작성한다. 규칙: (1) STAR에 담긴 사실(수치·기술·역할·결과)은 절대 바꾸거나 지어내지 마라. (2) JD 핵심 역량과 맞닿는 부분을 앞쪽에 배치하고 관련 키워드를 자연스럽게 녹인다. (3) 성과는 가능한 한 정량적으로 표현하되, 원본에 없는 수치는 만들어내지 마라. (4) 1인칭 주어·군더더기를 빼고 행동 동사 중심의 간결한 문체로 쓴다. (5) 길이와 톤은 다음 지시를 따른다: {tone}. 출력은 부가 설명 없이 재작성된 문단 텍스트만 반환한다.',
+null, null, now(), now());

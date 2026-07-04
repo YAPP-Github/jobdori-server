@@ -5,12 +5,13 @@ import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import org.springframework.http.client.SimpleClientHttpRequestFactory
+import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClient
+import java.net.http.HttpClient
 import java.time.Duration
 
 /**
@@ -27,10 +28,13 @@ class OpenAiHttpClient(
         .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer ${properties.apiKey}")
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "gzip, deflate")
-        .requestFactory(SimpleClientHttpRequestFactory().apply {
-            setConnectTimeout(Duration.ofSeconds(5))
-            setReadTimeout(Duration.ofSeconds(60))   // 추출 응답 김 대비
-        })
+        // JDK HttpClient 기반. SimpleClientHttpRequestFactory(HttpURLConnection)는 401 등 에러 본문을
+        // 삼켜([no body]) OpenAI 에러 JSON이 유실되므로 사용하지 않는다.
+        .requestFactory(
+            JdkClientHttpRequestFactory(
+                HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build(),
+            ).apply { setReadTimeout(Duration.ofSeconds(60)) },  // 추출 응답 김 대비
+        )
         .build()
 
     fun <T : Any> post(uri: String, body: Any, responseType: Class<T>): T =

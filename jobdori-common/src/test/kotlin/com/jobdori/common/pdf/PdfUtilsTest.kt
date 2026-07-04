@@ -14,6 +14,11 @@ import java.nio.file.Files
 
 internal class PdfUtilsTest : StringSpec({
 
+    "hasPdfSignature는 PDF 시그니처 여부를 반환한다" {
+        PdfUtils.hasPdfSignature("%PDF-1.4 sample".toByteArray()) shouldBe true
+        PdfUtils.hasPdfSignature("not pdf".toByteArray()) shouldBe false
+    }
+
     "getPageCount는 ByteArray 타입 PDF의 페이지 수를 반환한다" {
         // given
         val input = samplePdfBytes("First Page", "Second Page")
@@ -82,6 +87,17 @@ internal class PdfUtilsTest : StringSpec({
         result.trim() shouldBe "File PDF"
     }
 
+    "extractText는 PDF 추출 노이즈 문자를 공백으로 정규화한다" {
+        // given
+        val input = samplePdfBytes("Walk!Mission!&!Reward!System#Ops", "Startup%Backend%Engineer")
+
+        // when
+        val result = PdfUtils.extractText(input)
+
+        // then
+        result shouldBe "Walk Mission & Reward System Ops\nStartup Backend Engineer\n"
+    }
+
     "extractText는 PDF 파싱 실패 시 IllegalArgumentException을 던진다" {
         // given
         val input = "not pdf".toByteArray()
@@ -93,6 +109,32 @@ internal class PdfUtilsTest : StringSpec({
 
         // then
         exception.message shouldBe "PDF 텍스트 추출 중 에러가 발생하였습니다."
+    }
+
+    "extractText는 제한 페이지 수를 초과하면 IllegalArgumentException을 던진다" {
+        // given
+        val input = samplePdfBytes("First Page", "Second Page")
+
+        // when
+        val exception = shouldThrow<IllegalArgumentException> {
+            PdfUtils.extractText(input = input, maxPageCount = 1, maxTextLength = 1_000)
+        }
+
+        // then
+        exception.message shouldBe "PDF 페이지 수가 제한을 초과했습니다."
+    }
+
+    "extractText는 제한 텍스트 길이를 초과하면 IllegalArgumentException을 던진다" {
+        // given
+        val input = samplePdfBytes("Hello Jobdori")
+
+        // when
+        val exception = shouldThrow<IllegalArgumentException> {
+            PdfUtils.extractText(input = input, maxPageCount = 10, maxTextLength = 5)
+        }
+
+        // then
+        exception.message shouldBe "PDF 추출 텍스트 길이가 제한을 초과했습니다."
     }
 
     "getPageCount는 PDF 파싱 실패 시 IllegalArgumentException을 던진다" {

@@ -9,6 +9,10 @@ server:
   port: ${SERVER_PORT:20000}
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
   mvc:
     servlet:
       path: /api
@@ -38,5 +42,4 @@ sentry:
   enabled: false
   logging:
     enabled: false
-
 

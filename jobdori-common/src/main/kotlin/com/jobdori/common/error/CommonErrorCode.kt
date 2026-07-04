@@ -13,6 +13,12 @@ enum class CommonErrorCode(
         message = "입력한 내용을 다시 확인해 주세요.",
         description = "필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우",
     ),
+    E400_FILE_SIZE_EXCEEDED(
+        httpStatusCode = 400,
+        code = "file_size_exceeded",
+        message = "파일 크기 제한을 초과했습니다.",
+        description = "업로드한 파일 크기가 허용된 최대 크기를 초과한 경우",
+    ),
     E401_INVALID_AUTH_TOKEN(
         httpStatusCode = 401,
         code = "invalid_auth_token",

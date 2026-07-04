@@ -10,6 +10,7 @@ import com.jobdori.core.domain.experience.service.ExperienceProjectModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader
 import com.jobdori.core.domain.experience.service.ExperienceProjectRemover
 import com.jobdori.core.domain.experience.service.ExperienceReader
+import com.jobdori.core.domain.experience.service.command.ExperienceProjectCreateCommand
 import org.springframework.stereotype.Service
 
 @Service
@@ -36,10 +37,12 @@ class ExperienceProjectService(
         )
         val project = experienceProjectCreator.create(
             workspaceId = workspace.id,
-            name = name,
-            summary = summary,
-            period = period,
-            role = role,
+            command = ExperienceProjectCreateCommand(
+                name = name,
+                summary = summary,
+                period = period,
+                role = role,
+            ),
         )
 
         return ExperienceProjectResponse.from(project)

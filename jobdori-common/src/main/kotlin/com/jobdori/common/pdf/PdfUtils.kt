@@ -7,6 +7,10 @@ import java.io.InputStream
 
 object PdfUtils {
 
+    fun hasPdfSignature(input: ByteArray): Boolean {
+        return input.size >= PDF_SIGNATURE.size && PDF_SIGNATURE.indices.all { index -> input[index] == PDF_SIGNATURE[index] }
+    }
+
     fun getPageCount(input: ByteArray): Int {
         return try {
             Loader.loadPDF(input).use { document ->
@@ -34,8 +38,35 @@ object PdfUtils {
     fun extractText(input: ByteArray): String {
         return try {
             Loader.loadPDF(input).use { document ->
-                PDFTextStripper().getText(document)
+                normalizeExtractedText(PDFTextStripper().getText(document))
             }
+        } catch (exception: Exception) {
+            throw IllegalArgumentException("PDF 텍스트 추출 중 에러가 발생하였습니다.", exception)
+        }
+    }
+
+    fun extractText(
+        input: ByteArray,
+        maxPageCount: Int,
+        maxTextLength: Int,
+    ): String {
+        return try {
+            Loader.loadPDF(input).use { document ->
+                if (document.isEncrypted) {
+                    throw IllegalArgumentException("암호화된 PDF는 지원하지 않습니다.")
+                }
+                if (document.numberOfPages > maxPageCount) {
+                    throw IllegalArgumentException("PDF 페이지 수가 제한을 초과했습니다.")
+                }
+
+                val text = normalizeExtractedText(PDFTextStripper().getText(document))
+                if (text.length > maxTextLength) {
+                    throw IllegalArgumentException("PDF 추출 텍스트 길이가 제한을 초과했습니다.")
+                }
+                text
+            }
+        } catch (exception: IllegalArgumentException) {
+            throw exception
         } catch (exception: Exception) {
             throw IllegalArgumentException("PDF 텍스트 추출 중 에러가 발생하였습니다.", exception)
         }
@@ -48,11 +79,30 @@ object PdfUtils {
     fun extractText(file: File): String {
         return try {
             Loader.loadPDF(file).use { document ->
-                PDFTextStripper().getText(document)
+                normalizeExtractedText(PDFTextStripper().getText(document))
             }
         } catch (exception: Exception) {
             throw IllegalArgumentException("PDF 텍스트 추출 중 에러가 발생하였습니다. file: (${file.name})", exception)
         }
     }
+
+    private fun normalizeExtractedText(text: String): String {
+        return text
+            .replace("\r\n", "\n")
+            .replace("\r", "\n")
+            .replace(NOISE_CHARACTERS_REGEX, " ")
+            .replace(PRIVATE_USE_CHARACTERS_REGEX, "")
+            .lines()
+            .joinToString("\n") { line ->
+                line
+                    .replace(HORIZONTAL_SPACES_REGEX, " ")
+                    .trimEnd()
+            }
+    }
+
+    private val NOISE_CHARACTERS_REGEX = Regex("[!%#]")
+    private val PRIVATE_USE_CHARACTERS_REGEX = Regex("[\\uE000-\\uF8FF]")
+    private val HORIZONTAL_SPACES_REGEX = Regex("[\\t ]+")
+    private val PDF_SIGNATURE = "%PDF-".toByteArray(Charsets.US_ASCII)
 
 }

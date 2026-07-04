@@ -11,6 +11,7 @@ import com.jobdori.core.domain.experience.service.ExperienceModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.experience.service.ExperienceRemover
+import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
 import org.springframework.stereotype.Service
 
 @Service
@@ -40,9 +41,11 @@ class ExperienceService(
         val experience = experienceCreator.create(
             workspaceId = workspace.id,
             projectId = projectId,
-            tags = tags,
-            title = title,
-            contents = contents,
+            command = ExperienceCreateCommand(
+                tags = tags,
+                title = title,
+                contents = contents,
+            ),
         )
 
         return ExperienceResponse.from(

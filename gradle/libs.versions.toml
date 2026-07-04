@@ -9,6 +9,7 @@ kotlin-jdsl = "3.9.0"
 asciidoctor = "4.0.5"
 sentry = "8.46.0"
 pdfbox = "3.0.5"
+jsoup = "1.18.1"
 
 [libraries]
 # Kotlin
@@ -49,6 +50,9 @@ commons-lang3 = { module = "org.apache.commons:commons-lang3" }
 
 # PDF
 pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
+
+# JD 정적 크롤러(HTML 파싱)
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 # Kotlin JDSL
 kotlin-jdsl-jpql-dsl = { module = "com.linecorp.kotlin-jdsl:jpql-dsl", version.ref = "kotlin-jdsl" }

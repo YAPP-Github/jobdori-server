@@ -31,13 +31,19 @@ class ExperienceCustomRepositoryImpl(
                     and(
                         path(ExperienceEntity::workspaceId).eq(workspaceId),
                         path(ExperienceEntity::status).eq(status),
-                        lower(path(ExperienceEntity::title)).like(keywordPattern, '\\'),
+                        or(
+                            lower(path(ExperienceEntity::title)).like(keywordPattern, '\\'),
+                            lower(path(ExperienceEntity::contents)).like(keywordPattern, '\\'),
+                        ),
                     )
                 } else {
                     and(
                         path(ExperienceEntity::workspaceId).eq(workspaceId),
                         path(ExperienceEntity::status).eq(status),
-                        lower(path(ExperienceEntity::title)).like(keywordPattern, '\\'),
+                        or(
+                            lower(path(ExperienceEntity::title)).like(keywordPattern, '\\'),
+                            lower(path(ExperienceEntity::contents)).like(keywordPattern, '\\'),
+                        ),
                         path(ExperienceEntity::id).lessThan(cursorId),
                     )
                 },

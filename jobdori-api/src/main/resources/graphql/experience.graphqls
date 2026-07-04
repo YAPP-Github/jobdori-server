@@ -76,7 +76,7 @@ extend type Query {
         """
         workspaceId: ID!,
         """
-        경험 제목에 포함된 검색어입니다.
+        경험 제목 또는 내용에 포함된 검색어입니다.
         """
         keyword: String!,
         """

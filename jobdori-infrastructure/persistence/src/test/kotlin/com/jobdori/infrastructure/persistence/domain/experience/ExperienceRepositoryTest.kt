@@ -198,7 +198,7 @@ class ExperienceRepositoryTest(
         ) shouldContainExactly emptyMap()
     }
 
-    "워크스페이스 내 제목에 검색어가 포함된 활성 경험을 조회한다" {
+    "워크스페이스 내 제목 또는 내용에 검색어가 포함된 활성 경험을 조회한다" {
         // given
         val titleMatched = experienceJpaRepository.save(
             ExperienceEntity.from(
@@ -209,7 +209,7 @@ class ExperienceRepositoryTest(
                 ),
             ),
         )
-        experienceJpaRepository.save(
+        val contentsMatched = experienceJpaRepository.save(
             ExperienceEntity.from(
                 ExperienceFixture.create(
                     workspaceId = 10L,
@@ -247,7 +247,7 @@ class ExperienceRepositoryTest(
         )
 
         // then
-        result.map { it.id } shouldContainExactly listOf(titleMatched.id)
+        result.map { it.id } shouldContainExactly listOf(contentsMatched.id, titleMatched.id)
     }
 
 })

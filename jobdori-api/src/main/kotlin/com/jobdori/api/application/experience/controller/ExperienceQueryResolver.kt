@@ -41,14 +41,14 @@ class ExperienceQueryResolver(
         @UserId userId: Long,
         @Argument workspaceId: String,
         @Argument projectId: Long?,
-        @Arguments cursorRequest: ListExperienceRequest,
+        @Valid @Arguments request: ListExperienceRequest,
         env: DataFetchingEnvironment,
     ): ExperienceListResponse = experienceService.getExperiences(
         userId = userId,
         workspaceId = workspaceId,
         projectId = projectId,
-        cursor = cursorRequest.cursor,
-        size = cursorRequest.size,
+        cursor = request.cursor,
+        size = request.size,
         includeProjects = env.selectionSet.contains("experiences/project"),
     )
 
@@ -71,13 +71,13 @@ class ExperienceQueryResolver(
     fun experienceProjects(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Arguments cursorRequest: ListExperienceProjectRequest,
+        @Valid @Arguments request: ListExperienceProjectRequest,
         env: DataFetchingEnvironment,
     ): ExperienceProjectListResponse = experienceProjectService.getProjects(
         userId = userId,
         workspaceId = workspaceId,
-        cursor = cursorRequest.cursor,
-        size = cursorRequest.size,
+        cursor = request.cursor,
+        size = request.size,
         includeExperienceCount = env.selectionSet.contains("projects/experienceCount"),
     )
 

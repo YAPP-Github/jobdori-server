@@ -28,15 +28,19 @@
 <li><a href="#_queries">2. Queries</a>
 <ul class="sectlevel2">
 <li><a href="#_요청_예시">2.1. 요청 예시</a></li>
-<li><a href="#_필드_선택">2.2. 필드 선택</a></li>
-<li><a href="#_커서_페이징">2.3. 커서 페이징</a></li>
 </ul>
 </li>
-<li><a href="#_도메인별_에러_코드">3. 도메인별 에러 코드</a>
+<li><a href="#_mutations">3. Mutations</a>
 <ul class="sectlevel2">
-<li><a href="#_user">3.1. User</a></li>
-<li><a href="#_workspace">3.2. Workspace</a></li>
-<li><a href="#_experience">3.3. Experience</a></li>
+<li><a href="#_필드_선택">3.1. 필드 선택</a></li>
+<li><a href="#_커서_페이징">3.2. 커서 페이징</a></li>
+</ul>
+</li>
+<li><a href="#_도메인별_에러_코드">4. 도메인별 에러 코드</a>
+<ul class="sectlevel2">
+<li><a href="#_user">4.1. User</a></li>
+<li><a href="#_workspace">4.2. Workspace</a></li>
+<li><a href="#_experience">4.3. Experience</a></li>
 </ul>
 </li>
 </ul>
@@ -53,7 +57,7 @@
 <h1 id="introduction" class="sect0">GraphQL API Reference</h1>
 <div class="openblock partintro doc-lead">
 <div class="content">
-GraphQL API 사용에 필요한 공통 규칙, 응답 모델, Query별 예제를 제공합니다.
+GraphQL API 사용에 필요한 공통 규칙, 응답 모델, Query/Mutation별 예제를 제공합니다.
 </div>
 </div>
 <div class="sect1">
@@ -538,8 +542,158 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mutations">3. Mutations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>경험 생성:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation CreateExperience($workspaceId: ID!, $request: CreateExperienceRequest!) {
+  createExperience(workspaceId: $workspaceId, request: $request) {
+    experienceId
+    title
+    tags
+    contents {
+      type
+      star {
+        situation
+        task
+        action
+        result
+      }
+      free {
+        content
+      }
+    }
+    project {
+      projectId
+      name
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Variables:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
+  "request": {
+    "projectId": 3,
+    "tags": ["브랜드런칭", "퍼포먼스마케팅"],
+    "title": "런칭 캠페인 메시지 A/B 테스트",
+    "contents": {
+      "type": "STAR",
+      "star": {
+        "situation": "신규 브랜드 런칭 직후 핵심 메시지에 대한 반응 데이터가 부족했습니다.",
+        "task": "제한된 예산 안에서 전환 가능성이 높은 메시지를 빠르게 찾아야 했습니다.",
+        "action": "문제 인식형, 혜택 강조형, 사회적 증거형 메시지로 광고 소재와 랜딩 카피를 나눠 테스트했습니다.",
+        "result": "혜택 강조형 메시지의 클릭률과 회원가입 전환율이 가장 높아 메인 캠페인 메시지로 확정했습니다."
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>경험 수정:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation UpdateExperience($workspaceId: ID!, $experienceId: ID!, $request: UpdateExperienceRequest!) {
+  updateExperience(workspaceId: $workspaceId, experienceId: $experienceId, request: $request) {
+    experienceId
+    title
+    contents {
+      type
+      free {
+        content
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>경험 삭제:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteExperience($workspaceId: ID!, $experienceId: ID!) {
+  deleteExperience(workspaceId: $workspaceId, experienceId: $experienceId)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>경험 프로젝트 생성:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation CreateExperienceProject($workspaceId: ID!, $input: CreateExperienceProjectRequest!) {
+  createExperienceProject(workspaceId: $workspaceId, input: $input) {
+    projectId
+    name
+    summary
+    period {
+      startAt
+      endAt
+    }
+    role
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Variables:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
+  "request": {
+    "name": "신규 브랜드 런칭 캠페인",
+    "summary": "신규 서비스의 초기 인지도 확보 캠페인",
+    "period": {
+      "startAt": "2025-01-01",
+      "endAt": "2025-04-30"
+    },
+    "role": "Growth Marketer"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>경험 프로젝트 수정:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation UpdateExperienceProject($workspaceId: ID!, $projectId: ID!, $request: UpdateExperienceProjectRequest!) {
+  updateExperienceProject(workspaceId: $workspaceId, projectId: $projectId, request: $request) {
+    projectId
+    name
+    role
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>경험 프로젝트 삭제:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteExperienceProject($workspaceId: ID!, $projectId: ID!) {
+  deleteExperienceProject(workspaceId: $workspaceId, projectId: $projectId)
+}</code></pre>
+</div>
+</div>
 <div class="sect2">
-<h3 id="_필드_선택">2.2. 필드 선택</h3>
+<h3 id="_필드_선택">3.1. 필드 선택</h3>
 <div class="paragraph">
 <p>GraphQL은 클라이언트가 필요한 필드만 선택해서 조회합니다.</p>
 </div>
@@ -591,7 +745,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="sect2">
-<h3 id="_커서_페이징">2.3. 커서 페이징</h3>
+<h3 id="_커서_페이징">3.2. 커서 페이징</h3>
 <div class="paragraph">
 <p>목록 Query는 <code>cursor</code>, <code>size</code> 파라미터를 사용합니다.</p>
 </div>
@@ -668,13 +822,13 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="sect1">
-<h2 id="_도메인별_에러_코드">3. 도메인별 에러 코드</h2>
+<h2 id="_도메인별_에러_코드">4. 도메인별 에러 코드</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>현재 GraphQL Query에서 도메인 로직에 따라 발생할 수 있는 에러 코드입니다.</p>
+<p>현재 GraphQL API에서 도메인 로직에 따라 발생할 수 있는 에러 코드입니다.</p>
 </div>
 <div class="sect2">
-<h3 id="_user">3.1. User</h3>
+<h3 id="_user">4.1. User</h3>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -703,7 +857,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect2">
-<h3 id="_workspace">3.2. Workspace</h3>
+<h3 id="_workspace">4.2. Workspace</h3>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -732,7 +886,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect2">
-<h3 id="_experience">3.3. Experience</h3>
+<h3 id="_experience">4.3. Experience</h3>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -765,7 +919,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-07-03<br>
+Version 2026-07-04<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

@@ -258,8 +258,8 @@ mutation DeleteExperience($workspaceId: ID!, $experienceId: ID!) {
 
 [source,graphql]
 ----
-mutation CreateExperienceProject($workspaceId: ID!, $request: CreateExperienceProjectRequest!) {
-  createExperienceProject(workspaceId: $workspaceId, request: $request) {
+mutation CreateExperienceProject($workspaceId: ID!, $input: CreateExperienceProjectRequest!) {
+  createExperienceProject(workspaceId: $workspaceId, input: $input) {
     projectId
     name
     summary

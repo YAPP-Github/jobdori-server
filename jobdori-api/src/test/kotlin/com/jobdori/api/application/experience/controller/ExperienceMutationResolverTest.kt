@@ -233,7 +233,7 @@ internal class ExperienceMutationResolverTest(
                 mutation {
                   createExperienceProject(
                     workspaceId: "workspace-id",
-                    request: {
+                    input: {
                       name: "신규 브랜드 런칭 캠페인",
                       summary: "신규 서비스의 초기 인지도 확보 캠페인",
                       period: {

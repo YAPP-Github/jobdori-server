@@ -68,14 +68,14 @@ class ExperienceMutationResolver(
     fun createExperienceProject(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Valid @Argument request: CreateExperienceProjectRequest,
+        @Valid @Argument input: CreateExperienceProjectRequest,
     ): ExperienceProjectResponse = experienceProjectService.createProject(
         userId = userId,
         workspaceId = workspaceId,
-        name = request.name,
-        summary = request.summary,
-        period = request.period?.toPeriod(),
-        role = request.role,
+        name = input.name,
+        summary = input.summary,
+        period = input.period?.toPeriod(),
+        role = input.role,
     )
 
     @MutationMapping

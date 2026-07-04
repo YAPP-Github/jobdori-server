@@ -148,7 +148,7 @@ extend type Mutation {
         """
         생성할 경험 프로젝트 정보입니다.
         """
-        request: CreateExperienceProjectRequest!
+        input: CreateExperienceProjectRequest!
     ): ExperienceProject!
 
     """

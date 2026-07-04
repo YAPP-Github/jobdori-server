@@ -5,11 +5,13 @@ import com.jobdori.api.application.experience.dto.request.ListExperienceRequest
 import com.jobdori.api.application.experience.dto.request.SearchExperienceRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceListResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectListResponse
+import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.experience.service.ExperienceProjectService
 import com.jobdori.api.application.experience.service.ExperienceService
 import com.jobdori.api.support.auth.UserId
 import graphql.schema.DataFetchingEnvironment
+import jakarta.validation.Valid
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.Arguments
 import org.springframework.graphql.data.method.annotation.QueryMapping
@@ -39,14 +41,14 @@ class ExperienceQueryResolver(
         @UserId userId: Long,
         @Argument workspaceId: String,
         @Argument projectId: Long?,
-        @Arguments cursorRequest: ListExperienceRequest,
+        @Valid @Arguments request: ListExperienceRequest,
         env: DataFetchingEnvironment,
     ): ExperienceListResponse = experienceService.getExperiences(
         userId = userId,
         workspaceId = workspaceId,
         projectId = projectId,
-        cursor = cursorRequest.cursor,
-        size = cursorRequest.size,
+        cursor = request.cursor,
+        size = request.size,
         includeProjects = env.selectionSet.contains("experiences/project"),
     )
 
@@ -54,7 +56,7 @@ class ExperienceQueryResolver(
     fun searchExperiences(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Arguments request: SearchExperienceRequest,
+        @Valid @Arguments request: SearchExperienceRequest,
         env: DataFetchingEnvironment,
     ): ExperienceListResponse = experienceService.searchExperiences(
         userId = userId,
@@ -69,12 +71,27 @@ class ExperienceQueryResolver(
     fun experienceProjects(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Arguments cursorRequest: ListExperienceProjectRequest,
+        @Valid @Arguments request: ListExperienceProjectRequest,
+        env: DataFetchingEnvironment,
     ): ExperienceProjectListResponse = experienceProjectService.getProjects(
         userId = userId,
         workspaceId = workspaceId,
-        cursor = cursorRequest.cursor,
-        size = cursorRequest.size,
+        cursor = request.cursor,
+        size = request.size,
+        includeExperienceCount = env.selectionSet.contains("projects/experienceCount"),
+    )
+
+    @QueryMapping
+    fun experienceProject(
+        @UserId userId: Long,
+        @Argument workspaceId: String,
+        @Argument id: Long,
+        env: DataFetchingEnvironment,
+    ): ExperienceProjectResponse = experienceProjectService.getProject(
+        userId = userId,
+        workspaceId = workspaceId,
+        projectId = id,
+        includeExperienceCount = env.selectionSet.contains("experienceCount"),
     )
 
 }

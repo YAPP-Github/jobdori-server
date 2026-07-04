@@ -72,7 +72,7 @@ internal class ExperienceQueryResolverTest(
 
         verify(exactly = 1) { accessTokenService.getUserId("access-token") }
         verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, false) }
-        verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any()) }
+        verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any(), any()) }
     }
 
     "경험 목록에서 project를 요청하면 프로젝트를 한 번에 조회한다" {
@@ -132,7 +132,109 @@ internal class ExperienceQueryResolverTest(
             .path("experiences.experiences[1].project.projectId").entity<String>().isEqualTo("3")
 
         verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, true) }
-        verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any()) }
+        verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any(), any()) }
+    }
+
+    "경험 프로젝트 단건을 조회한다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        val project = ExperienceProject(
+            id = 3L,
+            workspaceId = 1L,
+            name = "프로젝트",
+            summary = "요약",
+            period = null,
+            role = "백엔드",
+            displayOrder = BigDecimal.ZERO,
+            status = ExperienceProjectStatus.ACTIVE,
+        )
+        every {
+            experienceProjectService.getProject(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 3L,
+                includeExperienceCount = false,
+            )
+        } returns ExperienceProjectResponse.from(project)
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                {
+                  experienceProject(workspaceId: "workspace-id", id: 3) {
+                    projectId
+                    name
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("experienceProject.projectId").entity<String>().isEqualTo("3")
+            .path("experienceProject.name").entity<String>().isEqualTo("프로젝트")
+
+        verify(exactly = 1) {
+            experienceProjectService.getProject(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 3L,
+                includeExperienceCount = false,
+            )
+        }
+    }
+
+    "경험 프로젝트 목록에서 experienceCount를 요청하면 카운트 포함 옵션을 넘긴다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        val project = ExperienceProject(
+            id = 3L,
+            workspaceId = 1L,
+            name = "프로젝트",
+            summary = "요약",
+            period = null,
+            role = "백엔드",
+            displayOrder = BigDecimal.ZERO,
+            status = ExperienceProjectStatus.ACTIVE,
+        )
+        every {
+            experienceProjectService.getProjects(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                cursor = null,
+                size = 2,
+                includeExperienceCount = true,
+            )
+        } returns com.jobdori.api.application.experience.dto.response.ExperienceProjectListResponse(
+            projects = listOf(ExperienceProjectResponse.from(project, experienceCount = 7)),
+            cursor = CursorResponse(nextCursor = null),
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                {
+                  experienceProjects(workspaceId: "workspace-id", cursor: null, size: 2) {
+                    projects {
+                      projectId
+                      experienceCount
+                    }
+                    cursor {
+                      hasNext
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("experienceProjects.projects[0].projectId").entity<String>().isEqualTo("3")
+            .path("experienceProjects.projects[0].experienceCount").entity<Int>().isEqualTo(7)
+
+        verify(exactly = 1) {
+            experienceProjectService.getProjects(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                cursor = null,
+                size = 2,
+                includeExperienceCount = true,
+            )
+        }
     }
 
     "검색어가 포함된 경험 목록을 조회한다" {

@@ -70,4 +70,16 @@ class ExperienceReader(
         )
     }
 
+    @Transactional(readOnly = true)
+    fun getExperienceCountsByProjectIds(workspaceId: Long, projectIds: Collection<Long>): Map<Long, Long> {
+        if (projectIds.isEmpty()) {
+            return emptyMap()
+        }
+
+        return experienceRepository.countByWorkspaceIdAndProjectIds(
+            workspaceId = workspaceId,
+            projectIds = projectIds.toSet(),
+        )
+    }
+
 }

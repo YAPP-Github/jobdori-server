@@ -24,4 +24,6 @@ interface ExperienceRepository {
         size: Int,
     ): List<Experience>
 
+    fun countByWorkspaceIdAndProjectIds(workspaceId: Long, projectIds: Collection<Long>): Map<Long, Long>
+
 }

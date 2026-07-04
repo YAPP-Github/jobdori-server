@@ -82,7 +82,8 @@ class ExperienceRepositoryImpl(
         size: Int,
     ): List<Experience> {
         val pageable = PageRequest.of(0, size)
-        val keywordPattern = "%${keyword.trim().lowercase()}%"
+        val escapedKeyword = escapeLikeWildcards(keyword.trim().lowercase())
+        val keywordPattern = "%${escapedKeyword}%"
         val entities = jpaRepository.searchAllByWorkspaceIdAndStatus(
             workspaceId = workspaceId,
             status = ExperienceStatus.ACTIVE,
@@ -92,6 +93,28 @@ class ExperienceRepositoryImpl(
         )
 
         return entities.map { it.toDomain() }
+    }
+
+    private fun escapeLikeWildcards(keyword: String): String {
+        return keyword
+            .replace("\\", "\\\\")
+            .replace("%", "\\%")
+            .replace("_", "\\_")
+    }
+
+    override fun countByWorkspaceIdAndProjectIds(
+        workspaceId: Long,
+        projectIds: Collection<Long>,
+    ): Map<Long, Long> {
+        if (projectIds.isEmpty()) {
+            return emptyMap()
+        }
+
+        return jpaRepository.countByWorkspaceIdAndProjectIdsAndStatus(
+            workspaceId = workspaceId,
+            projectIds = projectIds,
+            status = ExperienceStatus.ACTIVE,
+        ).associate { it.projectId to it.experienceCount }
     }
 
 }

@@ -122,4 +122,31 @@ class ExperienceReaderTest : StringSpec({
         result.nextCursor shouldBe "2"
     }
 
+    "프로젝트별 경험 개수를 조회한다" {
+        // given
+        every {
+            experienceRepository.countByWorkspaceIdAndProjectIds(
+                workspaceId = 10L,
+                projectIds = setOf(1L, 2L),
+            )
+        } returns mapOf(1L to 3L, 2L to 0L)
+
+        // when
+        val result = experienceReader.getExperienceCountsByProjectIds(
+            workspaceId = 10L,
+            projectIds = listOf(1L, 2L, 1L),
+        )
+
+        // then
+        result shouldBe mapOf(1L to 3L, 2L to 0L)
+    }
+
+    "프로젝트별 경험 개수 조회 요청이 비어 있으면 빈 Map을 반환한다" {
+        // when & then
+        experienceReader.getExperienceCountsByProjectIds(
+            workspaceId = 10L,
+            projectIds = emptyList(),
+        ) shouldBe emptyMap()
+    }
+
 })

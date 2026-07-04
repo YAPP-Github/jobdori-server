@@ -1,20 +1,20 @@
-=== Experience Import APIs
+==== Experience Import APIs
 
-==== Import Experiences (PDF)
+===== Import Experiences (PDF)
 
 PDF 파일에서 경험을 가져오는 API입니다.
 
 include::{snippets}/experience-import-pdf/request-path.adoc[]
 
-===== Request Parts
+====== Request Parts
 
 include::{snippets}/experience-import-pdf/request-parts.adoc[]
 
-===== Response Fields
+====== Response Fields
 
 include::{snippets}/experience-import-pdf/response-fields.adoc[]
 
-===== Examples
+====== Examples
 
 include::{snippets}/experience-import-pdf/http-request.adoc[]
 

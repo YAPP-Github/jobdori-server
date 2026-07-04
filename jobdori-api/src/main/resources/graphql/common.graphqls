@@ -13,6 +13,21 @@ type Period {
     endAt: String
 }
 
+"""
+기간 입력입니다.
+"""
+input PeriodInput {
+    """
+    기간 시작일입니다.
+    """
+    startAt: String
+
+    """
+    기간 종료일입니다.
+    """
+    endAt: String
+}
+
 
 """
 커서 정보입니다.

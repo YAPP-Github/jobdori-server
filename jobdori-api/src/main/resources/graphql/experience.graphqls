@@ -10,7 +10,7 @@ extend type Query {
         """
         조회할 경험 ID입니다.
         """
-        id: ID!
+        experienceId: ID!
     ): Experience
 
     """
@@ -46,7 +46,7 @@ extend type Query {
         """
         조회할 경험 프로젝트 ID입니다.
         """
-        id: ID!
+        projectId: ID!
     ): ExperienceProject!
 
     """
@@ -88,6 +88,255 @@ extend type Query {
         """
         size: Int!
     ): Experiences!
+}
+
+extend type Mutation {
+    """
+    경험을 생성합니다.
+    """
+    createExperience(
+        """
+        경험을 생성할 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        생성할 경험 정보입니다.
+        """
+        request: CreateExperienceRequest!
+    ): Experience!
+
+    """
+    경험을 수정합니다.
+    """
+    updateExperience(
+        """
+        경험이 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        수정할 경험 ID입니다.
+        """
+        experienceId: ID!,
+        """
+        수정할 경험 정보입니다.
+        """
+        request: UpdateExperienceRequest!
+    ): Experience!
+
+    """
+    경험을 삭제합니다.
+    """
+    deleteExperience(
+        """
+        경험이 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        삭제할 경험 ID입니다.
+        """
+        experienceId: ID!
+    ): Boolean!
+
+    """
+    경험 프로젝트를 생성합니다.
+    """
+    createExperienceProject(
+        """
+        경험 프로젝트를 생성할 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        생성할 경험 프로젝트 정보입니다.
+        """
+        request: CreateExperienceProjectRequest!
+    ): ExperienceProject!
+
+    """
+    경험 프로젝트를 수정합니다.
+    """
+    updateExperienceProject(
+        """
+        경험 프로젝트가 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        수정할 경험 프로젝트 ID입니다.
+        """
+        projectId: ID!,
+        """
+        수정할 경험 프로젝트 정보입니다.
+        """
+        request: UpdateExperienceProjectRequest!
+    ): ExperienceProject!
+
+    """
+    경험 프로젝트를 삭제합니다.
+    """
+    deleteExperienceProject(
+        """
+        경험 프로젝트가 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        삭제할 경험 프로젝트 ID입니다.
+        """
+        projectId: ID!
+    ): Boolean!
+}
+
+"""
+경험 생성 입력입니다.
+"""
+input CreateExperienceRequest {
+    """
+    연결할 경험 프로젝트 ID입니다.
+    """
+    projectId: ID!
+
+    """
+    경험에 부여할 태그 목록입니다.
+    """
+    tags: [String!] = []
+
+    """
+    경험 제목입니다.
+    """
+    title: String!
+
+    """
+    경험 상세 내용입니다.
+    """
+    contents: ExperienceContentsRequest!
+}
+
+"""
+경험 수정 입력입니다.
+"""
+input UpdateExperienceRequest {
+    """
+    변경할 경험 프로젝트 ID입니다.
+    """
+    projectId: ID
+
+    """
+    변경할 태그 목록입니다.
+    """
+    tags: [String!]
+
+    """
+    변경할 경험 제목입니다.
+    """
+    title: String
+
+    """
+    변경할 경험 상세 내용입니다.
+    """
+    contents: ExperienceContentsRequest
+}
+
+"""
+경험 상세 내용 입력입니다.
+"""
+input ExperienceContentsRequest {
+    """
+    경험 상세 내용 타입입니다.
+    """
+    type: ExperienceContentsType!
+
+    """
+    STAR 형식의 상세 내용입니다.
+    """
+    star: StarExperienceContentsRequest
+
+    """
+    FREE 형식의 상세 내용입니다.
+    """
+    free: FreeExperienceContentsRequest
+}
+
+"""
+STAR 형식의 경험 상세 내용 입력입니다.
+"""
+input StarExperienceContentsRequest {
+    """
+    상황입니다.
+    """
+    situation: String!
+
+    """
+    과제입니다.
+    """
+    task: String!
+
+    """
+    행동입니다.
+    """
+    action: String!
+
+    """
+    결과입니다.
+    """
+    result: String!
+}
+
+"""
+FREE 형식의 경험 상세 내용 입력입니다.
+"""
+input FreeExperienceContentsRequest {
+    """
+    자유 내용입니다.
+    """
+    content: String!
+}
+
+"""
+경험 프로젝트 생성 입력입니다.
+"""
+input CreateExperienceProjectRequest {
+    """
+    경험 프로젝트 이름입니다.
+    """
+    name: String!
+
+    """
+    경험 프로젝트 요약입니다.
+    """
+    summary: String!
+
+    """
+    경험 프로젝트 진행 기간입니다.
+    """
+    period: PeriodInput
+
+    """
+    경험 프로젝트에서 맡은 역할입니다.
+    """
+    role: String
+}
+
+"""
+경험 프로젝트 수정 입력입니다.
+"""
+input UpdateExperienceProjectRequest {
+    """
+    변경할 경험 프로젝트 이름입니다.
+    """
+    name: String
+
+    """
+    변경할 경험 프로젝트 요약입니다.
+    """
+    summary: String
+
+    """
+    변경할 경험 프로젝트 진행 기간입니다.
+    """
+    period: PeriodInput
+
+    """
+    변경할 경험 프로젝트 역할입니다.
+    """
+    role: String
 }
 
 """

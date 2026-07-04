@@ -22,7 +22,7 @@ endif::[]
 = GraphQL API Reference
 
 [.doc-lead]
-GraphQL API 사용에 필요한 공통 규칙, 응답 모델, Query별 예제를 제공합니다.
+GraphQL API 사용에 필요한 공통 규칙, 응답 모델, Query/Mutation별 예제를 제공합니다.
 
 == Overview
 
@@ -173,6 +173,145 @@ Variables:
 }
 ----
 
+== Mutations
+
+경험 생성:
+
+[source,graphql]
+----
+mutation CreateExperience($workspaceId: ID!, $request: CreateExperienceRequest!) {
+  createExperience(workspaceId: $workspaceId, request: $request) {
+    experienceId
+    title
+    tags
+    contents {
+      type
+      star {
+        situation
+        task
+        action
+        result
+      }
+      free {
+        content
+      }
+    }
+    project {
+      projectId
+      name
+    }
+  }
+}
+----
+
+Variables:
+
+[source,json]
+----
+{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
+  "request": {
+    "projectId": 3,
+    "tags": ["브랜드런칭", "퍼포먼스마케팅"],
+    "title": "런칭 캠페인 메시지 A/B 테스트",
+    "contents": {
+      "type": "STAR",
+      "star": {
+        "situation": "신규 브랜드 런칭 직후 핵심 메시지에 대한 반응 데이터가 부족했습니다.",
+        "task": "제한된 예산 안에서 전환 가능성이 높은 메시지를 빠르게 찾아야 했습니다.",
+        "action": "문제 인식형, 혜택 강조형, 사회적 증거형 메시지로 광고 소재와 랜딩 카피를 나눠 테스트했습니다.",
+        "result": "혜택 강조형 메시지의 클릭률과 회원가입 전환율이 가장 높아 메인 캠페인 메시지로 확정했습니다."
+      }
+    }
+  }
+}
+----
+
+경험 수정:
+
+[source,graphql]
+----
+mutation UpdateExperience($workspaceId: ID!, $experienceId: ID!, $request: UpdateExperienceRequest!) {
+  updateExperience(workspaceId: $workspaceId, experienceId: $experienceId, request: $request) {
+    experienceId
+    title
+    contents {
+      type
+      free {
+        content
+      }
+    }
+  }
+}
+----
+
+경험 삭제:
+
+[source,graphql]
+----
+mutation DeleteExperience($workspaceId: ID!, $experienceId: ID!) {
+  deleteExperience(workspaceId: $workspaceId, experienceId: $experienceId)
+}
+----
+
+경험 프로젝트 생성:
+
+[source,graphql]
+----
+mutation CreateExperienceProject($workspaceId: ID!, $request: CreateExperienceProjectRequest!) {
+  createExperienceProject(workspaceId: $workspaceId, request: $request) {
+    projectId
+    name
+    summary
+    period {
+      startAt
+      endAt
+    }
+    role
+  }
+}
+----
+
+Variables:
+
+[source,json]
+----
+{
+  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
+  "request": {
+    "name": "신규 브랜드 런칭 캠페인",
+    "summary": "신규 서비스의 초기 인지도 확보 캠페인",
+    "period": {
+      "startAt": "2025-01-01",
+      "endAt": "2025-04-30"
+    },
+    "role": "Growth Marketer"
+  }
+}
+----
+
+경험 프로젝트 수정:
+
+[source,graphql]
+----
+mutation UpdateExperienceProject($workspaceId: ID!, $projectId: ID!, $request: UpdateExperienceProjectRequest!) {
+  updateExperienceProject(workspaceId: $workspaceId, projectId: $projectId, request: $request) {
+    projectId
+    name
+    role
+  }
+}
+----
+
+경험 프로젝트 삭제:
+
+[source,graphql]
+----
+mutation DeleteExperienceProject($workspaceId: ID!, $projectId: ID!) {
+  deleteExperienceProject(workspaceId: $workspaceId, projectId: $projectId)
+}
+----
+
 === 필드 선택
 
 GraphQL은 클라이언트가 필요한 필드만 선택해서 조회합니다.
@@ -280,7 +419,7 @@ query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
 
 == 도메인별 에러 코드
 
-현재 GraphQL Query에서 도메인 로직에 따라 발생할 수 있는 에러 코드입니다.
+현재 GraphQL API에서 도메인 로직에 따라 발생할 수 있는 에러 코드입니다.
 
 === User
 

@@ -1,0 +1,392 @@
+package com.jobdori.api.application.experience.controller
+
+import com.jobdori.api.GraphQLTest
+import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
+import com.jobdori.api.application.experience.dto.response.ExperienceResponse
+import com.jobdori.api.application.experience.service.ExperienceProjectService
+import com.jobdori.api.application.experience.service.ExperienceService
+import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
+import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
+import com.jobdori.common.model.Period
+import com.jobdori.core.application.auth.AccessTokenService
+import com.jobdori.core.domain.experience.Experience
+import com.jobdori.core.domain.experience.ExperienceContents
+import com.jobdori.core.domain.experience.ExperienceProject
+import com.jobdori.core.domain.experience.ExperienceProjectStatus
+import com.jobdori.core.domain.experience.ExperienceStatus
+import com.ninjasquad.springmockk.MockkBean
+import io.kotest.core.spec.style.StringSpec
+import io.mockk.every
+import io.mockk.verify
+import org.springframework.context.annotation.Import
+import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester
+import org.springframework.graphql.test.tester.GraphQlTester
+import org.springframework.graphql.test.tester.entity
+import java.math.BigDecimal
+import java.time.LocalDate
+
+@GraphQLTest(ExperienceMutationResolver::class)
+@Import(UserIdArgumentGraphqlResolver::class)
+internal class ExperienceMutationResolverTest(
+    private val graphQlTester: GraphQlTester,
+    @MockkBean
+    private val accessTokenService: AccessTokenService,
+    @MockkBean
+    private val experienceService: ExperienceService,
+    @MockkBean
+    private val experienceProjectService: ExperienceProjectService,
+) : StringSpec({
+
+    beforeTest {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+    }
+
+    "경험을 생성한다" {
+        every {
+            experienceService.createExperience(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 3L,
+                tags = listOf("브랜드런칭", "퍼포먼스마케팅"),
+                title = "런칭 캠페인 메시지 A/B 테스트",
+                contents = any(),
+            )
+        } returns ExperienceResponse.from(
+            experience = graphQlExperience(
+                id = 100L,
+                projectId = 3L,
+                tags = listOf("브랜드런칭", "퍼포먼스마케팅"),
+                title = "런칭 캠페인 메시지 A/B 테스트",
+                contents = ExperienceContents.star("s", "t", "a", "r"),
+            ),
+            project = ExperienceProjectResponse.from(graphQlProject(3L)),
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  createExperience(
+                    workspaceId: "workspace-id",
+                    request: {
+                      projectId: 3,
+                      tags: ["브랜드런칭", "퍼포먼스마케팅"],
+                      title: "런칭 캠페인 메시지 A/B 테스트",
+                      contents: {
+                        type: STAR,
+                        star: {
+                          situation: "s",
+                          task: "t",
+                          action: "a",
+                          result: "r"
+                        }
+                      }
+                    }
+                  ) {
+                    experienceId
+                    project {
+                      projectId
+                    }
+                    title
+                    contents {
+                      type
+                      star {
+                        situation
+                      }
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("createExperience.experienceId").entity<String>().isEqualTo("100")
+            .path("createExperience.project.projectId").entity<String>().isEqualTo("3")
+            .path("createExperience.title").entity<String>().isEqualTo("런칭 캠페인 메시지 A/B 테스트")
+            .path("createExperience.contents.type").entity<String>().isEqualTo("STAR")
+            .path("createExperience.contents.star.situation").entity<String>().isEqualTo("s")
+
+        verify(exactly = 1) { accessTokenService.getUserId("access-token") }
+        verify(exactly = 1) {
+            experienceService.createExperience(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 3L,
+                tags = listOf("브랜드런칭", "퍼포먼스마케팅"),
+                title = "런칭 캠페인 메시지 A/B 테스트",
+                contents = any(),
+            )
+        }
+    }
+
+    "경험을 수정한다" {
+        every {
+            experienceService.modifyExperience(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                experienceId = 100L,
+                projectId = null,
+                tags = null,
+                title = "프로젝트 회고",
+                contents = any(),
+            )
+        } returns ExperienceResponse.from(
+            experience = graphQlExperience(
+                id = 100L,
+                title = "프로젝트 회고",
+                contents = ExperienceContents.free("회고 내용"),
+            ),
+            project = null,
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  updateExperience(
+                    workspaceId: "workspace-id",
+                    experienceId: 100,
+                    request: {
+                      title: "프로젝트 회고",
+                      contents: {
+                        type: FREE,
+                        free: {
+                          content: "회고 내용"
+                        }
+                      }
+                    }
+                  ) {
+                    experienceId
+                    title
+                    contents {
+                      type
+                      free {
+                        content
+                      }
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("updateExperience.experienceId").entity<String>().isEqualTo("100")
+            .path("updateExperience.title").entity<String>().isEqualTo("프로젝트 회고")
+            .path("updateExperience.contents.type").entity<String>().isEqualTo("FREE")
+            .path("updateExperience.contents.free.content").entity<String>().isEqualTo("회고 내용")
+
+        verify(exactly = 1) {
+            experienceService.modifyExperience(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                experienceId = 100L,
+                projectId = null,
+                tags = null,
+                title = "프로젝트 회고",
+                contents = any(),
+            )
+        }
+    }
+
+    "경험을 삭제한다" {
+        every {
+            experienceService.removeExperience(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                experienceId = 100L,
+            )
+        } returns Unit
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  deleteExperience(workspaceId: "workspace-id", experienceId: 100)
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("deleteExperience").entity<Boolean>().isEqualTo(true)
+
+        verify(exactly = 1) {
+            experienceService.removeExperience(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                experienceId = 100L,
+            )
+        }
+    }
+
+    "경험 프로젝트를 생성한다" {
+        every {
+            experienceProjectService.createProject(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                name = "신규 브랜드 런칭 캠페인",
+                summary = "신규 서비스의 초기 인지도 확보 캠페인",
+                period = Period(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 4, 30)),
+                role = "Growth Marketer",
+            )
+        } returns ExperienceProjectResponse.from(graphQlProject(100L))
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  createExperienceProject(
+                    workspaceId: "workspace-id",
+                    request: {
+                      name: "신규 브랜드 런칭 캠페인",
+                      summary: "신규 서비스의 초기 인지도 확보 캠페인",
+                      period: {
+                        startAt: "2025-01-01",
+                        endAt: "2025-04-30"
+                      },
+                      role: "Growth Marketer"
+                    }
+                  ) {
+                    projectId
+                    name
+                    period {
+                      startAt
+                      endAt
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("createExperienceProject.projectId").entity<String>().isEqualTo("100")
+            .path("createExperienceProject.name").entity<String>().isEqualTo("신규 브랜드 런칭 캠페인")
+            .path("createExperienceProject.period.startAt").entity<String>().isEqualTo("2025-01-01")
+
+        verify(exactly = 1) {
+            experienceProjectService.createProject(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                name = "신규 브랜드 런칭 캠페인",
+                summary = "신규 서비스의 초기 인지도 확보 캠페인",
+                period = Period(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 4, 30)),
+                role = "Growth Marketer",
+            )
+        }
+    }
+
+    "경험 프로젝트를 수정한다" {
+        every {
+            experienceProjectService.modifyProject(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 100L,
+                name = null,
+                summary = null,
+                period = null,
+                role = "Brand Growth Lead",
+            )
+        } returns ExperienceProjectResponse.from(graphQlProject(100L, role = "Brand Growth Lead"))
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  updateExperienceProject(
+                    workspaceId: "workspace-id",
+                    projectId: 100,
+                    request: {
+                      role: "Brand Growth Lead"
+                    }
+                  ) {
+                    projectId
+                    role
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("updateExperienceProject.projectId").entity<String>().isEqualTo("100")
+            .path("updateExperienceProject.role").entity<String>().isEqualTo("Brand Growth Lead")
+
+        verify(exactly = 1) {
+            experienceProjectService.modifyProject(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 100L,
+                name = null,
+                summary = null,
+                period = null,
+                role = "Brand Growth Lead",
+            )
+        }
+    }
+
+    "경험 프로젝트를 삭제한다" {
+        every {
+            experienceProjectService.removeProject(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 100L,
+            )
+        } returns Unit
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  deleteExperienceProject(workspaceId: "workspace-id", projectId: 100)
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("deleteExperienceProject").entity<Boolean>().isEqualTo(true)
+
+        verify(exactly = 1) {
+            experienceProjectService.removeProject(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                projectId = 100L,
+            )
+        }
+    }
+
+})
+
+private fun authenticatedTester(graphQlTester: GraphQlTester): GraphQlTester {
+    val builder = graphQlTester.mutate() as ExecutionGraphQlServiceTester.Builder<*>
+    return builder.configureExecutionInput { _, executionInputBuilder ->
+        executionInputBuilder.graphQLContext(
+            mapOf(AuthGraphQlContext.AUTHORIZATION to "Bearer access-token"),
+        ).build()
+    }.build()
+}
+
+private fun graphQlExperience(
+    id: Long,
+    projectId: Long = 3L,
+    tags: List<String> = emptyList(),
+    title: String = "경험 $id",
+    contents: ExperienceContents,
+) = Experience(
+    id = id,
+    workspaceId = 1L,
+    projectId = projectId,
+    tags = tags,
+    title = title,
+    contents = contents,
+    displayOrder = BigDecimal.ZERO,
+    status = ExperienceStatus.ACTIVE,
+)
+
+private fun graphQlProject(
+    id: Long,
+    role: String? = "Growth Marketer",
+) = ExperienceProject(
+    id = id,
+    workspaceId = 1L,
+    name = "신규 브랜드 런칭 캠페인",
+    summary = "신규 서비스의 초기 인지도 확보 캠페인",
+    period = Period(
+        startAt = LocalDate.of(2025, 1, 1),
+        endAt = LocalDate.of(2025, 4, 30),
+    ),
+    role = role,
+    displayOrder = BigDecimal.ZERO,
+    status = ExperienceProjectStatus.ACTIVE,
+)

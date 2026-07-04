@@ -27,12 +27,12 @@ class ExperienceQueryResolver(
     fun experience(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Argument id: Long,
+        @Argument experienceId: Long,
         env: DataFetchingEnvironment,
     ): ExperienceResponse? = experienceService.getExperience(
         userId = userId,
         workspaceId = workspaceId,
-        experienceId = id,
+        experienceId = experienceId,
         includeProject = env.selectionSet.contains("project"),
     )
 
@@ -85,12 +85,12 @@ class ExperienceQueryResolver(
     fun experienceProject(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Argument id: Long,
+        @Argument projectId: Long,
         env: DataFetchingEnvironment,
     ): ExperienceProjectResponse = experienceProjectService.getProject(
         userId = userId,
         workspaceId = workspaceId,
-        projectId = id,
+        projectId = projectId,
         includeExperienceCount = env.selectionSet.contains("experienceCount"),
     )
 

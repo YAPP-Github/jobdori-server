@@ -160,7 +160,7 @@ internal class ExperienceQueryResolverTest(
             .document(
                 """
                 {
-                  experienceProject(workspaceId: "workspace-id", id: 3) {
+                  experienceProject(workspaceId: "workspace-id", projectId: 3) {
                     projectId
                     name
                   }

@@ -1,5 +1,0 @@
-include::./experience.adoc[]
-
-include::./experience-project.adoc[]
-
-include::./experience-import-pdf.adoc[]

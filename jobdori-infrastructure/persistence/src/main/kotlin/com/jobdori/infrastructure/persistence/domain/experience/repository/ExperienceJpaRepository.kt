@@ -5,7 +5,7 @@ import com.jobdori.infrastructure.persistence.domain.experience.entity.Experienc
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface ExperienceJpaRepository : JpaRepository<ExperienceEntity, Long> {
+interface ExperienceJpaRepository : JpaRepository<ExperienceEntity, Long>, ExperienceCustomRepository {
 
     fun findByIdAndWorkspaceIdAndStatus(
         id: Long,

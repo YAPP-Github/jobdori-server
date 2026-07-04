@@ -75,4 +75,23 @@ class ExperienceRepositoryImpl(
         return entities.map { it.toDomain() }
     }
 
+    override fun searchAllByWorkspaceId(
+        workspaceId: Long,
+        keyword: String,
+        cursorId: Long?,
+        size: Int,
+    ): List<Experience> {
+        val pageable = PageRequest.of(0, size)
+        val keywordPattern = "%${keyword.trim().lowercase()}%"
+        val entities = jpaRepository.searchAllByWorkspaceIdAndStatus(
+            workspaceId = workspaceId,
+            status = ExperienceStatus.ACTIVE,
+            keywordPattern = keywordPattern,
+            cursorId = cursorId,
+            pageable = pageable,
+        )
+
+        return entities.map { it.toDomain() }
+    }
+
 }

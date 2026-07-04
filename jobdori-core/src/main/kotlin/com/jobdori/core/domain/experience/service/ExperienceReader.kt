@@ -49,4 +49,25 @@ class ExperienceReader(
         )
     }
 
+    @Transactional(readOnly = true)
+    fun searchExperiences(
+        workspaceId: Long,
+        keyword: String,
+        cursor: String?,
+        size: Int,
+    ): SliceResult<Experience> {
+        val experiences = experienceRepository.searchAllByWorkspaceId(
+            workspaceId = workspaceId,
+            keyword = keyword,
+            cursorId = cursor?.toLongOrNull(),
+            size = size + 1,
+        )
+        val page = experiences.take(size)
+
+        return SliceResult(
+            items = page,
+            nextCursor = if (experiences.size > size) page.lastOrNull()?.id?.toString() else null,
+        )
+    }
+
 }

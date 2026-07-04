@@ -2,6 +2,7 @@ package com.jobdori.api.application.experience.controller
 
 import com.jobdori.api.application.experience.dto.request.ListExperienceProjectRequest
 import com.jobdori.api.application.experience.dto.request.ListExperienceRequest
+import com.jobdori.api.application.experience.dto.request.SearchExperienceRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceListResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectListResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
@@ -46,6 +47,21 @@ class ExperienceQueryResolver(
         projectId = projectId,
         cursor = cursorRequest.cursor,
         size = cursorRequest.size,
+        includeProjects = env.selectionSet.contains("experiences/project"),
+    )
+
+    @QueryMapping
+    fun searchExperiences(
+        @UserId userId: Long,
+        @Argument workspaceId: String,
+        @Arguments request: SearchExperienceRequest,
+        env: DataFetchingEnvironment,
+    ): ExperienceListResponse = experienceService.searchExperiences(
+        userId = userId,
+        workspaceId = workspaceId,
+        keyword = request.keyword,
+        cursor = request.cursor,
+        size = request.size,
         includeProjects = env.selectionSet.contains("experiences/project"),
     )
 

@@ -176,4 +176,44 @@ class ExperienceService(
         )
     }
 
+    fun searchExperiences(
+        userId: Long,
+        workspaceId: String,
+        keyword: String,
+        cursor: String?,
+        size: Int,
+        includeProjects: Boolean,
+    ): ExperienceListResponse {
+        val workspace = workspaceAccessValidationService.validateAccessible(
+            workspaceId = workspaceId,
+            userId = userId,
+        )
+
+        val experiences = experienceReader.searchExperiences(
+            workspaceId = workspace.id,
+            keyword = keyword,
+            cursor = cursor,
+            size = size,
+        )
+
+        val projects = if (includeProjects) {
+            experienceProjectReader.getProjects(
+                workspaceId = workspace.id,
+                projectIds = experiences.items.map { it.projectId },
+            ).mapValues { (_, project) -> ExperienceProjectResponse.from(project) }
+        } else {
+            emptyMap()
+        }
+
+        return ExperienceListResponse(
+            experiences = experiences.items.map { experience ->
+                ExperienceResponse.from(
+                    experience = experience,
+                    project = projects[experience.projectId],
+                )
+            },
+            cursor = CursorResponse(nextCursor = experiences.nextCursor),
+        )
+    }
+
 }

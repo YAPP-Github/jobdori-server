@@ -93,4 +93,33 @@ class ExperienceReaderTest : StringSpec({
         result.nextCursor shouldBe "2"
     }
 
+    "검색어가 포함된 경험 목록을 slice로 조회한다" {
+        // given
+        val experiences = listOf(
+            ExperienceFixture.create(id = 3L, workspaceId = 10L, title = "Kotlin 성능 개선"),
+            ExperienceFixture.create(id = 2L, workspaceId = 10L, title = "검색 API 개선"),
+            ExperienceFixture.create(id = 1L, workspaceId = 10L, title = "응답 포맷 개선"),
+        )
+        every {
+            experienceRepository.searchAllByWorkspaceId(
+                workspaceId = 10L,
+                keyword = "개선",
+                cursorId = 4L,
+                size = 3,
+            )
+        } returns experiences
+
+        // when
+        val result = experienceReader.searchExperiences(
+            workspaceId = 10L,
+            keyword = "개선",
+            cursor = "4",
+            size = 2,
+        )
+
+        // then
+        result.items shouldContainExactly experiences.take(2)
+        result.nextCursor shouldBe "2"
+    }
+
 })

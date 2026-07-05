@@ -12,6 +12,7 @@ import com.jobdori.core.domain.prompt.PromptType
 import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Service
 class ExperienceAiExtractionService(
@@ -161,13 +162,15 @@ data class ExtractedPeriod(
             val endYear = endYear ?: return Period(startAt = startAt, endAt = null)
             val endMonth = endMonth?.takeIf { month -> month in 1..12 }
                 ?: return Period(startAt = startAt, endAt = null)
-            runCatching {
-                LocalDate.of(endYear.normalizedYear(), endMonth, 1)
-                    .withDayOfMonth(LocalDate.of(endYear.normalizedYear(), endMonth, 1).lengthOfMonth())
+            val candidateEndAt = runCatching {
+                YearMonth.of(endYear.normalizedYear(), endMonth).atEndOfMonth()
             }.getOrNull()
+
+            // Discard invalid or reversed end date
+            if (candidateEndAt != null && candidateEndAt.isBefore(startAt)) null else candidateEndAt
         }
 
-        return runCatching { Period(startAt = startAt, endAt = endAt) }.getOrNull()
+        return Period(startAt = startAt, endAt = endAt)
     }
 
     private fun Int.normalizedYear(): Int {
@@ -213,7 +216,7 @@ private object PeriodParser {
     private fun MatchResult.toEndDate(): LocalDate {
         val year = groupValues[1].toYear()
         val month = groupValues[2].toIntOrNull() ?: 12
-        return LocalDate.of(year, month, 1).withDayOfMonth(LocalDate.of(year, month, 1).lengthOfMonth())
+        return YearMonth.of(year, month).atEndOfMonth()
     }
 
     private fun String.toYear(): Int {

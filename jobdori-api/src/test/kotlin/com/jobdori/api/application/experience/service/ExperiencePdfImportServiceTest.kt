@@ -2,7 +2,12 @@ package com.jobdori.api.application.experience.service
 
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
+import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
+import com.jobdori.core.application.experience.command.ImportedExperienceCommandGroup
+import com.jobdori.core.domain.experience.ExperienceContents
+import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
+import com.jobdori.core.domain.experience.service.command.ExperienceProjectCreateCommand
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
@@ -23,16 +28,23 @@ import java.io.ByteArrayOutputStream
 internal class ExperiencePdfImportServiceTest : StringSpec({
 
     val experienceImportService = mockk<ExperienceImportService>()
+    val experienceAiExtractionService = mockk<ExperienceAiExtractionService>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
     val pdfValidationService = mockk<PdfValidationService>()
     val service = ExperiencePdfImportService(
         experienceImportService = experienceImportService,
+        experienceAiExtractionService = experienceAiExtractionService,
         workspaceAccessValidationService = workspaceAccessValidationService,
         pdfValidationService = pdfValidationService,
     )
 
     beforeTest {
-        clearMocks(experienceImportService, workspaceAccessValidationService, pdfValidationService)
+        clearMocks(
+            experienceImportService,
+            experienceAiExtractionService,
+            workspaceAccessValidationService,
+            pdfValidationService,
+        )
         every {
             workspaceAccessValidationService.validateAccessible(
                 workspaceId = "workspace-id",
@@ -51,12 +63,31 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
         )
 
         every { pdfValidationService.validate(file = file, userId = 1L) } returns pdfBytes
-        every { experienceImportService.saveAll(workspaceId = 1L, groups = any()) } returns Unit
+        val groups = listOf(
+            ImportedExperienceCommandGroup(
+                project = ExperienceProjectCreateCommand(
+                    name = "PDF 경험 추출",
+                    summary = "PDF에서 추출한 경험",
+                    period = null,
+                    role = null,
+                ),
+                experiences = listOf(
+                    ExperienceCreateCommand(
+                        tags = listOf("PDF"),
+                        title = "PDF 텍스트 추출",
+                        contents = ExperienceContents.free("PDF 텍스트를 추출했다"),
+                    ),
+                ),
+            ),
+        )
+        every { experienceAiExtractionService.extract(any()) } returns groups
+        every { experienceImportService.saveAll(workspaceId = 1L, groups = groups) } returns Unit
 
         service.importExperiences(file = file, workspaceId = "workspace-id", userId = 1L)
 
         verify(exactly = 1) { pdfValidationService.validate(file = file, userId = 1L) }
-        verify(exactly = 1) { experienceImportService.saveAll(workspaceId = 1L, groups = any()) }
+        verify(exactly = 1) { experienceAiExtractionService.extract(match { text -> text.contains("Hello Jobdori") }) }
+        verify(exactly = 1) { experienceImportService.saveAll(workspaceId = 1L, groups = groups) }
     }
 
     "PDF 검증에 실패하면 가져온 경험을 저장하지 않는다" {
@@ -77,6 +108,7 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
 
         exception.message shouldBe "유효한 PDF 파일을 첨부해 주세요"
         verify(exactly = 1) { pdfValidationService.validate(file = file, userId = 1L) }
+        verify(exactly = 0) { experienceAiExtractionService.extract(any()) }
         verify(exactly = 0) { experienceImportService.saveAll(workspaceId = any(), groups = any()) }
     }
 

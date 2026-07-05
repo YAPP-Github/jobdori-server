@@ -20,27 +20,42 @@
 <li><a href="#_overview">1. Overview</a>
 <ul class="sectlevel2">
 <li><a href="#graphql-common-headers">1.1. Endpoints</a></li>
-<li><a href="#_공통_헤더_정보">1.2. 공통 헤더 정보</a></li>
+<li><a href="#_공통_헤더_정보">1.2. 공통 헤더 정보</a>
+<ul class="sectlevel3">
+<li><a href="#_설정_방법">1.2.1. 설정 방법</a></li>
+</ul>
+</li>
 <li><a href="#_graphql_응답_모델">1.3. GraphQL 응답 모델</a></li>
 <li><a href="#graphql-common-error-codes">1.4. 공통 에러 코드</a></li>
+<li><a href="#_커서_페이징">1.5. 커서 페이징</a></li>
 </ul>
 </li>
-<li><a href="#_queries">2. Queries</a>
+<li><a href="#_커스텀_에러_코드">2. 커스텀 에러 코드</a>
 <ul class="sectlevel2">
-<li><a href="#_요청_예시">2.1. 요청 예시</a></li>
+<li><a href="#_user">2.1. User</a>
+<ul class="sectlevel3">
+<li><a href="#_내_정보_조회">2.1.1. 내 정보 조회</a></li>
 </ul>
 </li>
-<li><a href="#_mutations">3. Mutations</a>
-<ul class="sectlevel2">
-<li><a href="#_필드_선택">3.1. 필드 선택</a></li>
-<li><a href="#_커서_페이징">3.2. 커서 페이징</a></li>
+<li><a href="#_experience">2.2. Experience</a>
+<ul class="sectlevel3">
+<li><a href="#_경험_단건_조회">2.2.1. 경험 단건 조회</a></li>
+<li><a href="#_경험_목록_조회">2.2.2. 경험 목록 조회</a></li>
+<li><a href="#_경험_검색">2.2.3. 경험 검색</a></li>
+<li><a href="#_경험_생성">2.2.4. 경험 생성</a></li>
+<li><a href="#_경험_수정">2.2.5. 경험 수정</a></li>
+<li><a href="#_경험_삭제">2.2.6. 경험 삭제</a></li>
 </ul>
 </li>
-<li><a href="#_도메인별_에러_코드">4. 도메인별 에러 코드</a>
-<ul class="sectlevel2">
-<li><a href="#_user">4.1. User</a></li>
-<li><a href="#_workspace">4.2. Workspace</a></li>
-<li><a href="#_experience">4.3. Experience</a></li>
+<li><a href="#_experience_project">2.3. Experience Project</a>
+<ul class="sectlevel3">
+<li><a href="#_경험_프로젝트_단건_조회">2.3.1. 경험 프로젝트 단건 조회</a></li>
+<li><a href="#_경험_프로젝트_목록_조회">2.3.2. 경험 프로젝트 목록 조회</a></li>
+<li><a href="#_경험_프로젝트_생성">2.3.3. 경험 프로젝트 생성</a></li>
+<li><a href="#_경험_프로젝트_수정">2.3.4. 경험 프로젝트 수정</a></li>
+<li><a href="#_경험_프로젝트_삭제">2.3.5. 경험 프로젝트 삭제</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -353,11 +368,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">file_size_exceeded</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">파일 크기 제한을 초과했습니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">업로드한 파일 크기가 허용된 최대 크기를 초과한 경우</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_arguments</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">입력한 내용을 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우</p></td>
@@ -385,367 +395,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tbody>
 </table>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_queries">2. Queries</h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_요청_예시">2.1. 요청 예시</h3>
-<div class="paragraph">
-<p>GraphiQL에서는 아래 GraphQL 문서를 그대로 입력해서 실행할 수 있습니다.</p>
-</div>
-<div class="paragraph">
-<p>사용자 조회:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query MyUser {
-  myUser {
-    userId
-    email
-    name
-    profileImageUrl
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>경험 목록 조회:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
-  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
-    experiences {
-      experienceId
-      title
-      tags
-      contents {
-        type
-        star {
-          situation
-          task
-          action
-          result
-        }
-        free {
-          content
-        }
-      }
-      project {
-        projectId
-        name
-        role
-      }
-    }
-    cursor {
-      hasNext
-      nextCursor
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Variables:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
-  "cursor": null,
-  "size": 20
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>프로젝트별 경험 목록 조회:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ProjectExperiences($workspaceId: ID!, $projectId: ID!, $cursor: String, $size: Int!) {
-  experiences(workspaceId: $workspaceId, projectId: $projectId, cursor: $cursor, size: $size) {
-    experiences {
-      experienceId
-      title
-      tags
-      contents {
-        type
-        star {
-          situation
-          task
-          action
-          result
-        }
-        free {
-          content
-        }
-      }
-    }
-    cursor {
-      hasNext
-      nextCursor
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Variables:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
-  "projectId": 3,
-  "cursor": null,
-  "size": 20
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>경험 프로젝트 목록 조회:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ExperienceProjects($workspaceId: ID!, $cursor: String, $size: Int!) {
-  experienceProjects(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
-    projects {
-      projectId
-      name
-      summary
-      role
-      period {
-        startAt
-        endAt
-      }
-    }
-    cursor {
-      hasNext
-      nextCursor
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Variables:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
-  "cursor": null,
-  "size": 20
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_mutations">3. Mutations</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>경험 생성:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation CreateExperience($workspaceId: ID!, $request: CreateExperienceRequest!) {
-  createExperience(workspaceId: $workspaceId, request: $request) {
-    experienceId
-    title
-    tags
-    contents {
-      type
-      star {
-        situation
-        task
-        action
-        result
-      }
-      free {
-        content
-      }
-    }
-    project {
-      projectId
-      name
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Variables:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
-  "request": {
-    "projectId": 3,
-    "tags": ["브랜드런칭", "퍼포먼스마케팅"],
-    "title": "런칭 캠페인 메시지 A/B 테스트",
-    "contents": {
-      "type": "STAR",
-      "star": {
-        "situation": "신규 브랜드 런칭 직후 핵심 메시지에 대한 반응 데이터가 부족했습니다.",
-        "task": "제한된 예산 안에서 전환 가능성이 높은 메시지를 빠르게 찾아야 했습니다.",
-        "action": "문제 인식형, 혜택 강조형, 사회적 증거형 메시지로 광고 소재와 랜딩 카피를 나눠 테스트했습니다.",
-        "result": "혜택 강조형 메시지의 클릭률과 회원가입 전환율이 가장 높아 메인 캠페인 메시지로 확정했습니다."
-      }
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>경험 수정:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation UpdateExperience($workspaceId: ID!, $experienceId: ID!, $request: UpdateExperienceRequest!) {
-  updateExperience(workspaceId: $workspaceId, experienceId: $experienceId, request: $request) {
-    experienceId
-    title
-    contents {
-      type
-      free {
-        content
-      }
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>경험 삭제:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteExperience($workspaceId: ID!, $experienceId: ID!) {
-  deleteExperience(workspaceId: $workspaceId, experienceId: $experienceId)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>경험 프로젝트 생성:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation CreateExperienceProject($workspaceId: ID!, $input: CreateExperienceProjectRequest!) {
-  createExperienceProject(workspaceId: $workspaceId, input: $input) {
-    projectId
-    name
-    summary
-    period {
-      startAt
-      endAt
-    }
-    role
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Variables:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "workspaceId": "8f13f49e-132a-47b7-b704-d7eec18fd44b",
-  "request": {
-    "name": "신규 브랜드 런칭 캠페인",
-    "summary": "신규 서비스의 초기 인지도 확보 캠페인",
-    "period": {
-      "startAt": "2025-01-01",
-      "endAt": "2025-04-30"
-    },
-    "role": "Growth Marketer"
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>경험 프로젝트 수정:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation UpdateExperienceProject($workspaceId: ID!, $projectId: ID!, $request: UpdateExperienceProjectRequest!) {
-  updateExperienceProject(workspaceId: $workspaceId, projectId: $projectId, request: $request) {
-    projectId
-    name
-    role
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>경험 프로젝트 삭제:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteExperienceProject($workspaceId: ID!, $projectId: ID!) {
-  deleteExperienceProject(workspaceId: $workspaceId, projectId: $projectId)
-}</code></pre>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_필드_선택">3.1. 필드 선택</h3>
-<div class="paragraph">
-<p>GraphQL은 클라이언트가 필요한 필드만 선택해서 조회합니다.</p>
-</div>
-<div class="paragraph">
-<p>예를 들어 경험 목록에서 프로젝트 정보가 필요 없으면 <code>project</code> 필드를 요청하지 않습니다.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
-  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
-    experiences {
-      experienceId
-      title
-      tags
-    }
-    cursor {
-      hasNext
-      nextCursor
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>프로젝트 정보가 필요한 화면에서는 <code>project</code> 필드를 함께 요청합니다.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
-  experiences(workspaceId: $workspaceId, cursor: $cursor, size: $size) {
-    experiences {
-      experienceId
-      title
-      project {
-        projectId
-        name
-      }
-    }
-    cursor {
-      hasNext
-      nextCursor
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>경험이 프로젝트에 연결되어 있지 않으면 `project`는 `null`입니다.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_커서_페이징">3.2. 커서 페이징</h3>
+<h3 id="_커서_페이징">1.5. 커서 페이징</h3>
 <div class="paragraph">
 <p>목록 Query는 <code>cursor</code>, <code>size</code> 파라미터를 사용합니다.</p>
 </div>
@@ -822,18 +473,27 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="sect1">
-<h2 id="_도메인별_에러_코드">4. 도메인별 에러 코드</h2>
+<h2 id="_커스텀_에러_코드">2. 커스텀 에러 코드</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>현재 GraphQL API에서 도메인 로직에 따라 발생할 수 있는 에러 코드입니다.</p>
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래 표에는 각 GraphQL operation에서 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <div class="sect2">
-<h3 id="_user">4.1. User</h3>
+<h3 id="_user">2.1. User</h3>
+<div class="sect3">
+<h4 id="_내_정보_조회">2.1.1. 내 정보 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>me</code></p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
-<col style="width: 36%;">
-<col style="width: 36%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
 </colgroup>
 <thead>
 <tr>
@@ -848,21 +508,110 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">사용자를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유저를 찾을 수 없는 경우</p></td>
 </tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_experience">2.2. Experience</h3>
+<div class="sect3">
+<h4 id="_경험_단건_조회">2.2.1. 경험 단건 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>experience</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">user_already_exists</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">이미 가입된 사용자입니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">이미 가입한 유저인 경우</p></td>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 경험입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>project</code> 필드를 함께 요청했으나 연결된 경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_workspace">4.2. Workspace</h3>
+<div class="sect3">
+<h4 id="_경험_목록_조회">2.2.2. 경험 목록 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>experiences</code></p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
-<col style="width: 36%;">
-<col style="width: 36%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">`projectId`로 특정 프로젝트의 경험 목록을 조회했으나 프로젝트를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_경험_검색">2.2.3. 경험 검색</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>searchExperiences</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
 </colgroup>
 <thead>
 <tr>
@@ -885,34 +634,324 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_experience">4.3. Experience</h3>
+<div class="sect3">
+<h4 id="_경험_생성">2.2.4. 경험 생성</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>createExperience</code></p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
-<col style="width: 28%;">
-<col style="width: 44%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">GraphQL Classification</th>
+<th class="tableblock halign-left valign-top">Message</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NOT_FOUND</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="sect3">
+<h4 id="_경험_수정">2.2.5. 경험 수정</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>updateExperience</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 경험입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_경험_삭제">2.2.6. 경험 삭제</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>deleteExperience</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 경험입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_experience_project">2.3. Experience Project</h3>
+<div class="sect3">
+<h4 id="_경험_프로젝트_단건_조회">2.3.1. 경험 프로젝트 단건 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>experienceProject</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_경험_프로젝트_목록_조회">2.3.2. 경험 프로젝트 목록 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>experienceProjects</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_경험_프로젝트_생성">2.3.3. 경험 프로젝트 생성</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>createExperienceProject</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_경험_프로젝트_수정">2.3.4. 경험 프로젝트 수정</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>updateExperienceProject</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_경험_프로젝트_삭제">2.3.5. 경험 프로젝트 삭제</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>deleteExperienceProject</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>

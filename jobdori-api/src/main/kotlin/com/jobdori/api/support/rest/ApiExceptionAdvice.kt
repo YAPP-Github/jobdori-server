@@ -3,6 +3,7 @@ package com.jobdori.api.support.rest
 import com.jobdori.common.error.BaseException
 import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorDetail
+import com.jobdori.common.error.FileErrorCode
 import com.jobdori.common.logger.LoggerExtension.log
 import org.springframework.beans.TypeMismatchException
 import org.springframework.http.HttpStatus
@@ -81,7 +82,7 @@ class ApiExceptionAdvice {
     @ExceptionHandler(MaxUploadSizeExceededException::class)
     fun handleMaxUploadSizeExceededException(exception: MaxUploadSizeExceededException): ApiResponse<Nothing> {
         log.warn(exception) { exception.message }
-        return ApiResponse.fail(CommonErrorCode.E400_FILE_SIZE_EXCEEDED)
+        return ApiResponse.fail(FileErrorCode.E400_FILE_SIZE_EXCEEDED)
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

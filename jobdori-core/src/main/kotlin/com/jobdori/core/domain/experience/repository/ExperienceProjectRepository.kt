@@ -6,6 +6,8 @@ interface ExperienceProjectRepository {
 
     fun save(project: ExperienceProject): ExperienceProject
 
+    fun saveAll(projects: List<ExperienceProject>): List<ExperienceProject>
+
     fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): ExperienceProject?
 
     fun findAllByIdsAndWorkspaceId(ids: Collection<Long>, workspaceId: Long): List<ExperienceProject>

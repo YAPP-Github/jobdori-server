@@ -48,7 +48,7 @@ class ExperienceCreatorTest : StringSpec({
 
     "경험 목록을 생성한다" {
         // given
-        every { experienceRepository.save(any()) } answers { firstArg() }
+        every { experienceRepository.saveAll(any()) } answers { firstArg() }
 
         // when
         val experiences = experienceCreator.create(
@@ -74,7 +74,8 @@ class ExperienceCreatorTest : StringSpec({
         experiences.map { it.title } shouldContainExactly listOf("검색 성능 개선", "데이터 모델 개선")
         experiences.map { it.displayOrder } shouldContainExactly listOf(BigDecimal.ZERO, BigDecimal.ZERO)
         experiences.map { it.status } shouldContainExactly listOf(ExperienceStatus.ACTIVE, ExperienceStatus.ACTIVE)
-        verify(exactly = 2) { experienceRepository.save(any()) }
+        verify(exactly = 1) { experienceRepository.saveAll(any()) }
+        verify(exactly = 0) { experienceRepository.save(any()) }
     }
 
 })

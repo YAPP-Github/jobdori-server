@@ -4,22 +4,26 @@ import com.jobdori.core.domain.workspace.Workspace
 import com.jobdori.core.domain.workspace.repository.WorkspaceRepository
 import com.jobdori.infrastructure.persistence.domain.workspace.entity.WorkspaceEntity
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class WorkspaceRepositoryImpl(
     private val jpaRepository: WorkspaceJpaRepository,
 ) : WorkspaceRepository {
 
+    @Transactional(readOnly = true)
     override fun findByPublicId(publicId: String): Workspace? {
         return jpaRepository.findByPublicId(publicId)
             ?.toDomain()
     }
 
+    @Transactional(readOnly = true)
     override fun findAllByOwnerUserId(ownerUserId: Long): List<Workspace> {
         return jpaRepository.findAllByOwnerUserId(ownerUserId)
             .map { it.toDomain() }
     }
 
+    @Transactional
     override fun save(workspace: Workspace): Workspace {
         val entity = jpaRepository.save(WorkspaceEntity.from(workspace))
         return entity.toDomain()

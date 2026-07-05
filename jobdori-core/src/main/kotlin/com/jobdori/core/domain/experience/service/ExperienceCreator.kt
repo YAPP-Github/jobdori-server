@@ -4,14 +4,12 @@ import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.repository.ExperienceRepository
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ExperienceCreator(
     private val experienceRepository: ExperienceRepository,
 ) {
 
-    @Transactional
     fun create(
         workspaceId: Long,
         projectId: Long,
@@ -28,19 +26,22 @@ class ExperienceCreator(
         )
     }
 
-    @Transactional
     fun create(
         workspaceId: Long,
         projectId: Long,
         commands: List<ExperienceCreateCommand>,
     ): List<Experience> {
-        return commands.map { command ->
-            create(
+        val experiences = commands.map { command ->
+            Experience.newInstance(
                 workspaceId = workspaceId,
                 projectId = projectId,
-                command = command,
+                tags = command.tags,
+                title = command.title,
+                contents = command.contents,
             )
         }
+
+        return experienceRepository.saveAll(experiences)
     }
 
 }

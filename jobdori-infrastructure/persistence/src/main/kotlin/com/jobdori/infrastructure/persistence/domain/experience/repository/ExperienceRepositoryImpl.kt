@@ -6,16 +6,29 @@ import com.jobdori.core.domain.experience.repository.ExperienceRepository
 import com.jobdori.infrastructure.persistence.domain.experience.entity.ExperienceEntity
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ExperienceRepositoryImpl(
     private val jpaRepository: ExperienceJpaRepository,
 ) : ExperienceRepository {
 
+    @Transactional
     override fun save(experience: Experience): Experience {
         return jpaRepository.save(ExperienceEntity.from(experience)).toDomain()
     }
 
+    @Transactional
+    override fun saveAll(experiences: List<Experience>): List<Experience> {
+        if (experiences.isEmpty()) {
+            return emptyList()
+        }
+
+        return jpaRepository.saveAll(experiences.map { ExperienceEntity.from(it) })
+            .map { it.toDomain() }
+    }
+
+    @Transactional(readOnly = true)
     override fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): Experience? {
         return jpaRepository.findByIdAndWorkspaceIdAndStatus(
             id = id,
@@ -24,6 +37,7 @@ class ExperienceRepositoryImpl(
         )?.toDomain()
     }
 
+    @Transactional(readOnly = true)
     override fun findAllByWorkspaceId(
         workspaceId: Long,
         cursorId: Long?,
@@ -48,6 +62,7 @@ class ExperienceRepositoryImpl(
         return entities.map { it.toDomain() }
     }
 
+    @Transactional(readOnly = true)
     override fun findAllByWorkspaceIdAndProjectId(
         workspaceId: Long,
         projectId: Long,
@@ -75,6 +90,7 @@ class ExperienceRepositoryImpl(
         return entities.map { it.toDomain() }
     }
 
+    @Transactional(readOnly = true)
     override fun searchAllByWorkspaceId(
         workspaceId: Long,
         keyword: String,
@@ -102,6 +118,7 @@ class ExperienceRepositoryImpl(
             .replace("_", "\\_")
     }
 
+    @Transactional(readOnly = true)
     override fun countByWorkspaceIdAndProjectIds(
         workspaceId: Long,
         projectIds: Collection<Long>,

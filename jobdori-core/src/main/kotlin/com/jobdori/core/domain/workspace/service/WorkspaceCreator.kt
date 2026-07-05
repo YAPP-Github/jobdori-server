@@ -10,7 +10,6 @@ class WorkspaceCreator(
     private val workspaceRepository: WorkspaceRepository,
 ) {
 
-    @Transactional
     fun create(ownerUserId: Long): Workspace {
         return workspaceRepository.save(
             Workspace.newInstance(

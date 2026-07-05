@@ -54,7 +54,7 @@ class ExperienceProjectCreatorTest : StringSpec({
             startAt = LocalDate.of(2024, 1, 1),
             endAt = LocalDate.of(2024, 12, 31),
         )
-        every { experienceProjectRepository.save(any()) } answers { firstArg() }
+        every { experienceProjectRepository.saveAll(any()) } answers { firstArg() }
 
         // when
         val projects = experienceProjectCreator.create(
@@ -86,7 +86,8 @@ class ExperienceProjectCreatorTest : StringSpec({
             ExperienceProjectStatus.ACTIVE,
             ExperienceProjectStatus.ACTIVE,
         )
-        verify(exactly = 2) { experienceProjectRepository.save(any()) }
+        verify(exactly = 1) { experienceProjectRepository.saveAll(any()) }
+        verify(exactly = 0) { experienceProjectRepository.save(any()) }
     }
 
 })

@@ -6,6 +6,8 @@ interface ExperienceRepository {
 
     fun save(experience: Experience): Experience
 
+    fun saveAll(experiences: List<Experience>): List<Experience>
+
     fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): Experience?
 
     fun findAllByWorkspaceId(workspaceId: Long, cursorId: Long?, size: Int): List<Experience>

@@ -6,16 +6,29 @@ import com.jobdori.core.domain.experience.repository.ExperienceProjectRepository
 import com.jobdori.infrastructure.persistence.domain.experience.entity.ExperienceProjectEntity
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ExperienceProjectRepositoryImpl(
     private val jpaRepository: ExperienceProjectJpaRepository,
 ) : ExperienceProjectRepository {
 
+    @Transactional
     override fun save(project: ExperienceProject): ExperienceProject {
         return jpaRepository.save(ExperienceProjectEntity.from(project)).toDomain()
     }
 
+    @Transactional
+    override fun saveAll(projects: List<ExperienceProject>): List<ExperienceProject> {
+        if (projects.isEmpty()) {
+            return emptyList()
+        }
+
+        return jpaRepository.saveAll(projects.map { ExperienceProjectEntity.from(it) })
+            .map { it.toDomain() }
+    }
+
+    @Transactional(readOnly = true)
     override fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): ExperienceProject? {
         return jpaRepository.findByIdAndWorkspaceIdAndStatus(
             id = id,
@@ -24,6 +37,7 @@ class ExperienceProjectRepositoryImpl(
         )?.toDomain()
     }
 
+    @Transactional(readOnly = true)
     override fun findAllByIdsAndWorkspaceId(
         ids: Collection<Long>,
         workspaceId: Long,
@@ -39,6 +53,7 @@ class ExperienceProjectRepositoryImpl(
         ).map { it.toDomain() }
     }
 
+    @Transactional(readOnly = true)
     override fun findAllByWorkspaceId(
         workspaceId: Long,
         cursorId: Long?,

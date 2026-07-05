@@ -5,14 +5,12 @@ import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.error.ExperienceNotFoundException
 import com.jobdori.core.domain.experience.repository.ExperienceRepository
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ExperienceReader(
     private val experienceRepository: ExperienceRepository,
 ) {
 
-    @Transactional(readOnly = true)
     fun getExperience(workspaceId: Long, experienceId: Long): Experience {
         return experienceRepository.findByIdAndWorkspaceId(experienceId, workspaceId)
             ?: throw ExperienceNotFoundException(
@@ -20,7 +18,6 @@ class ExperienceReader(
             )
     }
 
-    @Transactional(readOnly = true)
     fun getExperiences(
         workspaceId: Long,
         projectId: Long?,
@@ -49,7 +46,6 @@ class ExperienceReader(
         )
     }
 
-    @Transactional(readOnly = true)
     fun searchExperiences(
         workspaceId: Long,
         keyword: String,
@@ -70,7 +66,6 @@ class ExperienceReader(
         )
     }
 
-    @Transactional(readOnly = true)
     fun getExperienceCountsByProjectIds(workspaceId: Long, projectIds: Collection<Long>): Map<Long, Long> {
         if (projectIds.isEmpty()) {
             return emptyMap()

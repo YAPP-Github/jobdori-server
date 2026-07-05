@@ -17,7 +17,7 @@ internal class ErrorCodeDocsGeneratorTest : FunSpec({
     test("REST 공통 에러코드 Asciidoctor 생성") {
         generateRestErrorCodeDocs(
             file = File("src/docs/asciidoc/restapi/common/error.adoc"),
-            errorCodes = CommonErrorCode.entries + FileErrorCode.entries,
+            errorCodes = CommonErrorCode.entries,
         )
     }
 

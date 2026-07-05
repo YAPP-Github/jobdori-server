@@ -1,4 +1,7 @@
 spring:
+  sql:
+    init:
+      mode: never
   jpa:
     hibernate:
       ddl-auto: validate
@@ -11,6 +14,9 @@ spring:
         default_batch_fetch_size: 300
     open-in-view: false
   datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
 
@@ -19,9 +25,11 @@ spring.config:
   activate:
     on-profile:
       - local
-      - test
 
 spring:
+  sql:
+    init:
+      mode: always
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -49,15 +57,17 @@ spring:
 spring.config:
   activate:
     on-profile:
-      - dev # 개발 DB로 바꿔야함 (임시 세팅)
+      - test
 
 spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    defer-datasource-initialization: true   # Hibernate가 테이블 생성한 뒤 data.sql 실행
     properties:
       hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
         dialect: org.hibernate.dialect.H2Dialect
 
   datasource:
@@ -66,7 +76,14 @@ spring:
     username: sa
     password:
 
-  h2:
-    console:
-      enabled: false
 
+---
+spring.config:
+  activate:
+    on-profile:
+      - dev
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update # TODO: 임시로 제거

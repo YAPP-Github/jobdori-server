@@ -5,4 +5,4 @@ data class StarExperienceContents(
     val task: String,
     val action: String,
     val result: String,
-)
+) : ExperienceContents

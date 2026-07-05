@@ -1,6 +1,7 @@
 package com.jobdori.api
 
 import com.jobdori.core.support.spring.JsonConfig
+import com.jobdori.api.support.graphql.GraphQLRuntimeWiringConfig
 import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest
 import org.springframework.context.annotation.Import
 import org.springframework.core.annotation.AliasFor
@@ -9,6 +10,7 @@ import kotlin.reflect.KClass
 
 @ActiveProfiles("test")
 @Import(
+    GraphQLRuntimeWiringConfig::class,
     JsonConfig::class,
 )
 @GraphQlTest

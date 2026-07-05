@@ -7,7 +7,7 @@ data class StarExperienceContentsResponse(
     val task: String,
     val action: String,
     val result: String,
-) {
+) : ExperienceContentsResponse {
 
     companion object {
         fun from(contents: StarExperienceContents) = StarExperienceContentsResponse(

@@ -4,7 +4,7 @@ import com.jobdori.core.domain.experience.FreeExperienceContents
 
 data class FreeExperienceContentsResponse(
     val content: String,
-) {
+) : ExperienceContentsResponse {
 
     companion object {
         fun from(contents: FreeExperienceContents) = FreeExperienceContentsResponse(

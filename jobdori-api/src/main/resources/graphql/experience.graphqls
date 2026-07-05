@@ -402,27 +402,12 @@ type Experience {
 """
 경험 상세 내용입니다.
 """
-type ExperienceContents {
-    """
-    경험 상세 내용 타입입니다.
-    """
-    type: ExperienceContentsType!
-
-    """
-    STAR 형식의 상세 내용입니다.
-    """
-    star: StarExperienceContents
-
-    """
-    FREE 형식의 상세 내용입니다.
-    """
-    free: FreeExperienceContents
-}
+union ExperienceContents = STAR | FREE
 
 """
 STAR 형식의 경험 상세 내용입니다.
 """
-type StarExperienceContents {
+type STAR {
     """
     상황입니다.
     """
@@ -447,7 +432,7 @@ type StarExperienceContents {
 """
 FREE 형식의 경험 상세 내용입니다.
 """
-type FreeExperienceContents {
+type FREE {
     """
     자유 내용입니다.
     """

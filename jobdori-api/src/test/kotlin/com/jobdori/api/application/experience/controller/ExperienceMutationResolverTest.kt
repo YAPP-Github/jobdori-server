@@ -89,8 +89,7 @@ internal class ExperienceMutationResolverTest(
                     }
                     title
                     contents {
-                      type
-                      star {
+                      ... on STAR {
                         situation
                       }
                     }
@@ -102,8 +101,7 @@ internal class ExperienceMutationResolverTest(
             .path("createExperience.experienceId").entity<String>().isEqualTo("100")
             .path("createExperience.project.projectId").entity<String>().isEqualTo("3")
             .path("createExperience.title").entity<String>().isEqualTo("런칭 캠페인 메시지 A/B 테스트")
-            .path("createExperience.contents.type").entity<String>().isEqualTo("STAR")
-            .path("createExperience.contents.star.situation").entity<String>().isEqualTo("s")
+            .path("createExperience.contents.situation").entity<String>().isEqualTo("s")
 
         verify(exactly = 1) { accessTokenService.getUserId("access-token") }
         verify(exactly = 1) {
@@ -158,8 +156,7 @@ internal class ExperienceMutationResolverTest(
                     experienceId
                     title
                     contents {
-                      type
-                      free {
+                      ... on FREE {
                         content
                       }
                     }
@@ -170,8 +167,7 @@ internal class ExperienceMutationResolverTest(
             .execute()
             .path("updateExperience.experienceId").entity<String>().isEqualTo("100")
             .path("updateExperience.title").entity<String>().isEqualTo("프로젝트 회고")
-            .path("updateExperience.contents.type").entity<String>().isEqualTo("FREE")
-            .path("updateExperience.contents.free.content").entity<String>().isEqualTo("회고 내용")
+            .path("updateExperience.contents.content").entity<String>().isEqualTo("회고 내용")
 
         verify(exactly = 1) {
             experienceService.modifyExperience(

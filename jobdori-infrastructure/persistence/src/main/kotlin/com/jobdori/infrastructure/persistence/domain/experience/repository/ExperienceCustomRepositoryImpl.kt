@@ -21,40 +21,33 @@ class ExperienceCustomRepositoryImpl(
         cursorId: Long?,
         pageable: Pageable,
     ): List<ExperienceEntity> {
-        val query = jpql {
-            select(
-                entity(ExperienceEntity::class),
-            ).from(
-                entity(ExperienceEntity::class),
-            ).where(
-                if (cursorId == null) {
-                    and(
-                        path(ExperienceEntity::workspaceId).eq(workspaceId),
-                        path(ExperienceEntity::status).eq(status),
-                        or(
-                            lower(path(ExperienceEntity::title)).like(keywordPattern, '\\'),
-                            lower(path(ExperienceEntity::contents)).like(keywordPattern, '\\'),
-                        ),
-                    )
-                } else {
-                    and(
-                        path(ExperienceEntity::workspaceId).eq(workspaceId),
-                        path(ExperienceEntity::status).eq(status),
-                        or(
-                            lower(path(ExperienceEntity::title)).like(keywordPattern, '\\'),
-                            lower(path(ExperienceEntity::contents)).like(keywordPattern, '\\'),
-                        ),
-                        path(ExperienceEntity::id).lessThan(cursorId),
-                    )
-                },
-            ).orderBy(
-                path(ExperienceEntity::id).desc(),
-            )
+        val cursorCondition = cursorId?.let { "and id < :cursorId" }.orEmpty()
+        val query = entityManager.createNativeQuery(
+            """
+            select *
+            from experience_v1
+            where workspace_id = :workspaceId
+              and status = :status
+              and (
+                lower(title) like :keywordPattern escape '\'
+                or lower(cast(contents as varchar)) like :keywordPattern escape '\'
+              )
+              $cursorCondition
+            order by id desc
+            """.trimIndent(),
+            ExperienceEntity::class.java,
+        )
+            .setParameter("workspaceId", workspaceId)
+            .setParameter("status", status.name)
+            .setParameter("keywordPattern", keywordPattern)
+            .setMaxResults(pageable.pageSize)
+
+        if (cursorId != null) {
+            query.setParameter("cursorId", cursorId)
         }
 
-        return entityManager.createQuery(query, jpqlRenderContext)
-            .setMaxResults(pageable.pageSize)
-            .resultList
+        @Suppress("UNCHECKED_CAST")
+        return query.resultList as List<ExperienceEntity>
     }
 
     override fun countByWorkspaceIdAndProjectIdsAndStatus(

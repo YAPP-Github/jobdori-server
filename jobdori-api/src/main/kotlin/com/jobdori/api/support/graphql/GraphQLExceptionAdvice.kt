@@ -101,7 +101,7 @@ class GraphQLExceptionAdvice {
 
     private fun toGraphQlErrorType(errorCode: ErrorCode): ErrorType {
         return when (errorCode.httpStatusCode) {
-            400 -> ErrorType.BAD_REQUEST
+            400, 422 -> ErrorType.BAD_REQUEST   // GraphQL엔 422 대응 타입이 없어 클라이언트 조치 가능(BAD_REQUEST)으로 분류
             401 -> ErrorType.UNAUTHORIZED
             403 -> ErrorType.FORBIDDEN
             404 -> ErrorType.NOT_FOUND

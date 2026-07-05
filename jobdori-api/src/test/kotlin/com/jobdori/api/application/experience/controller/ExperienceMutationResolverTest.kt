@@ -9,11 +9,13 @@ import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.common.model.Period
 import com.jobdori.core.application.auth.AccessTokenService
+import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceProject
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
 import com.jobdori.core.domain.experience.ExperienceStatus
+import com.jobdori.core.domain.experience.StarExperienceContents
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
 import io.mockk.every
@@ -35,6 +37,8 @@ internal class ExperienceMutationResolverTest(
     private val experienceService: ExperienceService,
     @MockkBean
     private val experienceProjectService: ExperienceProjectService,
+    @MockkBean
+    private val experienceContentsPolishService: ExperienceContentsPolishService,
 ) : StringSpec({
 
     beforeTest {
@@ -211,6 +215,53 @@ internal class ExperienceMutationResolverTest(
                 userId = 1L,
                 workspaceId = "workspace-id",
                 experienceId = 100L,
+            )
+        }
+    }
+
+    "Free Style 경험 내용을 STAR 형식으로 다듬는다" {
+        every {
+            experienceContentsPolishService.polishFreeStyleToStar(
+                content = "런칭 캠페인에서 메시지 A/B 테스트를 수행해 전환율을 개선했다.",
+            )
+        } returns StarExperienceContents(
+            situation = "신규 서비스 런칭 캠페인에서 메시지별 전환 성과를 검증해야 했다.",
+            task = "캠페인 메시지 A/B 테스트를 설계하고 성과가 높은 메시지를 찾아야 했다.",
+            action = "메시지 안을 나누어 테스트를 운영하고 전환율 데이터를 비교했다.",
+            result = "성과가 높은 메시지를 캠페인에 반영해 전환율을 개선했다.",
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  polishExperienceContents(
+                    request: {
+                      content: "런칭 캠페인에서 메시지 A/B 테스트를 수행해 전환율을 개선했다."
+                    }
+                  ) {
+                    situation
+                    task
+                    action
+                    result
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("polishExperienceContents.situation").entity<String>()
+            .isEqualTo("신규 서비스 런칭 캠페인에서 메시지별 전환 성과를 검증해야 했다.")
+            .path("polishExperienceContents.task").entity<String>()
+            .isEqualTo("캠페인 메시지 A/B 테스트를 설계하고 성과가 높은 메시지를 찾아야 했다.")
+            .path("polishExperienceContents.action").entity<String>()
+            .isEqualTo("메시지 안을 나누어 테스트를 운영하고 전환율 데이터를 비교했다.")
+            .path("polishExperienceContents.result").entity<String>()
+            .isEqualTo("성과가 높은 메시지를 캠페인에 반영해 전환율을 개선했다.")
+
+        verify(exactly = 1) { accessTokenService.getUserId("access-token") }
+        verify(exactly = 1) {
+            experienceContentsPolishService.polishFreeStyleToStar(
+                content = "런칭 캠페인에서 메시지 A/B 테스트를 수행해 전환율을 개선했다.",
             )
         }
     }

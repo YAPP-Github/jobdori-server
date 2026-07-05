@@ -7,19 +7,19 @@ import jakarta.validation.constraints.Size
 
 data class StarExperienceContentsRequest(
     @field:NotBlank
-    @field:Size(max = 1000)
+    @field:Size(max = 500)
     val situation: String = "",
 
     @field:NotBlank
-    @field:Size(max = 1000)
+    @field:Size(max = 500)
     val task: String = "",
 
     @field:NotBlank
-    @field:Size(max = 1000)
+    @field:Size(max = 500)
     val action: String = "",
 
     @field:NotBlank
-    @field:Size(max = 1000)
+    @field:Size(max = 500)
     val result: String = "",
 ) {
 

@@ -6,4 +6,5 @@ enum class PromptType {
     JD_APPLICATION_STRATEGY,       // jd 지원 전략 생성(서술형)
     EXPERIENCE_STAR_EXTRACTION,    // 경험 STAR 추출
     RESUME_EXPERIENCE_REWRITE,     // 이력서 문장 생성
+    EXPERIENCE_CONTENTS_POLISH,    // Free Style 경험 내용을 STAR로 변환
 }

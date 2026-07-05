@@ -1,0 +1,8 @@
+language: ko-KR
+reviews:
+  auto_review:
+    enabled: false
+  path_filters:
+    - "!build/**"
+    - "!.gradle/**"
+    - "!.idea/**"

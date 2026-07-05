@@ -4,7 +4,7 @@ extend type Query {
     """
     experience(
         """
-        경험이 속한 워크스페이스 ID입니다.
+        경험을 조회할 워크스페이스 ID입니다.
         """
         workspaceId: ID!,
         """
@@ -22,7 +22,7 @@ extend type Query {
         """
         workspaceId: ID!,
         """
-        특정 프로젝트의 경험만 조회할 때 사용하는 프로젝트 ID입니다.
+        특정 프로젝트의 경험만 조회할 때 사용하는 프로젝트 ID입니다 (선택)
         """
         projectId: ID,
         """
@@ -68,7 +68,7 @@ extend type Query {
     ): ExperienceProjects!
 
     """
-    경험 목록을 검색합니다.
+    키워드 기반으로 경험 목록을 검색합니다.
     """
     searchExperiences(
         """
@@ -76,7 +76,7 @@ extend type Query {
         """
         workspaceId: ID!,
         """
-        경험 제목 또는 내용에 포함된 검색어입니다.
+        검색어입니다.
         """
         keyword: String!,
         """
@@ -259,22 +259,22 @@ STAR 형식의 경험 상세 내용 입력입니다.
 """
 input StarExperienceContentsRequest {
     """
-    상황입니다.
+    S
     """
     situation: String!
 
     """
-    과제입니다.
+    T
     """
     task: String!
 
     """
-    행동입니다.
+    A
     """
     action: String!
 
     """
-    결과입니다.
+    R
     """
     result: String!
 }
@@ -309,7 +309,7 @@ input CreateExperienceProjectRequest {
     period: PeriodInput
 
     """
-    경험 프로젝트에서 맡은 역할입니다.
+    경험 프로젝트 역할입니다.
     """
     role: String
 }
@@ -490,21 +490,6 @@ type ExperienceProject {
 }
 
 """
-경험 상태입니다.
-"""
-enum ExperienceStatus {
-    """
-    활성 상태입니다.
-    """
-    ACTIVE
-
-    """
-    삭제된 상태입니다.
-    """
-    DELETED
-}
-
-"""
 경험 상세 내용 타입입니다.
 """
 enum ExperienceContentsType {
@@ -517,19 +502,4 @@ enum ExperienceContentsType {
     자유 서술 형식입니다.
     """
     FREE
-}
-
-"""
-경험 프로젝트 상태입니다.
-"""
-enum ExperienceProjectStatus {
-    """
-    활성 상태입니다.
-    """
-    ACTIVE
-
-    """
-    삭제된 상태입니다.
-    """
-    DELETED
 }

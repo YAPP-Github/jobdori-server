@@ -1,12 +1,8 @@
 package com.jobdori.infrastructure.persistence.domain.experience.entity
 
-import com.jobdori.common.json.JsonUtils
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
-import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.ExperienceStatus
-import com.jobdori.core.domain.experience.FreeExperienceContents
-import com.jobdori.core.domain.experience.StarExperienceContents
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -36,12 +32,9 @@ class ExperienceEntity(
     @Column(nullable = false, length = 150)
     var title: String,
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
-    var contentsType: ExperienceContentsType,
-
-    @Column(nullable = false, columnDefinition = "text")
-    var contents: String,
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(nullable = false, columnDefinition = "jsonb")
+    var contents: ExperienceContents,
 
     @Column(nullable = false, precision = 20, scale = 10)
     var displayOrder: BigDecimal,
@@ -60,8 +53,7 @@ class ExperienceEntity(
         projectId = domain.projectId
         tags = domain.tags
         title = domain.title
-        contentsType = domain.contents.type
-        contents = toContentsJson(domain.contents)
+        contents = domain.contents
         displayOrder = domain.displayOrder
         status = domain.status
     }
@@ -72,7 +64,7 @@ class ExperienceEntity(
         projectId = projectId,
         tags = tags,
         title = title,
-        contents = parseContents(contentsType, contents),
+        contents = contents,
         displayOrder = displayOrder,
         status = status,
     )
@@ -83,45 +75,10 @@ class ExperienceEntity(
             projectId = domain.projectId,
             tags = domain.tags,
             title = domain.title,
-            contentsType = domain.contents.type,
-            contents = toContentsJson(domain.contents),
+            contents = domain.contents,
             displayOrder = domain.displayOrder,
             status = domain.status,
         ).also { it.id = domain.id }
-
-        private fun toContentsJson(contents: ExperienceContents): String {
-            return when (contents.type) {
-                ExperienceContentsType.STAR -> JsonUtils.toJson(
-                    requireNotNull(contents.star) { "STAR contents require star payload" },
-                )
-
-                ExperienceContentsType.FREE -> JsonUtils.toJson(
-                    requireNotNull(contents.free) { "FREE contents require free payload" },
-                )
-            }
-        }
-
-        private fun parseContents(
-            contentsType: ExperienceContentsType,
-            contents: String,
-        ): ExperienceContents {
-            return when (contentsType) {
-                ExperienceContentsType.STAR -> {
-                    val star = requireNotNull(JsonUtils.toObject(contents, StarExperienceContents::class.java))
-                    ExperienceContents.star(
-                        situation = star.situation,
-                        task = star.task,
-                        action = star.action,
-                        result = star.result,
-                    )
-                }
-
-                ExperienceContentsType.FREE -> {
-                    val free = requireNotNull(JsonUtils.toObject(contents, FreeExperienceContents::class.java))
-                    ExperienceContents.free(content = free.content)
-                }
-            }
-        }
     }
 
 }

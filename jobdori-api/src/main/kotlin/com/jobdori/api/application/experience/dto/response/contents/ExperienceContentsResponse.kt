@@ -2,6 +2,8 @@ package com.jobdori.api.application.experience.dto.response.contents
 
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
+import com.jobdori.core.domain.experience.FreeExperienceContents
+import com.jobdori.core.domain.experience.StarExperienceContents
 
 data class ExperienceContentsResponse(
     val type: ExperienceContentsType,
@@ -10,27 +12,19 @@ data class ExperienceContentsResponse(
 ) {
 
     companion object {
-        fun from(contents: ExperienceContents) = ExperienceContentsResponse(
-            type = contents.type,
-            star = contents.star?.let(StarExperienceContentsResponse::from),
-            free = contents.free?.let(FreeExperienceContentsResponse::from),
-        )
+        fun from(contents: ExperienceContents): ExperienceContentsResponse {
+            return when (contents) {
+                is StarExperienceContents -> ExperienceContentsResponse(
+                    type = ExperienceContentsType.STAR,
+                    star = StarExperienceContentsResponse.from(contents),
+                )
 
-        fun star(
-            situation: String,
-            task: String,
-            action: String,
-            result: String,
-        ) = from(
-            ExperienceContents.star(
-                situation = situation,
-                task = task,
-                action = action,
-                result = result,
-            ),
-        )
-
-        fun free(content: String) = from(ExperienceContents.free(content))
+                is FreeExperienceContents -> ExperienceContentsResponse(
+                    type = ExperienceContentsType.FREE,
+                    free = FreeExperienceContentsResponse.from(contents),
+                )
+            }
+        }
     }
 
 }

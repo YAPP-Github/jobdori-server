@@ -60,7 +60,7 @@ internal class ExperienceImportControllerTest(
         }.andDo {
             handle(
                 document(
-                    "experience-import-pdf",
+                    "experience-import-from-file",
                     RestDocsUtils.getDocumentRequest(),
                     RestDocsUtils.getDocumentResponse(),
                     PageHeaderSnippet.pageHeaderSnippet(),

@@ -65,7 +65,7 @@ class TestTokenController(
         if (workspaceRepository.findAllByOwnerUserId(user.id).isNotEmpty()) {
             return
         }
-        workspaceRepository.save(Workspace.newInstance(ownerUserId = user.id))
+        workspaceRepository.save(Workspace.newInstance(ownerUserId = user.id, publicId = TEST_WORKSPACE_PUBLIC_ID))
     }
 
     private fun validateExpiresAt(
@@ -85,6 +85,7 @@ class TestTokenController(
     private companion object {
         const val TEST_USER_PUBLIC_ID = "00000000-0000-0000-0000-000000000001"
         const val TEST_USER_EMAIL = "test@jobdori.com"
+        const val TEST_WORKSPACE_PUBLIC_ID = "00000000-0000-0000-0000-000000000002"
     }
 
 }

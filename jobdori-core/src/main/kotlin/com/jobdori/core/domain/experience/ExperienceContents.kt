@@ -1,10 +1,17 @@
 package com.jobdori.core.domain.experience
 
-data class ExperienceContents(
-    val type: ExperienceContentsType,
-    val star: StarExperienceContents? = null,
-    val free: FreeExperienceContents? = null,
-) {
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    property = "type",
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = StarExperienceContents::class, name = "STAR"),
+    JsonSubTypes.Type(value = FreeExperienceContents::class, name = "FREE"),
+)
+sealed interface ExperienceContents {
 
     companion object {
         fun star(
@@ -12,20 +19,14 @@ data class ExperienceContents(
             task: String,
             action: String,
             result: String,
-        ) = ExperienceContents(
-            type = ExperienceContentsType.STAR,
-            star = StarExperienceContents(
-                situation = situation,
-                task = task,
-                action = action,
-                result = result,
-            ),
+        ) = StarExperienceContents(
+            situation = situation,
+            task = task,
+            action = action,
+            result = result,
         )
 
-        fun free(content: String) = ExperienceContents(
-            type = ExperienceContentsType.FREE,
-            free = FreeExperienceContents(content = content),
-        )
+        fun free(content: String) = FreeExperienceContents(content = content)
     }
 
 }

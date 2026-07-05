@@ -25,10 +25,11 @@ data class ExperienceContentsRequest(
         }
     }
 
-    fun toDomain() = ExperienceContents(
-        type = type,
-        star = star?.toDomain(),
-        free = free?.toDomain(),
-    )
+    fun toDomain(): ExperienceContents {
+        return when (type) {
+            ExperienceContentsType.STAR -> requireNotNull(star) { "STAR contents require star payload" }.toDomain()
+            ExperienceContentsType.FREE -> requireNotNull(free) { "FREE contents require free payload" }.toDomain()
+        }
+    }
 
 }

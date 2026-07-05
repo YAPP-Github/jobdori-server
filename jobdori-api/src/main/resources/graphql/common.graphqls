@@ -34,7 +34,7 @@ input PeriodInput {
 """
 type Cursor {
     """
-    다음 페이지를 조회할 때 사용할 커서입니다.
+    다음 페이지를 조회할 때 사용할 커서입니다. (다음 페이지가 없는 경우 null 응답)
     """
     nextCursor: String
 

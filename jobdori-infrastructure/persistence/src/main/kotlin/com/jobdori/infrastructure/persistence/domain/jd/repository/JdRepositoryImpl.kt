@@ -15,11 +15,11 @@ class JdRepositoryImpl(
     override fun save(jd: Jd): Jd = jdJpa.save(JdEntity.from(jd)).toDomain()
 
     @Transactional(readOnly = true)
-    override fun findByPublicIdAndUserId(publicId: String, userId: Long): Jd? =
-        jdJpa.findByPublicIdAndUserId(publicId, userId)?.toDomain()
+    override fun findByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long): Jd? =
+        jdJpa.findByPublicIdAndWorkspaceId(publicId, workspaceId)?.toDomain()
 
     @Transactional(readOnly = true)
-    override fun findAllByUserId(userId: Long): List<Jd> =
-        jdJpa.findAllByUserId(userId).map { it.toDomain() }
+    override fun findAllByWorkspaceId(workspaceId: Long): List<Jd> =
+        jdJpa.findAllByWorkspaceId(workspaceId).map { it.toDomain() }
 
 }

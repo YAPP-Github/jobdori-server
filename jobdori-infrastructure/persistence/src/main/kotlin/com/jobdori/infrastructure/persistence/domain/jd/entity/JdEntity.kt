@@ -18,7 +18,7 @@ class JdEntity(
     var publicId: String,
 
     @Column(nullable = false)
-    var userId: Long,
+    var workspaceId: Long,
 
     @Column(columnDefinition = "text")
     var sourceUrl: String?,
@@ -56,7 +56,7 @@ class JdEntity(
     fun toDomain() = Jd(
         id = id,
         publicId = publicId,
-        userId = userId,
+        workspaceId = workspaceId,
         sourceUrl = sourceUrl,
         companyName = companyName,
         positionTitle = positionTitle,
@@ -71,7 +71,7 @@ class JdEntity(
     companion object {
         fun from(jd: Jd) = JdEntity(
             publicId = jd.publicId,
-            userId = jd.userId,
+            workspaceId = jd.workspaceId,
             sourceUrl = jd.sourceUrl,
             companyName = jd.companyName,
             positionTitle = jd.positionTitle,

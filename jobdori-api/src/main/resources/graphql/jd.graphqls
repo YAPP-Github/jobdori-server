@@ -4,15 +4,24 @@ extend type Query {
     """
     jd(
         """
+        조회할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
         조회할 JD의 ID입니다.
         """
         id: ID!
     ): Jd
 
     """
-    인증된 사용자의 JD 목록을 조회합니다.
+    워크스페이스의 JD 목록을 조회합니다.
     """
-    jds: [Jd!]!
+    jds(
+        """
+        조회할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!
+    ): [Jd!]!
 }
 
 extend type Mutation {
@@ -23,6 +32,10 @@ extend type Mutation {
     크롤/추출 실패 시 오류를 반환합니다.
     """
     registerJd(
+        """
+        등록할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
         """
         등록 입력입니다. sourceUrl(크롤) 또는 body(붙여넣기) 중 정확히 하나를 채웁니다.
         """

@@ -102,19 +102,13 @@
       return cachedToken;
     }
 
-    const MUTATION = `mutation($request: JdRegisterRequest!){
-      registerJd(request: $request){
-        jd { jdId companyName positionTitle companyIntro responsibilities requiredExperiences preferredExperiences hiringProcess createdAt }
-        candidates { title body }
-      }
-    }`;
-
-    async function registerJd(request) {
+    // 공통 GraphQL 호출(토큰 자동) — raw 응답을 out에 표시하고 에러는 code와 함께 throw
+    async function gql(query, variables) {
       const token = await getToken();
       const res = await fetch('graphql', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ query: MUTATION, variables: { request } }),
+        body: JSON.stringify({ query, variables }),
       });
       const json = await res.json();
       $('out').textContent = JSON.stringify(json, null, 2);
@@ -122,7 +116,30 @@
         const e = json.errors[0];
         throw { code: e.extensions && e.extensions.code, message: e.message };
       }
-      return json.data.registerJd;
+      return json.data;
+    }
+
+    // 토큰 사용자의 워크스페이스 id(me 쿼리로 자동 조회) — JD는 워크스페이스 단위
+    let cachedWorkspaceId = null;
+    async function getWorkspaceId() {
+      if (cachedWorkspaceId) return cachedWorkspaceId;
+      const data = await gql('query { me { workspaces { workspaceId } } }', {});
+      cachedWorkspaceId = data.me.workspaces && data.me.workspaces[0] && data.me.workspaces[0].workspaceId;
+      if (!cachedWorkspaceId) throw { message: '워크스페이스가 없습니다(토큰 사용자에 워크스페이스 필요)' };
+      return cachedWorkspaceId;
+    }
+
+    const MUTATION = `mutation($workspaceId: ID!, $request: JdRegisterRequest!){
+      registerJd(workspaceId: $workspaceId, request: $request){
+        jd { jdId companyName positionTitle companyIntro responsibilities requiredExperiences preferredExperiences hiringProcess createdAt }
+        candidates { title body }
+      }
+    }`;
+
+    async function registerJd(request) {
+      const workspaceId = await getWorkspaceId();
+      const data = await gql(MUTATION, { workspaceId, request });
+      return data.registerJd;
     }
 
     function handleError(err) {

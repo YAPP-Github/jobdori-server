@@ -4,6 +4,6 @@ import com.jobdori.core.domain.jd.Jd
 
 interface JdRepository {
     fun save(jd: Jd): Jd
-    fun findByPublicIdAndUserId(publicId: String, userId: Long): Jd?
-    fun findAllByUserId(userId: Long): List<Jd>
+    fun findByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long): Jd?
+    fun findAllByWorkspaceId(workspaceId: Long): List<Jd>
 }

@@ -6,7 +6,7 @@ import java.util.UUID
 data class Jd(
     val id: Long,
     val publicId: String,
-    val userId: Long,
+    val workspaceId: Long,
     val sourceUrl: String?,   // 붙여넣기(text) 등록 시 null
     val companyName: String,
     val positionTitle: String,
@@ -20,7 +20,7 @@ data class Jd(
 
     companion object {
         fun newInstance(
-            userId: Long,
+            workspaceId: Long,
             sourceUrl: String?,
             companyName: String,
             positionTitle: String,
@@ -33,7 +33,7 @@ data class Jd(
         ) = Jd(
             id = 0L,
             publicId = publicId,
-            userId = userId,
+            workspaceId = workspaceId,
             sourceUrl = sourceUrl,
             companyName = companyName,
             positionTitle = positionTitle,

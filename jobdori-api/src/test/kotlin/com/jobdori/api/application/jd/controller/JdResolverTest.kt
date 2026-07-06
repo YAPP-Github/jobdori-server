@@ -1,6 +1,7 @@
 package com.jobdori.api.application.jd.controller
 
 import com.jobdori.api.GraphQLTest
+import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.core.application.ai.jd.result.JdPosting
@@ -9,6 +10,7 @@ import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.jd.JdRegisterResult
 import com.jobdori.core.application.jd.RegisterJdService
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
 import io.mockk.every
@@ -28,14 +30,19 @@ internal class JdResolverTest(
     private val registerJdService: RegisterJdService,
     @MockkBean
     private val getJdService: GetJdService,
+    @MockkBean
+    private val workspaceAccessValidationService: WorkspaceAccessValidationService,
 ) : StringSpec({
 
     beforeTest {
         every { accessTokenService.getUserId("access-token") } returns 1L
+        // workspaceId "ws-1"의 소유자 검증 통과 → 내부 id 10L로 스코프
+        every { workspaceAccessValidationService.validateAccessible("ws-1", 1L) } returns
+            Workspace(id = 10L, publicId = "ws-1", ownerUserId = 1L)
     }
 
     "URL로 등록하면 추출된 단일 JD를 반환한다" {
-        every { registerJdService.registerByUrl(1L, "https://example.com/jd") } returns
+        every { registerJdService.registerByUrl(10L, "https://example.com/jd") } returns
             JdRegisterResult.Registered(
                 graphQlJd(publicId = "jd-pub-1", companyName = "잡도리", positionTitle = "백엔드 개발자"),
             )
@@ -44,7 +51,7 @@ internal class JdResolverTest(
             .document(
                 """
                 mutation {
-                  registerJd(request: { sourceUrl: "https://example.com/jd" }) {
+                  registerJd(workspaceId: "ws-1", request: { sourceUrl: "https://example.com/jd" }) {
                     jd {
                       jdId
                       companyName
@@ -63,12 +70,12 @@ internal class JdResolverTest(
             .path("registerJd.jd.positionTitle").entity<String>().isEqualTo("백엔드 개발자")
             .path("registerJd.candidates").valueIsNull()
 
-        verify(exactly = 1) { registerJdService.registerByUrl(1L, "https://example.com/jd") }
+        verify(exactly = 1) { registerJdService.registerByUrl(10L, "https://example.com/jd") }
     }
 
     "붙여넣기 본문에 여러 공고가 있으면 후보 목록을 반환한다" {
         val multiBody = "여러 공고가 섞인 본문 ".repeat(50)   // @Size(min) 통과용 유효 길이
-        every { registerJdService.registerByText(1L, multiBody) } returns
+        every { registerJdService.registerByText(10L, multiBody) } returns
             JdRegisterResult.MultiplePostings(
                 listOf(
                     JdPosting(title = "백엔드 개발자", body = "본문 A"),
@@ -80,7 +87,7 @@ internal class JdResolverTest(
             .document(
                 """
                 mutation {
-                  registerJd(request: { body: "$multiBody" }) {
+                  registerJd(workspaceId: "ws-1", request: { body: "$multiBody" }) {
                     jd {
                       jdId
                     }
@@ -98,17 +105,17 @@ internal class JdResolverTest(
             .path("registerJd.candidates[0].body").entity<String>().isEqualTo("본문 A")
             .path("registerJd.candidates[1].title").entity<String>().isEqualTo("프론트 개발자")
 
-        verify(exactly = 1) { registerJdService.registerByText(1L, multiBody) }
+        verify(exactly = 1) { registerJdService.registerByText(10L, multiBody) }
     }
 
-    "publicId로 내 JD 단건을 조회한다" {
-        every { getJdService.getJd(1L, "jd-pub-1") } returns graphQlJd(publicId = "jd-pub-1", companyName = "잡도리")
+    "publicId로 워크스페이스의 JD 단건을 조회한다" {
+        every { getJdService.getJd(10L, "jd-pub-1") } returns graphQlJd(publicId = "jd-pub-1", companyName = "잡도리")
 
         authenticatedTester(graphQlTester)
             .document(
                 """
                 query {
-                  jd(id: "jd-pub-1") {
+                  jd(workspaceId: "ws-1", id: "jd-pub-1") {
                     jdId
                     companyName
                   }
@@ -119,7 +126,7 @@ internal class JdResolverTest(
             .path("jd.jdId").entity<String>().isEqualTo("jd-pub-1")
             .path("jd.companyName").entity<String>().isEqualTo("잡도리")
 
-        verify(exactly = 1) { getJdService.getJd(1L, "jd-pub-1") }
+        verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
     }
 
 })
@@ -141,7 +148,7 @@ private fun graphQlJd(
 ) = Jd(
     id = id,
     publicId = publicId,
-    userId = 1L,
+    workspaceId = 10L,
     sourceUrl = "https://example.com/jd",
     companyName = companyName,
     positionTitle = positionTitle,

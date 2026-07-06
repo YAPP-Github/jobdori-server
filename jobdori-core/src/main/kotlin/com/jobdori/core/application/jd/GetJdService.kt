@@ -12,12 +12,12 @@ class GetJdService(
 ) {
 
     @Transactional(readOnly = true)
-    fun getMine(userId: Long): List<Jd> = jdRepository.findAllByUserId(userId)
+    fun getJds(workspaceId: Long): List<Jd> = jdRepository.findAllByWorkspaceId(workspaceId)
 
-    /** 소유자 검증 — 없거나 타인 JD는 404(리소스 숨김) */
+    /** 워크스페이스 밖 JD는 404(리소스 숨김). 워크스페이스 접근 권한은 API 계층에서 검증. */
     @Transactional(readOnly = true)
-    fun getJd(userId: Long, publicId: String): Jd =
-        jdRepository.findByPublicIdAndUserId(publicId, userId)
+    fun getJd(workspaceId: Long, publicId: String): Jd =
+        jdRepository.findByPublicIdAndWorkspaceId(publicId, workspaceId)
             ?: throw JdNotFoundException("등록되지 않은 JD($publicId)입니다")
 
 }

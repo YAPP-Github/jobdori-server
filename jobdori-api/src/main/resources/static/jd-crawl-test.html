@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JD 크롤 + 분석 테스트 · Jobdori</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 820px; margin: 0 auto; padding: 24px; line-height: 1.5; }
+    h1 { font-size: 1.3rem; margin: 0 0 4px; }
+    h2 { font-size: 1rem; margin: 22px 0 8px; }
+    .hint { color: #888; font-size: .85rem; margin: 0 0 20px; }
+    label { display: block; font-weight: 600; font-size: .85rem; margin: 14px 0 4px; }
+    input[type=text] { width: 100%; padding: 8px; font: inherit; border: 1px solid #999; border-radius: 6px; background: transparent; color: inherit; }
+    button { margin-top: 12px; padding: 10px 20px; font: inherit; font-weight: 600; border: 0; border-radius: 6px; background: #2d6cdf; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: default; }
+    .meta { font-size: .8rem; color: #888; margin: 16px 0 6px; }
+    .err { color: #d33; } .ok { color: #2a2; }
+    .hidden { display: none; }
+    dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: .88rem; margin: 0; }
+    dt { font-weight: 600; color: #888; } dd { margin: 0; }
+    dd ul { margin: 0; padding-left: 18px; }
+    pre { background: #00000010; padding: 14px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin: 8px 0 0; font-size: .82rem; }
+  </style>
+</head>
+<body>
+  <h1>JD 크롤 + 분석 테스트</h1>
+  <p class="hint">URL을 크롤해 JD_META_EXTRACTION 프롬프트로 7필드를 추출합니다. (저장 없음 · POST /api/test-jd-crawl · local/dev 전용)</p>
+
+  <label>JD 링크</label>
+  <input type="text" id="url" placeholder="분석할 공고의 링크 (예: https://www.wanted.co.kr/wd/372653)">
+  <button id="go">크롤 + 분석 &gt;</button>
+
+  <div class="meta" id="meta"></div>
+
+  <div id="reportBox" class="hidden">
+    <h2>추출 결과</h2>
+    <dl id="report"></dl>
+    <h2>크롤 본문</h2>
+    <pre id="body"></pre>
+  </div>
+
+  <h2>Raw 응답</h2>
+  <pre id="out">결과가 여기에 표시됩니다.</pre>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    const li = a => (a && a.length) ? '<ul>' + a.map(x => `<li>${esc(x)}</li>`).join('') + '</ul>' : '—';
+
+    $('go').addEventListener('click', async () => {
+      const url = $('url').value.trim();
+      if (!url) return;
+      const btn = $('go'); btn.disabled = true; $('meta').textContent = '크롤 + 분석 중...';
+      $('reportBox').classList.add('hidden');
+      const t0 = performance.now();
+      try {
+        const res = await fetch('test-jd-crawl?url=' + encodeURIComponent(url), { method: 'POST' });
+        const json = await res.json();
+        $('out').textContent = JSON.stringify(json, null, 2);
+        const r = json.result || {};
+        const ms = Math.round(performance.now() - t0);
+        if (r.error) {
+          $('meta').innerHTML = `<span class="err">실패</span> · code=${r.code || '-'} · ${ms}ms — ${esc(r.error)}`;
+          return;
+        }
+        const m = r.extracted || {};
+        $('report').innerHTML = `
+          <dt>기업명</dt><dd>${esc(m.companyName) || '—'}</dd>
+          <dt>포지션</dt><dd>${esc(m.positionTitle) || '—'}</dd>
+          <dt>기업/팀 소개</dt><dd>${esc(m.companyIntro) || '—'}</dd>
+          <dt>업무 내용</dt><dd>${li(m.responsibilities)}</dd>
+          <dt>필요 경험</dt><dd>${li(m.requiredExperiences)}</dd>
+          <dt>우대 경험</dt><dd>${li(m.preferredExperiences)}</dd>
+          <dt>전형 절차</dt><dd>${li(m.hiringProcess)}</dd>`;
+        $('body').textContent = r.crawledBody || '';
+        $('reportBox').classList.remove('hidden');
+        $('meta').innerHTML = `<span class="ok">성공</span> · ${ms}ms`;
+      } catch (e) {
+        $('meta').innerHTML = `<span class="err">요청 실패</span>`;
+        $('out').textContent = String(e) + '\n\n서버가 :20000 에 떠 있는지, http://localhost:20000/api/jd-crawl-test.html 로 열었는지 확인하세요.';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    $('url').addEventListener('keydown', e => { if (e.key === 'Enter') $('go').click(); });
+  </script>
+</body>
+</html>

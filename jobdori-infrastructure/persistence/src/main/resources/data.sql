@@ -4,7 +4,7 @@ VALUES (1, 'gpt-4o-mini', 'OPEN_AI', now(), now());
 INSERT INTO ai_model_configs_v1 (id, ai_model_id, name, description, parameters, created_at, updated_at)
 VALUES
   (1, 1, 'jd_multi_posting_split', 'JD 다중 공고 분할',           '{"temperature":0.0}' FORMAT JSON, now(), now()),
-  (2, 1, 'jd_meta',                'JD 메타(기업명·직무명·정제본문·태그) 추출', '{"temperature":0.2}' FORMAT JSON, now(), now()),
+  (2, 1, 'jd_meta',                'JD 메타(기업명·포지션·소개·업무·필요/우대경험·전형절차) 추출', '{"temperature":0.2}' FORMAT JSON, now(), now()),
   (3, 1, 'jd_application_strategy','JD 지원 전략 생성',           '{"temperature":0.6}' FORMAT JSON, now(), now()),
   (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}' FORMAT JSON, now(), now()),
   (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}'  FORMAT JSON, now(), now());
@@ -16,11 +16,11 @@ VALUES (1, 1, 'JD_MULTI_POSTING_SPLIT',
 '{"type":"object","additionalProperties":false,"required":["postings"],"properties":{"postings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["title","body"],"properties":{"title":{"type":"string"},"body":{"type":"string"}}}}}}',
 null, now(), now());
 
--- 2) JD 메타 추출 (문서 Task 5.2)
+-- 2) JD 메타 추출 (문서 Task 5.2) — 7필드: 기업명·포지션·기업/팀 소개·업무·필요/우대 경험·전형 절차
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (2, 2, 'JD_META_EXTRACTION',
-'당신은 채용 공고(JD) 분석 전문가다. 입력된 JD 본문에서 다음을 추출한다. (1) 기업명(companyName)·직무명(jobTitle) — 본문에 명시가 없으면 빈 문자열(지어내지 마라). (2) 정제 본문(cleanedBody) — 메뉴·광고·중복·깨진 줄 등 비본문 노이즈를 제거하고 문단과 항목(자격요건·우대사항 등)을 읽기 좋게 정리한 본문. 내용을 요약하거나 지어내지 말고 원문 정보를 보존하되 형식만 다듬는다. (3) 역량 태그(tags) — JD가 요구하는 핵심 역량 키워드 3~5개 배열. 출력은 제공된 JSON 스키마를 100% 준수한다.',
-'{"type":"object","additionalProperties":false,"required":["companyName","jobTitle","cleanedBody","tags"],"properties":{"companyName":{"type":"string"},"jobTitle":{"type":"string"},"cleanedBody":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}}}',
+'당신은 채용 공고(JD) 분석 전문가다. 입력된 JD 본문에서 아래 7개 항목을 추출한다. (1) 기업이름(companyName) — 채용하는 회사명. 없으면 빈 문자열. (2) 포지션 이름(positionTitle) — 지원하는 직무명. 본문 제목·헤딩·"[포지션]" 라벨·"○○ 채용/모집" 문구에서 찾는다. 기업명·홍보 수식어(예: "[관광 스타트업]")는 빼고 직무명 중심으로 적되, 직무를 특정하는 표현(예: "서버 개발자(Backend)")은 그대로 유지한다. 채용 공고에는 거의 항상 직무명이 있으니 반드시 채우도록 하고, 정말로 본문 어디에도 직무명이 없을 때만 빈 문자열로 둔다. (3) 기업/팀 소개(companyIntro) — 회사·팀·서비스 소개 문단. (4) 업무 내용(responsibilities)·(5) 필요 경험(requiredExperiences, 자격요건/필수)·(6) 우대 경험(preferredExperiences, 우대사항/plus)·(7) 전형 절차(hiringProcess, 서류→면접 등 순서대로) — 각각 항목 단위로 나눈 문자열 배열. 단계에 딸린 참고 사항(괄호 안 안내, 코딩테스트 유무·소요시간, 준비물, 예: "(직무면접 간 1시간 이내의 코딩테스트가 진행됩니다.)")은 지원자가 참고해야 하므로 절대 생략하지 말고, 관련 단계 항목에 함께 담거나 별도 항목으로 유지한다. 공통 규칙: 본문에 명시된 것만 추출하고 추론·창작은 절대 하지 마라. 해당 항목이 없으면 빈 문자열 또는 빈 배열로 둔다. 사실·수치·기술명·고유명사는 바꾸거나 지어내지 말고 내용을 요약하지 마라(정보 보존). 다만 업무 내용·필요 경험·우대 경험 항목은 종결 어투를 개조식(명사형 종결)으로 통일한다 — 예: "~ 설계·개발", "~ 경험 보유", "~ 역량". 원문이 "~하신 분", "~합니다", "담당 업무:" 등이어도 명사형으로 정규화하되 담긴 사실은 그대로 둔다. 전형 절차(hiringProcess)는 단계명 형태를 유지한다. 필요 경험과 우대 경험은 헤더(자격요건/필수 vs 우대사항)를 기준으로 구분한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["companyName","positionTitle","companyIntro","responsibilities","requiredExperiences","preferredExperiences","hiringProcess"],"properties":{"companyName":{"type":"string"},"positionTitle":{"type":"string"},"companyIntro":{"type":"string"},"responsibilities":{"type":"array","items":{"type":"string"}},"requiredExperiences":{"type":"array","items":{"type":"string"}},"preferredExperiences":{"type":"array","items":{"type":"string"}},"hiringProcess":{"type":"array","items":{"type":"string"}}}}',
 null, now(), now());
 
 -- 3) JD 지원 전략 생성 (문서 Task 6.3) — generateText, json_schema NULL

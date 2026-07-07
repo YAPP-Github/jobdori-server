@@ -32,39 +32,37 @@
 </li>
 <li><a href="#_커스텀_에러_코드">2. 커스텀 에러 코드</a>
 <ul class="sectlevel2">
-<li><a href="#_notion_도메인_에러_코드">2.1. Notion 도메인 에러 코드</a></li>
-<li><a href="#_operation별_에러_코드">2.2. Operation별 에러 코드</a></li>
-<li><a href="#_user">2.3. User</a>
+<li><a href="#_user">2.1. User</a>
 <ul class="sectlevel3">
-<li><a href="#_내_정보_조회">2.3.1. 내 정보 조회</a></li>
+<li><a href="#_내_정보_조회">2.1.1. 내 정보 조회</a></li>
 </ul>
 </li>
-<li><a href="#_experience">2.4. Experience</a>
+<li><a href="#_experience">2.2. Experience</a>
 <ul class="sectlevel3">
-<li><a href="#_경험_단건_조회">2.4.1. 경험 단건 조회</a></li>
-<li><a href="#_경험_목록_조회">2.4.2. 경험 목록 조회</a></li>
-<li><a href="#_경험_검색">2.4.3. 경험 검색</a></li>
-<li><a href="#_경험_생성">2.4.4. 경험 생성</a></li>
-<li><a href="#_경험_수정">2.4.5. 경험 수정</a></li>
-<li><a href="#_경험_삭제">2.4.6. 경험 삭제</a></li>
+<li><a href="#_경험_단건_조회">2.2.1. 경험 단건 조회</a></li>
+<li><a href="#_경험_목록_조회">2.2.2. 경험 목록 조회</a></li>
+<li><a href="#_경험_검색">2.2.3. 경험 검색</a></li>
+<li><a href="#_경험_생성">2.2.4. 경험 생성</a></li>
+<li><a href="#_경험_수정">2.2.5. 경험 수정</a></li>
+<li><a href="#_경험_삭제">2.2.6. 경험 삭제</a></li>
 </ul>
 </li>
-<li><a href="#_experience_project">2.5. Experience Project</a>
+<li><a href="#_experience_project">2.3. Experience Project</a>
 <ul class="sectlevel3">
-<li><a href="#_경험_프로젝트_단건_조회">2.5.1. 경험 프로젝트 단건 조회</a></li>
-<li><a href="#_경험_프로젝트_목록_조회">2.5.2. 경험 프로젝트 목록 조회</a></li>
-<li><a href="#_경험_프로젝트_생성">2.5.3. 경험 프로젝트 생성</a></li>
-<li><a href="#_경험_프로젝트_수정">2.5.4. 경험 프로젝트 수정</a></li>
-<li><a href="#_경험_프로젝트_삭제">2.5.5. 경험 프로젝트 삭제</a></li>
+<li><a href="#_경험_프로젝트_단건_조회">2.3.1. 경험 프로젝트 단건 조회</a></li>
+<li><a href="#_경험_프로젝트_목록_조회">2.3.2. 경험 프로젝트 목록 조회</a></li>
+<li><a href="#_경험_프로젝트_생성">2.3.3. 경험 프로젝트 생성</a></li>
+<li><a href="#_경험_프로젝트_수정">2.3.4. 경험 프로젝트 수정</a></li>
+<li><a href="#_경험_프로젝트_삭제">2.3.5. 경험 프로젝트 삭제</a></li>
 </ul>
 </li>
-<li><a href="#_notion">2.6. Notion</a>
+<li><a href="#_notion">2.4. Notion</a>
 <ul class="sectlevel3">
-<li><a href="#_notion_연결_목록_조회">2.6.1. Notion 연결 목록 조회</a></li>
-<li><a href="#_notion_페이지_검색">2.6.2. Notion 페이지 검색</a></li>
-<li><a href="#_notion_연결">2.6.3. Notion 연결</a></li>
-<li><a href="#_notion_연결_해제">2.6.4. Notion 연결 해제</a></li>
-<li><a href="#_notion_경험_가져오기">2.6.5. Notion 경험 가져오기</a></li>
+<li><a href="#_notion_연결_목록_조회">2.4.1. Notion 연결 목록 조회</a></li>
+<li><a href="#_notion_페이지_검색">2.4.2. Notion 페이지 검색</a></li>
+<li><a href="#_notion_연결">2.4.3. Notion 연결</a></li>
+<li><a href="#_notion_연결_해제">2.4.4. Notion 연결 해제</a></li>
+<li><a href="#_notion_경험_가져오기">2.4.5. Notion 경험 가져오기</a></li>
 </ul>
 </li>
 </ul>
@@ -491,55 +489,9 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 아래 표에는 각 GraphQL operation에서 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <div class="sect2">
-<h3 id="_notion_도메인_에러_코드">2.1. Notion 도메인 에러 코드</h3>
-<div class="paragraph">
-<p>Notion 연결, 페이지 검색, 경험 가져오기 과정에서 발생할 수 있는 Notion 도메인 에러 코드입니다.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch api-table">
-<colgroup>
-<col style="width: 28%;">
-<col style="width: 36%;">
-<col style="width: 36%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">Message</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">notion_page_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 페이지에 접근할 수 없습니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">해당 페이지가 연결에 공유되지 않았거나 권한이 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">notion_connection_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 연결을 찾을 수 없습니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">요청한 Notion 연결이 없거나 접근 권한이 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">notion_connection_need_reconnect</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion을 다시 연결해야 합니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 토큰 갱신에 실패했거나 연결 권한이 해제된 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">notion_api_request_failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 요청에 실패했습니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 호출이 실패한 경우</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_operation별_에러_코드">2.2. Operation별 에러 코드</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_user">2.3. User</h3>
+<h3 id="_user">2.1. User</h3>
 <div class="sect3">
-<h4 id="_내_정보_조회">2.3.1. 내 정보 조회</h4>
+<h4 id="_내_정보_조회">2.1.1. 내 정보 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -570,9 +522,9 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="sect2">
-<h3 id="_experience">2.4. Experience</h3>
+<h3 id="_experience">2.2. Experience</h3>
 <div class="sect3">
-<h4 id="_경험_단건_조회">2.4.1. 경험 단건 조회</h4>
+<h4 id="_경험_단건_조회">2.2.1. 경험 단건 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -617,7 +569,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_목록_조회">2.4.2. 경험 목록 조회</h4>
+<h4 id="_경험_목록_조회">2.2.2. 경험 목록 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -657,7 +609,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_검색">2.4.3. 경험 검색</h4>
+<h4 id="_경험_검색">2.2.3. 경험 검색</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -692,7 +644,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_생성">2.4.4. 경험 생성</h4>
+<h4 id="_경험_생성">2.2.4. 경험 생성</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -732,7 +684,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_수정">2.4.5. 경험 수정</h4>
+<h4 id="_경험_수정">2.2.5. 경험 수정</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -777,7 +729,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_삭제">2.4.6. 경험 삭제</h4>
+<h4 id="_경험_삭제">2.2.6. 경험 삭제</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -818,9 +770,9 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="sect2">
-<h3 id="_experience_project">2.5. Experience Project</h3>
+<h3 id="_experience_project">2.3. Experience Project</h3>
 <div class="sect3">
-<h4 id="_경험_프로젝트_단건_조회">2.5.1. 경험 프로젝트 단건 조회</h4>
+<h4 id="_경험_프로젝트_단건_조회">2.3.1. 경험 프로젝트 단건 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -860,7 +812,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_프로젝트_목록_조회">2.5.2. 경험 프로젝트 목록 조회</h4>
+<h4 id="_경험_프로젝트_목록_조회">2.3.2. 경험 프로젝트 목록 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -895,7 +847,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_프로젝트_생성">2.5.3. 경험 프로젝트 생성</h4>
+<h4 id="_경험_프로젝트_생성">2.3.3. 경험 프로젝트 생성</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -930,7 +882,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_프로젝트_수정">2.5.4. 경험 프로젝트 수정</h4>
+<h4 id="_경험_프로젝트_수정">2.3.4. 경험 프로젝트 수정</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -970,7 +922,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_경험_프로젝트_삭제">2.5.5. 경험 프로젝트 삭제</h4>
+<h4 id="_경험_프로젝트_삭제">2.3.5. 경험 프로젝트 삭제</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -1011,9 +963,9 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="sect2">
-<h3 id="_notion">2.6. Notion</h3>
+<h3 id="_notion">2.4. Notion</h3>
 <div class="sect3">
-<h4 id="_notion_연결_목록_조회">2.6.1. Notion 연결 목록 조회</h4>
+<h4 id="_notion_연결_목록_조회">2.4.1. Notion 연결 목록 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -1048,7 +1000,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_notion_페이지_검색">2.6.2. Notion 페이지 검색</h4>
+<h4 id="_notion_페이지_검색">2.4.2. Notion 페이지 검색</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -1103,7 +1055,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_notion_연결">2.6.3. Notion 연결</h4>
+<h4 id="_notion_연결">2.4.3. Notion 연결</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -1143,7 +1095,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_notion_연결_해제">2.6.4. Notion 연결 해제</h4>
+<h4 id="_notion_연결_해제">2.4.4. Notion 연결 해제</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -1178,7 +1130,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_notion_경험_가져오기">2.6.5. Notion 경험 가져오기</h4>
+<h4 id="_notion_경험_가져오기">2.4.5. Notion 경험 가져오기</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>

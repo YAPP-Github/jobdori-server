@@ -390,8 +390,8 @@
         connectionSelect.replaceChildren();
         for (const connection of response.result?.connections || []) {
             const option = document.createElement("option");
-            option.value = connection.publicId;
-            option.textContent = connection.workspaceName || connection.notionWorkspaceId;
+            option.value = connection.connectionId;
+            option.textContent = connection.notionWorkspaceName || connection.connectionId;
             connectionSelect.appendChild(option);
         }
 
@@ -429,7 +429,7 @@
 
         for (const page of response.result?.pages || []) {
             const option = document.createElement("option");
-            option.value = page.id;
+            option.value = page.pageId;
             option.textContent = page.title;
             pageSelect.appendChild(option);
         }
@@ -446,8 +446,11 @@
             throw new Error("Jobdori access token is required.");
         }
 
+        const requestUrl = `${apiBaseUrlInput.value.replace(/\/$/, "")}${path}`;
+        console.info(`[apiFetch] ${options.method || "GET"} ${requestUrl}`);
+
         try {
-            const response = await fetch(`${apiBaseUrlInput.value.replace(/\/$/, "")}${path}`, {
+            const response = await fetch(requestUrl, {
                 ...options,
                 headers: {
                     "Authorization": `Bearer ${accessToken}`,
@@ -497,8 +500,10 @@
     }
 
     function showError(message) {
+        console.warn(`[showError] ${message}`);
         errorMessage.textContent = message;
         errorSection.classList.remove("hidden");
+        errorSection.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     function hideError() {

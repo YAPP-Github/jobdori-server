@@ -4,7 +4,7 @@ extend type Query {
     """
     notionConnections(
         """
-        Notion 연결을 조회할 워크스페이스 ID입니다.
+        워크스페이스 ID입니다.
         """
         workspaceId: ID!,
         """
@@ -22,15 +22,15 @@ extend type Query {
     """
     notionPages(
         """
-        Notion 연결이 속한 워크스페이스 ID입니다.
+        워크스페이스 ID입니다.
         """
         workspaceId: ID!,
         """
-        Notion 연결 public ID입니다.
+        Notion 연결 ID입니다.
         """
         connectionId: ID!,
         """
-        페이지 검색어입니다.
+        페이지 검색어입니다 (선택)
         """
         query: String,
         """
@@ -40,13 +40,13 @@ extend type Query {
         """
         한 번에 조회할 Notion 페이지 개수입니다. (1 이상 100 이하)
         """
-        pageSize: Int!
+        size: Int!
     ): NotionPages!
 }
 
 extend type Mutation {
     """
-    Notion OAuth authorization code로 워크스페이스에 Notion을 연결합니다.
+    워크스페이스에 Notion을 연결합니다.
     """
     connectNotion(
         """
@@ -68,7 +68,7 @@ extend type Mutation {
         """
         workspaceId: ID!,
         """
-        Notion 연결 public ID입니다.
+        Notion 연결 ID입니다.
         """
         connectionId: ID!
     ): Boolean!
@@ -108,7 +108,7 @@ Notion 경험 가져오기 요청입니다.
 """
 input NotionExperienceImportRequest {
     """
-    Notion 연결 public ID입니다.
+    Notion 연결 ID입니다.
     """
     connectionId: ID!
 
@@ -153,7 +153,7 @@ Notion 연결입니다.
 """
 type NotionConnection {
     """
-    외부 API에서 사용하는 Notion 연결 ID입니다.
+    Notion 연결 ID입니다.
     """
     connectionId: ID!
 

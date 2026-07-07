@@ -4,8 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import java.util.Base64
 
 @ConfigurationProperties(prefix = "crypto")
-data class CryptoProperties(
-    private val secret: String,
+class CryptoProperties(
+    secret: String,
 ) {
     val key: ByteArray = try {
         Base64.getDecoder().decode(secret)

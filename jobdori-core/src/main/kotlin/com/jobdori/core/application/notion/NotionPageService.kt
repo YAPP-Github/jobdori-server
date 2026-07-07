@@ -2,9 +2,9 @@ package com.jobdori.core.application.notion
 
 import com.jobdori.core.application.notion.client.NotionClient
 import com.jobdori.core.application.notion.client.NotionOAuthTokenClient
-import com.jobdori.core.domain.notion.NotionPages
 import com.jobdori.core.domain.notion.NotionConnection
 import com.jobdori.core.domain.notion.NotionPageContent
+import com.jobdori.core.domain.notion.NotionPages
 import com.jobdori.core.domain.notion.error.NotionConnectionNeedReconnectException
 import com.jobdori.core.domain.notion.error.NotionUnauthorizedException
 import com.jobdori.core.domain.notion.service.NotionConnectionReader
@@ -83,7 +83,7 @@ class NotionPageService(
                     refreshToken = token.refreshToken,
                 )
             )
-        } catch (exception: Exception) {
+        } catch (exception: NotionUnauthorizedException) {
             throw NotionConnectionNeedReconnectException(
                 message = "Notion 토큰 갱신에 실패했습니다. ${connection.messageContext("refreshToken")}",
                 cause = exception,

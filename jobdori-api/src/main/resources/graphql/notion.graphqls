@@ -153,29 +153,19 @@ Notion 연결입니다.
 """
 type NotionConnection {
     """
-    외부 API에서 사용하는 Notion 연결 public ID입니다.
+    외부 API에서 사용하는 Notion 연결 ID입니다.
     """
-    publicId: ID!
-
-    """
-    Notion 워크스페이스 ID입니다.
-    """
-    notionWorkspaceId: String!
+    connectionId: ID!
 
     """
     Notion 워크스페이스 이름입니다.
     """
-    workspaceName: String
+    notionWorkspaceName: String
 
     """
     Notion 워크스페이스 아이콘 URL입니다.
     """
-    workspaceIcon: String
-
-    """
-    Notion bot ID입니다.
-    """
-    botId: String!
+    notionWorkspaceIcon: String
 }
 
 """
@@ -185,7 +175,7 @@ type NotionPageSummary {
     """
     Notion 페이지 ID입니다.
     """
-    id: ID!
+    pageId: ID!
 
     """
     Notion 페이지 제목입니다.

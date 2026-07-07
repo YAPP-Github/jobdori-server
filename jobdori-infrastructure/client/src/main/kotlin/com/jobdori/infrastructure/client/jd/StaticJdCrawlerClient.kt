@@ -27,6 +27,9 @@ class StaticJdCrawlerClient(
     private val noiseSelector =
         "style, noscript, nav, footer, aside, iframe, svg, form, button, input, select"
 
+    // 워드프레스 등 본문 컨테이너 우선순위(사이트 메뉴·사이드바가 nav 밖에 있는 경우 노이즈 제거)
+    private val contentSelectors = listOf(".entry-content", "article", "main")
+
     private val restClient = RestClient.builder()
         .requestFactory(
             SimpleClientHttpRequestFactory().apply {
@@ -90,8 +93,13 @@ class StaticJdCrawlerClient(
     private fun extractText(html: ByteArray?, url: String): String {
         if (html == null || html.isEmpty()) return ""
         val document = Jsoup.parse(ByteArrayInputStream(html), null, url)
-        val body = document.apply { select(noiseSelector).remove() }.body() ?: return ""
-        return body.text().trim()
+        document.select(noiseSelector).remove()
+        val body = document.body() ?: return ""
+        // 본문 컨테이너가 충분한 길이면 사이트 크롬(메뉴·사이드바) 제외하고 그 영역만, 아니면 전체 body
+        val main = contentSelectors.asSequence()
+            .mapNotNull { document.selectFirst(it)?.text()?.trim() }
+            .firstOrNull { it.length >= properties.minBodyLength }
+        return main ?: body.text().trim()
     }
 
 }

@@ -398,7 +398,7 @@ Operation: `notionPages`
 
 |===
 
-==== Notion 경험 가져오기
+==== Notion 경험 불러오기
 
 Type: `Mutation`
 

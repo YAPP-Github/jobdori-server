@@ -33,19 +33,19 @@
 </li>
 <li><a href="#_auth_apis">2.2. Auth APIs</a>
 <ul class="sectlevel3">
-<li><a href="#_login">2.2.1. Login</a></li>
-<li><a href="#_refresh_access_token">2.2.2. Refresh Access Token</a></li>
-<li><a href="#_logout">2.2.3. Logout</a></li>
+<li><a href="#_로그인">2.2.1. 로그인</a></li>
+<li><a href="#_액세스_토큰_갱신">2.2.2. 액세스 토큰 갱신</a></li>
+<li><a href="#_로그아웃">2.2.3. 로그아웃</a></li>
 </ul>
 </li>
 <li><a href="#_user_apis">2.3. User APIs</a>
 <ul class="sectlevel3">
-<li><a href="#_get_my_user">2.3.1. Get My User</a></li>
+<li><a href="#_내_유저_정보_조회">2.3.1. 내 유저 정보 조회</a></li>
 </ul>
 </li>
 <li><a href="#_experience_apis">2.4. Experience APIs</a>
 <ul class="sectlevel3">
-<li><a href="#_import_experiences">2.4.1. Import Experiences</a></li>
+<li><a href="#_파일_경험_불러오기_pdf">2.4.1. 파일 경험 불러오기 (PDF)</a></li>
 </ul>
 </li>
 </ul>
@@ -54,7 +54,7 @@
 <ul class="sectlevel2">
 <li><a href="#_auth_apis_2">3.1. Auth APIs</a>
 <ul class="sectlevel3">
-<li><a href="#_issue_test_token">3.1.1. Issue Test Token</a></li>
+<li><a href="#_테스트용_토큰_발급">3.1.1. 테스트용 토큰 발급</a></li>
 </ul>
 </li>
 </ul>
@@ -454,7 +454,7 @@ Content-Length: 17
 <div class="sect2">
 <h3 id="_auth_apis">2.2. Auth APIs</h3>
 <div class="sect3">
-<h4 id="_login">2.2.1. Login</h4>
+<h4 id="_로그인">2.2.1. 로그인</h4>
 <div class="paragraph">
 <p>가입된 유저는 로그인하고, 미가입 유저는 자동 가입 후 로그인하는 API입니다.</p>
 </div>
@@ -606,8 +606,8 @@ Host: dev.api.jobdori.o-r.kr
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=110020905; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=111228705; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=110020465; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=111228265; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 135
 
@@ -654,7 +654,7 @@ Content-Length: 135
 </div>
 </div>
 <div class="sect3">
-<h4 id="_refresh_access_token">2.2.2. Refresh Access Token</h4>
+<h4 id="_액세스_토큰_갱신">2.2.2. 액세스 토큰 갱신</h4>
 <div class="paragraph">
 <p>Refresh 토큰으로 새로운 Access 토큰을 발급하는 API입니다.</p>
 </div>
@@ -772,7 +772,7 @@ Cookie: refresh_token=refresh-token</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=new-access-token; Path=/; Max-Age=110020905; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=new-access-token; Path=/; Max-Age=110020464; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 76
 
@@ -787,7 +787,7 @@ Content-Length: 76
 </div>
 </div>
 <div class="sect3">
-<h4 id="_logout">2.2.3. Logout</h4>
+<h4 id="_로그아웃">2.2.3. 로그아웃</h4>
 <div class="paragraph">
 <p>로그아웃 API입니다.</p>
 </div>
@@ -911,7 +911,7 @@ Content-Length: 17
 <div class="sect2">
 <h3 id="_user_apis">2.3. User APIs</h3>
 <div class="sect3">
-<h4 id="_get_my_user">2.3.1. Get My User</h4>
+<h4 id="_내_유저_정보_조회">2.3.1. 내 유저 정보 조회</h4>
 <div class="paragraph">
 <p>인증된 사용자의 정보를 조회하는 API입니다.</p>
 </div>
@@ -1059,7 +1059,7 @@ Content-Length: 313
 <div class="sect2">
 <h3 id="_experience_apis">2.4. Experience APIs</h3>
 <div class="sect3">
-<h4 id="_import_experiences">2.4.1. Import Experiences</h4>
+<h4 id="_파일_경험_불러오기_pdf">2.4.1. 파일 경험 불러오기 (PDF)</h4>
 <div class="paragraph">
 <p>파일에서 경험을 가져오는 API입니다. (현재 지원되는 파일: PDF)</p>
 </div>
@@ -1171,7 +1171,7 @@ Content-Length: 17
 <div class="sect2">
 <h3 id="_auth_apis_2">3.1. Auth APIs</h3>
 <div class="sect3">
-<h4 id="_issue_test_token">3.1.1. Issue Test Token</h4>
+<h4 id="_테스트용_토큰_발급">3.1.1. 테스트용 토큰 발급</h4>
 <div class="paragraph">
 <p>개발용 테스트 유저의 Access 토큰과 Refresh 토큰을 발급하는 API입니다.</p>
 </div>
@@ -1297,8 +1297,8 @@ Host: dev.api.jobdori.o-r.kr</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=110019103; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=111228703; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=110018663; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=111228263; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 110
 

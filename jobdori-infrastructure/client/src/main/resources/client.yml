@@ -7,6 +7,11 @@ google:
     client-id: ${GOOGLE_OAUTH_CLIENT_ID}
     client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET}
 
+notion:
+  client-id: ${NOTION_OAUTH_CLIENT_ID}
+  client-secret: ${NOTION_OAUTH_CLIENT_SECRET}
+  api-version: ${NOTION_API_VERSION:2026-03-11}
+
 ---
 spring.config:
   activate:
@@ -22,3 +27,8 @@ google:
   oauth:
     client-id: ${GOOGLE_OAUTH_CLIENT_ID:dummy-google-client-id}
     client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET:dummy-google-client-secret}
+
+notion:
+  client-id: ${NOTION_OAUTH_CLIENT_ID:dummy-notion-client-id}
+  client-secret: ${NOTION_OAUTH_CLIENT_SECRET:dummy-notion-client-secret}
+  api-version: ${NOTION_API_VERSION:2026-03-11}

@@ -7,6 +7,9 @@ jwt:
   codec:
     secret: ${JWT_CODEC_SECRET}
 
+crypto:
+  secret: ${CRYPTO_SECRET}
+
 ---
 spring:
   config:
@@ -18,3 +21,6 @@ spring:
 jwt:
   codec:
     secret: h2JOe+yl110wJIY0Sz7gma9puyErnVv272wU+021MII=
+
+crypto:
+  secret: ${CRYPTO_SECRET:AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=}

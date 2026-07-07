@@ -2,6 +2,7 @@ package com.jobdori.api.application.experience.controller
 
 import com.jobdori.api.ApiTest
 import com.jobdori.api.DocsTest
+import com.jobdori.api.application.notion.service.NotionExperienceImportService
 import com.jobdori.api.application.experience.service.ExperiencePdfImportService
 import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
@@ -19,6 +20,7 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.partWithName
@@ -26,6 +28,7 @@ import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.request.RequestDocumentation.requestParts
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.multipart
+import org.springframework.test.web.servlet.post
 
 @DocsTest
 @ApiTest(ExperienceImportController::class)
@@ -35,6 +38,8 @@ internal class ExperienceImportControllerTest(
     private val accessTokenService: AccessTokenService,
     @MockkBean
     private val experiencePdfImportService: ExperiencePdfImportService,
+    @MockkBean
+    private val notionExperienceImportService: NotionExperienceImportService,
 ) : StringSpec({
 
     "PDF 파일에서 경험을 가져온다" {
@@ -91,6 +96,65 @@ internal class ExperienceImportControllerTest(
                 file = file,
                 workspaceId = "workspace-id",
                 userId = 1L,
+            )
+        }
+    }
+
+    "Notion 페이지에서 경험을 가져온다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        every {
+            notionExperienceImportService.importExperiences(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                connectionId = "connection-public-id",
+                pageId = "page-id",
+            )
+        } returns Unit
+
+        mockMvc.post("/v1/workspaces/{workspaceId}/experience-imports/notion", "workspace-id") {
+            header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
+            contentType = MediaType.APPLICATION_JSON
+            content = """
+                {
+                  "connectionId": "connection-public-id",
+                  "pageId": "page-id"
+                }
+            """.trimIndent()
+        }.andExpect {
+            status { isOk() }
+            jsonPath("$.ok") { value(true) }
+        }.andDo {
+            handle(
+                document(
+                    "experience-import-from-notion",
+                    RestDocsUtils.getDocumentRequest(),
+                    RestDocsUtils.getDocumentResponse(),
+                    PageHeaderSnippet.pageHeaderSnippet(),
+                    pathParameters(
+                        parameterWithName("workspaceId").description("워크스페이스 ID"),
+                    ),
+                    requestFields(
+                        fieldWithPath("connectionId").type(JsonFieldType.STRING).description("Notion 연결 public ID"),
+                        fieldWithPath("pageId").type(JsonFieldType.STRING).description("가져올 Notion 페이지 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
+                    ),
+                    ErrorCodeSnippet.errorCodeSnippet(
+                        WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED to "요청 사용자가 해당 워크스페이스에 접근할 권한이 없는 경우",
+                        WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND to "요청한 워크스페이스를 찾을 수 없는 경우",
+                    ),
+                ),
+            )
+        }
+
+        verify(exactly = 1) { accessTokenService.getUserId("access-token") }
+        verify(exactly = 1) {
+            notionExperienceImportService.importExperiences(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                connectionId = "connection-public-id",
+                pageId = "page-id",
             )
         }
     }

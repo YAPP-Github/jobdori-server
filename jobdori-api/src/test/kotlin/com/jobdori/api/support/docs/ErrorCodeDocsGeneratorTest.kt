@@ -228,7 +228,7 @@ private val graphQlOperationErrors = listOf(
     GraphQlOperationError(
         category = "Notion",
         operation = "importNotionExperiences",
-        title = "Notion 경험 가져오기",
+        title = "Notion 경험 불러오기",
         type = GraphQlOperationType.MUTATION,
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,

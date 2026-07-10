@@ -22,6 +22,21 @@ extend type Query {
         """
         workspaceId: ID!
     ): [Jd!]!
+
+    """
+    JD의 AI 인사이트(공고 핵심·지원 전략)를 조회합니다.
+    최초 조회 시 AI로 생성·저장하며, 이후에는 저장된 값을 반환합니다.
+    """
+    jdInsight(
+        """
+        조회할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        조회할 JD의 ID입니다.
+        """
+        jdId: ID!
+    ): JdInsight
 }
 
 extend type Mutation {
@@ -141,4 +156,19 @@ type Jd {
     등록일입니다. (ISO-8601)
     """
     createdAt: String
+}
+
+"""
+JD의 AI 인사이트입니다.
+"""
+type JdInsight {
+    """
+    공고 핵심입니다. 공고가 원하는 인재상·핵심 요구를 요약한 서술형 문단입니다.
+    """
+    keyPoints: String!
+
+    """
+    지원 전략입니다. 어떤 경험을 어떻게 강조하면 좋을지 조언하는 서술형 문단입니다.
+    """
+    strategy: String!
 }

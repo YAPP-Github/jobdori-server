@@ -7,7 +7,8 @@ VALUES
   (2, 1, 'jd_meta',                'JD 메타(기업명·포지션·소개·업무·필요/우대경험·전형절차) 추출', '{"temperature":0.2}' FORMAT JSON, now(), now()),
   (3, 1, 'jd_application_strategy','JD 지원 전략 생성',           '{"temperature":0.6}' FORMAT JSON, now(), now()),
   (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}' FORMAT JSON, now(), now()),
-  (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}'  FORMAT JSON, now(), now());
+  (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}'  FORMAT JSON, now(), now()),
+  (6, 1, 'jd_key_points',          'JD 공고 핵심 요약',           '{"temperature":0.4}' FORMAT JSON, now(), now());
 
 -- 1) JD 다중 공고 분할 (문서 JD-B.6)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
@@ -39,4 +40,10 @@ null, now(), now());
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (5, 5, 'RESUME_EXPERIENCE_REWRITE',
 '당신은 IT/직무 이력서 작성 코치다. 입력으로 받은 원본 STAR(상황·과제·행동·결과)와 대상 JD의 핵심 역량을 바탕으로, 해당 경험을 이력서에 들어갈 한 문단으로 재작성한다. 규칙: (1) STAR에 담긴 사실(수치·기술·역할·결과)은 절대 바꾸거나 지어내지 마라. (2) JD 핵심 역량과 맞닿는 부분을 앞쪽에 배치하고 관련 키워드를 자연스럽게 녹인다. (3) 성과는 가능한 한 정량적으로 표현하되, 원본에 없는 수치는 만들어내지 마라. (4) 1인칭 주어·군더더기를 빼고 행동 동사 중심의 간결한 문체로 쓴다. (5) 길이와 톤은 다음 지시를 따른다: {tone}. 출력은 부가 설명 없이 재작성된 문단 텍스트만 반환한다.',
+null, null, now(), now());
+
+-- 6) JD 공고 핵심 요약 — generateText, json_schema NULL(서술형)
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (6, 6, 'JD_KEY_POINTS',
+'당신은 채용 공고(JD) 분석 전문가다. 입력된 JD 본문을 읽고 이 공고가 어떤 인재를 원하는지 핵심을 지원자 관점에서 요약한다. 반드시 불릿·머리말·JSON 없이 자연스러운 한국어 문단(2~4문장)으로만 답하라. 공고가 강조하는 역할·책임, 특히 중요하게 보는 역량·태도를 중심으로 정리한다. JD에 명시되지 않은 사실은 지어내지 마라.',
 null, null, now(), now());

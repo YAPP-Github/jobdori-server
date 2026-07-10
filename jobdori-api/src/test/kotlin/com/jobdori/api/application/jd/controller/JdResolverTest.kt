@@ -9,7 +9,9 @@ import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.jd.JdRegisterResult
 import com.jobdori.core.application.jd.RegisterJdService
+import com.jobdori.core.application.jdinsight.GetJdInsightService
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.jdinsight.JdInsight
 import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
@@ -30,6 +32,8 @@ internal class JdResolverTest(
     private val registerJdService: RegisterJdService,
     @MockkBean
     private val getJdService: GetJdService,
+    @MockkBean
+    private val getJdInsightService: GetJdInsightService,
     @MockkBean
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
 ) : StringSpec({
@@ -127,6 +131,33 @@ internal class JdResolverTest(
             .path("jd.companyName").entity<String>().isEqualTo("잡도리")
 
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
+    }
+
+    "JD의 AI 인사이트(공고 핵심·지원 전략)를 조회한다" {
+        every { getJdInsightService.getOrGenerate(10L, "jd-pub-1") } returns
+            JdInsight(
+                id = 1L,
+                jdId = 100L,
+                keyPoints = "사용자 경험을 주도적으로 이끌 사람을 원해요.",
+                strategy = "사용자 중심 문제를 정의·해결한 사례를 강조하면 좋겠어요.",
+            )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                query {
+                  jdInsight(workspaceId: "ws-1", jdId: "jd-pub-1") {
+                    keyPoints
+                    strategy
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("jdInsight.keyPoints").entity<String>().isEqualTo("사용자 경험을 주도적으로 이끌 사람을 원해요.")
+            .path("jdInsight.strategy").entity<String>().isEqualTo("사용자 중심 문제를 정의·해결한 사례를 강조하면 좋겠어요.")
+
+        verify(exactly = 1) { getJdInsightService.getOrGenerate(10L, "jd-pub-1") }
     }
 
 })

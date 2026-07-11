@@ -5,6 +5,7 @@ import com.jobdori.api.application.experience.dto.response.ExperienceListRespons
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
+import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.ExperienceCreator
 import com.jobdori.core.domain.experience.service.ExperienceModifier
@@ -22,6 +23,7 @@ class ExperienceService(
     private val experienceModifier: ExperienceModifier,
     private val experienceRemover: ExperienceRemover,
     private val experienceProjectReader: ExperienceProjectReader,
+    private val getExperienceRecommendationService: GetExperienceRecommendationService,
 ) {
 
     fun createExperience(
@@ -142,6 +144,7 @@ class ExperienceService(
         cursor: String?,
         size: Int,
         includeProjects: Boolean,
+        jdId: String? = null,
     ): ExperienceListResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -168,11 +171,20 @@ class ExperienceService(
             emptyMap()
         }
 
+        // jdId가 있으면 해당 JD 기준 매칭률·이유를 조인(경험 세트 변경 시 자동 재생성).
+        val matchByExperienceId = jdId
+            ?.let { getExperienceRecommendationService.getOrRefresh(workspace.id, it) }
+            ?.items?.associateBy { it.experienceId }
+            .orEmpty()
+
         return ExperienceListResponse(
             experiences = experiences.items.map { experience ->
+                val match = matchByExperienceId[experience.id]
                 ExperienceResponse.from(
                     experience = experience,
                     project = projects[experience.projectId],
+                    matchRate = match?.matchRate,
+                    reason = match?.reason,
                 )
             },
             cursor = CursorResponse(nextCursor = experiences.nextCursor),

@@ -66,6 +66,12 @@ class ExperienceReader(
         )
     }
 
+    fun findAllActive(workspaceId: Long): List<Experience> =
+        experienceRepository.findAllActiveByWorkspaceId(workspaceId)
+
+    fun signature(workspaceId: Long): String =
+        experienceRepository.experienceSignature(workspaceId)
+
     fun getExperienceCountsByProjectIds(workspaceId: Long, projectIds: Collection<Long>): Map<Long, Long> {
         if (projectIds.isEmpty()) {
             return emptyMap()

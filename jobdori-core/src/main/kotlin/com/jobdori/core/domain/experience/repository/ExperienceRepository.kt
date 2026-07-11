@@ -28,4 +28,10 @@ interface ExperienceRepository {
 
     fun countByWorkspaceIdAndProjectIds(workspaceId: Long, projectIds: Collection<Long>): Map<Long, Long>
 
+    // 워크스페이스의 ACTIVE 경험 전체(비페이지네이션). AI 추천 입력용.
+    fun findAllActiveByWorkspaceId(workspaceId: Long): List<Experience>
+
+    // 경험 세트 변경 감지용 시그니처("$count:$maxUpdatedAt"). 추가·수정·삭제가 모두 반영된다.
+    fun experienceSignature(workspaceId: Long): String
+
 }

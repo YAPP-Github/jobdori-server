@@ -26,6 +26,10 @@ extend type Query {
         """
         projectId: ID,
         """
+        JD ID입니다. 주면 각 경험에 해당 JD 기준 matchRate와 reason(상위 5개)을 채웁니다. (선택)
+        """
+        jdId: ID,
+        """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
         cursor: String,
@@ -397,6 +401,16 @@ type Experience {
     경험 상세 내용입니다.
     """
     contents: ExperienceContents!
+
+    """
+    JD 기준 매칭률(0~100)입니다. experiences 조회에 jdId를 준 경우에만 채워집니다.
+    """
+    matchRate: Int
+
+    """
+    선정 이유입니다. 매칭률 상위 5개 경험에만 채워집니다. (그 외 null)
+    """
+    reason: String
 }
 
 """

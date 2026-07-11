@@ -1,4 +1,4 @@
-==== Import Experiences
+==== 파일 경험 불러오기 (PDF)
 
 파일에서 경험을 가져오는 API입니다. (현재 지원되는 파일: PDF)
 

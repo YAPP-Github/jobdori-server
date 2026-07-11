@@ -1,4 +1,4 @@
-==== Refresh Access Token
+==== 액세스 토큰 갱신
 
 Refresh 토큰으로 새로운 Access 토큰을 발급하는 API입니다.
 

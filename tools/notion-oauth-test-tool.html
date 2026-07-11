@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Notion OAuth Tester</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #1f2937;
+            background: #f6f7fb;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: start center;
+            padding: 32px;
+        }
+
+        main {
+            width: min(980px, 100%);
+            background: #ffffff;
+            border: 1px solid #d8dee9;
+            border-radius: 8px;
+            box-shadow: 0 16px 48px rgb(31 41 55 / 10%);
+            padding: 28px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            line-height: 1.25;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 18px;
+        }
+
+        p {
+            margin: 0 0 20px;
+            color: #4b5563;
+            line-height: 1.55;
+        }
+
+        label {
+            display: grid;
+            gap: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px 14px;
+            font: inherit;
+            color: #111827;
+            background: #ffffff;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button,
+        a.button {
+            appearance: none;
+            border: 0;
+            border-radius: 6px;
+            padding: 11px 16px;
+            background: #111827;
+            color: white;
+            font: inherit;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button.secondary,
+        a.secondary {
+            background: #475569;
+        }
+
+        button:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+        .ok {
+            color: #047857;
+            font-weight: 700;
+        }
+
+        code {
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        @media (max-width: 720px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Notion OAuth Tester</h1>
+    <p>
+        Register this page URL as a Notion OAuth redirect URI. This tool opens Notion OAuth,
+        sends the returned code to the local API, lists shared pages, and retrieves page content.
+    </p>
+
+    <section>
+        <h2>Settings</h2>
+        <div class="grid">
+            <label>
+                API Base URL
+                <input id="api-base-url" autocomplete="off" value="http://localhost:8080">
+            </label>
+            <label>
+                Notion OAuth Client ID
+                <input id="client-id" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+            </label>
+        </div>
+        <label>
+            Jobdori Access Token
+            <input id="access-token" autocomplete="off" placeholder="Bearer token without the Bearer prefix">
+        </label>
+        <label>
+            Redirect URI
+            <input id="redirect-uri" autocomplete="off" required>
+        </label>
+        <div class="actions">
+            <button id="open-oauth" type="button">Open Notion OAuth</button>
+            <button class="secondary" id="copy-redirect-uri" type="button">Copy Redirect URI</button>
+            <a class="button secondary" href="./notion-oauth-test-tool.html">Reset</a>
+        </div>
+    </section>
+
+    <section class="result hidden" id="callback-result">
+        <h2>OAuth Callback</h2>
+        <p class="ok hidden" id="state-ok">State verified.</p>
+        <p class="error hidden" id="state-error">State mismatch. Do not exchange this code.</p>
+        <label>
+            Authorization Code
+            <textarea id="authorization-code" readonly></textarea>
+        </label>
+        <div class="actions">
+            <button id="connect" type="button">Connect API</button>
+            <button class="secondary" id="copy-code" type="button">Copy Code</button>
+        </div>
+    </section>
+
+    <section class="result" id="connection-section">
+        <h2>Connections</h2>
+        <div class="actions">
+            <button id="load-connections" type="button">Load Connections</button>
+        </div>
+        <label>
+            Connection
+            <select id="connection-select"></select>
+        </label>
+    </section>
+
+    <section class="result" id="pages-section">
+        <h2>Pages</h2>
+        <div class="grid">
+            <label>
+                Search Query
+                <input id="page-query" autocomplete="off" placeholder="Optional page title keyword">
+            </label>
+            <label>
+                Page Size
+                <input id="page-size" type="number" min="1" max="100" value="20">
+            </label>
+        </div>
+        <label>
+            Workspace ID
+            <input id="workspace-id" autocomplete="off" placeholder="Jobdori workspace public id">
+        </label>
+        <div class="actions">
+            <button id="load-pages" type="button">Load Pages</button>
+            <button class="secondary" id="load-more-pages" type="button" disabled>Load More</button>
+        </div>
+        <label>
+            Page
+            <select id="page-select"></select>
+        </label>
+        <div class="actions">
+            <button id="import-page" type="button">Import Page as Experiences</button>
+        </div>
+    </section>
+
+    <section class="result">
+        <h2>Result</h2>
+        <textarea id="result" readonly></textarea>
+    </section>
+
+    <section class="result hidden" id="error-section">
+        <h2>Error</h2>
+        <p class="error" id="error-message"></p>
+    </section>
+</main>
+
+<script>
+    const apiBaseUrlInput = document.querySelector("#api-base-url");
+    const clientIdInput = document.querySelector("#client-id");
+    const accessTokenInput = document.querySelector("#access-token");
+    const redirectUriInput = document.querySelector("#redirect-uri");
+    const callbackResult = document.querySelector("#callback-result");
+    const authorizationCode = document.querySelector("#authorization-code");
+    const stateOk = document.querySelector("#state-ok");
+    const stateError = document.querySelector("#state-error");
+    const connectionSection = document.querySelector("#connection-section");
+    const connectionSelect = document.querySelector("#connection-select");
+    const pagesSection = document.querySelector("#pages-section");
+    const pageQueryInput = document.querySelector("#page-query");
+    const pageSizeInput = document.querySelector("#page-size");
+    const workspaceIdInput = document.querySelector("#workspace-id");
+    const pageSelect = document.querySelector("#page-select");
+    const loadMorePagesButton = document.querySelector("#load-more-pages");
+    const resultOutput = document.querySelector("#result");
+    const errorSection = document.querySelector("#error-section");
+    const errorMessage = document.querySelector("#error-message");
+
+    const params = new URLSearchParams(window.location.search);
+    const currentRedirectUri = `${window.location.origin}${window.location.pathname}`;
+    let nextCursor = null;
+
+    apiBaseUrlInput.value = localStorage.getItem("notionApiBaseUrl") || "http://localhost:8080";
+    clientIdInput.value = localStorage.getItem("notionOAuthClientId") || "";
+    accessTokenInput.value = localStorage.getItem("jobdoriAccessToken") || "";
+    redirectUriInput.value = localStorage.getItem("notionRedirectUri") || currentRedirectUri;
+    workspaceIdInput.value = localStorage.getItem("jobdoriWorkspaceId") || "";
+
+    const returnedCode = params.get("code");
+    const returnedState = params.get("state");
+    const returnedError = params.get("error");
+
+    if (returnedCode) {
+        authorizationCode.value = returnedCode;
+        callbackResult.classList.remove("hidden");
+
+        const expectedState = sessionStorage.getItem("notionOAuthState");
+        if (expectedState && expectedState === returnedState) {
+            stateOk.classList.remove("hidden");
+        } else {
+            stateError.classList.remove("hidden");
+        }
+    }
+
+    if (returnedError) {
+        showError(`${returnedError}: ${params.get("error_description") || ""}`);
+    }
+
+    document.querySelector("#open-oauth").addEventListener("click", () => {
+        persistSettings();
+
+        const clientId = clientIdInput.value.trim();
+        const redirectUri = redirectUriInput.value.trim();
+        const state = crypto.randomUUID();
+
+        sessionStorage.setItem("notionOAuthState", state);
+
+        const authUrl = new URL("https://api.notion.com/v1/oauth/authorize");
+        authUrl.searchParams.set("owner", "user");
+        authUrl.searchParams.set("client_id", clientId);
+        authUrl.searchParams.set("redirect_uri", redirectUri);
+        authUrl.searchParams.set("response_type", "code");
+        authUrl.searchParams.set("state", state);
+
+        window.location.href = authUrl.toString();
+    });
+
+    document.querySelector("#connect").addEventListener("click", () => runAsync(async () => {
+        persistSettings();
+        if (!authorizationCode.value.trim()) {
+            showError("Authorization code is required.");
+            return;
+        }
+
+        const workspaceId = workspaceIdInput.value.trim();
+        if (!workspaceId) {
+            showError("Workspace id is required.");
+            return;
+        }
+        const response = await apiFetch(`/v1/workspaces/${encodeURIComponent(workspaceId)}/notion/connections`, {
+            method: "POST",
+            body: JSON.stringify({
+                authorizationCode: authorizationCode.value.trim(),
+                redirectUri: redirectUriInput.value.trim(),
+            }),
+        });
+
+        writeResult(response);
+        connectionSection.classList.remove("hidden");
+        pagesSection.classList.remove("hidden");
+        await loadConnections();
+    }));
+
+    document.querySelector("#load-connections").addEventListener("click", () => runAsync(loadConnections));
+
+    document.querySelector("#load-pages").addEventListener("click", () => runAsync(async () => {
+        nextCursor = null;
+        pageSelect.replaceChildren();
+        await loadPages();
+    }));
+
+    loadMorePagesButton.addEventListener("click", () => runAsync(loadPages));
+
+    document.querySelector("#import-page").addEventListener("click", () => runAsync(async () => {
+        const connectionId = connectionSelect.value;
+        const pageId = pageSelect.value;
+        const workspaceId = workspaceIdInput.value.trim();
+        if (!connectionId || !pageId || !workspaceId) {
+            showError("Select a connection and page, and enter a workspace id first.");
+            return;
+        }
+
+        const response = await apiFetch(`/v1/workspaces/${encodeURIComponent(workspaceId)}/experience-imports/notion`, {
+            method: "POST",
+            body: JSON.stringify({
+                connectionId,
+                pageId,
+            }),
+        });
+        writeResult(response);
+    }));
+
+    document.querySelector("#copy-redirect-uri").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(redirectUriInput.value);
+    });
+
+    document.querySelector("#copy-code").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(authorizationCode.value);
+    });
+
+    async function loadConnections() {
+        persistSettings();
+        const workspaceId = workspaceIdInput.value.trim();
+        if (!workspaceId) {
+            showError("Workspace id is required.");
+            return;
+        }
+        const response = await apiFetch(`/v1/workspaces/${encodeURIComponent(workspaceId)}/notion/connections`);
+        writeResult(response);
+
+        connectionSelect.replaceChildren();
+        for (const connection of response.result?.connections || []) {
+            const option = document.createElement("option");
+            option.value = connection.connectionId;
+            option.textContent = connection.notionWorkspaceName || connection.connectionId;
+            connectionSelect.appendChild(option);
+        }
+
+        connectionSection.classList.remove("hidden");
+        pagesSection.classList.remove("hidden");
+    }
+
+    async function loadPages() {
+        const connectionId = connectionSelect.value;
+        if (!connectionId) {
+            showError("Select a connection first.");
+            return;
+        }
+
+        const query = pageQueryInput.value.trim();
+        const pageSize = pageSizeInput.value || "20";
+        const searchParams = new URLSearchParams();
+        searchParams.set("pageSize", pageSize);
+        if (query) {
+            searchParams.set("query", query);
+        }
+        if (nextCursor) {
+            searchParams.set("cursor", nextCursor);
+        }
+
+        const workspaceId = workspaceIdInput.value.trim();
+        if (!workspaceId) {
+            showError("Workspace id is required.");
+            return;
+        }
+        const response = await apiFetch(
+            `/v1/workspaces/${encodeURIComponent(workspaceId)}/notion/connections/${connectionId}/pages?${searchParams.toString()}`
+        );
+        writeResult(response);
+
+        for (const page of response.result?.pages || []) {
+            const option = document.createElement("option");
+            option.value = page.pageId;
+            option.textContent = page.title;
+            pageSelect.appendChild(option);
+        }
+
+        nextCursor = response.result?.cursor?.nextCursor || null;
+        loadMorePagesButton.disabled = !response.result?.cursor?.hasNext;
+    }
+
+    async function apiFetch(path, options = {}) {
+        hideError();
+        const accessToken = accessTokenInput.value.trim();
+        if (!accessToken) {
+            showError("Jobdori access token is required.");
+            throw new Error("Jobdori access token is required.");
+        }
+
+        const requestUrl = `${apiBaseUrlInput.value.replace(/\/$/, "")}${path}`;
+        console.info(`[apiFetch] ${options.method || "GET"} ${requestUrl}`);
+
+        try {
+            const response = await fetch(requestUrl, {
+                ...options,
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                    ...(options.headers || {}),
+                },
+            });
+
+            const text = await response.text();
+            const body = text ? JSON.parse(text) : null;
+            if (!response.ok || body?.ok === false) {
+                const message = body?.error?.message || body?.error?.code || response.statusText;
+                showError(message);
+                throw new Error(message);
+            }
+            return body;
+        } catch (error) {
+            if (error instanceof TypeError) {
+                showError("API request failed. Check API Base URL, server status, and CORS settings.");
+            } else if (!errorSection.classList.contains("hidden")) {
+                // The specific API error is already visible.
+            } else {
+                showError(error.message || String(error));
+            }
+            throw error;
+        }
+    }
+
+    async function runAsync(task) {
+        try {
+            await task();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function persistSettings() {
+        localStorage.setItem("notionApiBaseUrl", apiBaseUrlInput.value.trim());
+        localStorage.setItem("notionOAuthClientId", clientIdInput.value.trim());
+        localStorage.setItem("jobdoriAccessToken", accessTokenInput.value.trim());
+        localStorage.setItem("notionRedirectUri", redirectUriInput.value.trim());
+        localStorage.setItem("jobdoriWorkspaceId", workspaceIdInput.value.trim());
+    }
+
+    function writeResult(value) {
+        resultOutput.value = JSON.stringify(value, null, 2);
+    }
+
+    function showError(message) {
+        console.warn(`[showError] ${message}`);
+        errorMessage.textContent = message;
+        errorSection.classList.remove("hidden");
+        errorSection.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function hideError() {
+        errorMessage.textContent = "";
+        errorSection.classList.add("hidden");
+    }
+</script>
+</body>
+</html>

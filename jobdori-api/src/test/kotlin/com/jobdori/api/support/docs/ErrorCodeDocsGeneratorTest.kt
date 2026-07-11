@@ -3,9 +3,9 @@ package com.jobdori.api.support.docs
 import com.jobdori.api.DocsTest
 import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorCode
-import com.jobdori.common.error.FileErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
+import com.jobdori.core.domain.notion.error.NotionErrorCode
 import com.jobdori.core.domain.user.error.UserErrorCode
 import com.jobdori.core.domain.workspace.error.WorkspaceErrorCode
 import io.kotest.core.spec.style.FunSpec
@@ -37,6 +37,10 @@ internal class ErrorCodeDocsGeneratorTest : FunSpec({
         generateGraphQlErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/experience/experience-error.adoc"),
             errorCodes = ExperienceErrorCode.entries + ExperienceProjectErrorCode.entries,
+        )
+        generateGraphQlErrorCodeDocs(
+            file = File("src/docs/asciidoc/graphql/notion/notion-error.adoc"),
+            errorCodes = NotionErrorCode.entries,
         )
         generateGraphQlOperationErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/operation-error.adoc"),
@@ -174,6 +178,65 @@ private val graphQlOperationErrors = listOf(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
             ExperienceProjectErrorCode.E404_EXPERIENCE_PROJECT_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "connectNotion",
+        title = "Notion 연결",
+        type = GraphQlOperationType.MUTATION,
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            NotionErrorCode.API_REQUEST_FAILED to "Notion OAuth 토큰 교환 요청이 실패한 경우",
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "disconnectNotion",
+        title = "Notion 연결 해제",
+        type = GraphQlOperationType.MUTATION,
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "notionConnections",
+        title = "Notion 연결 목록 조회",
+        type = GraphQlOperationType.QUERY,
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "notionPages",
+        title = "Notion 페이지 검색",
+        type = GraphQlOperationType.QUERY,
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            NotionErrorCode.CONNECTION_NOT_FOUND,
+            NotionErrorCode.CONNECTION_NEED_RECONNECT,
+            NotionErrorCode.PAGE_ACCESS_DENIED,
+            NotionErrorCode.API_REQUEST_FAILED,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "importNotionExperiences",
+        title = "Notion 경험 불러오기",
+        type = GraphQlOperationType.MUTATION,
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            NotionErrorCode.CONNECTION_NOT_FOUND,
+            NotionErrorCode.CONNECTION_NEED_RECONNECT,
+            NotionErrorCode.PAGE_ACCESS_DENIED,
+            NotionErrorCode.API_REQUEST_FAILED,
         ),
     ),
 )

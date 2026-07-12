@@ -1,0 +1,165 @@
+package com.jobdori.infrastructure.persistence.domain.resume
+
+import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
+import com.jobdori.core.domain.resume.ResumeCareerPayload
+import com.jobdori.core.domain.resume.ResumeSectionType
+import com.jobdori.core.domain.resume.ResumeStatus
+import com.jobdori.core.domain.resume.ResumeTemplate
+import com.jobdori.core.domain.resume.repository.ResumeRepository
+import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
+import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
+import com.jobdori.core.domain.resume.service.command.ResumeSectionSaveCommand
+import com.jobdori.infrastructure.persistence.IntegrationTest
+import com.jobdori.infrastructure.persistence.domain.resume.repository.ResumeJpaRepository
+import com.jobdori.infrastructure.persistence.domain.resume.repository.ResumeSectionItemJpaRepository
+import com.jobdori.infrastructure.persistence.domain.resume.repository.ResumeSectionJpaRepository
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
+import java.math.BigDecimal
+
+@IntegrationTest
+class ResumeRepositoryTest(
+    private val resumeRepository: ResumeRepository,
+    private val resumeJpaRepository: ResumeJpaRepository,
+    private val sectionJpaRepository: ResumeSectionJpaRepository,
+    private val sectionItemJpaRepository: ResumeSectionItemJpaRepository,
+) : StringSpec({
+
+    afterEach {
+        sectionItemJpaRepository.deleteAll()
+        sectionJpaRepository.deleteAll()
+        resumeJpaRepository.deleteAll()
+    }
+
+    "이력서 상세를 생성하고 섹션과 아이템을 순서대로 조회한다" {
+        // when
+        val detail = resumeRepository.createDetail(
+            workspaceId = 10L,
+            command = saveCommand(
+                title = "신규 이력서",
+                sections = listOf(
+                    sectionCommand(type = ResumeSectionType.CAREER, displayOrder = "20"),
+                    sectionCommand(type = ResumeSectionType.BASIC_INFO, displayOrder = "10"),
+                ),
+            ),
+        )
+
+        // then
+        detail.resume.title shouldBe "신규 이력서"
+        detail.resume.status shouldBe ResumeStatus.DRAFT
+        detail.sections.map { it.section.type } shouldContainExactly listOf(
+            ResumeSectionType.BASIC_INFO,
+            ResumeSectionType.CAREER,
+        )
+        detail.sections.flatMap { it.items }.map { it.payload.type } shouldContainExactly listOf(
+            ResumeSectionType.BASIC_INFO,
+            ResumeSectionType.CAREER,
+        )
+    }
+
+    "이력서 상세 수정 시 요청에 없는 섹션과 아이템을 삭제하고 요청 스냅샷을 저장한다" {
+        // given
+        val created = resumeRepository.createDetail(
+            workspaceId = 10L,
+            command = saveCommand(
+                title = "기존 이력서",
+                sections = listOf(
+                    sectionCommand(type = ResumeSectionType.BASIC_INFO, displayOrder = "10"),
+                    sectionCommand(type = ResumeSectionType.CAREER, displayOrder = "20"),
+                ),
+            ),
+        )
+        val basicInfoSection = created.sections.first { it.section.type == ResumeSectionType.BASIC_INFO }
+        val basicInfoItem = basicInfoSection.items.single()
+
+        // when
+        val modified = resumeRepository.modifyDetail(
+            id = created.resume.id,
+            workspaceId = 10L,
+            command = saveCommand(
+                title = "수정 이력서",
+                status = ResumeStatus.ACTIVE,
+                sections = listOf(
+                    sectionCommand(
+                        sectionId = basicInfoSection.section.id,
+                        itemId = basicInfoItem.id,
+                        type = ResumeSectionType.BASIC_INFO,
+                        displayOrder = "30",
+                        visible = false,
+                    ),
+                ),
+            ),
+        )
+
+        // then
+        requireNotNull(modified)
+        modified.resume.title shouldBe "수정 이력서"
+        modified.resume.status shouldBe ResumeStatus.ACTIVE
+        modified.sections shouldHaveSize 1
+        modified.sections.single().section.type shouldBe ResumeSectionType.BASIC_INFO
+        modified.sections.single().section.displayOrder shouldBe BigDecimal("30")
+        modified.sections.single().section.visible shouldBe false
+        modified.sections.single().items.single().id shouldBe basicInfoItem.id
+        sectionJpaRepository.findAll() shouldHaveSize 1
+        sectionItemJpaRepository.findAll() shouldHaveSize 1
+    }
+
+    "없는 이력서 상세 수정은 null을 반환한다" {
+        // when & then
+        resumeRepository.modifyDetail(
+            id = 999L,
+            workspaceId = 10L,
+            command = saveCommand(title = "없음"),
+        ).shouldBeNull()
+    }
+
+})
+
+private fun saveCommand(
+    title: String,
+    status: ResumeStatus = ResumeStatus.DRAFT,
+    sections: List<ResumeSectionSaveCommand> = listOf(sectionCommand()),
+) = ResumeSaveCommand(
+    targetJdId = null,
+    title = title,
+    template = ResumeTemplate.DEFAULT,
+    status = status,
+    sections = sections,
+)
+
+private fun sectionCommand(
+    sectionId: Long? = null,
+    itemId: Long? = null,
+    type: ResumeSectionType = ResumeSectionType.BASIC_INFO,
+    displayOrder: String = "10",
+    visible: Boolean = true,
+) = ResumeSectionSaveCommand(
+    sectionId = sectionId,
+    type = type,
+    displayOrder = BigDecimal(displayOrder),
+    visible = visible,
+    items = listOf(
+        ResumeSectionItemSaveCommand(
+            itemId = itemId,
+            payload = when (type) {
+                ResumeSectionType.CAREER -> ResumeCareerPayload(
+                    companyName = "회사",
+                    role = "백엔드",
+                    period = null,
+                    contents = "경력 내용",
+                )
+
+                else -> ResumeBasicInfoPayload(
+                    name = "홍길동",
+                    email = "hong@example.com",
+                    phone = "010-0000-0000",
+                )
+            },
+            displayOrder = BigDecimal.ONE,
+            visible = visible,
+        ),
+    ),
+)

@@ -1,9 +1,9 @@
 package com.jobdori.core.application.auth
 
-import com.jobdori.core.domain.auth.error.InvalidAuthTokenException
 import com.jobdori.core.domain.auth.AuthToken
-import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.auth.AuthTokenType
+import com.jobdori.core.domain.auth.error.InvalidAuthTokenException
+import com.jobdori.core.domain.auth.service.AuthTokenProvider
 import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.error.UserNotFoundException
 import com.jobdori.core.domain.user.service.UserReader

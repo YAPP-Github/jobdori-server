@@ -2,10 +2,10 @@ package com.jobdori.infrastructure.client.notion
 
 import com.jobdori.common.error.InternalServerException
 import com.jobdori.core.application.notion.client.NotionClient
-import com.jobdori.core.domain.notion.NotionPages
 import com.jobdori.core.domain.notion.NotionBlock
 import com.jobdori.core.domain.notion.NotionPageContent
 import com.jobdori.core.domain.notion.NotionPageSummary
+import com.jobdori.core.domain.notion.NotionPages
 import com.jobdori.core.domain.notion.error.NotionApiRequestFailedException
 import com.jobdori.core.domain.notion.error.NotionPageAccessDeniedException
 import com.jobdori.core.domain.notion.error.NotionUnauthorizedException
@@ -177,10 +177,12 @@ class NotionClientImpl(
                     message = "Notion API 인증에 실패했습니다. ${context.toMessageContext()}",
                     cause = exception,
                 )
+
                 403, 404 -> throw NotionPageAccessDeniedException(
                     message = "Notion 페이지 접근 권한이 없거나 공유되지 않았습니다. ${context.toMessageContext()}",
                     cause = exception,
                 )
+
                 else -> throw NotionApiRequestFailedException(
                     message = "Notion API 요청에 실패했습니다. ${context.toMessageContext()}",
                     cause = exception,

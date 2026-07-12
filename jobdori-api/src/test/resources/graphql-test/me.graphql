@@ -1,11 +1,11 @@
 {
-  me {
-    userId
-    email
-    name
-    profileImageUrl
-    workspaces {
-      workspaceId
+    me {
+        userId
+        email
+        name
+        profileImageUrl
+        workspaces {
+            workspaceId
+        }
     }
-  }
 }

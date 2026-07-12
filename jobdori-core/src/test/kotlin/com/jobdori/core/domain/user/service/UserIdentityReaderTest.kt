@@ -1,7 +1,7 @@
 package com.jobdori.core.domain.user.service
 
-import com.jobdori.core.domain.user.UserIdentityProvider
 import com.jobdori.core.domain.user.UserIdentityFixture
+import com.jobdori.core.domain.user.UserIdentityProvider
 import com.jobdori.core.domain.user.repository.UserIdentityRepository
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.nulls.shouldBeNull

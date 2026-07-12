@@ -14,6 +14,7 @@
 | `GraphQL` API
 | `/api/graphql`
 |===
+
 === 공통 헤더 정보
 
 GraphQL API도 REST API와 동일하게 HTTP Header로 인증 정보를 전달합니다.
@@ -161,7 +162,8 @@ GraphQL 요청이 실패하면 `errors` 필드에 오류 정보가 포함됩니�
 ====
 --
 
-NOTE: GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려갈 수 있습니다. 클라이언트는 HTTP status만 보지 말고 `errors[].extensions.code`를 기준으로 처리해야 합니다.
+NOTE: GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려갈 수 있습니다.
+클라이언트는 HTTP status만 보지 말고 `errors[].extensions.code`를 기준으로 처리해야 합니다.
 
 [[graphql-common-error-codes]]
 === 공통 에러 코드

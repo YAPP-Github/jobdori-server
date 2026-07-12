@@ -1,10 +1,10 @@
 package com.jobdori.api.application.experience.service
 
-import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.api.application.experience.dto.request.CreateExperienceRequest
 import com.jobdori.api.application.experience.dto.request.UpdateExperienceRequest
 import com.jobdori.api.application.experience.dto.request.contents.ExperienceContentsRequest
 import com.jobdori.api.application.experience.dto.request.contents.FreeExperienceContentsRequest
+import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.model.SliceResult
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents

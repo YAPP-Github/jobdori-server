@@ -452,6 +452,125 @@
 |===
 // end::importNotionExperiences[]
 
+=== Resume
+
+==== 이력서 목록 조회
+
+Type: `Query`
+
+Operation: `resumes`
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+|===
+
+==== 이력서 상세 조회
+
+Type: `Query`
+
+Operation: `resume`
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+| resume_not_found
+| 존재하지 않는 이력서입니다
+| 이력서를 찾을 수 없는 경우
+
+|===
+
+==== 이력서 생성
+
+Type: `Mutation`
+
+Operation: `createResume`
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+|===
+
+==== 이력서 수정
+
+Type: `Mutation`
+
+Operation: `updateResume`
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+| resume_not_found
+| 존재하지 않는 이력서입니다
+| 이력서를 찾을 수 없는 경우
+
+|===
+
+==== 이력서 삭제
+
+Type: `Mutation`
+
+Operation: `deleteResume`
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+| resume_not_found
+| 존재하지 않는 이력서입니다
+| 이력서를 찾을 수 없는 경우
+
+|===
+
 // tag::jd[]
 커스텀 에러 코드:
 

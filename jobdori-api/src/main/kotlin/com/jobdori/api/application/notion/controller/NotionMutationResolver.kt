@@ -32,7 +32,7 @@ class NotionMutationResolver(
     fun disconnectNotion(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Argument connectionId: String,
+        @Argument connectionId: Long,
     ): Boolean {
         notionConnectionApiService.disconnect(
             userId = userId,

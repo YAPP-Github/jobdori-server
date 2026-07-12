@@ -3,14 +3,14 @@ package com.jobdori.api.application.notion.dto.response
 import com.jobdori.core.domain.notion.NotionConnection
 
 data class NotionConnectionResponse(
-    val connectionId: String,
+    val connectionId: Long,
     val notionWorkspaceName: String?,
     val notionWorkspaceIcon: String?,
 ) {
 
     companion object {
         fun from(connection: NotionConnection) = NotionConnectionResponse(
-            connectionId = connection.publicId,
+            connectionId = connection.id,
             notionWorkspaceName = connection.workspaceName,
             notionWorkspaceIcon = connection.workspaceIcon,
         )

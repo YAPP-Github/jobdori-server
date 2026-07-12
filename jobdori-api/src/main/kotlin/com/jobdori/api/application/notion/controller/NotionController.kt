@@ -61,7 +61,7 @@ class NotionController(
     fun disconnect(
         @UserId userId: Long,
         @PathVariable workspaceId: String,
-        @PathVariable connectionId: String,
+        @PathVariable connectionId: Long,
     ): ApiResponse<Nothing?> {
         notionConnectionApiService.disconnect(
             userId = userId,
@@ -76,7 +76,7 @@ class NotionController(
     fun searchPages(
         @UserId userId: Long,
         @PathVariable workspaceId: String,
-        @PathVariable connectionId: String,
+        @PathVariable connectionId: Long,
         @RequestParam(required = false) query: String?,
         @RequestParam(required = false) cursor: String?,
         @RequestParam(defaultValue = "20") pageSize: Int,

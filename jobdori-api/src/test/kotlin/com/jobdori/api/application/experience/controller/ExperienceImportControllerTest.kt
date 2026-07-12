@@ -2,8 +2,8 @@ package com.jobdori.api.application.experience.controller
 
 import com.jobdori.api.ApiTest
 import com.jobdori.api.DocsTest
-import com.jobdori.api.application.notion.service.NotionExperienceImportService
 import com.jobdori.api.application.experience.service.ExperiencePdfImportService
+import com.jobdori.api.application.notion.service.NotionExperienceImportService
 import com.jobdori.api.support.docs.ErrorCodeSnippet
 import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
@@ -106,7 +106,7 @@ internal class ExperienceImportControllerTest(
             notionExperienceImportService.importExperiences(
                 userId = 1L,
                 workspaceId = "workspace-id",
-                connectionId = "connection-public-id",
+                connectionId = 740000000000000001,
                 pageId = "page-id",
             )
         } returns Unit
@@ -116,7 +116,7 @@ internal class ExperienceImportControllerTest(
             contentType = MediaType.APPLICATION_JSON
             content = """
                 {
-                  "connectionId": "connection-public-id",
+                  "connectionId": "740000000000000001",
                   "pageId": "page-id"
                 }
             """.trimIndent()
@@ -134,7 +134,7 @@ internal class ExperienceImportControllerTest(
                         parameterWithName("workspaceId").description("워크스페이스 ID"),
                     ),
                     requestFields(
-                        fieldWithPath("connectionId").type(JsonFieldType.STRING).description("Notion 연결 public ID"),
+                        fieldWithPath("connectionId").type(JsonFieldType.STRING).description("Notion 연결 ID"),
                         fieldWithPath("pageId").type(JsonFieldType.STRING).description("가져올 Notion 페이지 ID"),
                     ),
                     responseFields(
@@ -153,7 +153,7 @@ internal class ExperienceImportControllerTest(
             notionExperienceImportService.importExperiences(
                 userId = 1L,
                 workspaceId = "workspace-id",
-                connectionId = "connection-public-id",
+                connectionId = 740000000000000001,
                 pageId = "page-id",
             )
         }

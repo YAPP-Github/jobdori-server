@@ -3,10 +3,9 @@ package com.jobdori.infrastructure.persistence.domain.notion.entity
 import com.jobdori.core.domain.notion.NotionConnection
 import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
+import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
@@ -20,10 +19,6 @@ import java.time.LocalDateTime
     ],
     uniqueConstraints = [
         UniqueConstraint(
-            name = "uk_notion_connection_public_id",
-            columnNames = ["public_id"],
-        ),
-        UniqueConstraint(
             name = "uk_notion_connection_workspace_notion_workspace_bot",
             columnNames = ["workspace_id", "notion_workspace_id", "bot_id"],
         ),
@@ -31,9 +26,6 @@ import java.time.LocalDateTime
 )
 @Entity
 class NotionConnectionEntity(
-    @Column(name = "public_id", nullable = false, updatable = false, length = 36)
-    var publicId: String,
-
     @Column(name = "workspace_id", nullable = false, updatable = false)
     var workspaceId: Long,
 
@@ -60,7 +52,7 @@ class NotionConnectionEntity(
 ) : AuditableEntity() {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SnowflakeId
     var id: Long = 0L
 
     fun update(connection: NotionConnection, encryptor: StringEncryptor) {
@@ -73,7 +65,6 @@ class NotionConnectionEntity(
 
     fun toDomain(encryptor: StringEncryptor) = NotionConnection(
         id = id,
-        publicId = publicId,
         workspaceId = workspaceId,
         notionWorkspaceId = notionWorkspaceId,
         workspaceName = workspaceName,
@@ -86,7 +77,6 @@ class NotionConnectionEntity(
 
     companion object {
         fun from(connection: NotionConnection, encryptor: StringEncryptor) = NotionConnectionEntity(
-            publicId = connection.publicId,
             workspaceId = connection.workspaceId,
             notionWorkspaceId = connection.notionWorkspaceId,
             workspaceName = connection.workspaceName,

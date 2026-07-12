@@ -79,7 +79,7 @@ class NotionExperienceImportServiceTest : StringSpec({
         every {
             notionPageService.getPageContent(
                 workspaceId = 10L,
-                connectionPublicId = "connection-id",
+                connectionId = 1,
                 pageId = "page-id",
             )
         } returns content
@@ -90,7 +90,7 @@ class NotionExperienceImportServiceTest : StringSpec({
         service.importExperiences(
             userId = 1L,
             workspaceId = "workspace-public-id",
-            connectionId = "connection-id",
+            connectionId = 1,
             pageId = "page-id",
         )
 
@@ -110,7 +110,7 @@ class NotionExperienceImportServiceTest : StringSpec({
         every {
             notionPageService.getPageContent(
                 workspaceId = 10L,
-                connectionPublicId = "connection-id",
+                connectionId = 1,
                 pageId = "empty-page-id",
             )
         } returns NotionPageContent(
@@ -124,7 +124,7 @@ class NotionExperienceImportServiceTest : StringSpec({
             service.importExperiences(
                 userId = 1L,
                 workspaceId = "workspace-public-id",
-                connectionId = "connection-id",
+                connectionId = 1,
                 pageId = "empty-page-id",
             )
         }

@@ -25,7 +25,7 @@ class NotionConnectionRepositoryImpl(
                 it.update(connection, encryptor)
             } ?: NotionConnectionEntity.from(connection, encryptor)
         } else {
-            jpaRepository.findByPublicIdAndWorkspaceId(connection.publicId, connection.workspaceId)?.also {
+            jpaRepository.findByIdAndWorkspaceId(connection.id, connection.workspaceId)?.also {
                 it.update(connection, encryptor)
             } ?: NotionConnectionEntity.from(connection, encryptor)
         }
@@ -34,8 +34,8 @@ class NotionConnectionRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long): NotionConnection? {
-        return jpaRepository.findByPublicIdAndWorkspaceId(publicId, workspaceId)?.toDomain(encryptor)
+    override fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): NotionConnection? {
+        return jpaRepository.findByIdAndWorkspaceId(id, workspaceId)?.toDomain(encryptor)
     }
 
     @Transactional(readOnly = true)
@@ -68,8 +68,8 @@ class NotionConnectionRepositoryImpl(
     }
 
     @Transactional
-    override fun deleteByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long) {
-        jpaRepository.deleteByPublicIdAndWorkspaceId(publicId, workspaceId)
+    override fun deleteByIdAndWorkspaceId(id: Long, workspaceId: Long) {
+        jpaRepository.deleteByIdAndWorkspaceId(id, workspaceId)
     }
 
 }

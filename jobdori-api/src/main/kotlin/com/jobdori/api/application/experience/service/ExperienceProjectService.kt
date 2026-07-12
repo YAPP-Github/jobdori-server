@@ -110,7 +110,7 @@ class ExperienceProjectService(
             projects = result.items.map { project ->
                 ExperienceProjectResponse.from(
                     project = project,
-                    experienceCount = experienceCounts[project.id]?.toInt() ?: if (includeExperienceCount) 0 else null,
+                    experienceCount = experienceCounts[project.id] ?: if (includeExperienceCount) 0L else null,
                 )
             },
             cursor = CursorResponse(nextCursor = result.nextCursor),
@@ -135,7 +135,7 @@ class ExperienceProjectService(
             experienceReader.getExperienceCountsByProjectIds(
                 workspaceId = workspace.id,
                 projectIds = listOf(project.id),
-            )[project.id]?.toInt() ?: 0
+            )[project.id] ?: 0L
         } else {
             null
         }

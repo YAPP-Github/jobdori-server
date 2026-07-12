@@ -150,7 +150,7 @@ class ExperienceProjectServiceTest : StringSpec({
         )
 
         // then
-        response.projects.map { it.experienceCount } shouldContainExactly listOf(5, 0)
+        response.projects.map { it.experienceCount } shouldContainExactly listOf(5L, 0L)
     }
 
     "프로젝트 목록에서 experienceCount를 요청하지 않으면 경험 개수를 조회하지 않는다" {
@@ -197,7 +197,7 @@ class ExperienceProjectServiceTest : StringSpec({
 
         // then
         response.projectId shouldBe 3L
-        response.experienceCount shouldBe 7
+        response.experienceCount shouldBe 7L
     }
 
 })

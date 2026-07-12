@@ -50,7 +50,7 @@ class NotionConnectionApiService(
     fun disconnect(
         userId: Long,
         workspaceId: String,
-        connectionId: String,
+        connectionId: Long,
     ) {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -62,7 +62,7 @@ class NotionConnectionApiService(
     fun searchPages(
         userId: Long,
         workspaceId: String,
-        connectionId: String,
+        connectionId: Long,
         query: String?,
         cursor: String?,
         pageSize: Int,
@@ -74,7 +74,7 @@ class NotionConnectionApiService(
         return NotionPageSummaryListResponse.from(
             notionPageService.searchPages(
                 workspaceId = workspace.id,
-                connectionPublicId = connectionId,
+                connectionId = connectionId,
                 query = query,
                 startCursor = cursor,
                 pageSize = pageSize,

@@ -35,8 +35,8 @@ class NotionConnectionStore(
         return connectionRepository.save(connection)
     }
 
-    fun deleteByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long) {
-        connectionRepository.deleteByPublicIdAndWorkspaceId(publicId, workspaceId)
+    fun deleteByIdAndWorkspaceId(id: Long, workspaceId: Long) {
+        connectionRepository.deleteByIdAndWorkspaceId(id, workspaceId)
     }
 
 }

@@ -15,19 +15,19 @@ class NotionConnectionReaderTest : StringSpec({
     val connectionRepository = mockk<NotionConnectionRepository>()
     val connectionReader = NotionConnectionReader(connectionRepository)
 
-    "공개 ID와 워크스페이스 ID로 Notion 연결을 조회한다" {
+    "ID와 워크스페이스 ID로 Notion 연결을 조회한다" {
         // given
-        val connection = notionReaderConnection(id = 1L, publicId = "connection-id", workspaceId = 10L)
+        val connection = notionReaderConnection(id = 1L, workspaceId = 10L)
         every {
-            connectionRepository.findByPublicIdAndWorkspaceId(
-                publicId = "connection-id",
+            connectionRepository.findByIdAndWorkspaceId(
+                id = 1L,
                 workspaceId = 10L,
             )
         } returns connection
 
         // when & then
-        connectionReader.getByPublicIdAndWorkspaceId(
-            publicId = "connection-id",
+        connectionReader.getByIdAndWorkspaceId(
+            id = 1L,
             workspaceId = 10L,
         ) shouldBe connection
     }
@@ -35,16 +35,16 @@ class NotionConnectionReaderTest : StringSpec({
     "Notion 연결이 없으면 예외를 던진다" {
         // given
         every {
-            connectionRepository.findByPublicIdAndWorkspaceId(
-                publicId = "missing-connection-id",
+            connectionRepository.findByIdAndWorkspaceId(
+                id = 999L,
                 workspaceId = 10L,
             )
         } returns null
 
         // when & then
         shouldThrow<NotionConnectionNotFoundException> {
-            connectionReader.getByPublicIdAndWorkspaceId(
-                publicId = "missing-connection-id",
+            connectionReader.getByIdAndWorkspaceId(
+                id = 999L,
                 workspaceId = 10L,
             )
         }
@@ -106,11 +106,9 @@ class NotionConnectionReaderTest : StringSpec({
 
 private fun notionReaderConnection(
     id: Long = 1L,
-    publicId: String = "connection-$id",
     workspaceId: Long = 1L,
 ) = NotionConnection(
     id = id,
-    publicId = publicId,
     workspaceId = workspaceId,
     notionWorkspaceId = "notion-workspace-id",
     workspaceName = "Jobdori",

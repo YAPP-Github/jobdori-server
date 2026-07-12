@@ -202,7 +202,7 @@ internal class ExperienceQueryResolverTest(
                 includeExperienceCount = true,
             )
         } returns com.jobdori.api.application.experience.dto.response.ExperienceProjectListResponse(
-            projects = listOf(ExperienceProjectResponse.from(project, experienceCount = 7)),
+            projects = listOf(ExperienceProjectResponse.from(project, experienceCount = 7L)),
             cursor = CursorResponse(nextCursor = null),
         )
 
@@ -224,7 +224,7 @@ internal class ExperienceQueryResolverTest(
             )
             .execute()
             .path("experienceProjects.projects[0].projectId").entity<String>().isEqualTo("3")
-            .path("experienceProjects.projects[0].experienceCount").entity<Int>().isEqualTo(7)
+            .path("experienceProjects.projects[0].experienceCount").entity<Long>().isEqualTo(7L)
 
         verify(exactly = 1) {
             experienceProjectService.getProjects(

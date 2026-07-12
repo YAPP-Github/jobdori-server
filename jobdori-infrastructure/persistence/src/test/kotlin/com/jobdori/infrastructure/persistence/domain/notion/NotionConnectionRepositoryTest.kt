@@ -26,7 +26,6 @@ class NotionConnectionRepositoryTest(
         val saved = notionConnectionRepository.save(
             notionConnection(
                 id = 0L,
-                publicId = "connection-id",
                 workspaceId = 10L,
                 accessToken = "plain-access-token",
                 refreshToken = "plain-refresh-token",
@@ -39,7 +38,7 @@ class NotionConnectionRepositoryTest(
         entities[0].accessTokenEncrypted shouldNotBe "plain-access-token"
         entities[0].refreshTokenEncrypted shouldNotBe "plain-refresh-token"
 
-        val found = notionConnectionRepository.findByPublicIdAndWorkspaceId("connection-id", 10L)
+        val found = notionConnectionRepository.findByIdAndWorkspaceId(saved.id, 10L)
         found?.id shouldBe saved.id
         found?.accessToken shouldBe "plain-access-token"
         found?.refreshToken shouldBe "plain-refresh-token"
@@ -50,7 +49,6 @@ class NotionConnectionRepositoryTest(
         val saved = notionConnectionRepository.save(
             notionConnection(
                 id = 0L,
-                publicId = "connection-id",
                 workspaceId = 10L,
                 workspaceName = "Old",
                 accessToken = "old-access-token",
@@ -62,7 +60,6 @@ class NotionConnectionRepositoryTest(
         val updated = notionConnectionRepository.save(
             notionConnection(
                 id = 0L,
-                publicId = "new-random-public-id",
                 workspaceId = 10L,
                 workspaceName = "Updated",
                 accessToken = "updated-access-token",
@@ -72,7 +69,6 @@ class NotionConnectionRepositoryTest(
 
         // then
         updated.id shouldBe saved.id
-        updated.publicId shouldBe "connection-id"
         updated.workspaceName shouldBe "Updated"
         updated.accessToken shouldBe "updated-access-token"
         updated.refreshToken shouldBe "updated-refresh-token"
@@ -82,16 +78,16 @@ class NotionConnectionRepositoryTest(
     "워크스페이스의 Notion 연결 목록을 ID 역순 slice로 조회한다" {
         // given
         val first = notionConnectionRepository.save(
-            notionConnection(id = 0L, publicId = "first", workspaceId = 10L, botId = "bot-1"),
+            notionConnection(id = 0L, workspaceId = 10L, botId = "bot-1"),
         )
         val second = notionConnectionRepository.save(
-            notionConnection(id = 0L, publicId = "second", workspaceId = 10L, botId = "bot-2"),
+            notionConnection(id = 0L, workspaceId = 10L, botId = "bot-2"),
         )
         val third = notionConnectionRepository.save(
-            notionConnection(id = 0L, publicId = "third", workspaceId = 10L, botId = "bot-3"),
+            notionConnection(id = 0L, workspaceId = 10L, botId = "bot-3"),
         )
         notionConnectionRepository.save(
-            notionConnection(id = 0L, publicId = "other-workspace", workspaceId = 20L, botId = "bot-4"),
+            notionConnection(id = 0L, workspaceId = 20L, botId = "bot-4"),
         )
 
         // when
@@ -111,27 +107,26 @@ class NotionConnectionRepositoryTest(
         nextPage.map { it.id } shouldContainExactly listOf(first.id)
     }
 
-    "공개 ID와 워크스페이스 ID로 삭제한다" {
+    "ID와 워크스페이스 ID로 삭제한다" {
         // given
-        notionConnectionRepository.save(
-            notionConnection(id = 0L, publicId = "connection-id", workspaceId = 10L),
+        val saved = notionConnectionRepository.save(
+            notionConnection(id = 0L, workspaceId = 10L),
         )
 
         // when
-        notionConnectionRepository.deleteByPublicIdAndWorkspaceId(
-            publicId = "connection-id",
+        notionConnectionRepository.deleteByIdAndWorkspaceId(
+            id = saved.id,
             workspaceId = 10L,
         )
 
         // then
-        notionConnectionRepository.findByPublicIdAndWorkspaceId("connection-id", 10L).shouldBeNull()
+        notionConnectionRepository.findByIdAndWorkspaceId(saved.id, 10L).shouldBeNull()
     }
 
 })
 
 private fun notionConnection(
     id: Long,
-    publicId: String,
     workspaceId: Long,
     notionWorkspaceId: String = "notion-workspace-id",
     workspaceName: String? = "Jobdori",
@@ -141,7 +136,6 @@ private fun notionConnection(
     refreshToken: String = "refresh-token",
 ) = NotionConnection(
     id = id,
-    publicId = publicId,
     workspaceId = workspaceId,
     notionWorkspaceId = notionWorkspaceId,
     workspaceName = workspaceName,

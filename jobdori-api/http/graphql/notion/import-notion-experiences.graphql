@@ -2,7 +2,7 @@ mutation ImportNotionExperiences {
     importNotionExperiences(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         request: {
-            connectionId: "00000000-0000-0000-0000-000000000601"
+            connectionId: 740000000000000001
             pageId: "notion-page-id"
         }
     )

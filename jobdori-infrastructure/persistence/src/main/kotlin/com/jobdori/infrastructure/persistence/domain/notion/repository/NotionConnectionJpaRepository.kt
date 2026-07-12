@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface NotionConnectionJpaRepository : JpaRepository<NotionConnectionEntity, Long> {
 
-    fun findByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long): NotionConnectionEntity?
+    fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): NotionConnectionEntity?
 
     fun findAllByWorkspaceIdOrderByIdDesc(workspaceId: Long, pageable: Pageable): List<NotionConnectionEntity>
 
@@ -22,6 +22,6 @@ interface NotionConnectionJpaRepository : JpaRepository<NotionConnectionEntity, 
         botId: String,
     ): NotionConnectionEntity?
 
-    fun deleteByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long)
+    fun deleteByIdAndWorkspaceId(id: Long, workspaceId: Long)
 
 }

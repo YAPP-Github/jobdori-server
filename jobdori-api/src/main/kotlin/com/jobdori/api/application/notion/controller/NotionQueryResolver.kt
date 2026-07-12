@@ -33,7 +33,7 @@ class NotionQueryResolver(
     fun notionPages(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Argument connectionId: String,
+        @Argument connectionId: Long,
         @Argument query: String?,
         @Valid @Arguments request: ListNotionPageListRequest,
     ): NotionPageSummaryListResponse = notionConnectionApiService.searchPages(

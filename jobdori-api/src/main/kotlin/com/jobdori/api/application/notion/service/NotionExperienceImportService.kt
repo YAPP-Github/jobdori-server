@@ -18,7 +18,7 @@ class NotionExperienceImportService(
     fun importExperiences(
         userId: Long,
         workspaceId: String,
-        connectionId: String,
+        connectionId: Long,
         pageId: String,
     ) {
         val workspace = workspaceAccessValidationService.validateAccessible(
@@ -27,7 +27,7 @@ class NotionExperienceImportService(
         )
         val content = notionPageService.getPageContent(
             workspaceId = workspace.id,
-            connectionPublicId = connectionId,
+            connectionId = connectionId,
             pageId = pageId,
         )
         val text = content.plainText.trim()

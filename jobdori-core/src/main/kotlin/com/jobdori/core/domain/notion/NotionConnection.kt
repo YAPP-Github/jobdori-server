@@ -1,11 +1,9 @@
 package com.jobdori.core.domain.notion
 
 import java.time.LocalDateTime
-import java.util.UUID
 
 data class NotionConnection(
     val id: Long,
-    val publicId: String,
     val workspaceId: Long,
     val notionWorkspaceId: String,
     val workspaceName: String?,
@@ -28,7 +26,6 @@ data class NotionConnection(
             token: NotionOAuthToken,
         ) = NotionConnection(
             id = 0L,
-            publicId = UUID.randomUUID().toString(),
             workspaceId = workspaceId,
             notionWorkspaceId = token.notionWorkspaceId,
             workspaceName = token.workspaceName,

@@ -1,7 +1,7 @@
 query NotionPages {
     notionPages(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        connectionId: "00000000-0000-0000-0000-000000000601"
+        connectionId: 740000000000000001
         query: "이력서"
         cursor: null
         size: 10

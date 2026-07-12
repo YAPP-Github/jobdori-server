@@ -34,8 +34,8 @@ class NotionConnectionService(
         )
     }
 
-    fun disconnect(workspaceId: Long, connectionPublicId: String) {
-        connectionStore.deleteByPublicIdAndWorkspaceId(connectionPublicId, workspaceId)
+    fun disconnect(workspaceId: Long, connectionId: Long) {
+        connectionStore.deleteByIdAndWorkspaceId(connectionId, workspaceId)
     }
 
 }

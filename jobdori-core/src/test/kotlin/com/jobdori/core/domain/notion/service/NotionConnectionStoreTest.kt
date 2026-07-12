@@ -46,7 +46,6 @@ class NotionConnectionStoreTest : StringSpec({
         // given
         val existingConnection = notionStoreConnection(
             id = 5L,
-            publicId = "existing-connection-id",
             workspaceId = 10L,
             workspaceName = "Old",
             accessToken = "old-access-token",
@@ -74,7 +73,6 @@ class NotionConnectionStoreTest : StringSpec({
 
         // then
         result.id shouldBe 5L
-        result.publicId shouldBe "existing-connection-id"
         result.workspaceName shouldBe "Updated"
         result.workspaceIcon shouldBe "https://example.com/updated.png"
         result.accessToken shouldBe "updated-access-token"
@@ -99,7 +97,6 @@ private fun notionOAuthToken(
 
 private fun notionStoreConnection(
     id: Long = 1L,
-    publicId: String = "connection-$id",
     workspaceId: Long = 1L,
     workspaceName: String? = "Jobdori",
     workspaceIcon: String? = "https://example.com/icon.png",
@@ -107,7 +104,6 @@ private fun notionStoreConnection(
     refreshToken: String = "refresh-token",
 ) = NotionConnection(
     id = id,
-    publicId = publicId,
     workspaceId = workspaceId,
     notionWorkspaceId = "notion-workspace-id",
     workspaceName = workspaceName,

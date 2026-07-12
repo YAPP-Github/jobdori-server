@@ -21,12 +21,12 @@ class NotionPageService(
 
     fun searchPages(
         workspaceId: Long,
-        connectionPublicId: String,
+        connectionId: Long,
         query: String?,
         startCursor: String?,
         pageSize: Int,
     ): NotionPages {
-        val connection = getConnectedConnection(workspaceId, connectionPublicId)
+        val connection = getConnectedConnection(workspaceId, connectionId)
         return withTokenRefresh(connection) { activeConnection ->
             notionClient.searchPages(
                 accessToken = activeConnection.accessToken,
@@ -39,10 +39,10 @@ class NotionPageService(
 
     fun getPageContent(
         workspaceId: Long,
-        connectionPublicId: String,
+        connectionId: Long,
         pageId: String,
     ): NotionPageContent {
-        val connection = getConnectedConnection(workspaceId, connectionPublicId)
+        val connection = getConnectedConnection(workspaceId, connectionId)
         return withTokenRefresh(connection) { activeConnection ->
             notionClient.getPageContent(
                 accessToken = activeConnection.accessToken,
@@ -51,9 +51,13 @@ class NotionPageService(
         }
     }
 
-    private fun getConnectedConnection(workspaceId: Long, connectionPublicId: String): NotionConnection {
-        return connectionReader.getByPublicIdAndWorkspaceId(connectionPublicId, workspaceId)
+    private fun getConnectedConnection(workspaceId: Long, connectionId: Long): NotionConnection {
+        return connectionReader.getByIdAndWorkspaceId(
+            id = connectionId,
+            workspaceId = workspaceId,
+        )
     }
+
 
     private fun <T> withTokenRefresh(
         connection: NotionConnection,
@@ -92,7 +96,7 @@ class NotionPageService(
     }
 
     private fun NotionConnection.messageContext(operation: String): String {
-        return "[operation=$operation, workspaceId=$workspaceId, connectionId=$id, connectionPublicId=$publicId, notionWorkspaceId=$notionWorkspaceId, botId=$botId]"
+        return "[operation=$operation, workspaceId=$workspaceId, connectionId=$id, notionWorkspaceId=$notionWorkspaceId, botId=$botId]"
     }
 
 }

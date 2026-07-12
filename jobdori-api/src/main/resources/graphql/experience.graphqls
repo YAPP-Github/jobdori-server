@@ -506,7 +506,7 @@ type ExperienceProject {
     """
     경험 프로젝트에 연결된 활성 경험 개수입니다.
     """
-    experienceCount: Int
+    experienceCount: Long
 }
 
 """

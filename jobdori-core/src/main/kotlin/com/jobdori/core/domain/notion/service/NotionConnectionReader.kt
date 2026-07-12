@@ -13,10 +13,10 @@ class NotionConnectionReader(
 ) {
 
     @Transactional(readOnly = true)
-    fun getByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long): NotionConnection {
-        return connectionRepository.findByPublicIdAndWorkspaceId(publicId, workspaceId)
+    fun getByIdAndWorkspaceId(id: Long, workspaceId: Long): NotionConnection {
+        return connectionRepository.findByIdAndWorkspaceId(id, workspaceId)
             ?: throw NotionConnectionNotFoundException(
-                message = "Notion 연결을 찾을 수 없습니다. [workspaceId=$workspaceId, connectionPublicId=$publicId]",
+                message = "Notion 연결을 찾을 수 없습니다. [workspaceId=$workspaceId, connectionId=$id]",
             )
     }
 

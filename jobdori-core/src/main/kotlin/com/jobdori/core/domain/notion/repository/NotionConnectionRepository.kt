@@ -6,7 +6,7 @@ interface NotionConnectionRepository {
 
     fun save(connection: NotionConnection): NotionConnection
 
-    fun findByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long): NotionConnection?
+    fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): NotionConnection?
 
     fun findAllByWorkspaceId(workspaceId: Long, cursorId: Long?, size: Int): List<NotionConnection>
 
@@ -16,6 +16,6 @@ interface NotionConnectionRepository {
         botId: String,
     ): NotionConnection?
 
-    fun deleteByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long)
+    fun deleteByIdAndWorkspaceId(id: Long, workspaceId: Long)
 
 }

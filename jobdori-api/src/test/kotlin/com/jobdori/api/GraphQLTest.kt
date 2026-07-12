@@ -1,5 +1,6 @@
 package com.jobdori.api
 
+import com.jobdori.api.support.graphql.GraphQLLongScalarConfig
 import com.jobdori.core.support.spring.JsonConfig
 import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest
 import org.springframework.context.annotation.Import
@@ -9,6 +10,7 @@ import kotlin.reflect.KClass
 
 @ActiveProfiles("test")
 @Import(
+    GraphQLLongScalarConfig::class,
     JsonConfig::class,
 )
 @GraphQlTest

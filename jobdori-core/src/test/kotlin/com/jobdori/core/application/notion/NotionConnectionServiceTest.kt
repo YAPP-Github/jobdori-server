@@ -88,11 +88,9 @@ class NotionConnectionServiceTest : StringSpec({
 
 private fun notionConnectionServiceConnection(
     id: Long = 1L,
-    publicId: String = "connection-$id",
     workspaceId: Long = 1L,
 ) = NotionConnection(
     id = id,
-    publicId = publicId,
     workspaceId = workspaceId,
     notionWorkspaceId = "notion-workspace-id",
     workspaceName = "Jobdori",

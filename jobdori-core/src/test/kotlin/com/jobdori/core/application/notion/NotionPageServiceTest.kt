@@ -40,8 +40,8 @@ class NotionPageServiceTest : StringSpec({
             hasMore = false,
         )
         every {
-            connectionReader.getByPublicIdAndWorkspaceId(
-                publicId = "connection-id",
+            connectionReader.getByIdAndWorkspaceId(
+                id = 1L,
                 workspaceId = 10L,
             )
         } returns connection
@@ -57,7 +57,7 @@ class NotionPageServiceTest : StringSpec({
         // when
         val result = notionPageService.searchPages(
             workspaceId = 10L,
-            connectionPublicId = "connection-id",
+            connectionId = 1,
             query = "resume",
             startCursor = null,
             pageSize = 300,
@@ -70,7 +70,8 @@ class NotionPageServiceTest : StringSpec({
 
     "Notion 인증 실패 시 토큰을 갱신하고 갱신된 토큰으로 한 번 재시도한다" {
         // given
-        val connection = notionPageServiceConnection(accessToken = "expired-access-token", refreshToken = "refresh-token")
+        val connection =
+            notionPageServiceConnection(accessToken = "expired-access-token", refreshToken = "refresh-token")
         val refreshedToken = NotionOAuthToken(
             accessToken = "refreshed-access-token",
             refreshToken = "refreshed-refresh-token",
@@ -89,7 +90,7 @@ class NotionPageServiceTest : StringSpec({
             hasMore = true,
         )
         every {
-            connectionReader.getByPublicIdAndWorkspaceId("connection-id", 10L)
+            connectionReader.getByIdAndWorkspaceId(1L, 10L)
         } returns connection
         every {
             notionClient.searchPages(
@@ -113,7 +114,7 @@ class NotionPageServiceTest : StringSpec({
         // when
         val result = notionPageService.searchPages(
             workspaceId = 10L,
-            connectionPublicId = "connection-id",
+            connectionId = 1,
             query = null,
             startCursor = null,
             pageSize = 20,
@@ -127,7 +128,8 @@ class NotionPageServiceTest : StringSpec({
 
     "토큰 갱신 후에도 인증에 실패하면 재연결 필요 예외를 던진다" {
         // given
-        val connection = notionPageServiceConnection(accessToken = "expired-access-token", refreshToken = "refresh-token")
+        val connection =
+            notionPageServiceConnection(accessToken = "expired-access-token", refreshToken = "refresh-token")
         val refreshedToken = NotionOAuthToken(
             accessToken = "refreshed-access-token",
             refreshToken = "refreshed-refresh-token",
@@ -137,7 +139,7 @@ class NotionPageServiceTest : StringSpec({
             workspaceIcon = null,
         )
         every {
-            connectionReader.getByPublicIdAndWorkspaceId("connection-id", 10L)
+            connectionReader.getByIdAndWorkspaceId(1L, 10L)
         } returns connection
         every {
             notionClient.searchPages(
@@ -165,7 +167,7 @@ class NotionPageServiceTest : StringSpec({
         shouldThrow<NotionConnectionNeedReconnectException> {
             notionPageService.searchPages(
                 workspaceId = 10L,
-                connectionPublicId = "connection-id",
+                connectionId = 1,
                 query = null,
                 startCursor = null,
                 pageSize = 20,
@@ -177,13 +179,11 @@ class NotionPageServiceTest : StringSpec({
 
 private fun notionPageServiceConnection(
     id: Long = 1L,
-    publicId: String = "connection-id",
     workspaceId: Long = 10L,
     accessToken: String = "access-token",
     refreshToken: String = "refresh-token",
 ) = NotionConnection(
     id = id,
-    publicId = publicId,
     workspaceId = workspaceId,
     notionWorkspaceId = "notion-workspace-id",
     workspaceName = "Jobdori",

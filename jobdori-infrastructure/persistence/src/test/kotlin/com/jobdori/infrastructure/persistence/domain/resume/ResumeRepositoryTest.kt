@@ -10,6 +10,7 @@ import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionSaveCommand
 import com.jobdori.infrastructure.persistence.IntegrationTest
+import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeEntity
 import com.jobdori.infrastructure.persistence.domain.resume.repository.ResumeJpaRepository
 import com.jobdori.infrastructure.persistence.domain.resume.repository.ResumeSectionItemJpaRepository
 import com.jobdori.infrastructure.persistence.domain.resume.repository.ResumeSectionJpaRepository
@@ -110,6 +111,31 @@ class ResumeRepositoryTest(
         ).shouldBeNull()
     }
 
+    "워크스페이스의 이력서 수를 상태별로 조회한다" {
+        // given
+        resumeJpaRepository.saveAll(
+            listOf(
+                resumeEntity(workspaceId = 10L, status = ResumeStatus.COMPLETED),
+                resumeEntity(workspaceId = 10L, status = ResumeStatus.COMPLETED),
+                resumeEntity(workspaceId = 10L, status = ResumeStatus.DRAFT),
+                resumeEntity(workspaceId = 10L, status = ResumeStatus.DELETED),
+                resumeEntity(workspaceId = 20L, status = ResumeStatus.COMPLETED),
+            ),
+        )
+
+        // when
+        val counts = resumeRepository.countByWorkspaceIdAndStatuses(
+            workspaceId = 10L,
+            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+        )
+
+        // then
+        counts shouldBe mapOf(
+            ResumeStatus.COMPLETED to 2L,
+            ResumeStatus.DRAFT to 1L,
+        )
+    }
+
 })
 
 private fun saveCommand(
@@ -154,4 +180,14 @@ private fun sectionCommand(
             visible = visible,
         ),
     ),
+)
+
+private fun resumeEntity(
+    workspaceId: Long,
+    status: ResumeStatus,
+) = ResumeEntity(
+    workspaceId = workspaceId,
+    targetJdId = null,
+    template = ResumeTemplate.DEFAULT,
+    status = status,
 )

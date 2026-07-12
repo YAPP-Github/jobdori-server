@@ -183,7 +183,7 @@ class ExperienceRepositoryTest(
         )
 
         // then
-        counts.associate { it.projectId to it.experienceCount } shouldContainExactly mapOf(
+        counts shouldBe mapOf(
             100L to 2L,
             200L to 1L,
         )

@@ -474,6 +474,28 @@
 |===
 // end::resumes[]
 
+// tag::resumeCounts[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+|===
+// end::resumeCounts[]
+
 // tag::resume[]
 커스텀 에러 코드:
 

@@ -11,6 +11,8 @@ interface ResumeRepository {
 
     fun findAllByWorkspaceIdAndStatuses(workspaceId: Long, statuses: Collection<ResumeStatus>): List<Resume>
 
+    fun countByWorkspaceIdAndStatuses(workspaceId: Long, statuses: Collection<ResumeStatus>): Map<ResumeStatus, Long>
+
     fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): Resume?
 
     fun findSectionsByIdAndWorkspaceId(id: Long, workspaceId: Long): ResumeDetail?

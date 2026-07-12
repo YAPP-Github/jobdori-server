@@ -4,7 +4,7 @@ import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface ResumeJpaRepository : JpaRepository<ResumeEntity, Long> {
+interface ResumeJpaRepository : JpaRepository<ResumeEntity, Long>, ResumeCustomRepository {
 
     fun findByIdAndWorkspaceIdAndStatusIn(
         id: Long,

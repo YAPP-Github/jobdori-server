@@ -46,28 +46,6 @@ data class ResumeResponse(
 
 }
 
-data class ResumeSummaryResponse(
-    val resumeId: Long,
-    val targetJdId: Long?,
-    val template: ResumeTemplate,
-    val status: ResumeStatusType,
-    val createdAt: Instant,
-    val updatedAt: Instant,
-) {
-
-    companion object {
-        fun from(resume: Resume) = ResumeSummaryResponse(
-            resumeId = resume.id,
-            targetJdId = resume.targetJdId,
-            template = resume.template,
-            status = ResumeStatusType.from(resume.status),
-            createdAt = resume.createdAt.toInstantAtSystemDefaultZone(),
-            updatedAt = resume.updatedAt.toInstantAtSystemDefaultZone(),
-        )
-    }
-
-}
-
 data class ResumeSectionResponse(
     val sectionId: Long,
     val type: ResumeSectionType,

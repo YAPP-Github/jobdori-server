@@ -8,10 +8,20 @@ extend type Query {
         """
         workspaceId: ID!,
         """
-        조회할 이력서 상태 목록입니다 (생략하면 ACTIVE, DRAFT를 모두 조회)
+        조회할 이력서 상태 목록입니다 (생략하면 COMPLETED, DRAFT를 모두 조회)
         """
         statuses: [ResumeStatusType!]
     ): [ResumeSummary!]!
+
+    """
+    워크스페이스의 이력서 수를 상태별로 조회합니다.
+    """
+    resumeCounts(
+        """
+        이력서 수를 조회할 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!
+    ): [ResumeStatusCount!]!
 
     """
     이력서 상세를 조회합니다.
@@ -464,6 +474,21 @@ type ResumeSummary {
     마지막 수정 시각입니다.
     """
     updatedAt: String!
+}
+
+"""
+이력서 상태별 개수 응답입니다.
+"""
+type ResumeStatusCount {
+    """
+    이력서 상태입니다.
+    """
+    status: ResumeStatusType!
+
+    """
+    해당 상태의 이력서 수입니다.
+    """
+    count: Int!
 }
 
 """

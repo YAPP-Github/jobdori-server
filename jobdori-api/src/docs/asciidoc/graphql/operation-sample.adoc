@@ -581,6 +581,25 @@ query Resumes {
 ====
 // end::resumes[]
 
+// tag::resumeCounts[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query ResumeCounts {
+    resumeCounts(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+    ) {
+        status
+        count
+    }
+}
+----
+====
+// end::resumeCounts[]
+
 // tag::resume[]
 [.graphql-sample]
 ====

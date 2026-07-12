@@ -2,6 +2,7 @@ package com.jobdori.api.application.resume.controller
 
 import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
+import com.jobdori.api.application.resume.dto.response.ResumeStatusCountResponse
 import com.jobdori.api.application.resume.dto.response.ResumeSummaryResponse
 import com.jobdori.api.application.resume.service.ResumeService
 import com.jobdori.api.support.auth.UserId
@@ -24,6 +25,15 @@ class ResumeQueryResolver(
         userId = userId,
         workspaceId = workspaceId,
         statuses = statuses,
+    )
+
+    @QueryMapping
+    fun resumeCounts(
+        @UserId userId: Long,
+        @Argument workspaceId: String,
+    ): List<ResumeStatusCountResponse> = resumeService.countResumes(
+        userId = userId,
+        workspaceId = workspaceId,
     )
 
     @QueryMapping

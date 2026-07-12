@@ -41,6 +41,21 @@ class ResumeRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
+    override fun countByWorkspaceIdAndStatuses(
+        workspaceId: Long,
+        statuses: Collection<ResumeStatus>,
+    ): Map<ResumeStatus, Long> {
+        if (statuses.isEmpty()) {
+            return emptyMap()
+        }
+
+        return resumeJpaRepository.countByWorkspaceIdAndStatusIn(
+            workspaceId = workspaceId,
+            statuses = statuses,
+        )
+    }
+
+    @Transactional(readOnly = true)
     override fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): Resume? {
         return resumeJpaRepository.findByIdAndWorkspaceIdAndStatusIn(
             id = id,

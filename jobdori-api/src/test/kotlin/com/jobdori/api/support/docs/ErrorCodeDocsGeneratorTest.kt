@@ -297,6 +297,17 @@ private val graphQlOperationErrors = listOf(
     ),
     GraphQlOperationError(
         category = "Resume",
+        operation = "resumeCounts",
+        title = "이력서 상태별 개수 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("resume/resume-counts.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Resume",
         operation = "resume",
         title = "이력서 상세 조회",
         type = GraphQlOperationType.QUERY,

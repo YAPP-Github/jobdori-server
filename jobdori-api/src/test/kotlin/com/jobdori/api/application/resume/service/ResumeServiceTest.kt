@@ -17,6 +17,7 @@ import com.jobdori.core.domain.resume.ResumeLanguagePayload
 import com.jobdori.core.domain.resume.ResumeSectionFixture
 import com.jobdori.core.domain.resume.ResumeSectionItemFixture
 import com.jobdori.core.domain.resume.ResumeSectionType
+import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
 import com.jobdori.core.domain.resume.service.ResumeCreator
 import com.jobdori.core.domain.resume.service.ResumeModifier
@@ -233,6 +234,37 @@ class ResumeServiceTest : StringSpec({
         response.sections.map { it.sectionId } shouldBe listOf(200L, 300L)
         response.sections[0].items.map { it.itemId } shouldBe listOf(201L, 202L)
         response.sections[1].items.map { it.itemId } shouldBe listOf(301L, 302L)
+    }
+
+    "이력서 수를 상태별 응답으로 변환한다" {
+        // given
+        every {
+            resumeReader.countResumes(
+                workspaceId = 1L,
+                statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+            )
+        } returns mapOf(
+            ResumeStatus.COMPLETED to 2L,
+            ResumeStatus.DRAFT to 1L,
+        )
+
+        // when
+        val response = resumeService.countResumes(
+            userId = 10L,
+            workspaceId = "workspace-id",
+        )
+
+        // then
+        response.map { it.status to it.count } shouldBe listOf(
+            ResumeStatusType.COMPLETED to 2L,
+            ResumeStatusType.DRAFT to 1L,
+        )
+        verify(exactly = 1) {
+            resumeReader.countResumes(
+                workspaceId = 1L,
+                statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+            )
+        }
     }
 
     "이력서 저장 요청의 섹션 displayOrder가 중복되면 예외가 발생한다" {

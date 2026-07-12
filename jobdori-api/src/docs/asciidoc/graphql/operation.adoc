@@ -200,6 +200,16 @@ include::./operation-sample.adoc[tag=resumes]
 
 include::./operation-error.adoc[tag=resumes]
 
+==== 이력서 상태별 개수 조회
+
+Type: `Query`
+
+Operation: `resumeCounts`
+
+include::./operation-sample.adoc[tag=resumeCounts]
+
+include::./operation-error.adoc[tag=resumeCounts]
+
 ==== 이력서 상세 조회
 
 Type: `Query`

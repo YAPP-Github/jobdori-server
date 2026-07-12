@@ -142,7 +142,7 @@ class ExperienceRepositoryImpl(
             workspaceId = workspaceId,
             projectIds = projectIds,
             status = ExperienceStatus.ACTIVE,
-        ).associate { it.projectId to it.experienceCount }
+        )
     }
 
 }

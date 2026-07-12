@@ -19,6 +19,19 @@ class ResumeReader(
         )
     }
 
+    fun countResumes(workspaceId: Long, statuses: Collection<ResumeStatus>): Map<ResumeStatus, Long> {
+        if (statuses.isEmpty()) {
+            return emptyMap()
+        }
+
+        val counts = resumeRepository.countByWorkspaceIdAndStatuses(
+            workspaceId = workspaceId,
+            statuses = statuses,
+        )
+
+        return statuses.distinct().associateWith { counts[it] ?: 0L }
+    }
+
     fun getResume(workspaceId: Long, resumeId: Long): Resume {
         return resumeRepository.findByIdAndWorkspaceId(
             id = resumeId,

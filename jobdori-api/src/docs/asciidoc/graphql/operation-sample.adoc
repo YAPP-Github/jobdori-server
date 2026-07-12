@@ -283,9 +283,12 @@ mutation UpdateExperience {
             tags: ["GraphQL", "Spring Boot"]
             title: "이력서 GraphQL API 개선"
             contents: {
-                type: FREE
-                free: {
-                    content: "이력서 저장 API의 입력 검증을 보강하고 응답 필드를 정리했습니다."
+                type: STAR
+                star: {
+                    situation: "이력서 섹션과 아이템을 자유롭게 구성해야 하는 요구사항이 있었습니다."
+                    task: "클라이언트가 한 번의 요청으로 전체 이력서 스냅샷을 저장할 수 있는 API가 필요했습니다."
+                    action: "SaveResumeInput을 기준으로 섹션 타입과 payload를 검증하고, core 서비스에서 저장 흐름을 일관되게 처리했습니다."
+                    result: "생성, 수정 API의 입력 구조를 통일해 프론트엔드 연동 비용을 줄이고 테스트 커버리지를 확보했습니다."
                 }
             }
         }

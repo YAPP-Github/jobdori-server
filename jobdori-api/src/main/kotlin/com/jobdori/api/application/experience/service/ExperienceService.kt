@@ -1,11 +1,12 @@
 package com.jobdori.api.application.experience.service
 
 import com.jobdori.api.application.common.dto.response.CursorResponse
+import com.jobdori.api.application.experience.dto.request.CreateExperienceRequest
+import com.jobdori.api.application.experience.dto.request.UpdateExperienceRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceListResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
-import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.ExperienceCreator
 import com.jobdori.core.domain.experience.service.ExperienceModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader
@@ -28,9 +29,7 @@ class ExperienceService(
         userId: Long,
         workspaceId: String,
         projectId: Long,
-        tags: List<String>,
-        title: String,
-        contents: ExperienceContents,
+        request: CreateExperienceRequest,
     ): ExperienceResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -42,9 +41,9 @@ class ExperienceService(
             workspaceId = workspace.id,
             projectId = projectId,
             command = ExperienceCreateCommand(
-                tags = tags,
-                title = title,
-                contents = contents,
+                title = request.title,
+                contents = request.contents.toDomain(),
+                tags = request.tags,
             ),
         )
 
@@ -58,30 +57,27 @@ class ExperienceService(
         userId: Long,
         workspaceId: String,
         experienceId: Long,
-        projectId: Long?,
-        tags: List<String>?,
-        title: String?,
-        contents: ExperienceContents?,
+        request: UpdateExperienceRequest,
     ): ExperienceResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,
         )
 
-        if (projectId != null) {
+        if (request.projectId != null) {
             experienceProjectReader.getProject(
                 workspaceId = workspace.id,
-                projectId = projectId,
+                projectId = request.projectId,
             )
         }
 
         val modified = experienceModifier.modify(
             workspaceId = workspace.id,
             experienceId = experienceId,
-            projectId = projectId,
-            tags = tags,
-            title = title,
-            contents = contents,
+            projectId = request.projectId,
+            tags = request.tags,
+            title = request.title,
+            contents = request.contents?.toDomain(),
         )
         val project = experienceProjectReader.getProject(
             workspaceId = workspace.id,

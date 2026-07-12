@@ -1,10 +1,11 @@
 package com.jobdori.api.application.experience.service
 
 import com.jobdori.api.application.common.dto.response.CursorResponse
+import com.jobdori.api.application.experience.dto.request.CreateExperienceProjectRequest
+import com.jobdori.api.application.experience.dto.request.UpdateExperienceProjectRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectListResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
-import com.jobdori.common.model.Period
 import com.jobdori.core.domain.experience.service.ExperienceProjectCreator
 import com.jobdori.core.domain.experience.service.ExperienceProjectModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader
@@ -26,10 +27,7 @@ class ExperienceProjectService(
     fun createProject(
         userId: Long,
         workspaceId: String,
-        name: String,
-        summary: String,
-        period: Period?,
-        role: String?,
+        request: CreateExperienceProjectRequest,
     ): ExperienceProjectResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -38,10 +36,10 @@ class ExperienceProjectService(
         val project = experienceProjectCreator.create(
             workspaceId = workspace.id,
             command = ExperienceProjectCreateCommand(
-                name = name,
-                summary = summary,
-                period = period,
-                role = role,
+                name = request.name,
+                summary = request.summary,
+                period = request.period?.toPeriod(),
+                role = request.role,
             ),
         )
 
@@ -52,10 +50,7 @@ class ExperienceProjectService(
         userId: Long,
         workspaceId: String,
         projectId: Long,
-        name: String?,
-        summary: String?,
-        period: Period?,
-        role: String?,
+        request: UpdateExperienceProjectRequest,
     ): ExperienceProjectResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -64,10 +59,10 @@ class ExperienceProjectService(
         val project = experienceProjectModifier.modify(
             workspaceId = workspace.id,
             projectId = projectId,
-            name = name,
-            summary = summary,
-            period = period,
-            role = role,
+            name = request.name,
+            summary = request.summary,
+            period = request.period?.toPeriod(),
+            role = request.role,
         )
 
         return ExperienceProjectResponse.from(project)

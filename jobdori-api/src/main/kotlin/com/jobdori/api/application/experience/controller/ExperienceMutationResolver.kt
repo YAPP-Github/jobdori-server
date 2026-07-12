@@ -33,9 +33,7 @@ class ExperienceMutationResolver(
         userId = userId,
         workspaceId = workspaceId,
         projectId = request.projectId,
-        tags = request.tags,
-        title = request.title,
-        contents = request.contents.toDomain(),
+        request = request,
     )
 
     @MutationMapping
@@ -48,10 +46,7 @@ class ExperienceMutationResolver(
         userId = userId,
         workspaceId = workspaceId,
         experienceId = experienceId,
-        projectId = request.projectId,
-        tags = request.tags,
-        title = request.title,
-        contents = request.contents?.toDomain(),
+        request = request,
     )
 
     @MutationMapping
@@ -85,10 +80,7 @@ class ExperienceMutationResolver(
     ): ExperienceProjectResponse = experienceProjectService.createProject(
         userId = userId,
         workspaceId = workspaceId,
-        name = input.name,
-        summary = input.summary,
-        period = input.period?.toPeriod(),
-        role = input.role,
+        request = input,
     )
 
     @MutationMapping
@@ -101,10 +93,7 @@ class ExperienceMutationResolver(
         userId = userId,
         workspaceId = workspaceId,
         projectId = projectId,
-        name = request.name,
-        summary = request.summary,
-        period = request.period?.toPeriod(),
-        role = request.role,
+        request = request,
     )
 
     @MutationMapping

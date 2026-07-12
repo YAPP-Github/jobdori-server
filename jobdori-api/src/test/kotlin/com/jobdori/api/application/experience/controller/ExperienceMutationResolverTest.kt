@@ -1,6 +1,10 @@
 package com.jobdori.api.application.experience.controller
 
 import com.jobdori.api.GraphQLTest
+import com.jobdori.api.application.experience.dto.request.CreateExperienceProjectRequest
+import com.jobdori.api.application.experience.dto.request.CreateExperienceRequest
+import com.jobdori.api.application.experience.dto.request.UpdateExperienceProjectRequest
+import com.jobdori.api.application.experience.dto.request.UpdateExperienceRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.experience.service.ExperienceProjectService
@@ -51,9 +55,7 @@ internal class ExperienceMutationResolverTest(
                 userId = 1L,
                 workspaceId = "workspace-id",
                 projectId = 3L,
-                tags = listOf("브랜드런칭", "퍼포먼스마케팅"),
-                title = "런칭 캠페인 메시지 A/B 테스트",
-                contents = any(),
+                request = any<CreateExperienceRequest>(),
             )
         } returns ExperienceResponse.from(
             experience = graphQlExperience(
@@ -115,9 +117,7 @@ internal class ExperienceMutationResolverTest(
                 userId = 1L,
                 workspaceId = "workspace-id",
                 projectId = 3L,
-                tags = listOf("브랜드런칭", "퍼포먼스마케팅"),
-                title = "런칭 캠페인 메시지 A/B 테스트",
-                contents = any(),
+                request = any<CreateExperienceRequest>(),
             )
         }
     }
@@ -128,10 +128,7 @@ internal class ExperienceMutationResolverTest(
                 userId = 1L,
                 workspaceId = "workspace-id",
                 experienceId = 100L,
-                projectId = null,
-                tags = null,
-                title = "프로젝트 회고",
-                contents = any(),
+                request = any<UpdateExperienceRequest>(),
             )
         } returns ExperienceResponse.from(
             experience = graphQlExperience(
@@ -182,10 +179,7 @@ internal class ExperienceMutationResolverTest(
                 userId = 1L,
                 workspaceId = "workspace-id",
                 experienceId = 100L,
-                projectId = null,
-                tags = null,
-                title = "프로젝트 회고",
-                contents = any(),
+                request = any<UpdateExperienceRequest>(),
             )
         }
     }
@@ -271,10 +265,7 @@ internal class ExperienceMutationResolverTest(
             experienceProjectService.createProject(
                 userId = 1L,
                 workspaceId = "workspace-id",
-                name = "신규 브랜드 런칭 캠페인",
-                summary = "신규 서비스의 초기 인지도 확보 캠페인",
-                period = Period(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 4, 30)),
-                role = "Growth Marketer",
+                request = any<CreateExperienceProjectRequest>(),
             )
         } returns ExperienceProjectResponse.from(graphQlProject(100L))
 
@@ -313,10 +304,7 @@ internal class ExperienceMutationResolverTest(
             experienceProjectService.createProject(
                 userId = 1L,
                 workspaceId = "workspace-id",
-                name = "신규 브랜드 런칭 캠페인",
-                summary = "신규 서비스의 초기 인지도 확보 캠페인",
-                period = Period(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 4, 30)),
-                role = "Growth Marketer",
+                request = any<CreateExperienceProjectRequest>(),
             )
         }
     }
@@ -327,10 +315,7 @@ internal class ExperienceMutationResolverTest(
                 userId = 1L,
                 workspaceId = "workspace-id",
                 projectId = 100L,
-                name = null,
-                summary = null,
-                period = null,
-                role = "Brand Growth Lead",
+                request = any<UpdateExperienceProjectRequest>(),
             )
         } returns ExperienceProjectResponse.from(graphQlProject(100L, role = "Brand Growth Lead"))
 
@@ -360,10 +345,7 @@ internal class ExperienceMutationResolverTest(
                 userId = 1L,
                 workspaceId = "workspace-id",
                 projectId = 100L,
-                name = null,
-                summary = null,
-                period = null,
-                role = "Brand Growth Lead",
+                request = any<UpdateExperienceProjectRequest>(),
             )
         }
     }

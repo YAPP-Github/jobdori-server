@@ -1,6 +1,10 @@
 package com.jobdori.api.application.experience.service
 
+import com.jobdori.api.application.common.dto.request.PeriodRequest
+import com.jobdori.api.application.experience.dto.request.CreateExperienceProjectRequest
+import com.jobdori.api.application.experience.dto.request.UpdateExperienceProjectRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
+import com.jobdori.common.model.Period
 import com.jobdori.common.model.SliceResult
 import com.jobdori.core.domain.experience.ExperienceProject
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
@@ -9,6 +13,7 @@ import com.jobdori.core.domain.experience.service.ExperienceProjectModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader
 import com.jobdori.core.domain.experience.service.ExperienceProjectRemover
 import com.jobdori.core.domain.experience.service.ExperienceReader
+import com.jobdori.core.domain.experience.service.command.ExperienceProjectCreateCommand
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
@@ -17,6 +22,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.time.LocalDate
 import java.math.BigDecimal
 
 class ExperienceProjectServiceTest : StringSpec({
@@ -47,6 +53,74 @@ class ExperienceProjectServiceTest : StringSpec({
             publicId = "workspace-id",
             ownerUserId = 10L,
         )
+    }
+
+    "프로젝트 생성 요청 모델을 command로 변환해 생성한다" {
+        // given
+        val request = CreateExperienceProjectRequest(
+            name = "프로젝트",
+            summary = "프로젝트 요약",
+            period = PeriodRequest(
+                startAt = LocalDate.of(2025, 1, 1),
+                endAt = LocalDate.of(2025, 3, 31),
+            ),
+            role = "백엔드",
+        )
+        every {
+            experienceProjectCreator.create(
+                workspaceId = 1L,
+                command = ExperienceProjectCreateCommand(
+                    name = "프로젝트",
+                    summary = "프로젝트 요약",
+                    period = Period(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)),
+                    role = "백엔드",
+                ),
+            )
+        } returns project(3L)
+
+        // when
+        val response = experienceProjectService.createProject(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            request = request,
+        )
+
+        // then
+        response.projectId shouldBe 3L
+    }
+
+    "프로젝트 수정 요청 모델을 수정 인자로 변환한다" {
+        // given
+        val request = UpdateExperienceProjectRequest(
+            name = "수정 프로젝트",
+            summary = null,
+            period = PeriodRequest(
+                startAt = LocalDate.of(2025, 4, 1),
+                endAt = LocalDate.of(2025, 6, 30),
+            ),
+            role = "리드",
+        )
+        every {
+            experienceProjectModifier.modify(
+                workspaceId = 1L,
+                projectId = 3L,
+                name = "수정 프로젝트",
+                summary = null,
+                period = Period(LocalDate.of(2025, 4, 1), LocalDate.of(2025, 6, 30)),
+                role = "리드",
+            )
+        } returns project(3L)
+
+        // when
+        val response = experienceProjectService.modifyProject(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            projectId = 3L,
+            request = request,
+        )
+
+        // then
+        response.projectId shouldBe 3L
     }
 
     "프로젝트 목록에서 experienceCount를 요청하면 프로젝트별 경험 개수를 채운다" {

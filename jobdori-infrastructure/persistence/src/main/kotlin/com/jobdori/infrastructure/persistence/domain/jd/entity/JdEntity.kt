@@ -1,9 +1,12 @@
 package com.jobdori.infrastructure.persistence.domain.jd.entity
 
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.jd.JdStatus
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
 import jakarta.persistence.Column
+import jakarta.persistence.EnumType
 import jakarta.persistence.Entity
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -54,6 +57,10 @@ class JdEntity(
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "jsonb")
     var coreCompetencies: List<String>,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    var status: JdStatus,
 ) : AuditableEntity() {
 
     @Id
@@ -74,6 +81,7 @@ class JdEntity(
         preferredExperiences = preferredExperiences,
         hiringProcess = hiringProcess,
         coreCompetencies = coreCompetencies,
+        status = status,
         createdAt = createdAt,
     )
 
@@ -91,6 +99,7 @@ class JdEntity(
             preferredExperiences = jd.preferredExperiences,
             hiringProcess = jd.hiringProcess,
             coreCompetencies = jd.coreCompetencies,
+            status = jd.status,
         ).also { it.id = jd.id }
     }
 

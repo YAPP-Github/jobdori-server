@@ -7,6 +7,7 @@ import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.core.application.ai.jd.result.JdPosting
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.application.jd.AnalyzeGuestJdService
+import com.jobdori.core.application.jd.CompleteJdService
 import com.jobdori.core.application.jd.DeleteJdService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.jd.GuestJdAnalysisResult
@@ -15,6 +16,7 @@ import com.jobdori.core.application.jd.RegisterJdService
 import com.jobdori.core.application.jdinsight.GetJdInsightService
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdSortType
+import com.jobdori.core.domain.jd.JdStatus
 import com.jobdori.core.domain.jdinsight.JdInsight
 import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
@@ -38,6 +40,8 @@ internal class JdResolverTest(
     private val analyzeGuestJdService: AnalyzeGuestJdService,
     @MockkBean
     private val deleteJdService: DeleteJdService,
+    @MockkBean
+    private val completeJdService: CompleteJdService,
     @MockkBean
     private val getJdService: GetJdService,
     @MockkBean
@@ -204,8 +208,8 @@ internal class JdResolverTest(
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
     }
 
-    "sort를 생략하면 최신순(LATEST)으로 JD 목록을 조회한다" {
-        every { getJdService.getJds(10L, JdSortType.LATEST) } returns
+    "sort를 생략하면 최신순(LATEST)으로 status 필터 없이 JD 목록을 조회한다" {
+        every { getJdService.getJds(10L, JdSortType.LATEST, null) } returns
             listOf(graphQlJd(publicId = "jd-pub-2", companyName = "잡도리"))
 
         authenticatedTester(graphQlTester)
@@ -221,11 +225,11 @@ internal class JdResolverTest(
             .execute()
             .path("jds[0].jdId").entity<String>().isEqualTo("jd-pub-2")
 
-        verify(exactly = 1) { getJdService.getJds(10L, JdSortType.LATEST) }
+        verify(exactly = 1) { getJdService.getJds(10L, JdSortType.LATEST, null) }
     }
 
     "sort로 가나다순(NAME)을 지정해 JD 목록을 조회한다" {
-        every { getJdService.getJds(10L, JdSortType.NAME) } returns
+        every { getJdService.getJds(10L, JdSortType.NAME, null) } returns
             listOf(graphQlJd(publicId = "jd-pub-3", companyName = "가나다"))
 
         authenticatedTester(graphQlTester)
@@ -242,7 +246,29 @@ internal class JdResolverTest(
             .execute()
             .path("jds[0].companyName").entity<String>().isEqualTo("가나다")
 
-        verify(exactly = 1) { getJdService.getJds(10L, JdSortType.NAME) }
+        verify(exactly = 1) { getJdService.getJds(10L, JdSortType.NAME, null) }
+    }
+
+    "status로 진행 중(IN_PROGRESS) JD만 필터링해 조회한다" {
+        every { getJdService.getJds(10L, JdSortType.LATEST, JdStatus.IN_PROGRESS) } returns
+            listOf(graphQlJd(publicId = "jd-pub-4", status = JdStatus.IN_PROGRESS))
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                query {
+                  jds(workspaceId: "ws-1", status: IN_PROGRESS) {
+                    jdId
+                    status
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("jds[0].jdId").entity<String>().isEqualTo("jd-pub-4")
+            .path("jds[0].status").entity<String>().isEqualTo("IN_PROGRESS")
+
+        verify(exactly = 1) { getJdService.getJds(10L, JdSortType.LATEST, JdStatus.IN_PROGRESS) }
     }
 
     "JD를 삭제하면 true를 반환한다" {
@@ -260,6 +286,28 @@ internal class JdResolverTest(
             .path("deleteJd").entity<Boolean>().isEqualTo(true)
 
         verify(exactly = 1) { deleteJdService.deleteJd(10L, "jd-pub-1") }
+    }
+
+    "JD를 완료 처리하면 COMPLETED 상태의 JD를 반환한다" {
+        every { completeJdService.markCompleted(10L, "jd-pub-1") } returns
+            graphQlJd(publicId = "jd-pub-1", status = JdStatus.COMPLETED)
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  markJdCompleted(workspaceId: "ws-1", id: "jd-pub-1") {
+                    jdId
+                    status
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("markJdCompleted.jdId").entity<String>().isEqualTo("jd-pub-1")
+            .path("markJdCompleted.status").entity<String>().isEqualTo("COMPLETED")
+
+        verify(exactly = 1) { completeJdService.markCompleted(10L, "jd-pub-1") }
     }
 
     "JD의 AI 인사이트(공고 핵심·지원 전략)를 조회한다" {
@@ -306,6 +354,7 @@ private fun graphQlJd(
     companyName: String = "잡도리",
     positionTitle: String = "백엔드 개발자",
     coreCompetencies: List<String> = listOf("데이터 기반 개선", "협업"),
+    status: JdStatus = JdStatus.IN_PROGRESS,
 ) = Jd(
     id = id,
     publicId = publicId,
@@ -319,4 +368,5 @@ private fun graphQlJd(
     preferredExperiences = emptyList(),
     hiringProcess = emptyList(),
     coreCompetencies = coreCompetencies,
+    status = status,
 )

@@ -17,6 +17,7 @@ data class Jd(
     val preferredExperiences: List<String>,
     val hiringProcess: List<String>,
     val coreCompetencies: List<String>,   // AR0001 카드용 핵심 역량 태그(최대 5개). AI 추출 산출물
+    val status: JdStatus = JdStatus.IN_PROGRESS,   // 등록 직후 진행 중. 이력서 완료 시 COMPLETED로 전환(AR0001)
     val createdAt: LocalDateTime? = null,
 ) {
 

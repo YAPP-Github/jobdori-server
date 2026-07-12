@@ -1,6 +1,7 @@
 package com.jobdori.api.application.jd.dto.response
 
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.jd.JdStatus
 
 data class JdResponse(
     val jdId: String,
@@ -14,6 +15,7 @@ data class JdResponse(
     val preferredExperiences: List<String>,
     val hiringProcess: List<String>,
     val coreCompetencies: List<String>,
+    val status: JdStatus,
     val createdAt: String?,
 ) {
 
@@ -30,6 +32,7 @@ data class JdResponse(
             preferredExperiences = jd.preferredExperiences,
             hiringProcess = jd.hiringProcess,
             coreCompetencies = jd.coreCompetencies,
+            status = jd.status,
             createdAt = jd.createdAt?.toString(),
         )
     }

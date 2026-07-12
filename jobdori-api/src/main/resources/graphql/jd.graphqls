@@ -24,7 +24,11 @@ extend type Query {
         """
         정렬 기준입니다. LATEST(최신순, 기본값) 또는 NAME(회사명 가나다순).
         """
-        sort: JdSortType! = LATEST
+        sort: JdSortType! = LATEST,
+        """
+        상태 필터입니다. 생략하면 전체, IN_PROGRESS/COMPLETED면 해당 상태만. (AR0001 진행 중/완료 섹션)
+        """
+        status: JdStatus
     ): [Jd!]!
 
     """
@@ -88,6 +92,21 @@ extend type Mutation {
         """
         id: ID!
     ): Boolean!
+
+    """
+    이력서 생성이 완료된 JD를 완료 상태(COMPLETED)로 전환합니다. (AR0001 진행 중 → 완료)
+    이미 완료면 그대로 반환하며, 워크스페이스 밖 JD면 오류를 반환합니다.
+    """
+    markJdCompleted(
+        """
+        JD가 속한 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        완료 처리할 JD의 ID입니다.
+        """
+        id: ID!
+    ): Jd!
 }
 
 """
@@ -195,6 +214,11 @@ type Jd {
     coreCompetencies: [String!]!
 
     """
+    이력서 생성 진행 상태입니다. (AR0001 진행 중/완료 섹션 구분)
+    """
+    status: JdStatus!
+
+    """
     등록일입니다. (ISO-8601)
     """
     createdAt: String
@@ -213,6 +237,21 @@ enum JdSortType {
     회사명 가나다순입니다.
     """
     NAME
+}
+
+"""
+JD의 이력서 생성 진행 상태입니다.
+"""
+enum JdStatus {
+    """
+    이력서 미완성(등록 직후 기본)입니다.
+    """
+    IN_PROGRESS
+
+    """
+    연결된 이력서 생성 완료입니다.
+    """
+    COMPLETED
 }
 
 """

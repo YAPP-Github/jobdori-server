@@ -12,7 +12,6 @@ import java.time.Instant
 
 data class ResumeResponse(
     val resumeId: Long,
-    val targetJdId: Long?,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
     val sections: List<ResumeSectionResponse>,
@@ -23,7 +22,6 @@ data class ResumeResponse(
     companion object {
         fun from(resume: Resume) = ResumeResponse(
             resumeId = resume.id,
-            targetJdId = resume.targetJdId,
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
             sections = emptyList(),
@@ -33,7 +31,6 @@ data class ResumeResponse(
 
         fun from(detail: ResumeDetail) = ResumeResponse(
             resumeId = detail.resume.id,
-            targetJdId = detail.resume.targetJdId,
             template = detail.resume.template,
             status = ResumeStatusType.from(detail.resume.status),
             sections = detail.sections

@@ -11,7 +11,7 @@ import com.jobdori.core.domain.resume.service.command.ResumeSectionSaveCommand
 import jakarta.validation.Valid
 
 data class SaveResumeRequest(
-    val targetJdId: Long?,
+    val targetJdId: String?,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
     @field:Valid
@@ -22,7 +22,7 @@ data class SaveResumeRequest(
         validateSectionDisplayOrders()
         validateSectionIds()
         return ResumeSaveCommand(
-            targetJdId = targetJdId,
+            targetJdId = 0,
             template = template,
             status = status.toDomain(),
             sections = sections.map { it.toCommand() },

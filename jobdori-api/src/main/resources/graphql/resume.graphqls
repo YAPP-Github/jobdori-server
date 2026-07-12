@@ -411,11 +411,6 @@ type Resume {
     resumeId: ID!
 
     """
-    연결된 채용공고 ID입니다.
-    """
-    targetJdId: ID
-
-    """
     이력서 템플릿입니다.
     """
     template: ResumeTemplate!
@@ -449,11 +444,6 @@ type ResumeSummary {
     이력서 ID입니다.
     """
     resumeId: ID!
-
-    """
-    연결된 채용공고 ID입니다.
-    """
-    targetJdId: ID
 
     """
     이력서 템플릿입니다.

@@ -450,7 +450,8 @@ GraphQL API 사용에 필요한 공통 규칙, 응답 모델, Query/Mutation별 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려갈 수 있습니다. 클라이언트는 HTTP status만 보지 말고 `errors[].extensions.code`를 기준으로 처리해야 합니다.
+GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려갈 수 있습니다.
+클라이언트는 HTTP status만 보지 말고 `errors[].extensions.code`를 기준으로 처리해야 합니다.
 </td>
 </tr>
 </table>

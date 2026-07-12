@@ -4,7 +4,6 @@ mutation UpdateResume {
         resumeId: 1,
         input: {
             targetJdId: 1,
-            title: "잡도리 백엔드 개발자 이력서 - 수정본"
             template: DEFAULT
             status: DRAFT
             sections: [
@@ -47,7 +46,6 @@ mutation UpdateResume {
     ) {
         resumeId
         targetJdId
-        title
         template
         status
         createdAt

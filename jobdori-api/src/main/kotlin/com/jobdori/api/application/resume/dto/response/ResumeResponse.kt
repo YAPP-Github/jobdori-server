@@ -2,8 +2,8 @@ package com.jobdori.api.application.resume.dto.response
 
 import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.common.time.toInstantAtSystemDefaultZone
-import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.Resume
+import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeSection
 import com.jobdori.core.domain.resume.ResumeSectionItem
 import com.jobdori.core.domain.resume.ResumeSectionType
@@ -13,7 +13,6 @@ import java.time.Instant
 data class ResumeResponse(
     val resumeId: Long,
     val targetJdId: Long?,
-    val title: String,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
     val sections: List<ResumeSectionResponse>,
@@ -25,7 +24,6 @@ data class ResumeResponse(
         fun from(resume: Resume) = ResumeResponse(
             resumeId = resume.id,
             targetJdId = resume.targetJdId,
-            title = resume.title,
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
             sections = emptyList(),
@@ -36,7 +34,6 @@ data class ResumeResponse(
         fun from(detail: ResumeDetail) = ResumeResponse(
             resumeId = detail.resume.id,
             targetJdId = detail.resume.targetJdId,
-            title = detail.resume.title,
             template = detail.resume.template,
             status = ResumeStatusType.from(detail.resume.status),
             sections = detail.sections
@@ -52,7 +49,6 @@ data class ResumeResponse(
 data class ResumeSummaryResponse(
     val resumeId: Long,
     val targetJdId: Long?,
-    val title: String,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
     val createdAt: Instant,
@@ -63,7 +59,6 @@ data class ResumeSummaryResponse(
         fun from(resume: Resume) = ResumeSummaryResponse(
             resumeId = resume.id,
             targetJdId = resume.targetJdId,
-            title = resume.title,
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
             createdAt = resume.createdAt.toInstantAtSystemDefaultZone(),

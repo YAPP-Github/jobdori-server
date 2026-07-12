@@ -3,28 +3,9 @@ mutation CreateResume {
         workspaceId: "00000000-0000-0000-0000-000000000002"
         input: {
             targetJdId: "backend-developer-2026"
-            title: "잡도리 백엔드 개발자 이력서"
             template: DEFAULT
             status: ACTIVE
             sections: [
-                {
-                    type: BASIC_INFO
-                    displayOrder: 1.0
-                    visible: true
-                    items: [
-                        {
-                            displayOrder: 1.0
-                            visible: true
-                            payload: {
-                                basicInfo: {
-                                    name: "잡도리"
-                                    email: "jobdori.backend@example.com"
-                                    phone: "010-1234-5678"
-                                }
-                            }
-                        }
-                    ]
-                }
                 {
                     type: CORE_SKILL
                     displayOrder: 2.0

@@ -12,7 +12,6 @@ import jakarta.validation.Valid
 
 data class SaveResumeRequest(
     val targetJdId: Long?,
-    val title: String,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
     @field:Valid
@@ -24,7 +23,6 @@ data class SaveResumeRequest(
         validateSectionIds()
         return ResumeSaveCommand(
             targetJdId = targetJdId,
-            title = title,
             template = template,
             status = status.toDomain(),
             sections = sections.map { it.toCommand() },

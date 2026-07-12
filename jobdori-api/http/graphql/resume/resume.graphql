@@ -5,7 +5,6 @@ query Resume {
     ) {
         resumeId
         targetJdId
-        title
         template
         status
         createdAt

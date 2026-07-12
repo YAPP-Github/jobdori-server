@@ -22,9 +22,6 @@ class ResumeEntity(
     @Column
     var targetJdId: Long?,
 
-    @Column(nullable = false, length = 100)
-    var title: String,
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     var template: ResumeTemplate,
@@ -42,7 +39,6 @@ class ResumeEntity(
         id = id,
         workspaceId = workspaceId,
         targetJdId = targetJdId,
-        title = title,
         template = template,
         status = status,
         createdAt = createdAt,
@@ -53,7 +49,6 @@ class ResumeEntity(
         fun from(domain: Resume) = ResumeEntity(
             workspaceId = domain.workspaceId,
             targetJdId = domain.targetJdId,
-            title = domain.title,
             template = domain.template,
             status = domain.status,
         ).also { it.id = domain.id }

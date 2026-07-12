@@ -7,7 +7,6 @@ import com.jobdori.core.domain.resume.ResumeTemplate
 
 data class ResumeSaveCommand(
     val targetJdId: Long?,
-    val title: String,
     val template: ResumeTemplate,
     val status: ResumeStatus,
     val sections: List<ResumeSectionSaveCommand>,

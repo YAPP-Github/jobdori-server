@@ -24,7 +24,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
-import java.math.BigDecimal
 
 @Table(name = "resume_section_item_v1")
 @Entity
@@ -40,8 +39,8 @@ class ResumeSectionItemEntity(
     @Column(nullable = false, columnDefinition = "jsonb")
     var payload: String,
 
-    @Column(nullable = false, precision = 20, scale = 10)
-    var displayOrder: BigDecimal,
+    @Column(nullable = false)
+    var displayOrder: Double,
 
     @Column(nullable = false)
     var visible: Boolean,

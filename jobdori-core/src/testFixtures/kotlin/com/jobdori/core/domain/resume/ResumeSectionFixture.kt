@@ -1,6 +1,5 @@
 package com.jobdori.core.domain.resume
 
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 object ResumeSectionFixture {
@@ -9,7 +8,7 @@ object ResumeSectionFixture {
         id: Long = 0L,
         resumeId: Long = 1L,
         type: ResumeSectionType = ResumeSectionType.BASIC_INFO,
-        displayOrder: BigDecimal = BigDecimal.ZERO,
+        displayOrder: Double = 0.0,
         visible: Boolean = true,
         createdAt: LocalDateTime = LocalDateTime.of(2026, 1, 1, 0, 0),
         updatedAt: LocalDateTime = createdAt,
@@ -24,4 +23,3 @@ object ResumeSectionFixture {
     )
 
 }
-

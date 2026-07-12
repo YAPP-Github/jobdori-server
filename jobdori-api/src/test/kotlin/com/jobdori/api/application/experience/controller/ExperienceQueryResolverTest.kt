@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester
 import org.springframework.graphql.test.tester.GraphQlTester
 import org.springframework.graphql.test.tester.entity
-import java.math.BigDecimal
 
 @GraphQLTest(ExperienceQueryResolver::class)
 @Import(UserIdArgumentGraphqlResolver::class)
@@ -85,7 +84,7 @@ internal class ExperienceQueryResolverTest(
             summary = "신규 서비스의 초기 인지도 확보 캠페인",
             period = null,
             role = "Growth Marketer",
-            displayOrder = BigDecimal.ZERO,
+            displayOrder = 0.0,
             status = ExperienceProjectStatus.ACTIVE,
         )
         every {
@@ -195,7 +194,7 @@ internal class ExperienceQueryResolverTest(
             summary = "요약",
             period = null,
             role = "백엔드",
-            displayOrder = BigDecimal.ZERO,
+            displayOrder = 0.0,
             status = ExperienceProjectStatus.ACTIVE,
         )
         every {
@@ -241,7 +240,7 @@ internal class ExperienceQueryResolverTest(
             summary = "요약",
             period = null,
             role = "백엔드",
-            displayOrder = BigDecimal.ZERO,
+            displayOrder = 0.0,
             status = ExperienceProjectStatus.ACTIVE,
         )
         every {
@@ -360,6 +359,6 @@ private fun graphQlExperience(
     tags = tags,
     title = "경험 $id",
     contents = contents,
-    displayOrder = BigDecimal.ZERO,
+    displayOrder = 0.0,
     status = ExperienceStatus.ACTIVE,
 )

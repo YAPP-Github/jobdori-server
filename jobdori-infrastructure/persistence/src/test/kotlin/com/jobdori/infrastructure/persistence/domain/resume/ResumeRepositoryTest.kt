@@ -18,7 +18,6 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-import java.math.BigDecimal
 
 @IntegrationTest
 class ResumeRepositoryTest(
@@ -100,7 +99,7 @@ class ResumeRepositoryTest(
         modified.resume.status shouldBe ResumeStatus.ACTIVE
         modified.sections shouldHaveSize 1
         modified.sections.single().section.type shouldBe ResumeSectionType.BASIC_INFO
-        modified.sections.single().section.displayOrder shouldBe BigDecimal("30")
+        modified.sections.single().section.displayOrder shouldBe 30.0
         modified.sections.single().section.visible shouldBe false
         modified.sections.single().items.single().id shouldBe basicInfoItem.id
         sectionJpaRepository.findAll() shouldHaveSize 1
@@ -139,7 +138,7 @@ private fun sectionCommand(
 ) = ResumeSectionSaveCommand(
     sectionId = sectionId,
     type = type,
-    displayOrder = BigDecimal(displayOrder),
+    displayOrder = displayOrder.toDouble(),
     visible = visible,
     items = listOf(
         ResumeSectionItemSaveCommand(
@@ -158,7 +157,7 @@ private fun sectionCommand(
                     phone = "010-0000-0000",
                 )
             },
-            displayOrder = BigDecimal.ONE,
+            displayOrder = 1.0,
             visible = visible,
         ),
     ),

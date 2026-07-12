@@ -1,13 +1,12 @@
 package com.jobdori.core.domain.resume
 
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class ResumeSectionItem(
     val id: Long,
     val sectionId: Long,
     val payload: ResumeSectionItemPayload,
-    val displayOrder: BigDecimal,
+    val displayOrder: Double,
     val visible: Boolean,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
@@ -17,7 +16,7 @@ data class ResumeSectionItem(
         fun newInstance(
             sectionId: Long,
             payload: ResumeSectionItemPayload,
-            displayOrder: BigDecimal = BigDecimal.ZERO,
+            displayOrder: Double = 0.0,
             visible: Boolean = true,
             now: LocalDateTime = LocalDateTime.now(),
         ) = ResumeSectionItem(

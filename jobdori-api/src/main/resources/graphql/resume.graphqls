@@ -116,9 +116,14 @@ input SaveResumeSectionInput {
     sectionId: ID
 
     """
-    섹션 표시 순서입니다. 소수점 문자열을 허용합니다.
+    섹션 타입입니다. 하위 아이템 payload 타입과 일치해야 합니다.
     """
-    displayOrder: String!
+    type: ResumeSectionType!
+
+    """
+    섹션 표시 순서입니다.
+    """
+    displayOrder: Float!
 
     """
     섹션 노출 여부입니다.
@@ -141,9 +146,9 @@ input SaveResumeSectionItemInput {
     itemId: ID
 
     """
-    아이템 표시 순서입니다. 소수점 문자열을 허용합니다.
+    아이템 표시 순서입니다.
     """
-    displayOrder: String!
+    displayOrder: Float!
 
     """
     아이템 노출 여부입니다.
@@ -151,7 +156,7 @@ input SaveResumeSectionItemInput {
     visible: Boolean!
 
     """
-    섹션 타입을 결정하는 payload 입력입니다.
+    섹션 타입과 일치해야 하는 payload 입력입니다.
     """
     payload: ResumeSectionItemPayloadInput!
 }
@@ -306,6 +311,11 @@ input ResumeEducationPayloadInput {
     degree: String
 
     """
+    학력 상태입니다. 예: 졸업 예정
+    """
+    status: String
+
+    """
     재학 기간입니다.
     """
     period: PeriodInput
@@ -321,9 +331,9 @@ input ResumeAwardPayloadInput {
     name: String!
 
     """
-    수상 관련 기간입니다.
+    수상 기관명입니다.
     """
-    period: PeriodInput
+    organization: String
 
     """
     수상일입니다.
@@ -493,7 +503,7 @@ type ResumeSection {
     """
     섹션 표시 순서입니다.
     """
-    displayOrder: String!
+    displayOrder: Float!
 
     """
     섹션 노출 여부입니다.
@@ -528,7 +538,7 @@ type ResumeSectionItem {
     """
     아이템 표시 순서입니다.
     """
-    displayOrder: String!
+    displayOrder: Float!
 
     """
     아이템 노출 여부입니다.
@@ -701,6 +711,11 @@ type ResumeEducationPayload {
     degree: String
 
     """
+    학력 상태입니다. 예: 졸업 예정
+    """
+    status: String
+
+    """
     재학 기간입니다.
     """
     period: Period
@@ -716,9 +731,9 @@ type ResumeAwardPayload {
     name: String!
 
     """
-    수상 관련 기간입니다.
+    수상 기관명입니다.
     """
-    period: Period
+    organization: String
 
     """
     수상일입니다.

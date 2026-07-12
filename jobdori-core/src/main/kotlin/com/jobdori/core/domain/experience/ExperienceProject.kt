@@ -1,7 +1,6 @@
 package com.jobdori.core.domain.experience
 
 import com.jobdori.common.model.Period
-import java.math.BigDecimal
 
 data class ExperienceProject(
     val id: Long,
@@ -10,7 +9,7 @@ data class ExperienceProject(
     val summary: String,
     val period: Period?,
     val role: String?,
-    val displayOrder: BigDecimal,
+    val displayOrder: Double,
     val status: ExperienceProjectStatus,
 ) {
 
@@ -21,7 +20,7 @@ data class ExperienceProject(
             summary: String,
             period: Period?,
             role: String?,
-            displayOrder: BigDecimal = BigDecimal.ZERO,
+            displayOrder: Double = 0.0,
         ) = ExperienceProject(
             id = 0L,
             workspaceId = workspaceId,

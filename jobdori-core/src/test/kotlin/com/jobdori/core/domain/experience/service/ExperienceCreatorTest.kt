@@ -10,7 +10,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import java.math.BigDecimal
 
 class ExperienceCreatorTest : StringSpec({
 
@@ -42,7 +41,7 @@ class ExperienceCreatorTest : StringSpec({
         experience.tags shouldBe listOf("Kotlin", "Spring")
         experience.title shouldBe "검색 성능 개선"
         experience.contents shouldBe contents
-        experience.displayOrder shouldBe BigDecimal.ZERO
+        experience.displayOrder shouldBe 0.0
         experience.status shouldBe ExperienceStatus.ACTIVE
     }
 
@@ -72,7 +71,7 @@ class ExperienceCreatorTest : StringSpec({
         experiences.map { it.workspaceId } shouldContainExactly listOf(10L, 10L)
         experiences.map { it.projectId } shouldContainExactly listOf(1L, 1L)
         experiences.map { it.title } shouldContainExactly listOf("검색 성능 개선", "데이터 모델 개선")
-        experiences.map { it.displayOrder } shouldContainExactly listOf(BigDecimal.ZERO, BigDecimal.ZERO)
+        experiences.map { it.displayOrder } shouldContainExactly listOf(0.0, 0.0)
         experiences.map { it.status } shouldContainExactly listOf(ExperienceStatus.ACTIVE, ExperienceStatus.ACTIVE)
         verify(exactly = 1) { experienceRepository.saveAll(any()) }
         verify(exactly = 0) { experienceRepository.save(any()) }

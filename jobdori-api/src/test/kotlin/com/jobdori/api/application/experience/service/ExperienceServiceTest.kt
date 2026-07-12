@@ -27,7 +27,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import java.math.BigDecimal
 
 class ExperienceServiceTest : StringSpec({
 
@@ -287,7 +286,7 @@ private fun experience(
     tags = listOf("Kotlin"),
     title = title,
     contents = contents,
-    displayOrder = BigDecimal.ZERO,
+    displayOrder = 0.0,
     status = ExperienceStatus.ACTIVE,
 )
 
@@ -303,6 +302,6 @@ private fun project(id: Long) = ExperienceProject(
     summary = "프로젝트 요약",
     period = null,
     role = "백엔드 개발자",
-    displayOrder = BigDecimal.ZERO,
+    displayOrder = 0.0,
     status = ExperienceProjectStatus.ACTIVE,
 )

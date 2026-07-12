@@ -11,7 +11,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import java.math.BigDecimal
 
 @Table(name = "resume_section_v1")
 @Entity
@@ -23,8 +22,8 @@ class ResumeSectionEntity(
     @Column(nullable = false, length = 30)
     var type: ResumeSectionType,
 
-    @Column(nullable = false, precision = 20, scale = 10)
-    var displayOrder: BigDecimal,
+    @Column(nullable = false)
+    var displayOrder: Double,
 
     @Column(nullable = false)
     var visible: Boolean,

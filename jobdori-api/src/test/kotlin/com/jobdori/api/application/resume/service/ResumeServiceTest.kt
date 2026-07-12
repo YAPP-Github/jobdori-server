@@ -30,7 +30,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import java.math.BigDecimal
 import java.time.LocalDate
 
 class ResumeServiceTest : StringSpec({
@@ -115,7 +114,7 @@ class ResumeServiceTest : StringSpec({
         }
     }
 
-    "payload language로 어학 섹션 타입을 추론한다" {
+    "요청 섹션 타입으로 어학 섹션 command를 생성한다" {
         // given
         val request = languageSaveRequest(title = "어학 이력서")
         val detail = ResumeDetail(
@@ -186,18 +185,18 @@ class ResumeServiceTest : StringSpec({
                     section = ResumeSectionFixture.create(
                         id = 300L,
                         resumeId = 100L,
-                        displayOrder = BigDecimal("20"),
+                        displayOrder = 20.0,
                     ),
                     items = listOf(
                         ResumeSectionItemFixture.create(
                             id = 302L,
                             sectionId = 300L,
-                            displayOrder = BigDecimal("2"),
+                            displayOrder = 2.0,
                         ),
                         ResumeSectionItemFixture.create(
                             id = 301L,
                             sectionId = 300L,
-                            displayOrder = BigDecimal("1"),
+                            displayOrder = 1.0,
                         ),
                     ),
                 ),
@@ -205,18 +204,18 @@ class ResumeServiceTest : StringSpec({
                     section = ResumeSectionFixture.create(
                         id = 200L,
                         resumeId = 100L,
-                        displayOrder = BigDecimal("10"),
+                        displayOrder = 10.0,
                     ),
                     items = listOf(
                         ResumeSectionItemFixture.create(
                             id = 202L,
                             sectionId = 200L,
-                            displayOrder = BigDecimal("2"),
+                            displayOrder = 2.0,
                         ),
                         ResumeSectionItemFixture.create(
                             id = 201L,
                             sectionId = 200L,
-                            displayOrder = BigDecimal("1"),
+                            displayOrder = 1.0,
                         ),
                     ),
                 ),
@@ -246,8 +245,8 @@ class ResumeServiceTest : StringSpec({
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,
             sections = listOf(
-                basicInfoSection(displayOrder = "1.0"),
-                languageSection(displayOrder = "1.00"),
+                basicInfoSection(displayOrder = 1.0),
+                languageSection(displayOrder = 1.0),
             ),
         )
 
@@ -270,11 +269,12 @@ class ResumeServiceTest : StringSpec({
             sections = listOf(
                 SaveResumeSectionRequest(
                     sectionId = 200L,
-                    displayOrder = "1.0",
+                    type = ResumeSectionType.BASIC_INFO,
+                    displayOrder = 1.0,
                     visible = true,
                     items = listOf(
-                        basicInfoItem(displayOrder = "1.0"),
-                        basicInfoItem(displayOrder = "1.00"),
+                        basicInfoItem(displayOrder = 1.0),
+                        basicInfoItem(displayOrder = 1.0),
                     ),
                 ),
             ),
@@ -289,6 +289,33 @@ class ResumeServiceTest : StringSpec({
         exception.details.single().field shouldBe "sections.items.displayOrder"
     }
 
+    "이력서 저장 요청의 섹션 타입과 아이템 payload 타입이 다르면 예외가 발생한다" {
+        // given
+        val request = SaveResumeRequest(
+            targetJdId = null,
+            title = "타입 불일치",
+            template = ResumeTemplate.DEFAULT,
+            status = ResumeStatusType.DRAFT,
+            sections = listOf(
+                SaveResumeSectionRequest(
+                    sectionId = 200L,
+                    type = ResumeSectionType.LANGUAGE,
+                    displayOrder = 1.0,
+                    visible = true,
+                    items = listOf(basicInfoItem(displayOrder = 1.0)),
+                ),
+            ),
+        )
+
+        // when
+        val exception = shouldThrow<InvalidArgumentsException> {
+            request.toCommand()
+        }
+
+        // then
+        exception.details.single().field shouldBe "sections.items.payload"
+    }
+
 })
 
 private fun saveRequest(title: String) = SaveResumeRequest(
@@ -299,12 +326,13 @@ private fun saveRequest(title: String) = SaveResumeRequest(
     sections = listOf(
         SaveResumeSectionRequest(
             sectionId = 200L,
-            displayOrder = "10",
+            type = ResumeSectionType.BASIC_INFO,
+            displayOrder = 10.0,
             visible = true,
             items = listOf(
                 SaveResumeSectionItemRequest(
                     itemId = 300L,
-                    displayOrder = "1",
+                    displayOrder = 1.0,
                     visible = true,
                     payload = ResumeSectionItemPayloadRequest(
                         basicInfo = ResumeBasicInfoPayloadRequest(
@@ -327,21 +355,23 @@ private fun saveRequest(title: String) = SaveResumeRequest(
     ),
 )
 
-private fun basicInfoSection(displayOrder: String) = SaveResumeSectionRequest(
+private fun basicInfoSection(displayOrder: Double) = SaveResumeSectionRequest(
     sectionId = 200L,
+    type = ResumeSectionType.BASIC_INFO,
     displayOrder = displayOrder,
     visible = true,
-    items = listOf(basicInfoItem(displayOrder = "1")),
+    items = listOf(basicInfoItem(displayOrder = 1.0)),
 )
 
-private fun languageSection(displayOrder: String) = SaveResumeSectionRequest(
+private fun languageSection(displayOrder: Double) = SaveResumeSectionRequest(
     sectionId = 300L,
+    type = ResumeSectionType.LANGUAGE,
     displayOrder = displayOrder,
     visible = true,
-    items = listOf(languageItem(displayOrder = "1")),
+    items = listOf(languageItem(displayOrder = 1.0)),
 )
 
-private fun basicInfoItem(displayOrder: String) = SaveResumeSectionItemRequest(
+private fun basicInfoItem(displayOrder: Double) = SaveResumeSectionItemRequest(
     itemId = 300L,
     displayOrder = displayOrder,
     visible = true,
@@ -362,7 +392,7 @@ private fun basicInfoItem(displayOrder: String) = SaveResumeSectionItemRequest(
     ),
 )
 
-private fun languageItem(displayOrder: String) = SaveResumeSectionItemRequest(
+private fun languageItem(displayOrder: Double) = SaveResumeSectionItemRequest(
     itemId = 400L,
     displayOrder = displayOrder,
     visible = true,
@@ -391,12 +421,13 @@ private fun languageSaveRequest(title: String) = SaveResumeRequest(
     sections = listOf(
         SaveResumeSectionRequest(
             sectionId = 200L,
-            displayOrder = "10",
+            type = ResumeSectionType.LANGUAGE,
+            displayOrder = 10.0,
             visible = true,
             items = listOf(
                 SaveResumeSectionItemRequest(
                     itemId = 300L,
-                    displayOrder = "1",
+                    displayOrder = 1.0,
                     visible = true,
                     payload = ResumeSectionItemPayloadRequest(
                         basicInfo = null,

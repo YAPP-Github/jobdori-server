@@ -103,6 +103,7 @@ data class ResumeEducationPayloadResponse(
     val schoolName: String,
     val major: String?,
     val degree: String?,
+    val status: String?,
     val period: PeriodResponse?,
 ) : ResumePayloadResponse {
     companion object {
@@ -110,6 +111,7 @@ data class ResumeEducationPayloadResponse(
             schoolName = payload.schoolName,
             major = payload.major,
             degree = payload.degree,
+            status = payload.status,
             period = payload.period?.let { PeriodResponse.from(it) },
         )
     }
@@ -117,13 +119,13 @@ data class ResumeEducationPayloadResponse(
 
 data class ResumeAwardPayloadResponse(
     val name: String,
-    val period: PeriodResponse?,
+    val organization: String?,
     val awardedAt: LocalDate?,
 ) : ResumePayloadResponse {
     companion object {
         fun from(payload: ResumeAwardPayload) = ResumeAwardPayloadResponse(
             name = payload.name,
-            period = payload.period?.let { PeriodResponse.from(it) },
+            organization = payload.organization,
             awardedAt = payload.awardedAt,
         )
     }

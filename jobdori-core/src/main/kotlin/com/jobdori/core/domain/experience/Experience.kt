@@ -1,7 +1,5 @@
 package com.jobdori.core.domain.experience
 
-import java.math.BigDecimal
-
 data class Experience(
     val id: Long,
     val workspaceId: Long,
@@ -9,7 +7,7 @@ data class Experience(
     val tags: List<String>,
     val title: String,
     val contents: ExperienceContents,
-    val displayOrder: BigDecimal,
+    val displayOrder: Double,
     val status: ExperienceStatus,
 ) {
 
@@ -20,7 +18,7 @@ data class Experience(
             tags: List<String>,
             title: String,
             contents: ExperienceContents,
-            displayOrder: BigDecimal = BigDecimal.ZERO,
+            displayOrder: Double = 0.0,
         ) = Experience(
             id = 0L,
             workspaceId = workspaceId,

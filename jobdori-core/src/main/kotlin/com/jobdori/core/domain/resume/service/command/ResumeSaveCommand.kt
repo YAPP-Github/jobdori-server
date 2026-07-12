@@ -4,7 +4,6 @@ import com.jobdori.core.domain.resume.ResumeSectionItemPayload
 import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
-import java.math.BigDecimal
 
 data class ResumeSaveCommand(
     val targetJdId: Long?,
@@ -17,7 +16,7 @@ data class ResumeSaveCommand(
 data class ResumeSectionSaveCommand(
     val sectionId: Long?,
     val type: ResumeSectionType,
-    val displayOrder: BigDecimal,
+    val displayOrder: Double,
     val visible: Boolean,
     val items: List<ResumeSectionItemSaveCommand>,
 )
@@ -25,6 +24,6 @@ data class ResumeSectionSaveCommand(
 data class ResumeSectionItemSaveCommand(
     val itemId: Long?,
     val payload: ResumeSectionItemPayload,
-    val displayOrder: BigDecimal,
+    val displayOrder: Double,
     val visible: Boolean,
 )

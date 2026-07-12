@@ -19,7 +19,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import java.math.BigDecimal
 
 class ResumeModifierTest : StringSpec({
 
@@ -88,7 +87,7 @@ private fun saveCommand(title: String) = ResumeSaveCommand(
         ResumeSectionSaveCommand(
             sectionId = 2L,
             type = ResumeSectionType.BASIC_INFO,
-            displayOrder = BigDecimal("10"),
+            displayOrder = 10.0,
             visible = true,
             items = listOf(
                 ResumeSectionItemSaveCommand(
@@ -98,11 +97,10 @@ private fun saveCommand(title: String) = ResumeSaveCommand(
                         email = "hong@example.com",
                         phone = "010-0000-0000",
                     ),
-                    displayOrder = BigDecimal("1"),
+                    displayOrder = 1.0,
                     visible = true,
                 ),
             ),
         ),
     ),
 )
-

@@ -77,7 +77,7 @@ data class ResumeSectionResponse(
     val sectionId: Long,
     val type: ResumeSectionType,
     val displayText: String,
-    val displayOrder: String,
+    val displayOrder: Double,
     val visible: Boolean,
     val items: List<ResumeSectionItemResponse>,
     val createdAt: Instant,
@@ -89,7 +89,7 @@ data class ResumeSectionResponse(
             sectionId = section.id,
             type = section.type,
             displayText = section.type.displayText,
-            displayOrder = section.displayOrder.toPlainString(),
+            displayOrder = section.displayOrder,
             visible = section.visible,
             items = items
                 .sortedBy { it.displayOrder }
@@ -103,7 +103,7 @@ data class ResumeSectionResponse(
 
 data class ResumeSectionItemResponse(
     val itemId: Long,
-    val displayOrder: String,
+    val displayOrder: Double,
     val visible: Boolean,
     val payload: ResumeSectionItemPayloadResponse,
     val createdAt: Instant,
@@ -113,7 +113,7 @@ data class ResumeSectionItemResponse(
     companion object {
         fun from(item: ResumeSectionItem) = ResumeSectionItemResponse(
             itemId = item.id,
-            displayOrder = item.displayOrder.toPlainString(),
+            displayOrder = item.displayOrder,
             visible = item.visible,
             payload = ResumeSectionItemPayloadResponse.from(item.payload),
             createdAt = item.createdAt.toInstantAtSystemDefaultZone(),

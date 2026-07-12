@@ -129,24 +129,26 @@ data class ResumeEducationPayloadRequest(
     val schoolName: String,
     val major: String?,
     val degree: String?,
+    val status: String?,
     val period: PeriodRequest?,
 ) : ResumePayloadRequest<ResumeEducationPayload> {
     override fun toPayload() = ResumeEducationPayload(
         schoolName = schoolName,
         major = major,
         degree = degree,
+        status = status,
         period = period?.toPeriod(),
     )
 }
 
 data class ResumeAwardPayloadRequest(
     val name: String,
-    val period: PeriodRequest?,
+    val organization: String?,
     val awardedAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeAwardPayload> {
     override fun toPayload() = ResumeAwardPayload(
         name = name,
-        period = period?.toPeriod(),
+        organization = organization,
         awardedAt = awardedAt,
     )
 }

@@ -1,7 +1,5 @@
 package com.jobdori.core.domain.experience
 
-import java.math.BigDecimal
-
 object ExperienceFixture {
 
     fun create(
@@ -11,7 +9,7 @@ object ExperienceFixture {
         tags: List<String> = listOf("Kotlin", "Spring"),
         title: String = "경험",
         contents: ExperienceContents = ExperienceContents.free("경험 내용"),
-        displayOrder: BigDecimal = BigDecimal.ZERO,
+        displayOrder: Double = 0.0,
         status: ExperienceStatus = ExperienceStatus.ACTIVE,
     ) = Experience(
         id = id,

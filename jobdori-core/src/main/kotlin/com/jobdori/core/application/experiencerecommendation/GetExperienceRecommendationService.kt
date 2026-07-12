@@ -16,7 +16,7 @@ class GetExperienceRecommendationService(
     private val generateService: GenerateExperienceRecommendationService,
 ) {
 
-    // 경험 세트가 그대로면 캐시 반환, 바뀌었으면(시그니처 불일치) 재생성·갱신.
+    // 경험 세트가 그대로면 캐시 반환, 바뀌었으면(시그니처 불일치) 재생성/갱신.
     @Transactional
     fun getOrRefresh(workspaceId: Long, jdPublicId: String): JdExperienceRecommendation {
         val jd = jdRepository.findByPublicIdAndWorkspaceId(jdPublicId, workspaceId)

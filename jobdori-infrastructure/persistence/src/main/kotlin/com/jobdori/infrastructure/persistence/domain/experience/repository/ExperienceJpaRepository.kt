@@ -21,7 +21,7 @@ interface ExperienceJpaRepository : JpaRepository<ExperienceEntity, Long>, Exper
         status: ExperienceStatus,
     ): List<ExperienceEntity>
 
-    // 경험 세트 시그니처(개수 + 최신 수정시각). 추가·수정·삭제 감지용.
+    // 경험 세트 시그니처(개수 + 최신 수정시각). 추가/수정/삭제 감지용.
     @Query(
         """
         select count(e.id) as cnt, max(e.updatedAt) as maxUpdatedAt

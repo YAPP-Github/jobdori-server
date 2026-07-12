@@ -1,7 +1,7 @@
 package com.jobdori.core.domain.jd
 
 // JD 원문은 저장하지 않으므로 구조화 메타를 AI 프롬프트 입력용 텍스트로 재구성한다.
-// JD 인사이트·경험 추천 등 JD를 프롬프트에 넣는 모든 곳이 공유한다.
+// JD 인사이트/경험 추천 등 JD를 프롬프트에 넣는 모든 곳이 공유한다.
 object JdPromptText {
 
     fun of(jd: Jd): String = buildString {

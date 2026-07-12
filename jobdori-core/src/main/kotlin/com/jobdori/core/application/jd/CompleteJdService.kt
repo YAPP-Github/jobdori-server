@@ -7,7 +7,7 @@ import com.jobdori.core.domain.jd.repository.JdRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-// 이력서 생성 완료 시 JD 상태를 COMPLETED로 전환(AR0001 진행 중 → 완료). Resume 모듈이 완료 시점에 호출한다.
+// 이력서 생성 완료 시 JD 상태를 COMPLETED로 전환(AR0001 진행 중 -> 완료). Resume 모듈이 완료 시점에 호출한다.
 @Service
 class CompleteJdService(
     private val jdRepository: JdRepository,

@@ -32,7 +32,7 @@ class JdResolver(
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
 ) {
 
-    // 크롤·추출 실패(JdCrawlException/AiException)는 GraphQLExceptionAdvice가 매핑
+    // 크롤/추출 실패(JdCrawlException/AiException)는 GraphQLExceptionAdvice가 매핑
     @MutationMapping
     fun registerJd(
         @UserId userId: Long,
@@ -48,7 +48,7 @@ class JdResolver(
         return JdRegisterResponse.from(result)
     }
 
-    // ponytail: 비인증 공개 엔드포인트 — 크롤+AI 호출이라 비용/남용 표면. SSRF는 JdUrlGuard가 막지만
+    // ponytail: 비인증 공개 엔드포인트 - 크롤+AI 호출이라 비용/남용 표면. SSRF는 JdUrlGuard가 막지만
     // 레이트리밋/캡차는 아직 없음(후속). 저장은 하지 않는다(결과만 반환).
     @MutationMapping
     fun analyzeGuestJd(
@@ -73,7 +73,7 @@ class JdResolver(
         return true
     }
 
-    // 이력서 생성 완료 시 호출 → JD를 COMPLETED로 전환(AR0001 진행 중 → 완료). 향후 Resume 완료 플로우에서 연동.
+    // 이력서 생성 완료 시 호출 -> JD를 COMPLETED로 전환(AR0001 진행 중 -> 완료). 향후 Resume 완료 플로우에서 연동.
     @MutationMapping
     fun markJdCompleted(
         @UserId userId: Long,
@@ -105,7 +105,7 @@ class JdResolver(
         return getJdService.getJds(workspace.id, sort, status).map { JdResponse.from(it) }
     }
 
-    // 최초 조회 시 AI로 생성·저장하고 이후엔 캐시 반환. 생성 실패(AiException)는 GraphQLExceptionAdvice가 매핑
+    // 최초 조회 시 AI로 생성/저장하고 이후엔 캐시 반환. 생성 실패(AiException)는 GraphQLExceptionAdvice가 매핑
     @QueryMapping
     fun jdInsight(
         @UserId userId: Long,

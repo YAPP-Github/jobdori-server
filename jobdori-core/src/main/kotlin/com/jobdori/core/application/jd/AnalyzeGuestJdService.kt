@@ -10,7 +10,7 @@ import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdPolicy
 import org.springframework.stereotype.Service
 
-// 비로그인 게스트용 JD 분석. 저장하지 않고(워크스페이스·영속화 없음) 추출·인사이트 결과만 반환한다.
+// 비로그인 게스트용 JD 분석. 저장하지 않고(워크스페이스/영속화 없음) 추출/인사이트 결과만 반환한다.
 @Service
 class AnalyzeGuestJdService(
     private val crawler: JdCrawlerClient,

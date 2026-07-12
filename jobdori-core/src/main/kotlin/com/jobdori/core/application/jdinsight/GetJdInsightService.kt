@@ -14,7 +14,7 @@ class GetJdInsightService(
     private val generateJdInsightService: GenerateJdInsightService,
 ) {
 
-    // 최초 조회 시 생성·저장하고 이후에는 캐시된 인사이트를 재사용한다(lazy 캐시).
+    // 최초 조회 시 생성/저장하고 이후에는 캐시된 인사이트를 재사용한다(lazy 캐시).
     @Transactional
     fun getOrGenerate(workspaceId: Long, jdPublicId: String): JdInsight {
         val jd = jdRepository.findByPublicIdAndWorkspaceId(jdPublicId, workspaceId)

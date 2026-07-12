@@ -171,7 +171,7 @@ class ExperienceService(
             emptyMap()
         }
 
-        // jdId가 있으면 해당 JD 기준 매칭률·이유를 조인(경험 세트 변경 시 자동 재생성).
+        // jdId가 있으면 해당 JD 기준 매칭률/이유를 조인(경험 세트 변경 시 자동 재생성).
         val matchByExperienceId = jdId
             ?.let { getExperienceRecommendationService.getOrRefresh(workspace.id, it) }
             ?.items?.associateBy { it.experienceId }

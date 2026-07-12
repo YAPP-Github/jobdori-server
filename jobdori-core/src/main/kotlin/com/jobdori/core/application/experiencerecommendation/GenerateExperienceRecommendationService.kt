@@ -33,7 +33,7 @@ class GenerateExperienceRecommendationService(
             template.buildStructured(buildUserPrompt(jd, experiences), ExperienceRecommendationResult::class),
         )
 
-        // LLM은 인덱스(1..N)로 참조 → experience로 환원. 점수 정렬을 신뢰하고, 없는 reason은 null.
+        // LLM은 인덱스(1..N)로 참조 -> experience로 환원. 점수 정렬을 신뢰하고, 없는 reason은 null.
         val scoreByIndex = result.scores.associate { it.index to it.matchRate }
         val reasonByIndex = result.reasons.associate { it.index to it.reason }
         return experiences.mapIndexed { i, experience ->

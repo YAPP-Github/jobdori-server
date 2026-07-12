@@ -17,7 +17,7 @@ class RegisterJdService(
     private val extractJdMetaService: ExtractJdMetaService,
     private val jdRepository: JdRepository,
 ) {
-    // 크롤 실패 시 JdCrawlException 전파 → API가 422로 붙여넣기 유도
+    // 크롤 실패 시 JdCrawlException 전파 -> API가 422로 붙여넣기 유도
     fun registerByUrl(workspaceId: Long, url: String): JdRegisterResult =
         register(workspaceId, sourceUrl = url, body = crawler.fetchBody(url))
 

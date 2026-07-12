@@ -52,7 +52,7 @@ internal class JdResolverTest(
 
     beforeTest {
         every { accessTokenService.getUserId("access-token") } returns 1L
-        // workspaceId "ws-1"의 소유자 검증 통과 → 내부 id 10L로 스코프
+        // workspaceId "ws-1"의 소유자 검증 통과 -> 내부 id 10L로 스코프
         every { workspaceAccessValidationService.validateAccessible("ws-1", 1L) } returns
             Workspace(id = 10L, publicId = "ws-1", ownerUserId = 1L)
     }
@@ -310,7 +310,7 @@ internal class JdResolverTest(
         verify(exactly = 1) { completeJdService.markCompleted(10L, "jd-pub-1") }
     }
 
-    "JD의 AI 인사이트(공고 핵심·지원 전략)를 조회한다" {
+    "JD의 AI 인사이트(공고 핵심/지원 전략)를 조회한다" {
         every { getJdInsightService.getOrGenerate(10L, "jd-pub-1") } returns
             JdInsight(
                 id = 1L,

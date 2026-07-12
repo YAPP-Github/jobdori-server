@@ -5,7 +5,7 @@ import com.jobdori.core.domain.experiencerecommendation.JdExperienceRecommendati
 interface JdExperienceRecommendationRepository {
     fun findByJdId(jdId: Long): JdExperienceRecommendation?
 
-    // jdId 유니크 — 있으면 갱신, 없으면 삽입.
+    // jdId 유니크 - 있으면 갱신, 없으면 삽입.
     fun upsert(recommendation: JdExperienceRecommendation): JdExperienceRecommendation
 
     fun deleteByJdId(jdId: Long)

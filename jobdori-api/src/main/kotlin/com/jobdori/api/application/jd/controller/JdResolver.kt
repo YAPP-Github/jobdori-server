@@ -8,6 +8,7 @@ import com.jobdori.api.application.jd.dto.response.JdResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.api.support.auth.UserId
 import com.jobdori.core.application.jd.AnalyzeGuestJdService
+import com.jobdori.core.application.jd.DeleteJdService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.jd.RegisterJdService
 import com.jobdori.core.application.jdinsight.GetJdInsightService
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Controller
 class JdResolver(
     private val registerJdService: RegisterJdService,
     private val analyzeGuestJdService: AnalyzeGuestJdService,
+    private val deleteJdService: DeleteJdService,
     private val getJdService: GetJdService,
     private val getJdInsightService: GetJdInsightService,
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
@@ -56,6 +58,18 @@ class JdResolver(
         }
         return GuestJdAnalysisResponse.from(result)
     }
+
+    @MutationMapping
+    fun deleteJd(
+        @UserId userId: Long,
+        @Argument workspaceId: String,
+        @Argument id: String,
+    ): Boolean {
+        val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
+        deleteJdService.deleteJd(workspace.id, id)
+        return true
+    }
+
     @QueryMapping
     fun jd(
         @UserId userId: Long,

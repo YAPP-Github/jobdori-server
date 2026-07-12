@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface JdInsightJpaRepository : JpaRepository<JdInsightEntity, Long> {
     fun findByJdId(jdId: Long): JdInsightEntity?
+    fun deleteByJdId(jdId: Long)
 }

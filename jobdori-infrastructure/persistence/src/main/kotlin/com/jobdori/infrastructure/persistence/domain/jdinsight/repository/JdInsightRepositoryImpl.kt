@@ -19,4 +19,7 @@ class JdInsightRepositoryImpl(
     override fun findByJdId(jdId: Long): JdInsight? =
         jdInsightJpa.findByJdId(jdId)?.toDomain()
 
+    @Transactional
+    override fun deleteByJdId(jdId: Long) = jdInsightJpa.deleteByJdId(jdId)
+
 }

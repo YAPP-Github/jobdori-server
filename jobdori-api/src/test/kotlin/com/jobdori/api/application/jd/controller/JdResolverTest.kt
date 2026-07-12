@@ -7,6 +7,7 @@ import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.core.application.ai.jd.result.JdPosting
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.application.jd.AnalyzeGuestJdService
+import com.jobdori.core.application.jd.DeleteJdService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.jd.GuestJdAnalysisResult
 import com.jobdori.core.application.jd.JdRegisterResult
@@ -36,6 +37,7 @@ internal class JdResolverTest(
     @MockkBean
     private val analyzeGuestJdService: AnalyzeGuestJdService,
     @MockkBean
+    private val deleteJdService: DeleteJdService,
     @MockkBean
     private val getJdService: GetJdService,
     @MockkBean
@@ -240,6 +242,22 @@ internal class JdResolverTest(
 
         verify(exactly = 1) { getJdService.getJds(10L, JdSortType.NAME) }
     }
+
+    "JD를 삭제하면 true를 반환한다" {
+        every { deleteJdService.deleteJd(10L, "jd-pub-1") } returns Unit
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  deleteJd(workspaceId: "ws-1", id: "jd-pub-1")
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("deleteJd").entity<Boolean>().isEqualTo(true)
+
+        verify(exactly = 1) { deleteJdService.deleteJd(10L, "jd-pub-1") }
     }
 
     "JD의 AI 인사이트(공고 핵심·지원 전략)를 조회한다" {

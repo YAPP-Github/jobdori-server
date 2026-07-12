@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface JdExperienceRecommendationJpaRepository : JpaRepository<JdExperienceRecommendationEntity, Long> {
     fun findByJdId(jdId: Long): JdExperienceRecommendationEntity?
+    fun deleteByJdId(jdId: Long)
 }

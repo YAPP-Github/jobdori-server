@@ -24,4 +24,7 @@ class JdExperienceRecommendationRepositoryImpl(
         return jpa.save(entity).toDomain()
     }
 
+    @Transactional
+    override fun deleteByJdId(jdId: Long) = jpa.deleteByJdId(jdId)
+
 }

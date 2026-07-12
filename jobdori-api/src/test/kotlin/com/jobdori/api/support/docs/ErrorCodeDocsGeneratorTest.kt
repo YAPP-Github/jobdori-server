@@ -488,7 +488,6 @@ private fun generateGraphQlOperationErrorCodeDocs(
 ) {
     writeErrorCodeDocs(
         file = file,
-        generatedBy = "ErrorCodeDocsGeneratorTest.GraphQL 에러코드 Asciidoctor 생성",
         content = buildString {
             operationErrors.forEach { operationError ->
                 appendLine("// tag::${operationError.operation}[]")

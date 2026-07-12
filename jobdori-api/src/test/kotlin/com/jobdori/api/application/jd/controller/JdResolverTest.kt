@@ -13,6 +13,7 @@ import com.jobdori.core.application.jd.JdRegisterResult
 import com.jobdori.core.application.jd.RegisterJdService
 import com.jobdori.core.application.jdinsight.GetJdInsightService
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.jd.JdSortType
 import com.jobdori.core.domain.jdinsight.JdInsight
 import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
@@ -199,6 +200,10 @@ internal class JdResolverTest(
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
     }
 
+    "sort를 생략하면 최신순(LATEST)으로 JD 목록을 조회한다" {
+        every { getJdService.getJds(10L, JdSortType.LATEST) } returns
+            listOf(graphQlJd(publicId = "jd-pub-2", companyName = "잡도리"))
+
         authenticatedTester(graphQlTester)
             .document(
                 """
@@ -211,6 +216,30 @@ internal class JdResolverTest(
             )
             .execute()
             .path("jds[0].jdId").entity<String>().isEqualTo("jd-pub-2")
+
+        verify(exactly = 1) { getJdService.getJds(10L, JdSortType.LATEST) }
+    }
+
+    "sort로 가나다순(NAME)을 지정해 JD 목록을 조회한다" {
+        every { getJdService.getJds(10L, JdSortType.NAME) } returns
+            listOf(graphQlJd(publicId = "jd-pub-3", companyName = "가나다"))
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                query {
+                  jds(workspaceId: "ws-1", sort: NAME) {
+                    jdId
+                    companyName
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("jds[0].companyName").entity<String>().isEqualTo("가나다")
+
+        verify(exactly = 1) { getJdService.getJds(10L, JdSortType.NAME) }
+    }
     }
 
     "JD의 AI 인사이트(공고 핵심·지원 전략)를 조회한다" {

@@ -11,6 +11,7 @@ import com.jobdori.core.application.jd.AnalyzeGuestJdService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.jd.RegisterJdService
 import com.jobdori.core.application.jdinsight.GetJdInsightService
+import com.jobdori.core.domain.jd.JdSortType
 import jakarta.validation.Valid
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
@@ -69,6 +70,7 @@ class JdResolver(
     fun jds(
         @UserId userId: Long,
         @Argument workspaceId: String,
+        @Argument sort: JdSortType,
     ): List<JdResponse> {
         val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
         return getJdService.getJds(workspace.id, sort).map { JdResponse.from(it) }

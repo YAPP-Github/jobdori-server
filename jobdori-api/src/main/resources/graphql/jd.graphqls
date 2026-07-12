@@ -20,7 +20,11 @@ extend type Query {
         """
         조회할 워크스페이스의 ID입니다.
         """
-        workspaceId: ID!
+        workspaceId: ID!,
+        """
+        정렬 기준입니다. LATEST(최신순, 기본값) 또는 NAME(회사명 가나다순).
+        """
+        sort: JdSortType! = LATEST
     ): [Jd!]!
 
     """
@@ -177,6 +181,20 @@ type Jd {
     """
     createdAt: String
 }
+
+"""
+JD 목록 정렬 기준입니다.
+"""
+enum JdSortType {
+    """
+    최신순(등록 역순)입니다.
+    """
+    LATEST
+
+    """
+    회사명 가나다순입니다.
+    """
+    NAME
 }
 
 """

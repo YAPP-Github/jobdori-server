@@ -50,5 +50,6 @@ class AnalyzeGuestJdService(
         requiredExperiences = meta.requiredExperiences,
         preferredExperiences = meta.preferredExperiences,
         hiringProcess = meta.hiringProcess,
+        coreCompetencies = meta.coreCompetencies,
     )
 }

@@ -190,6 +190,9 @@ type Jd {
     hiringProcess: [String!]!
 
     """
+    핵심 역량 태그입니다. AI가 공고에서 추출한 상위 핵심 역량(최대 5개). 아카이브 카드용.
+    """
+    coreCompetencies: [String!]!
 
     """
     등록일입니다. (ISO-8601)
@@ -290,6 +293,11 @@ type GuestJdAnalysis {
     전형 절차 목록입니다.
     """
     hiringProcess: [String!]!
+
+    """
+    핵심 역량 태그입니다. AI가 공고에서 추출한 상위 핵심 역량(최대 5개).
+    """
+    coreCompetencies: [String!]!
 
     """
     AI 인사이트(공고 핵심·지원 전략)입니다.

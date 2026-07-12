@@ -191,6 +191,7 @@ internal class JdResolverTest(
                   jd(workspaceId: "ws-1", id: "jd-pub-1") {
                     jdId
                     companyName
+                    coreCompetencies
                   }
                 }
                 """.trimIndent(),
@@ -198,6 +199,7 @@ internal class JdResolverTest(
             .execute()
             .path("jd.jdId").entity<String>().isEqualTo("jd-pub-1")
             .path("jd.companyName").entity<String>().isEqualTo("잡도리")
+            .path("jd.coreCompetencies").entityList(String::class.java).containsExactly("데이터 기반 개선", "협업")
 
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
     }
@@ -303,6 +305,7 @@ private fun graphQlJd(
     publicId: String = "jd-pub",
     companyName: String = "잡도리",
     positionTitle: String = "백엔드 개발자",
+    coreCompetencies: List<String> = listOf("데이터 기반 개선", "협업"),
 ) = Jd(
     id = id,
     publicId = publicId,
@@ -315,4 +318,5 @@ private fun graphQlJd(
     requiredExperiences = emptyList(),
     preferredExperiences = emptyList(),
     hiringProcess = emptyList(),
+    coreCompetencies = coreCompetencies,
 )

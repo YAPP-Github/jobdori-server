@@ -9,4 +9,5 @@ data class JdMetaResult(
     val requiredExperiences: List<String> = emptyList(),
     val preferredExperiences: List<String> = emptyList(),
     val hiringProcess: List<String> = emptyList(),
+    val coreCompetencies: List<String> = emptyList(),
 )

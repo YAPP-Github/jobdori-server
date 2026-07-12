@@ -38,6 +38,7 @@ data class GuestJdAnalysis(
     val requiredExperiences: List<String>,
     val preferredExperiences: List<String>,
     val hiringProcess: List<String>,
+    val coreCompetencies: List<String>,
     val insight: JdInsightResponse,
 ) {
 
@@ -52,6 +53,7 @@ data class GuestJdAnalysis(
             requiredExperiences = jd.requiredExperiences,
             preferredExperiences = jd.preferredExperiences,
             hiringProcess = jd.hiringProcess,
+            coreCompetencies = jd.coreCompetencies,
             insight = JdInsightResponse.from(insight),
         )
     }

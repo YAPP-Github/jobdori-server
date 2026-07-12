@@ -23,6 +23,9 @@ class JdEntity(
     @Column(columnDefinition = "text")
     var sourceUrl: String?,
 
+    @Column(columnDefinition = "text")
+    var sourceBody: String?,
+
     @Column(nullable = false)
     var companyName: String,
 
@@ -47,6 +50,10 @@ class JdEntity(
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "jsonb")
     var hiringProcess: List<String>,
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(nullable = false, columnDefinition = "jsonb")
+    var coreCompetencies: List<String>,
 ) : AuditableEntity() {
 
     @Id
@@ -58,6 +65,7 @@ class JdEntity(
         publicId = publicId,
         workspaceId = workspaceId,
         sourceUrl = sourceUrl,
+        sourceBody = sourceBody,
         companyName = companyName,
         positionTitle = positionTitle,
         companyIntro = companyIntro,
@@ -65,6 +73,7 @@ class JdEntity(
         requiredExperiences = requiredExperiences,
         preferredExperiences = preferredExperiences,
         hiringProcess = hiringProcess,
+        coreCompetencies = coreCompetencies,
         createdAt = createdAt,
     )
 
@@ -73,6 +82,7 @@ class JdEntity(
             publicId = jd.publicId,
             workspaceId = jd.workspaceId,
             sourceUrl = jd.sourceUrl,
+            sourceBody = jd.sourceBody,
             companyName = jd.companyName,
             positionTitle = jd.positionTitle,
             companyIntro = jd.companyIntro,
@@ -80,6 +90,7 @@ class JdEntity(
             requiredExperiences = jd.requiredExperiences,
             preferredExperiences = jd.preferredExperiences,
             hiringProcess = jd.hiringProcess,
+            coreCompetencies = jd.coreCompetencies,
         ).also { it.id = jd.id }
     }
 

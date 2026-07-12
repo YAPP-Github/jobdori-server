@@ -1,0 +1,37 @@
+mutation UpdateExperience {
+    updateExperience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+        request: {
+            projectId: 1
+            tags: ["GraphQL", "Spring Boot"]
+            title: "이력서 GraphQL API 개선"
+            contents: {
+                type: FREE
+                free: {
+                    content: "이력서 저장 API의 입력 검증을 보강하고 응답 필드를 정리했습니다."
+                }
+            }
+        }
+    ) {
+        experienceId
+        tags
+        title
+        project {
+            projectId
+            name
+        }
+        contents {
+            type
+            star {
+                situation
+                task
+                action
+                result
+            }
+            free {
+                content
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+query Experience {
+    experience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+    ) {
+        experienceId
+        tags
+        title
+        project {
+            projectId
+            name
+            summary
+            period {
+                startAt
+                endAt
+            }
+            role
+            experienceCount
+        }
+        contents {
+            type
+            star {
+                situation
+                task
+                action
+                result
+            }
+            free {
+                content
+            }
+        }
+    }
+}

@@ -1,0 +1,6 @@
+mutation DisconnectNotion {
+    disconnectNotion(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        connectionId: "00000000-0000-0000-0000-000000000601"
+    )
+}

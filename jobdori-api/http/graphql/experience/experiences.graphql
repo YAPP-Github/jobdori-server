@@ -1,0 +1,34 @@
+query Experiences {
+    experiences(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+        cursor: null
+        size: 10
+    ) {
+        experiences {
+            experienceId
+            tags
+            title
+            project {
+                projectId
+                name
+            }
+            contents {
+                type
+                star {
+                    situation
+                    task
+                    action
+                    result
+                }
+                free {
+                    content
+                }
+            }
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}

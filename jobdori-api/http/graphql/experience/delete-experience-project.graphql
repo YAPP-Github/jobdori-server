@@ -1,0 +1,6 @@
+mutation DeleteExperienceProject {
+    deleteExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+    )
+}

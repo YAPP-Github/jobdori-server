@@ -1,0 +1,17 @@
+query NotionConnections {
+    notionConnections(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        cursor: null
+        size: 10
+    ) {
+        connections {
+            connectionId
+            notionWorkspaceName
+            notionWorkspaceIcon
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}

@@ -1,0 +1,16 @@
+query ExperienceProject {
+    experienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}

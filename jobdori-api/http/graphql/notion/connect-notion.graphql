@@ -1,0 +1,13 @@
+mutation ConnectNotion {
+    connectNotion(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: {
+            authorizationCode: "notion-oauth-authorization-code"
+            redirectUri: "http://localhost:3000/notion/callback"
+        }
+    ) {
+        connectionId
+        notionWorkspaceName
+        notionWorkspaceIcon
+    }
+}

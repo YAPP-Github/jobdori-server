@@ -1,0 +1,11 @@
+query Me {
+    me {
+        userId
+        email
+        name
+        profileImageUrl
+        workspaces {
+            workspaceId
+        }
+    }
+}

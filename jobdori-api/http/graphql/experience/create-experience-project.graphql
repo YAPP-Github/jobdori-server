@@ -1,0 +1,21 @@
+mutation CreateExperienceProject {
+    createExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        input: {
+            name: "잡도리 이력서 서비스"
+            summary: "사용자가 이력서와 경험을 구조화해 관리할 수 있는 채용 플랫폼 기능"
+            period: { startAt: "2025-01-01", endAt: "2025-06-30" }
+            role: "Backend Developer"
+        }
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}

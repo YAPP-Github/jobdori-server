@@ -1,0 +1,6 @@
+mutation DeleteExperience {
+    deleteExperience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+    )
+}

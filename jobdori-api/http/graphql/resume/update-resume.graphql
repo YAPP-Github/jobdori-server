@@ -1,9 +1,9 @@
 mutation UpdateResume {
     updateResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 1,
+        resumeId: 94123123213123123,
         input: {
-            targetJdId: 1,
+            targetJdId: "00000000-0000-0000-0000-000000000002"
             template: DEFAULT
             status: COMPLETED
             sections: [

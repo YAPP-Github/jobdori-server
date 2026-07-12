@@ -2,7 +2,7 @@ mutation CreateResume {
     createResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         input: {
-            targetJdId: 1
+            targetJdId: "00000000-0000-0000-0000-000000000002"
             template: DEFAULT
             status: DRAFT
             sections: [

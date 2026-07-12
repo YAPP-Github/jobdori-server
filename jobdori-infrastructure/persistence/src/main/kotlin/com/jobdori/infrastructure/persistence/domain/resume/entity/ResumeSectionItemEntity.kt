@@ -14,12 +14,11 @@ import com.jobdori.core.domain.resume.ResumeSectionItemPayload
 import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeSkillPayload
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
+import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
@@ -47,7 +46,7 @@ class ResumeSectionItemEntity(
 ) : AuditableEntity() {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SnowflakeId
     var id: Long = 0L
 
     fun toDomain() = ResumeSectionItem(

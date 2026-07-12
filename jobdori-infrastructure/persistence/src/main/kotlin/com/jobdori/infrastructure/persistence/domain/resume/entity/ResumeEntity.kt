@@ -4,12 +4,11 @@ import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
+import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
@@ -32,7 +31,7 @@ class ResumeEntity(
 ) : AuditableEntity() {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SnowflakeId
     var id: Long = 0L
 
     fun toDomain() = Resume(

@@ -8,7 +8,7 @@ import java.time.Instant
 
 data class ResumeSummaryResponse(
     val resumeId: Long,
-    val targetJdId: Long?,
+    val targetJdId: String?,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
     val createdAt: Instant,
@@ -18,7 +18,7 @@ data class ResumeSummaryResponse(
     companion object {
         fun from(resume: Resume) = ResumeSummaryResponse(
             resumeId = resume.id,
-            targetJdId = resume.targetJdId,
+            targetJdId = resume.targetJdId.toString(),
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
             createdAt = resume.createdAt.toInstantAtSystemDefaultZone(),

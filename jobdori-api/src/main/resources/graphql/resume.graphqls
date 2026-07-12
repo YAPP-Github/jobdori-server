@@ -488,7 +488,7 @@ type ResumeStatusCount {
     """
     해당 상태의 이력서 수입니다.
     """
-    count: Int!
+    count: Long!
 }
 
 """

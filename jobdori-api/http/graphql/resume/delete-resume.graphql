@@ -1,6 +1,6 @@
 mutation DeleteResume {
     deleteResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 1
+        resumeId: 94123123213123123
     )
 }

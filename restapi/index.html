@@ -589,6 +589,8 @@ Content-Length: 17
 </div>
 <div class="sect4">
 <h5 id="_examples_2">Examples</h5>
+<div class="sect5">
+<h6 id="_http_request_2">HTTP Request</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/auth/login HTTP/1.1
@@ -603,11 +605,28 @@ Host: dev.api.jobdori.o-r.kr
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect5">
+<h6 id="_curl_2">Curl</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://dev.api.jobdori.o-r.kr/api/v1/auth/login' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "provider" : "GOOGLE",
+  "authorizationCode" : "authorization-code",
+  "redirectUri" : "http://dev.api.jobdori.o-r.kr/auth/callback"
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_http_response_2">HTTP Response</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=109595124; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=110802924; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=109592034; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=110799834; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 135
 
@@ -619,6 +638,7 @@ Content-Length: 135
     "isNewUser" : false
   }
 }</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -761,6 +781,8 @@ Content-Length: 135
 </div>
 <div class="sect4">
 <h5 id="_examples_3">Examples</h5>
+<div class="sect5">
+<h6 id="_http_request_3">HTTP Request</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/auth/refresh HTTP/1.1
@@ -769,10 +791,23 @@ Host: dev.api.jobdori.o-r.kr
 Cookie: refresh_token=refresh-token</code></pre>
 </div>
 </div>
+</div>
+<div class="sect5">
+<h6 id="_curl_3">Curl</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://dev.api.jobdori.o-r.kr/api/v1/auth/refresh' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    --cookie 'refresh_token=refresh-token'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_http_response_3">HTTP Response</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=new-access-token; Path=/; Max-Age=109595124; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=new-access-token; Path=/; Max-Age=109592034; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 76
 
@@ -782,6 +817,7 @@ Content-Length: 76
     "accessToken" : "new-access-token"
   }
 }</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -884,6 +920,8 @@ Content-Length: 76
 </div>
 <div class="sect4">
 <h5 id="_examples_4">Examples</h5>
+<div class="sect5">
+<h6 id="_http_request_4">HTTP Request</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/auth/logout HTTP/1.1
@@ -892,6 +930,19 @@ Host: dev.api.jobdori.o-r.kr
 Cookie: refresh_token=refresh-token</code></pre>
 </div>
 </div>
+</div>
+<div class="sect5">
+<h6 id="_curl_4">Curl</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://dev.api.jobdori.o-r.kr/api/v1/auth/logout' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    --cookie 'refresh_token=refresh-token'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_http_response_4">HTTP Response</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -903,6 +954,7 @@ Content-Length: 17
 {
   "ok" : true
 }</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -922,8 +974,8 @@ Content-Length: 17
 </div>
 </div>
 </div>
-<div class="sect5">
-<h6 id="_response_fields_5">Response Fields</h6>
+<div class="sect4">
+<h5 id="_response_fields_5">Response Fields</h5>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 20%;">
@@ -994,8 +1046,10 @@ Content-Length: 17
 </tbody>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_examples_5">Examples</h5>
 <div class="sect5">
-<h6 id="_examples_5">Examples</h6>
+<h6 id="_http_request_5">HTTP Request</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/v1/users/me HTTP/1.1
@@ -1003,6 +1057,18 @@ Authorization: Bearer access-token
 Host: dev.api.jobdori.o-r.kr</code></pre>
 </div>
 </div>
+</div>
+<div class="sect5">
+<h6 id="_curl_5">Curl</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://dev.api.jobdori.o-r.kr/api/v1/users/me' -i -X GET \
+    -H 'Authorization: Bearer access-token'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_http_response_5">HTTP Response</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -1024,8 +1090,9 @@ Content-Length: 313
 </div>
 </div>
 </div>
-<div class="sect5">
-<h6 id="_error_codes_3">Error Codes</h6>
+</div>
+<div class="sect4">
+<h5 id="_error_codes_3">Error Codes</h5>
 <div class="paragraph api-note">
 <p>공통 에러 코드는 <a href="#common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
 </div>
@@ -1288,17 +1355,30 @@ Content-Length: 17
 </div>
 <div class="sect4">
 <h5 id="_examples_7">Examples</h5>
+<div class="sect5">
+<h6 id="_http_request_6">HTTP Request</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/test-tokens?accessTokenExpiresAt=2030-01-01T00:00&amp;refreshTokenExpiresAt=2030-01-15T00:00 HTTP/1.1
 Host: dev.api.jobdori.o-r.kr</code></pre>
 </div>
 </div>
+</div>
+<div class="sect5">
+<h6 id="_curl_6">Curl</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://dev.api.jobdori.o-r.kr/api/test-tokens?accessTokenExpiresAt=2030-01-01T00:00&amp;refreshTokenExpiresAt=2030-01-15T00:00' -i -X GET</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_http_response_6">HTTP Response</h6>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=109593322; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=110802922; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=109590232; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=110799832; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 110
 
@@ -1309,6 +1389,7 @@ Content-Length: 110
     "refreshToken" : "refresh-token"
   }
 }</code></pre>
+</div>
 </div>
 </div>
 </div>

@@ -138,6 +138,7 @@ a:focus {
     margin-bottom: 3rem;
     min-width: 0;
     padding: 2.4rem 2.55rem 2.8rem;
+    position: relative;
 }
 
 #content > #preamble:first-child {
@@ -318,6 +319,7 @@ samp {
     border-radius: 8px;
     box-shadow: 0 12px 26px rgba(15, 23, 42, 0.16);
     overflow: auto;
+    position: relative;
 }
 
 .listingblock .title,
@@ -340,6 +342,129 @@ samp {
     margin: 0;
     padding: 1rem 1.12rem;
     white-space: pre;
+}
+
+.listingblock.has-copy-button pre {
+    padding-bottom: 2.65rem;
+}
+
+.copy-code-button {
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #1e293b;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    height: 1.8rem;
+    justify-content: center;
+    line-height: 1;
+    min-width: 3.1rem;
+    padding: 0 0.65rem;
+    position: absolute;
+    right: 0.72rem;
+    bottom: 0.65rem;
+    z-index: 2;
+}
+
+.copy-code-button:hover,
+.copy-code-button:focus {
+    background: #e0ecff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+.copy-code-button.is-copied {
+    background: var(--docs-green-soft);
+    border-color: #86efac;
+    color: var(--docs-green);
+}
+
+.graphql-sample {
+    background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+    border: 1px solid #bfdbfe;
+    border-left: 5px solid #0ea5e9;
+    border-radius: 8px;
+    box-shadow: 0 12px 26px rgba(14, 165, 233, 0.08);
+    margin: 1rem 0 1.35rem;
+}
+
+.graphql-sample > .content {
+    padding: 0.95rem 1rem 1rem;
+}
+
+.graphql-sample .paragraph:first-child p {
+    align-items: center;
+    color: #075985;
+    display: flex;
+    font-size: 0.86rem;
+    font-weight: 800;
+    gap: 0.45rem;
+    margin: 0 0 0.65rem;
+}
+
+.graphql-sample .paragraph:first-child p::before {
+    background: #0ea5e9;
+    border-radius: 4px;
+    color: #ffffff;
+    content: "GraphQL";
+    display: inline-flex;
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+    padding: 0.27rem 0.42rem;
+}
+
+.graphql-sample .listingblock {
+    margin-bottom: 0;
+}
+
+.graphql-sample .listingblock > .content {
+    border-color: #075985;
+    box-shadow: 0 10px 22px rgba(7, 89, 133, 0.16);
+}
+
+.graphql-sample .copy-code-button {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+    color: #075985;
+    min-width: 4.4rem;
+}
+
+.graphql-sample .copy-code-button:hover,
+.graphql-sample .copy-code-button:focus {
+    background: #bae6fd;
+    border-color: #38bdf8;
+    color: #0c4a6e;
+}
+
+.copy-document-button {
+    background: var(--docs-accent);
+    border: 1px solid var(--docs-accent-strong);
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    float: right;
+    font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 0.84rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 0 1rem 1rem;
+    min-height: 2.15rem;
+    padding: 0.55rem 0.85rem;
+}
+
+.copy-document-button:hover,
+.copy-document-button:focus {
+    background: var(--docs-accent-strong);
+}
+
+.copy-document-button.is-copied {
+    background: var(--docs-green);
+    border-color: #166534;
 }
 
 .listingblock pre.highlight {

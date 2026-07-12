@@ -30,7 +30,7 @@
 <li><a href="#_커서_페이징">1.5. 커서 페이징</a></li>
 </ul>
 </li>
-<li><a href="#_커스텀_에러_코드">2. 커스텀 에러 코드</a>
+<li><a href="#_apis">2. APIs</a>
 <ul class="sectlevel2">
 <li><a href="#_user">2.1. User</a>
 <ul class="sectlevel3">
@@ -45,6 +45,7 @@
 <li><a href="#_경험_생성">2.2.4. 경험 생성</a></li>
 <li><a href="#_경험_수정">2.2.5. 경험 수정</a></li>
 <li><a href="#_경험_삭제">2.2.6. 경험 삭제</a></li>
+<li><a href="#_경험_내용_다듬기">2.2.7. 경험 내용 다듬기</a></li>
 </ul>
 </li>
 <li><a href="#_experience_project">2.3. Experience Project</a>
@@ -491,12 +492,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="sect1">
-<h2 id="_커스텀_에러_코드">2. 커스텀 에러 코드</h2>
+<h2 id="_apis">2. APIs</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
-아래 표에는 각 GraphQL operation에서 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
-</div>
 <div class="sect2">
 <h3 id="_user">2.1. User</h3>
 <div class="sect3">
@@ -506,6 +503,35 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>me</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Me {
+    me {
+        userId
+        email
+        name
+        profileImageUrl
+        workspaces {
+            workspaceId
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -539,6 +565,57 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>experience</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experience {
+    experience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+    ) {
+        experienceId
+        tags
+        title
+        project {
+            projectId
+            name
+            summary
+            period {
+                startAt
+                endAt
+            }
+            role
+            experienceCount
+        }
+        contents {
+            type
+            star {
+                situation
+                task
+                action
+                result
+            }
+            free {
+                content
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -585,6 +662,58 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>experiences</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Experiences {
+    experiences(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+        cursor: null
+        size: 10
+    ) {
+        experiences {
+            experienceId
+            tags
+            title
+            project {
+                projectId
+                name
+            }
+            contents {
+                type
+                star {
+                    situation
+                    task
+                    action
+                    result
+                }
+                free {
+                    content
+                }
+            }
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -625,6 +754,58 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>searchExperiences</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query SearchExperiences {
+    searchExperiences(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        keyword: "GraphQL"
+        cursor: null
+        size: 10
+    ) {
+        experiences {
+            experienceId
+            tags
+            title
+            project {
+                projectId
+                name
+            }
+            contents {
+                type
+                star {
+                    situation
+                    task
+                    action
+                    result
+                }
+                free {
+                    content
+                }
+            }
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -659,6 +840,63 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>createExperience</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation CreateExperience {
+    createExperience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: {
+            projectId: 1
+            tags: ["GraphQL", "Kotlin", "API"]
+            title: "이력서 생성 API 구현"
+            contents: {
+                type: STAR
+                star: {
+                    situation: "이력서 섹션과 아이템을 자유롭게 구성해야 하는 요구사항이 있었습니다."
+                    task: "클라이언트가 한 번의 요청으로 전체 이력서 스냅샷을 저장할 수 있는 API가 필요했습니다."
+                    action: "SaveResumeInput을 기준으로 섹션 타입과 payload를 검증하고, core 서비스에서 저장 흐름을 일관되게 처리했습니다."
+                    result: "생성, 수정 API의 입력 구조를 통일해 프론트엔드 연동 비용을 줄이고 테스트 커버리지를 확보했습니다."
+                }
+            }
+        }
+    ) {
+        experienceId
+        tags
+        title
+        project {
+            projectId
+            name
+        }
+        contents {
+            type
+            star {
+                situation
+                task
+                action
+                result
+            }
+            free {
+                content
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -699,6 +937,61 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>updateExperience</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation UpdateExperience {
+    updateExperience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+        request: {
+            projectId: 1
+            tags: ["GraphQL", "Spring Boot"]
+            title: "이력서 GraphQL API 개선"
+            contents: {
+                type: FREE
+                free: {
+                    content: "이력서 저장 API의 입력 검증을 보강하고 응답 필드를 정리했습니다."
+                }
+            }
+        }
+    ) {
+        experienceId
+        tags
+        title
+        project {
+            projectId
+            name
+        }
+        contents {
+            type
+            star {
+                situation
+                task
+                action
+                result
+            }
+            free {
+                content
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -745,6 +1038,30 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>deleteExperience</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteExperience {
+    deleteExperience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+    )
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -777,6 +1094,44 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tbody>
 </table>
 </div>
+<div class="sect3">
+<h4 id="_경험_내용_다듬기">2.2.7. 경험 내용 다듬기</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>polishExperienceContents</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation PolishExperienceContents {
+    polishExperienceContents(
+        request: {
+            content: "이력서 저장 API를 만들었다. 섹션과 아이템이 복잡해서 저장 구조를 정리했고 테스트도 추가했다."
+        }
+    ) {
+        situation
+        task
+        action
+        result
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드: 없음</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_experience_project">2.3. Experience Project</h3>
@@ -787,6 +1142,40 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>experienceProject</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ExperienceProject {
+    experienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -828,6 +1217,47 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>experienceProjects</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ExperienceProjects {
+    experienceProjects(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        cursor: null
+        size: 10
+    ) {
+        projects {
+            projectId
+            name
+            summary
+            period {
+                startAt
+                endAt
+            }
+            role
+            experienceCount
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -863,6 +1293,45 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>createExperienceProject</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation CreateExperienceProject {
+    createExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        input: {
+            name: "잡도리 이력서 서비스"
+            summary: "사용자가 이력서와 경험을 구조화해 관리할 수 있는 채용 플랫폼 기능"
+            period: { startAt: "2025-01-01", endAt: "2025-06-30" }
+            role: "Backend Developer"
+        }
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -897,6 +1366,46 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>updateExperienceProject</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation UpdateExperienceProject {
+    updateExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+        request: {
+            name: "잡도리 이력서 플랫폼 고도화"
+            summary: "이력서 작성, 경험 정리, GraphQL API를 개선한 프로젝트"
+            period: { startAt: "2025-01-01", endAt: "2025-07-31" }
+            role: "Backend Developer"
+        }
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -937,6 +1446,30 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>deleteExperienceProject</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteExperienceProject {
+    deleteExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+    )
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -981,6 +1514,37 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>connectNotion</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation ConnectNotion {
+    connectNotion(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: {
+            authorizationCode: "notion-oauth-authorization-code"
+            redirectUri: "http://localhost:3000/notion/callback"
+        }
+    ) {
+        connectionId
+        notionWorkspaceName
+        notionWorkspaceIcon
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -1021,6 +1585,30 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>disconnectNotion</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DisconnectNotion {
+    disconnectNotion(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        connectionId: "00000000-0000-0000-0000-000000000601"
+    )
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -1056,6 +1644,41 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>notionConnections</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query NotionConnections {
+    notionConnections(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        cursor: null
+        size: 10
+    ) {
+        connections {
+            connectionId
+            notionWorkspaceName
+            notionWorkspaceIcon
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -1090,6 +1713,44 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>notionPages</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query NotionPages {
+    notionPages(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        connectionId: "00000000-0000-0000-0000-000000000601"
+        query: "이력서"
+        cursor: null
+        size: 10
+    ) {
+        pages {
+            pageId
+            title
+            url
+            lastEditedTime
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -1145,6 +1806,33 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>importNotionExperiences</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation ImportNotionExperiences {
+    importNotionExperiences(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: {
+            connectionId: "00000000-0000-0000-0000-000000000601"
+            pageId: "notion-page-id"
+        }
+    )
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -1204,6 +1892,38 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>resumes</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Resumes {
+    resumes(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        statuses: [ACTIVE, DRAFT]
+    ) {
+        resumeId
+        targetJdId
+        title
+        template
+        status
+        createdAt
+        updatedAt
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -1238,6 +1958,111 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>resume</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Resume {
+    resume(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 1
+    ) {
+        resumeId
+        targetJdId
+        title
+        template
+        status
+        createdAt
+        updatedAt
+        sections {
+            sectionId
+            type
+            displayText
+            displayOrder
+            visible
+            createdAt
+            updatedAt
+            items {
+                itemId
+                displayOrder
+                visible
+                createdAt
+                updatedAt
+                payload {
+                    basicInfo {
+                        name
+                        email
+                        phone
+                    }
+                    coreSkill {
+                        content
+                    }
+                    career {
+                        companyName
+                        role
+                        period {
+                            startAt
+                            endAt
+                        }
+                        contents
+                    }
+                    experience {
+                        name
+                        role
+                        period {
+                            startAt
+                            endAt
+                        }
+                        contents
+                    }
+                    education {
+                        schoolName
+                        major
+                        degree
+                        status
+                        period {
+                            startAt
+                            endAt
+                        }
+                    }
+                    award {
+                        name
+                        organization
+                        awardedAt
+                    }
+                    language {
+                        examName
+                        scoreOrGrade
+                        acquiredAt
+                    }
+                    certificate {
+                        name
+                        organization
+                        acquiredAt
+                    }
+                    skill {
+                        name
+                        level
+                    }
+                }
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -1279,6 +2104,244 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="paragraph">
 <p>Operation: <code>createResume</code></p>
 </div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation CreateResume {
+    createResume(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        input: {
+            targetJdId: "backend-developer-2026"
+            title: "잡도리 백엔드 개발자 이력서"
+            template: DEFAULT
+            status: ACTIVE
+            sections: [
+                {
+                    type: BASIC_INFO
+                    displayOrder: 1.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                basicInfo: {
+                                    name: "잡도리"
+                                    email: "jobdori.backend@example.com"
+                                    phone: "010-1234-5678"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CORE_SKILL
+                    displayOrder: 2.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                coreSkill: {
+                                    content: "Kotlin과 Spring Boot 기반 백엔드 서비스를 설계하고 개발합니다. PostgreSQL, JPA, Kotlin JDSL을 활용한 데이터 모델링과 조회 성능 개선 경험이 있으며, GraphQL과 REST API를 모두 운영 가능한 수준으로 구현해왔습니다."
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: EXPERIENCE
+                    displayOrder: 3.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                experience: {
+                                    name: "이력서 관리 GraphQL API 개발"
+                                    role: "Backend Developer"
+                                    period: { startAt: "2025-01-01", endAt: "2025-06-30" }
+                                    contents: [
+                                        "이력서 생성, 조회, 수정, 삭제 GraphQL API 설계 및 구현",
+                                        "섹션과 아이템을 스냅샷 단위로 저장하는 도메인 모델 설계",
+                                        "Kotest 기반 서비스 테스트와 GraphQL 예외 응답 검증 추가"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CAREER
+                    displayOrder: 4.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                career: {
+                                    companyName: "잡도리"
+                                    role: "Backend Developer"
+                                    period: { startAt: "2024-01-01", endAt: "2025-12-31" }
+                                    contents: "채용 플랫폼의 이력서, 경험 정리, 워크스페이스 도메인을 담당했습니다. Kotlin, Spring Boot, PostgreSQL 기반으로 API를 개발하고 core와 infrastructure의 책임을 분리해 유지보수성을 개선했습니다."
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: EDUCATION
+                    displayOrder: 5.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                education: {
+                                    schoolName: "잡도리대학교"
+                                    major: "컴퓨터공학"
+                                    degree: "학사"
+                                    status: "졸업"
+                                    period: { startAt: "2018-03-01", endAt: "2024-02-29" }
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: AWARD
+                    displayOrder: 6.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                award: {
+                                    name: "잡도리 해커톤 대상"
+                                    organization: "잡도리 테크랩"
+                                    awardedAt: "2024-08-01"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: LANGUAGE
+                    displayOrder: 7.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                language: {
+                                    examName: "TOEIC"
+                                    scoreOrGrade: "900"
+                                    acquiredAt: "2024-03-15"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CERTIFICATE
+                    displayOrder: 8.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                certificate: {
+                                    name: "정보처리기사"
+                                    organization: "한국산업인력공단"
+                                    acquiredAt: "2024-05-20"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: SKILL
+                    displayOrder: 9.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                skill: {
+                                    name: "Kotlin"
+                                    level: "Advanced"
+                                }
+                            }
+                        }
+                        {
+                            displayOrder: 2.0
+                            visible: true
+                            payload: {
+                                skill: {
+                                    name: "Spring Boot"
+                                    level: "Advanced"
+                                }
+                            }
+                        }
+                        {
+                            displayOrder: 3.0
+                            visible: true
+                            payload: {
+                                skill: {
+                                    name: "PostgreSQL"
+                                    level: "Intermediate"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ) {
+        resumeId
+        targetJdId
+        title
+        template
+        status
+        createdAt
+        updatedAt
+        sections {
+            sectionId
+            type
+            displayText
+            displayOrder
+            visible
+            items {
+                itemId
+                displayOrder
+                visible
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
 <col style="width: 28%;">
@@ -1313,6 +2376,92 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>updateResume</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation UpdateResume {
+    updateResume(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 1,
+        input: {
+            targetJdId: 1,
+            title: "잡도리 백엔드 개발자 이력서 - 수정본"
+            template: DEFAULT
+            status: DRAFT
+            sections: [
+                {
+                    type: BASIC_INFO
+                    displayOrder: 1.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                basicInfo: {
+                                    name: "잡도리"
+                                    email: "jobdori.backend@example.com"
+                                    phone: "010-1234-5678"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CORE_SKILL
+                    displayOrder: 2.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                coreSkill: {
+                                    content: "Kotlin, Spring Boot, PostgreSQL 기반 백엔드 개발과 GraphQL API 설계에 강점이 있습니다."
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ) {
+        resumeId
+        targetJdId
+        title
+        template
+        status
+        createdAt
+        updatedAt
+        sections {
+            sectionId
+            type
+            displayText
+            displayOrder
+            visible
+            items {
+                itemId
+                displayOrder
+                visible
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>
@@ -1353,6 +2502,30 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="paragraph">
 <p>Operation: <code>deleteResume</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteResume {
+    deleteResume(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 1
+    )
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch api-table">
 <colgroup>

@@ -289,6 +289,7 @@ private val graphQlOperationErrors = listOf(
         operation = "resumes",
         title = "이력서 목록 조회",
         type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("resume/resumes.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -299,6 +300,7 @@ private val graphQlOperationErrors = listOf(
         operation = "resume",
         title = "이력서 상세 조회",
         type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("resume/resume.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -310,6 +312,7 @@ private val graphQlOperationErrors = listOf(
         operation = "createResume",
         title = "이력서 생성",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("resume/create-resume.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -320,6 +323,7 @@ private val graphQlOperationErrors = listOf(
         operation = "updateResume",
         title = "이력서 수정",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("resume/update-resume.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -331,6 +335,7 @@ private val graphQlOperationErrors = listOf(
         operation = "deleteResume",
         title = "이력서 삭제",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("resume/delete-resume.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,

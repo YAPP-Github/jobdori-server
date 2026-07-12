@@ -1,0 +1,68 @@
+mutation UpdateResume {
+    updateResume(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 1,
+        input: {
+            targetJdId: 1,
+            title: "잡도리 백엔드 개발자 이력서 - 수정본"
+            template: DEFAULT
+            status: DRAFT
+            sections: [
+                {
+                    type: BASIC_INFO
+                    displayOrder: 1.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                basicInfo: {
+                                    name: "잡도리"
+                                    email: "jobdori.backend@example.com"
+                                    phone: "010-1234-5678"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CORE_SKILL
+                    displayOrder: 2.0
+                    visible: true
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                coreSkill: {
+                                    content: "Kotlin, Spring Boot, PostgreSQL 기반 백엔드 개발과 GraphQL API 설계에 강점이 있습니다."
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ) {
+        resumeId
+        targetJdId
+        title
+        template
+        status
+        createdAt
+        updatedAt
+        sections {
+            sectionId
+            type
+            displayText
+            displayOrder
+            visible
+            items {
+                itemId
+                displayOrder
+                visible
+            }
+        }
+    }
+}

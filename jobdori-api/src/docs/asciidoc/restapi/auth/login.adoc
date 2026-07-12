@@ -18,7 +18,15 @@ include::{snippets}/auth-login/response-headers.adoc[]
 
 ===== Examples
 
+====== HTTP Request
+
 include::{snippets}/auth-login/http-request.adoc[]
+
+====== Curl
+
+include::{snippets}/auth-login/curl-request.adoc[]
+
+====== HTTP Response
 
 include::{snippets}/auth-login/http-response.adoc[]
 

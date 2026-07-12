@@ -20,6 +20,14 @@ include::{snippets}/auth-refresh/response-headers.adoc[]
 
 ===== Examples
 
+====== HTTP Request
+
 include::{snippets}/auth-refresh/http-request.adoc[]
+
+====== Curl
+
+include::{snippets}/auth-refresh/curl-request.adoc[]
+
+====== HTTP Response
 
 include::{snippets}/auth-refresh/http-response.adoc[]

@@ -1,3 +1,5 @@
+// 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
+
 [.api-table]
 [cols="28%,36%,36%",options="header"]
 |===

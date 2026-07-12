@@ -18,7 +18,15 @@ include::{snippets}/dev-test-token/response-headers.adoc[]
 
 ===== Examples
 
+====== HTTP Request
+
 include::{snippets}/dev-test-token/http-request.adoc[]
+
+====== Curl
+
+include::{snippets}/dev-test-token/curl-request.adoc[]
+
+====== HTTP Response
 
 include::{snippets}/dev-test-token/http-response.adoc[]
 

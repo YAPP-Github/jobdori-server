@@ -18,6 +18,14 @@ include::{snippets}/auth-logout/response-headers.adoc[]
 
 ===== Examples
 
+====== HTTP Request
+
 include::{snippets}/auth-logout/http-request.adoc[]
+
+====== Curl
+
+include::{snippets}/auth-logout/curl-request.adoc[]
+
+====== HTTP Response
 
 include::{snippets}/auth-logout/http-response.adoc[]

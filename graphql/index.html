@@ -1688,7 +1688,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DisconnectNotion {
     disconnectNotion(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        connectionId: "00000000-0000-0000-0000-000000000601"
+        connectionId: 740000000000000001
     )
 }</code></pre>
 </div>
@@ -1817,7 +1817,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query NotionPages {
     notionPages(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        connectionId: "00000000-0000-0000-0000-000000000601"
+        connectionId: 740000000000000001
         query: "이력서"
         cursor: null
         size: 10
@@ -1911,7 +1911,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
     importNotionExperiences(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         request: {
-            connectionId: "00000000-0000-0000-0000-000000000601"
+            connectionId: 740000000000000001
             pageId: "notion-page-id"
         }
     )
@@ -2122,7 +2122,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Resume {
     resume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 1
+        resumeId: 94123123213123123
     ) {
         resumeId
         targetJdId
@@ -2267,7 +2267,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
     createResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         input: {
-            targetJdId: 1
+            targetJdId: "00000000-0000-0000-0000-000000000002"
             template: DEFAULT
             status: DRAFT
             sections: [
@@ -2514,9 +2514,9 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation UpdateResume {
     updateResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 1,
+        resumeId: 94123123213123123,
         input: {
-            targetJdId: 1,
+            targetJdId: "00000000-0000-0000-0000-000000000002"
             template: DEFAULT
             status: COMPLETED
             sections: [
@@ -2638,7 +2638,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteResume {
     deleteResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 1
+        resumeId: 94123123213123123
     )
 }</code></pre>
 </div>

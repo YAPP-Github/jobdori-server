@@ -8,6 +8,7 @@ data class Jd(
     val publicId: String,
     val workspaceId: Long,
     val sourceUrl: String?,   // 붙여넣기(text) 등록 시 null
+    val sourceBody: String? = null,   // 등록에 쓰인 공고 원문. 원문 조회 화면용. 기능 이전 레거시 행은 null
     val companyName: String,
     val positionTitle: String,
     val companyIntro: String,
@@ -22,6 +23,7 @@ data class Jd(
         fun newInstance(
             workspaceId: Long,
             sourceUrl: String?,
+            sourceBody: String,
             companyName: String,
             positionTitle: String,
             companyIntro: String,
@@ -35,6 +37,7 @@ data class Jd(
             publicId = publicId,
             workspaceId = workspaceId,
             sourceUrl = sourceUrl,
+            sourceBody = sourceBody,
             companyName = companyName,
             positionTitle = positionTitle,
             companyIntro = companyIntro,

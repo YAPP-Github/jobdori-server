@@ -56,6 +56,19 @@ extend type Mutation {
         """
         request: JdRegisterRequest!
     ): JdRegisterResult!
+
+    """
+    비로그인 상태에서 JD를 분석합니다. (온보딩 유입용)
+    저장하지 않고 7필드 추출과 AI 인사이트(공고 핵심·지원 전략)를 즉시 반환합니다.
+    본문에 여러 공고가 있으면 후보 목록(candidates)을 반환하며, 하나를 골라 body로 다시 분석합니다.
+    인증이 필요 없는 공개 요청입니다.
+    """
+    analyzeGuestJd(
+        """
+        분석 입력입니다. sourceUrl(크롤) 또는 body(붙여넣기) 중 정확히 하나를 채웁니다.
+        """
+        request: JdRegisterRequest!
+    ): GuestJdAnalysisResult!
 }
 
 """
@@ -118,6 +131,11 @@ type Jd {
     sourceUrl: String
 
     """
+    등록에 사용된 공고 원문입니다. 원문 조회 화면용이며, 기능 이전에 등록된 JD는 null입니다.
+    """
+    sourceBody: String
+
+    """
     기업 이름입니다. (추출 실패 시 빈 문자열)
     """
     companyName: String!
@@ -153,9 +171,12 @@ type Jd {
     hiringProcess: [String!]!
 
     """
+
+    """
     등록일입니다. (ISO-8601)
     """
     createdAt: String
+}
 }
 
 """
@@ -171,4 +192,74 @@ type JdInsight {
     지원 전략입니다. 어떤 경험을 어떻게 강조하면 좋을지 조언하는 서술형 문단입니다.
     """
     strategy: String!
+}
+
+"""
+비로그인 JD 분석 결과입니다. 단일 공고면 analysis, 다중 공고면 candidates가 채워집니다.
+"""
+type GuestJdAnalysisResult {
+    """
+    분석 결과입니다. (단일 공고)
+    """
+    analysis: GuestJdAnalysis
+
+    """
+    저장되지 않은 공고 후보 목록입니다. (다중 공고 — 하나를 골라 body로 재분석)
+    """
+    candidates: [JdCandidate!]
+}
+
+"""
+비로그인 JD 분석 결과(단일 공고)입니다. 저장되지 않으며 jdId가 없습니다.
+"""
+type GuestJdAnalysis {
+    """
+    원본 공고 URL입니다. (붙여넣기 분석이면 null)
+    """
+    sourceUrl: String
+
+    """
+    분석에 사용된 공고 원문입니다.
+    """
+    sourceBody: String
+
+    """
+    기업 이름입니다. (추출 실패 시 빈 문자열)
+    """
+    companyName: String!
+
+    """
+    포지션 이름입니다. (추출 실패 시 빈 문자열)
+    """
+    positionTitle: String!
+
+    """
+    기업/팀 소개입니다.
+    """
+    companyIntro: String!
+
+    """
+    업무 내용 목록입니다.
+    """
+    responsibilities: [String!]!
+
+    """
+    필요 경험(자격요건) 목록입니다.
+    """
+    requiredExperiences: [String!]!
+
+    """
+    우대 경험 목록입니다.
+    """
+    preferredExperiences: [String!]!
+
+    """
+    전형 절차 목록입니다.
+    """
+    hiringProcess: [String!]!
+
+    """
+    AI 인사이트(공고 핵심·지원 전략)입니다.
+    """
+    insight: JdInsight!
 }

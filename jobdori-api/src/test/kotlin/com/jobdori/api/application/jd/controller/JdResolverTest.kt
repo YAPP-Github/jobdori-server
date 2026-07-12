@@ -6,7 +6,9 @@ import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.core.application.ai.jd.result.JdPosting
 import com.jobdori.core.application.auth.AccessTokenService
+import com.jobdori.core.application.jd.AnalyzeGuestJdService
 import com.jobdori.core.application.jd.GetJdService
+import com.jobdori.core.application.jd.GuestJdAnalysisResult
 import com.jobdori.core.application.jd.JdRegisterResult
 import com.jobdori.core.application.jd.RegisterJdService
 import com.jobdori.core.application.jdinsight.GetJdInsightService
@@ -30,6 +32,9 @@ internal class JdResolverTest(
     private val accessTokenService: AccessTokenService,
     @MockkBean
     private val registerJdService: RegisterJdService,
+    @MockkBean
+    private val analyzeGuestJdService: AnalyzeGuestJdService,
+    @MockkBean
     @MockkBean
     private val getJdService: GetJdService,
     @MockkBean
@@ -112,6 +117,67 @@ internal class JdResolverTest(
         verify(exactly = 1) { registerJdService.registerByText(10L, multiBody) }
     }
 
+    "비로그인 상태로 URL을 분석하면 추출 결과와 인사이트를 저장 없이 반환한다" {
+        every { analyzeGuestJdService.analyzeByUrl("https://example.com/jd") } returns
+            GuestJdAnalysisResult.Analyzed(
+                jd = graphQlJd(companyName = "잡도리", positionTitle = "백엔드 개발자"),
+                insight = JdInsight(
+                    id = 0L,
+                    jdId = 0L,
+                    keyPoints = "주도적으로 문제를 정의할 사람을 원해요.",
+                    strategy = "정의·해결 사례를 강조하세요.",
+                ),
+            )
+
+        // 인증 헤더 없이(비로그인) 호출한다
+        graphQlTester
+            .document(
+                """
+                mutation {
+                  analyzeGuestJd(request: { sourceUrl: "https://example.com/jd" }) {
+                    analysis {
+                      companyName
+                      positionTitle
+                      insight { keyPoints strategy }
+                    }
+                    candidates { title }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("analyzeGuestJd.analysis.companyName").entity<String>().isEqualTo("잡도리")
+            .path("analyzeGuestJd.analysis.insight.keyPoints").entity<String>().isEqualTo("주도적으로 문제를 정의할 사람을 원해요.")
+            .path("analyzeGuestJd.candidates").valueIsNull()
+
+        verify(exactly = 1) { analyzeGuestJdService.analyzeByUrl("https://example.com/jd") }
+    }
+
+    "비로그인 분석 본문에 여러 공고가 있으면 후보 목록을 반환한다" {
+        val multiBody = "여러 공고가 섞인 본문 ".repeat(50)
+        every { analyzeGuestJdService.analyzeByText(multiBody) } returns
+            GuestJdAnalysisResult.MultiplePostings(
+                listOf(JdPosting(title = "백엔드 개발자", body = "본문 A")),
+            )
+
+        graphQlTester
+            .document(
+                """
+                mutation {
+                  analyzeGuestJd(request: { body: "$multiBody" }) {
+                    analysis { companyName }
+                    candidates { title body }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("analyzeGuestJd.analysis").valueIsNull()
+            .path("analyzeGuestJd.candidates[0].title").entity<String>().isEqualTo("백엔드 개발자")
+
+        verify(exactly = 1) { analyzeGuestJdService.analyzeByText(multiBody) }
+    }
+
     "publicId로 워크스페이스의 JD 단건을 조회한다" {
         every { getJdService.getJd(10L, "jd-pub-1") } returns graphQlJd(publicId = "jd-pub-1", companyName = "잡도리")
 
@@ -131,6 +197,20 @@ internal class JdResolverTest(
             .path("jd.companyName").entity<String>().isEqualTo("잡도리")
 
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
+    }
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                query {
+                  jds(workspaceId: "ws-1") {
+                    jdId
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("jds[0].jdId").entity<String>().isEqualTo("jd-pub-2")
     }
 
     "JD의 AI 인사이트(공고 핵심·지원 전략)를 조회한다" {

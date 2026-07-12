@@ -13,6 +13,9 @@ import com.jobdori.core.domain.resume.ResumeExperiencePayload
 import com.jobdori.core.domain.resume.ResumeLanguagePayload
 import com.jobdori.core.domain.resume.ResumeSectionItemPayload
 import com.jobdori.core.domain.resume.ResumeSkillPayload
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.Pattern
 import java.time.LocalDate
 
 interface ResumePayloadRequest<out T : ResumeSectionItemPayload> {
@@ -22,14 +25,23 @@ interface ResumePayloadRequest<out T : ResumeSectionItemPayload> {
 }
 
 data class ResumeSectionItemPayloadRequest(
+    @field:Valid
     val basicInfo: ResumeBasicInfoPayloadRequest?,
+    @field:Valid
     val coreSkill: ResumeCoreSkillPayloadRequest?,
+    @field:Valid
     val career: ResumeCareerPayloadRequest?,
+    @field:Valid
     val experience: ResumeExperiencePayloadRequest?,
+    @field:Valid
     val education: ResumeEducationPayloadRequest?,
+    @field:Valid
     val award: ResumeAwardPayloadRequest?,
+    @field:Valid
     val certificate: ResumeCertificatePayloadRequest?,
+    @field:Valid
     val language: ResumeLanguagePayloadRequest?,
+    @field:Valid
     val skill: ResumeSkillPayloadRequest?,
 ) {
 
@@ -67,7 +79,9 @@ data class ResumeSectionItemPayloadRequest(
 
 data class ResumeBasicInfoPayloadRequest(
     val name: String,
+    @field:Email(message = "올바른 이메일 형식이 아닙니다.")
     val email: String?,
+    @field:Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)")
     val phone: String?,
 ) : ResumePayloadRequest<ResumeBasicInfoPayload> {
     override fun toPayload() = ResumeBasicInfoPayload(

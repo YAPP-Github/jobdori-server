@@ -1,5 +1,6 @@
 package com.jobdori.infrastructure.persistence.domain.resume.repository
 
+import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
 import com.jobdori.core.domain.resume.Resume
@@ -107,6 +108,7 @@ class ResumeRepositoryImpl(
         workspaceId: Long,
         command: ResumeSaveCommand,
     ): ResumeDetail {
+        validateResumeStatus(command.status)
         val savedResume = resumeJpaRepository.save(
             ResumeEntity(
                 workspaceId = workspaceId,
@@ -131,6 +133,7 @@ class ResumeRepositoryImpl(
         workspaceId: Long,
         command: ResumeSaveCommand,
     ): ResumeDetail? {
+        validateResumeStatus(command.status)
         val resumeEntity = resumeJpaRepository.findByIdAndWorkspaceIdAndStatusIn(
             id = id,
             workspaceId = workspaceId,
@@ -149,6 +152,14 @@ class ResumeRepositoryImpl(
         )
 
         return findDetailByIdAndWorkspaceId(id = savedResume.id, workspaceId = workspaceId)
+    }
+
+    private fun validateResumeStatus(status: ResumeStatus) {
+        if (status == ResumeStatus.DELETED) {
+            throw InvalidArgumentsException(
+                message = "이력서를 DELETED 상태로 생성하거나 수정할 수 없습니다.",
+            )
+        }
     }
 
     private fun saveSectionsAndItems(

@@ -38,7 +38,6 @@ class ResumeRepositoryTest(
         val detail = resumeRepository.createDetail(
             workspaceId = 10L,
             command = saveCommand(
-                title = "신규 이력서",
                 sections = listOf(
                     sectionCommand(type = ResumeSectionType.CAREER, displayOrder = "20"),
                     sectionCommand(type = ResumeSectionType.BASIC_INFO, displayOrder = "10"),
@@ -47,7 +46,6 @@ class ResumeRepositoryTest(
         )
 
         // then
-        detail.resume.title shouldBe "신규 이력서"
         detail.resume.status shouldBe ResumeStatus.DRAFT
         detail.sections.map { it.section.type } shouldContainExactly listOf(
             ResumeSectionType.BASIC_INFO,
@@ -64,7 +62,6 @@ class ResumeRepositoryTest(
         val created = resumeRepository.createDetail(
             workspaceId = 10L,
             command = saveCommand(
-                title = "기존 이력서",
                 sections = listOf(
                     sectionCommand(type = ResumeSectionType.BASIC_INFO, displayOrder = "10"),
                     sectionCommand(type = ResumeSectionType.CAREER, displayOrder = "20"),
@@ -79,8 +76,7 @@ class ResumeRepositoryTest(
             id = created.resume.id,
             workspaceId = 10L,
             command = saveCommand(
-                title = "수정 이력서",
-                status = ResumeStatus.ACTIVE,
+                status = ResumeStatus.COMPLETED,
                 sections = listOf(
                     sectionCommand(
                         sectionId = basicInfoSection.section.id,
@@ -95,8 +91,7 @@ class ResumeRepositoryTest(
 
         // then
         requireNotNull(modified)
-        modified.resume.title shouldBe "수정 이력서"
-        modified.resume.status shouldBe ResumeStatus.ACTIVE
+        modified.resume.status shouldBe ResumeStatus.COMPLETED
         modified.sections shouldHaveSize 1
         modified.sections.single().section.type shouldBe ResumeSectionType.BASIC_INFO
         modified.sections.single().section.displayOrder shouldBe 30.0
@@ -111,19 +106,17 @@ class ResumeRepositoryTest(
         resumeRepository.modifyDetail(
             id = 999L,
             workspaceId = 10L,
-            command = saveCommand(title = "없음"),
+            command = saveCommand(),
         ).shouldBeNull()
     }
 
 })
 
 private fun saveCommand(
-    title: String,
     status: ResumeStatus = ResumeStatus.DRAFT,
     sections: List<ResumeSectionSaveCommand> = listOf(sectionCommand()),
 ) = ResumeSaveCommand(
     targetJdId = null,
-    title = title,
     template = ResumeTemplate.DEFAULT,
     status = status,
     sections = sections,

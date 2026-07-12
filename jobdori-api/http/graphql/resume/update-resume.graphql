@@ -5,7 +5,7 @@ mutation UpdateResume {
         input: {
             targetJdId: 1,
             template: DEFAULT
-            status: DRAFT
+            status: COMPLETED
             sections: [
                 {
                     type: BASIC_INFO

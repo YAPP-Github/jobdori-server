@@ -283,7 +283,7 @@ input ResumeExperiencePayloadInput {
     """
     경험 상세 내용 목록입니다.
     """
-    contents: [String!]!
+    contents: String
 }
 
 """
@@ -673,7 +673,7 @@ type ResumeExperiencePayload {
     """
     경험 상세 내용 목록입니다.
     """
-    contents: [String!]!
+    contents: String
 }
 
 """
@@ -798,7 +798,7 @@ enum ResumeStatusType {
     """
     활성 이력서입니다.
     """
-    ACTIVE
+    COMPLETED
 
     """
     임시 저장된 이력서입니다.

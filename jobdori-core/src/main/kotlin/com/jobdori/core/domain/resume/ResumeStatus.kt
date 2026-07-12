@@ -1,7 +1,9 @@
 package com.jobdori.core.domain.resume
 
 enum class ResumeStatus {
-    ACTIVE,
+
+    COMPLETED,
     DRAFT,
     DELETED,
+
 }

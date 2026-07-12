@@ -62,9 +62,9 @@ class ResumeServiceTest : StringSpec({
 
     "이력서 수정 요청을 command로 변환해 modifier에 위임한다" {
         // given
-        val request = saveRequest(title = "수정 이력서")
+        val request = saveRequest()
         val detail = ResumeDetail(
-            resume = ResumeFixture.create(id = 100L, workspaceId = 1L, title = "수정 이력서"),
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
             sections = listOf(
                 ResumeDetailSection(
                     section = ResumeSectionFixture.create(id = 200L, resumeId = 100L),
@@ -100,14 +100,12 @@ class ResumeServiceTest : StringSpec({
 
         // then
         response.resumeId shouldBe 100L
-        response.title shouldBe "수정 이력서"
         response.sections.single().items.single().payload.basicInfo?.name shouldBe "홍길동"
         verify(exactly = 1) {
             resumeModifier.modifyDetail(
                 workspaceId = 1L,
                 resumeId = 100L,
                 command = withArg<ResumeSaveCommand> {
-                    it.title shouldBe "수정 이력서"
                     it.sections.single().items.single().payload.type shouldBe ResumeSectionType.BASIC_INFO
                 },
             )
@@ -116,9 +114,9 @@ class ResumeServiceTest : StringSpec({
 
     "요청 섹션 타입으로 어학 섹션 command를 생성한다" {
         // given
-        val request = languageSaveRequest(title = "어학 이력서")
+        val request = languageSaveRequest()
         val detail = ResumeDetail(
-            resume = ResumeFixture.create(id = 100L, workspaceId = 1L, title = "어학 이력서"),
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
             sections = listOf(
                 ResumeDetailSection(
                     section = ResumeSectionFixture.create(
@@ -179,7 +177,7 @@ class ResumeServiceTest : StringSpec({
                 resumeId = 100L,
             )
         } returns ResumeDetail(
-            resume = ResumeFixture.create(id = 100L, workspaceId = 1L, title = "조회 이력서"),
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
             sections = listOf(
                 ResumeDetailSection(
                     section = ResumeSectionFixture.create(
@@ -241,7 +239,6 @@ class ResumeServiceTest : StringSpec({
         // given
         val request = SaveResumeRequest(
             targetJdId = null,
-            title = "중복 섹션",
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,
             sections = listOf(
@@ -263,7 +260,6 @@ class ResumeServiceTest : StringSpec({
         // given
         val request = SaveResumeRequest(
             targetJdId = null,
-            title = "중복 아이템",
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,
             sections = listOf(
@@ -293,7 +289,6 @@ class ResumeServiceTest : StringSpec({
         // given
         val request = SaveResumeRequest(
             targetJdId = null,
-            title = "타입 불일치",
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,
             sections = listOf(
@@ -318,9 +313,8 @@ class ResumeServiceTest : StringSpec({
 
 })
 
-private fun saveRequest(title: String) = SaveResumeRequest(
+private fun saveRequest() = SaveResumeRequest(
     targetJdId = null,
-    title = title,
     template = ResumeTemplate.DEFAULT,
     status = ResumeStatusType.DRAFT,
     sections = listOf(
@@ -413,9 +407,8 @@ private fun languageItem(displayOrder: Double) = SaveResumeSectionItemRequest(
     ),
 )
 
-private fun languageSaveRequest(title: String) = SaveResumeRequest(
+private fun languageSaveRequest() = SaveResumeRequest(
     targetJdId = null,
-    title = title,
     template = ResumeTemplate.DEFAULT,
     status = ResumeStatusType.DRAFT,
     sections = listOf(

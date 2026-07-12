@@ -6,7 +6,7 @@ data class ResumeExperiencePayload(
     val name: String,
     val role: String?,
     val period: Period?,
-    val contents: List<String>,
+    val contents: String?,
 ) : ResumeSectionItemPayload {
     override val type = ResumeSectionType.EXPERIENCE
 }

@@ -87,7 +87,7 @@ data class ResumeExperiencePayloadResponse(
     val name: String,
     val role: String?,
     val period: PeriodResponse?,
-    val contents: List<String>,
+    val contents: String?,
 ) : ResumePayloadResponse {
     companion object {
         fun from(payload: ResumeExperiencePayload) = ResumeExperiencePayloadResponse(

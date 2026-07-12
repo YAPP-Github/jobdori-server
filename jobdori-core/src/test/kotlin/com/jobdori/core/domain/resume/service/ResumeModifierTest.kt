@@ -29,9 +29,9 @@ class ResumeModifierTest : StringSpec({
 
     "이력서 상세를 수정한다" {
         // given
-        val command = saveCommand(title = "수정 이력서")
+        val command = saveCommand()
         val detail = ResumeDetail(
-            resume = ResumeFixture.create(id = 1L, workspaceId = 10L, title = "수정 이력서"),
+            resume = ResumeFixture.create(id = 1L, workspaceId = 10L),
             sections = listOf(
                 ResumeDetailSection(
                     section = ResumeSectionFixture.create(id = 2L, resumeId = 1L),
@@ -57,7 +57,7 @@ class ResumeModifierTest : StringSpec({
 
     "수정할 이력서가 없으면 예외를 던진다" {
         // given
-        val command = saveCommand(title = "수정 이력서")
+        val command = saveCommand()
         every {
             resumeRepository.modifyDetail(
                 id = 1L,
@@ -78,9 +78,8 @@ class ResumeModifierTest : StringSpec({
 
 })
 
-private fun saveCommand(title: String) = ResumeSaveCommand(
+private fun saveCommand() = ResumeSaveCommand(
     targetJdId = null,
-    title = title,
     template = ResumeTemplate.DEFAULT,
     status = ResumeStatus.DRAFT,
     sections = listOf(

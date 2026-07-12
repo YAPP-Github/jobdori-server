@@ -45,7 +45,7 @@ class ResumeRepositoryImpl(
         return resumeJpaRepository.findByIdAndWorkspaceIdAndStatusIn(
             id = id,
             workspaceId = workspaceId,
-            statuses = listOf(ResumeStatus.ACTIVE, ResumeStatus.DRAFT),
+            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
         )?.toDomain()
     }
 
@@ -113,7 +113,6 @@ class ResumeRepositoryImpl(
             ResumeEntity(
                 workspaceId = workspaceId,
                 targetJdId = command.targetJdId,
-                title = command.title,
                 template = command.template,
                 status = command.status,
             ),
@@ -137,11 +136,10 @@ class ResumeRepositoryImpl(
         val resumeEntity = resumeJpaRepository.findByIdAndWorkspaceIdAndStatusIn(
             id = id,
             workspaceId = workspaceId,
-            statuses = listOf(ResumeStatus.ACTIVE, ResumeStatus.DRAFT),
+            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
         ) ?: return null
 
         resumeEntity.targetJdId = command.targetJdId
-        resumeEntity.title = command.title
         resumeEntity.template = command.template
         resumeEntity.status = command.status
         val savedResume = resumeJpaRepository.save(resumeEntity)

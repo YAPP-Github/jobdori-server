@@ -18,7 +18,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Pattern
 import java.time.LocalDate
 
-interface ResumePayloadRequest<out T : ResumeSectionItemPayload> {
+fun interface ResumePayloadRequest<out T : ResumeSectionItemPayload> {
 
     fun toPayload(): T
 
@@ -115,7 +115,7 @@ data class ResumeExperiencePayloadRequest(
     val name: String,
     val role: String?,
     val period: PeriodRequest?,
-    val contents: List<String>,
+    val contents: String?,
 ) : ResumePayloadRequest<ResumeExperiencePayload> {
     override fun toPayload() = ResumeExperiencePayload(
         name = name,

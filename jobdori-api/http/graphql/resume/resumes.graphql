@@ -1,7 +1,7 @@
 query Resumes {
     resumes(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        statuses: [ACTIVE, DRAFT]
+        statuses: [COMPLETED, DRAFT]
     ) {
         resumeId
         targetJdId

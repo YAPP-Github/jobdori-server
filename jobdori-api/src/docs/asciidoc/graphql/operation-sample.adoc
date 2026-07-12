@@ -745,6 +745,7 @@ mutation CreateResume {
                                     role: "Backend Developer"
                                     period: { startAt: "2025-01-01", endAt: "2025-06-30" }
                                     contents: "이력서 생성, 조회, 수정, 삭제 GraphQL API 설계 및 구현"
+                                }
                             }
                         }
                     ]

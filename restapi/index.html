@@ -9,6 +9,95 @@
 <link rel="stylesheet" href="../index.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const content = document.querySelector("#content");
+    if (content) {
+      const copyDocumentButton = document.createElement("button");
+      copyDocumentButton.type = "button";
+      copyDocumentButton.className = "copy-document-button";
+      copyDocumentButton.textContent = "문서 전체 복사";
+      copyDocumentButton.setAttribute("aria-label", "문서 전체 복사");
+
+      copyDocumentButton.addEventListener("click", async () => {
+        const clone = content.cloneNode(true);
+        clone.querySelectorAll(".copy-code-button, .copy-document-button").forEach((element) => element.remove());
+        const text = clone.innerText
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+
+        try {
+          await navigator.clipboard.writeText(text);
+          copyDocumentButton.textContent = "복사 완료";
+          copyDocumentButton.classList.add("is-copied");
+          window.setTimeout(() => {
+            copyDocumentButton.textContent = "문서 전체 복사";
+            copyDocumentButton.classList.remove("is-copied");
+          }, 1400);
+        } catch {
+          copyDocumentButton.textContent = "복사 실패";
+          window.setTimeout(() => {
+            copyDocumentButton.textContent = "문서 전체 복사";
+          }, 1400);
+        }
+      });
+
+      content.prepend(copyDocumentButton);
+    }
+
+    document.querySelectorAll(".listingblock > .content").forEach((content) => {
+      const code = content.querySelector("pre code, pre");
+      if (!code || content.querySelector(".copy-code-button")) {
+        return;
+      }
+
+      content.closest(".listingblock")?.classList.add("has-copy-button");
+
+      const sectionTitle = findPreviousHeadingText(content.closest(".listingblock"));
+      const defaultLabel = sectionTitle === "HTTP Request"
+        ? "HTTP 복사"
+        : sectionTitle === "Curl"
+          ? "Curl 복사"
+          : "복사";
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "copy-code-button";
+      button.textContent = defaultLabel;
+      button.setAttribute("aria-label", `${defaultLabel}`);
+
+      button.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(code.textContent.trimEnd());
+          button.textContent = "완료";
+          button.classList.add("is-copied");
+          window.setTimeout(() => {
+            button.textContent = defaultLabel;
+            button.classList.remove("is-copied");
+          }, 1400);
+        } catch {
+          button.textContent = "실패";
+          window.setTimeout(() => {
+            button.textContent = defaultLabel;
+          }, 1400);
+        }
+      });
+
+      content.appendChild(button);
+    });
+
+    function findPreviousHeadingText(element) {
+      let current = element?.previousElementSibling;
+      while (current) {
+        if (/^H[1-6]$/.test(current.tagName)) {
+          return current.textContent.trim();
+        }
+        current = current.previousElementSibling;
+      }
+      return "";
+    }
+  });
+</script>
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
@@ -625,8 +714,8 @@ Host: dev.api.jobdori.o-r.kr
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=109588223; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=110796023; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=109585561; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=110793361; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 135
 
@@ -807,7 +896,7 @@ Cookie: refresh_token=refresh-token</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=new-access-token; Path=/; Max-Age=109588223; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=new-access-token; Path=/; Max-Age=109585560; Expires=Tue, 1 Jan 2030 00:30:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 76
 
@@ -1377,8 +1466,8 @@ Host: dev.api.jobdori.o-r.kr</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: access_token=access-token; Path=/; Max-Age=109586422; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
-Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=110796022; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: access_token=access-token; Path=/; Max-Age=109583759; Expires=Tue, 1 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refresh_token=refresh-token; Path=/; Max-Age=110793359; Expires=Tue, 15 Jan 2030 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 Content-Length: 110
 

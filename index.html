@@ -9,6 +9,95 @@
 <link rel="stylesheet" href="./index.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const content = document.querySelector("#content");
+    if (content) {
+      const copyDocumentButton = document.createElement("button");
+      copyDocumentButton.type = "button";
+      copyDocumentButton.className = "copy-document-button";
+      copyDocumentButton.textContent = "문서 전체 복사";
+      copyDocumentButton.setAttribute("aria-label", "문서 전체 복사");
+
+      copyDocumentButton.addEventListener("click", async () => {
+        const clone = content.cloneNode(true);
+        clone.querySelectorAll(".copy-code-button, .copy-document-button").forEach((element) => element.remove());
+        const text = clone.innerText
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+
+        try {
+          await navigator.clipboard.writeText(text);
+          copyDocumentButton.textContent = "복사 완료";
+          copyDocumentButton.classList.add("is-copied");
+          window.setTimeout(() => {
+            copyDocumentButton.textContent = "문서 전체 복사";
+            copyDocumentButton.classList.remove("is-copied");
+          }, 1400);
+        } catch {
+          copyDocumentButton.textContent = "복사 실패";
+          window.setTimeout(() => {
+            copyDocumentButton.textContent = "문서 전체 복사";
+          }, 1400);
+        }
+      });
+
+      content.prepend(copyDocumentButton);
+    }
+
+    document.querySelectorAll(".listingblock > .content").forEach((content) => {
+      const code = content.querySelector("pre code, pre");
+      if (!code || content.querySelector(".copy-code-button")) {
+        return;
+      }
+
+      content.closest(".listingblock")?.classList.add("has-copy-button");
+
+      const sectionTitle = findPreviousHeadingText(content.closest(".listingblock"));
+      const defaultLabel = sectionTitle === "HTTP Request"
+        ? "HTTP 복사"
+        : sectionTitle === "Curl"
+          ? "Curl 복사"
+          : "복사";
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "copy-code-button";
+      button.textContent = defaultLabel;
+      button.setAttribute("aria-label", `${defaultLabel}`);
+
+      button.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(code.textContent.trimEnd());
+          button.textContent = "완료";
+          button.classList.add("is-copied");
+          window.setTimeout(() => {
+            button.textContent = defaultLabel;
+            button.classList.remove("is-copied");
+          }, 1400);
+        } catch {
+          button.textContent = "실패";
+          window.setTimeout(() => {
+            button.textContent = defaultLabel;
+          }, 1400);
+        }
+      });
+
+      content.appendChild(button);
+    });
+
+    function findPreviousHeadingText(element) {
+      let current = element?.previousElementSibling;
+      while (current) {
+        if (/^H[1-6]$/.test(current.tagName)) {
+          return current.textContent.trim();
+        }
+        current = current.previousElementSibling;
+      }
+      return "";
+    }
+  });
+</script>
 </head>
 <body id="introduction" class="book toc2 toc-left">
 <div id="header">

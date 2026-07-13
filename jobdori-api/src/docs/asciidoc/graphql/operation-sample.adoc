@@ -557,4 +557,178 @@ mutation ImportNotionExperiences {
 ====
 // end::importNotionExperiences[]
 
+// tag::jd[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query Jd {
+    jd(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        id: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        jdId
+        sourceUrl
+        companyName
+        positionTitle
+        companyIntro
+        responsibilities
+        requiredExperiences
+        preferredExperiences
+        hiringProcess
+        coreCompetencies
+        status
+        createdAt
+    }
+}
+----
+====
+// end::jd[]
+
+// tag::jds[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query Jds {
+    jds(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        sort: LATEST
+        status: IN_PROGRESS
+    ) {
+        jdId
+        companyName
+        positionTitle
+        status
+        createdAt
+    }
+}
+----
+====
+// end::jds[]
+
+// tag::jdInsight[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query JdInsight {
+    jdInsight(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        jdId: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        keyPoints
+        strategy
+    }
+}
+----
+====
+// end::jdInsight[]
+
+// tag::registerJd[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation RegisterJd {
+    registerJd(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: { sourceUrl: "https://example.com/jd" }
+    ) {
+        jd {
+            jdId
+            companyName
+            positionTitle
+            status
+        }
+        candidates {
+            title
+            body
+        }
+    }
+}
+----
+====
+// end::registerJd[]
+
+// tag::analyzeGuestJd[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation AnalyzeGuestJd {
+    analyzeGuestJd(
+        request: { sourceUrl: "https://example.com/jd" }
+    ) {
+        analysis {
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
+        }
+        candidates {
+            title
+            body
+        }
+    }
+}
+----
+====
+// end::analyzeGuestJd[]
+
+// tag::markJdCompleted[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation MarkJdCompleted {
+    markJdCompleted(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        id: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        jdId
+        status
+    }
+}
+----
+====
+// end::markJdCompleted[]
+
+// tag::deleteJd[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation DeleteJd {
+    deleteJd(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        id: "00000000-0000-0000-0000-00000000000a"
+    )
+}
+----
+====
+// end::deleteJd[]
+
 

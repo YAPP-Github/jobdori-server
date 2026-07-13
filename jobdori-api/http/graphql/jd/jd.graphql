@@ -1,0 +1,19 @@
+query Jd {
+    jd(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        id: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        jdId
+        sourceUrl
+        companyName
+        positionTitle
+        companyIntro
+        responsibilities
+        requiredExperiences
+        preferredExperiences
+        hiringProcess
+        coreCompetencies
+        status
+        createdAt
+    }
+}

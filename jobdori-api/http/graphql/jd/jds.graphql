@@ -1,0 +1,13 @@
+query Jds {
+    jds(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        sort: LATEST
+        status: IN_PROGRESS
+    ) {
+        jdId
+        companyName
+        positionTitle
+        status
+        createdAt
+    }
+}

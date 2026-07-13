@@ -1,0 +1,24 @@
+mutation AnalyzeGuestJd {
+    analyzeGuestJd(
+        request: { sourceUrl: "https://example.com/jd" }
+    ) {
+        analysis {
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
+        }
+        candidates {
+            title
+            body
+        }
+    }
+}

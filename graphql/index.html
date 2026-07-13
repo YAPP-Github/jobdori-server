@@ -155,6 +155,17 @@
 <li><a href="#_notion_경험_불러오기">2.4.5. Notion 경험 불러오기</a></li>
 </ul>
 </li>
+<li><a href="#_jd">2.5. JD</a>
+<ul class="sectlevel3">
+<li><a href="#_jd_단건_조회">2.5.1. JD 단건 조회</a></li>
+<li><a href="#_jd_목록_조회">2.5.2. JD 목록 조회</a></li>
+<li><a href="#_jd_인사이트_조회">2.5.3. JD 인사이트 조회</a></li>
+<li><a href="#_jd_등록">2.5.4. JD 등록</a></li>
+<li><a href="#_비로그인_jd_분석">2.5.5. 비로그인 JD 분석</a></li>
+<li><a href="#_jd_완료_처리">2.5.6. JD 완료 처리</a></li>
+<li><a href="#_jd_삭제">2.5.7. JD 삭제</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1958,6 +1969,577 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_api_request_failed</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 요청에 실패했습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 호출이 실패한 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jd">2.5. JD</h3>
+<div class="sect3">
+<h4 id="_jd_단건_조회">2.5.1. JD 단건 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>jd</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Jd {
+    jd(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        id: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        jdId
+        sourceUrl
+        companyName
+        positionTitle
+        companyIntro
+        responsibilities
+        requiredExperiences
+        preferredExperiences
+        hiringProcess
+        coreCompetencies
+        status
+        createdAt
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_jd_목록_조회">2.5.2. JD 목록 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>jds</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query Jds {
+    jds(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        sort: LATEST
+        status: IN_PROGRESS
+    ) {
+        jdId
+        companyName
+        positionTitle
+        status
+        createdAt
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_jd_인사이트_조회">2.5.3. JD 인사이트 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>jdInsight</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query JdInsight {
+    jdInsight(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        jdId: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        keyPoints
+        strategy
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_rate_limited</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청이 많아 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">최초 조회로 인사이트를 생성하는 중 AI 요청 한도를 초과한 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">최초 조회로 인사이트를 생성하는 중 AI 응답 생성에 실패한 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_unavailable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">현재 AI 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">최초 조회로 인사이트를 생성하는 중 AI 서비스에 접근할 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_timeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">최초 조회로 인사이트를 생성하는 중 AI 응답이 지연된 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_jd_등록">2.5.4. JD 등록</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>registerJd</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation RegisterJd {
+    registerJd(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: { sourceUrl: "https://example.com/jd" }
+    ) {
+        jd {
+            jdId
+            companyName
+            positionTitle
+            status
+        }
+        candidates {
+            title
+            body
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_invalid_url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">요청할 수 없는 URL입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">허용되지 않은 스킴이거나 내부 네트워크 주소(SSRF 차단)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">해당 페이지에 접근할 수 없습니다. 내용을 직접 붙여넣어 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JD URL 접근 거부(4xx)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_fetch_failed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">공고 내용을 가져오지 못했습니다. 내용을 직접 붙여넣어 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JD 본문 수집 실패(모든 크롤 단 실패)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_rate_limited</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청이 많아 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청 한도 초과</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 생성 실패</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_unavailable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">현재 AI 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 서비스 접근 불가</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_timeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 지연/시간 초과</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_비로그인_jd_분석">2.5.5. 비로그인 JD 분석</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>analyzeGuestJd</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation AnalyzeGuestJd {
+    analyzeGuestJd(
+        request: { sourceUrl: "https://example.com/jd" }
+    ) {
+        analysis {
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
+        }
+        candidates {
+            title
+            body
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_invalid_url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">요청할 수 없는 URL입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">허용되지 않은 스킴이거나 내부 네트워크 주소(SSRF 차단)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">해당 페이지에 접근할 수 없습니다. 내용을 직접 붙여넣어 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JD URL 접근 거부(4xx)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_fetch_failed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">공고 내용을 가져오지 못했습니다. 내용을 직접 붙여넣어 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JD 본문 수집 실패(모든 크롤 단 실패)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_rate_limited</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청이 많아 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청 한도 초과</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 생성 실패</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_unavailable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">현재 AI 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 서비스 접근 불가</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_timeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 지연/시간 초과</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_jd_완료_처리">2.5.6. JD 완료 처리</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>markJdCompleted</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation MarkJdCompleted {
+    markJdCompleted(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        id: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        jdId
+        status
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_jd_삭제">2.5.7. JD 삭제</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>deleteJd</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteJd {
+    deleteJd(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        id: "00000000-0000-0000-0000-00000000000a"
+    )
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
 </tr>
 </tbody>
 </table>

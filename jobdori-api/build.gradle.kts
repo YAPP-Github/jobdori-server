@@ -7,6 +7,7 @@ dependencies {
     implementation(project(":jobdori-common"))
     runtimeOnly(project(":jobdori-infrastructure:persistence"))
     runtimeOnly(project(":jobdori-infrastructure:client"))
+    testImplementation(testFixtures(project(":jobdori-core")))
 
     // Web
     implementation(libs.spring.boot.starter.webmvc)

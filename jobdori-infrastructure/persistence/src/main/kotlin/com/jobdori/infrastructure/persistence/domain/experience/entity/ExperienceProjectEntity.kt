@@ -11,7 +11,6 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import java.math.BigDecimal
 import java.time.LocalDate
 
 @Table(name = "experience_project_v1")
@@ -35,8 +34,8 @@ class ExperienceProjectEntity(
     @Column(length = 100)
     var role: String?,
 
-    @Column(nullable = false, precision = 20, scale = 10)
-    var displayOrder: BigDecimal,
+    @Column(nullable = false)
+    var displayOrder: Double,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)

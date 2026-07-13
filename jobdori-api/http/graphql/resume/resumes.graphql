@@ -1,0 +1,13 @@
+query Resumes {
+    resumes(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        statuses: [COMPLETED, DRAFT]
+    ) {
+        resumeId
+        targetJdId
+        template
+        status
+        createdAt
+        updatedAt
+    }
+}

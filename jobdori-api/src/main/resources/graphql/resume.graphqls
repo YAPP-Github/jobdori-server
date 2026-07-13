@@ -1,0 +1,872 @@
+extend type Query {
+    """
+    워크스페이스의 이력서 목록을 조회합니다.
+    """
+    resumes(
+        """
+        이력서 목록을 조회할 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        조회할 이력서 상태 목록입니다 (생략하면 COMPLETED, DRAFT를 모두 조회)
+        """
+        statuses: [ResumeStatusType!]
+    ): [ResumeSummary!]!
+
+    """
+    워크스페이스의 이력서 수를 상태별로 조회합니다.
+    """
+    resumeCounts(
+        """
+        이력서 수를 조회할 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!
+    ): [ResumeStatusCount!]!
+
+    """
+    이력서 상세를 조회합니다.
+    """
+    resume(
+        """
+        이력서가 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        조회할 이력서 ID입니다.
+        """
+        resumeId: ID!
+    ): Resume!
+}
+
+extend type Mutation {
+    """
+    새 이력서를 전체 스냅샷 단위로 생성합니다.
+    """
+    createResume(
+        """
+        이력서를 생성할 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        생성할 이력서 전체 스냅샷입니다.
+        """
+        input: SaveResumeInput!
+    ): Resume!
+
+    """
+    기존 이력서를 전체 스냅샷 단위로 수정합니다.
+    """
+    updateResume(
+        """
+        이력서가 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        수정할 이력서 ID입니다.
+        """
+        resumeId: ID!,
+        """
+        수정할 이력서 전체 스냅샷입니다.
+        """
+        input: SaveResumeInput!
+    ): Resume!
+
+    """
+    이력서를 삭제합니다.
+    """
+    deleteResume(
+        """
+        이력서가 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        삭제할 이력서 ID입니다.
+        """
+        resumeId: ID!
+    ): Boolean!
+}
+
+"""
+이력서 생성 및 수정에 사용하는 전체 스냅샷 입력입니다.
+"""
+input SaveResumeInput {
+    """
+    이력서가 맞춤 대상 채용공고와 연결되는 경우의 채용공고 ID입니다.
+    """
+    targetJdId: ID
+
+    """
+    이력서 렌더링에 사용할 템플릿입니다.
+    """
+    template: ResumeTemplate!
+
+    """
+    저장할 이력서 상태입니다.
+    """
+    status: ResumeStatusType!
+
+    """
+    저장할 섹션 목록입니다. 요청에 없는 기존 섹션은 삭제됩니다.
+    """
+    sections: [SaveResumeSectionInput!]!
+}
+
+"""
+이력서 섹션 저장 입력입니다.
+"""
+input SaveResumeSectionInput {
+    """
+    기존 섹션을 수정할 때 사용하는 섹션 ID입니다. 없으면 새 섹션으로 생성됩니다.
+    """
+    sectionId: ID
+
+    """
+    섹션 타입입니다. 하위 아이템 payload 타입과 일치해야 합니다.
+    """
+    type: ResumeSectionType!
+
+    """
+    섹션 표시 순서입니다.
+    """
+    displayOrder: Float!
+
+    """
+    섹션 노출 여부입니다.
+    """
+    visible: Boolean!
+
+    """
+    섹션에 포함할 아이템 목록입니다. 요청에 없는 기존 아이템은 삭제됩니다.
+    """
+    items: [SaveResumeSectionItemInput!]!
+}
+
+"""
+이력서 섹션 아이템 저장 입력입니다.
+"""
+input SaveResumeSectionItemInput {
+    """
+    기존 아이템을 수정할 때 사용하는 아이템 ID입니다. 없으면 새 아이템으로 생성됩니다.
+    """
+    itemId: ID
+
+    """
+    아이템 표시 순서입니다.
+    """
+    displayOrder: Float!
+
+    """
+    아이템 노출 여부입니다.
+    """
+    visible: Boolean!
+
+    """
+    섹션 타입과 일치해야 하는 payload 입력입니다.
+    """
+    payload: ResumeSectionItemPayloadInput!
+}
+
+"""
+섹션 아이템 payload 입력입니다. 정확히 하나의 필드만 채웁니다.
+"""
+input ResumeSectionItemPayloadInput {
+    """
+    기본 정보 payload입니다.
+    """
+    basicInfo: ResumeBasicInfoPayloadInput
+
+    """
+    핵심 역량 payload입니다.
+    """
+    coreSkill: ResumeCoreSkillPayloadInput
+
+    """
+    경력 payload입니다.
+    """
+    career: ResumeCareerPayloadInput
+
+    """
+    경험 payload입니다.
+    """
+    experience: ResumeExperiencePayloadInput
+
+    """
+    학력 payload입니다.
+    """
+    education: ResumeEducationPayloadInput
+
+    """
+    수상 payload입니다.
+    """
+    award: ResumeAwardPayloadInput
+
+    """
+    자격증 payload입니다.
+    """
+    certificate: ResumeCertificatePayloadInput
+
+    """
+    어학 payload입니다.
+    """
+    language: ResumeLanguagePayloadInput
+
+    """
+    기술 payload입니다.
+    """
+    skill: ResumeSkillPayloadInput
+}
+
+"""
+기본 정보 payload 입력입니다.
+"""
+input ResumeBasicInfoPayloadInput {
+    """
+    이름입니다.
+    """
+    name: String!
+
+    """
+    이메일 주소입니다.
+    """
+    email: String
+
+    """
+    전화번호입니다.
+    """
+    phone: String
+}
+
+"""
+핵심 역량 payload 입력입니다.
+"""
+input ResumeCoreSkillPayloadInput {
+    """
+    핵심 역량 내용입니다.
+    """
+    content: String!
+}
+
+"""
+경력 payload 입력입니다.
+"""
+input ResumeCareerPayloadInput {
+    """
+    회사명입니다.
+    """
+    companyName: String!
+
+    """
+    직무 또는 역할입니다.
+    """
+    role: String
+
+    """
+    재직 기간입니다.
+    """
+    period: PeriodInput
+
+    """
+    경력 상세 내용입니다.
+    """
+    contents: String!
+}
+
+"""
+경험 payload 입력입니다.
+"""
+input ResumeExperiencePayloadInput {
+    """
+    경험 이름입니다.
+    """
+    name: String!
+
+    """
+    경험에서 맡은 역할입니다.
+    """
+    role: String
+
+    """
+    경험 수행 기간입니다.
+    """
+    period: PeriodInput
+
+    """
+    경험 상세 내용 목록입니다.
+    """
+    contents: String
+}
+
+"""
+학력 payload 입력입니다.
+"""
+input ResumeEducationPayloadInput {
+    """
+    학교명입니다.
+    """
+    schoolName: String!
+
+    """
+    전공명입니다.
+    """
+    major: String
+
+    """
+    학위 또는 학력 구분입니다.
+    """
+    degree: String
+
+    """
+    학력 상태입니다. 예: 졸업 예정
+    """
+    status: String
+
+    """
+    재학 기간입니다.
+    """
+    period: PeriodInput
+}
+
+"""
+수상 payload 입력입니다.
+"""
+input ResumeAwardPayloadInput {
+    """
+    수상명입니다.
+    """
+    name: String!
+
+    """
+    수상 기관명입니다.
+    """
+    organization: String
+
+    """
+    수상일입니다.
+    """
+    awardedAt: String
+}
+
+"""
+자격증 payload 입력입니다.
+"""
+input ResumeCertificatePayloadInput {
+    """
+    자격증명입니다.
+    """
+    name: String!
+
+    """
+    발급 기관입니다.
+    """
+    organization: String
+
+    """
+    취득일입니다.
+    """
+    acquiredAt: String
+}
+
+"""
+기술 payload 입력입니다.
+"""
+input ResumeSkillPayloadInput {
+    """
+    기술명입니다.
+    """
+    name: String!
+
+    """
+    숙련도 또는 수준입니다.
+    """
+    level: String
+}
+
+"""
+어학 payload 입력입니다.
+"""
+input ResumeLanguagePayloadInput {
+    """
+    어학 시험명입니다.
+    """
+    examName: String!
+
+    """
+    어학 점수 또는 등급입니다.
+    """
+    scoreOrGrade: String!
+
+    """
+    어학 취득일입니다.
+    """
+    acquiredAt: String
+}
+
+"""
+이력서 상세 응답입니다.
+"""
+type Resume {
+    """
+    이력서 ID입니다.
+    """
+    resumeId: ID!
+
+    """
+    이력서 템플릿입니다.
+    """
+    template: ResumeTemplate!
+
+    """
+    이력서 상태입니다.
+    """
+    status: ResumeStatusType!
+
+    """
+    요청한 선택 필드에 따라 포함되는 섹션 목록입니다.
+    """
+    sections: [ResumeSection!]!
+
+    """
+    생성 시각입니다.
+    """
+    createdAt: String!
+
+    """
+    마지막 수정 시각입니다.
+    """
+    updatedAt: String!
+}
+
+"""
+이력서 목록용 요약 응답입니다.
+"""
+type ResumeSummary {
+    """
+    이력서 ID입니다.
+    """
+    resumeId: ID!
+
+    """
+    이력서 템플릿입니다.
+    """
+    template: ResumeTemplate!
+
+    """
+    이력서 상태입니다.
+    """
+    status: ResumeStatusType!
+
+    """
+    생성 시각입니다.
+    """
+    createdAt: String!
+
+    """
+    마지막 수정 시각입니다.
+    """
+    updatedAt: String!
+}
+
+"""
+이력서 상태별 개수 응답입니다.
+"""
+type ResumeStatusCount {
+    """
+    이력서 상태입니다.
+    """
+    status: ResumeStatusType!
+
+    """
+    해당 상태의 이력서 수입니다.
+    """
+    count: Long!
+}
+
+"""
+이력서 섹션 응답입니다.
+"""
+type ResumeSection {
+    """
+    섹션 ID입니다.
+    """
+    sectionId: ID!
+
+    """
+    섹션 종류입니다.
+    """
+    type: ResumeSectionType!
+
+    """
+    화면에 표시할 섹션명입니다.
+    """
+    displayText: String!
+
+    """
+    섹션 표시 순서입니다.
+    """
+    displayOrder: Float!
+
+    """
+    섹션 노출 여부입니다.
+    """
+    visible: Boolean!
+
+    """
+    섹션에 포함된 아이템 목록입니다.
+    """
+    items: [ResumeSectionItem!]!
+
+    """
+    생성 시각입니다.
+    """
+    createdAt: String!
+
+    """
+    마지막 수정 시각입니다.
+    """
+    updatedAt: String!
+}
+
+"""
+이력서 섹션 아이템 응답입니다.
+"""
+type ResumeSectionItem {
+    """
+    아이템 ID입니다.
+    """
+    itemId: ID!
+
+    """
+    아이템 표시 순서입니다.
+    """
+    displayOrder: Float!
+
+    """
+    아이템 노출 여부입니다.
+    """
+    visible: Boolean!
+
+    """
+    아이템 상세 payload입니다.
+    """
+    payload: ResumeSectionItemPayload!
+
+    """
+    생성 시각입니다.
+    """
+    createdAt: String!
+
+    """
+    마지막 수정 시각입니다.
+    """
+    updatedAt: String!
+}
+
+"""
+섹션 아이템 payload 응답입니다. 섹션 타입과 일치하는 필드 하나가 채워집니다.
+"""
+type ResumeSectionItemPayload {
+    """
+    기본 정보 payload입니다.
+    """
+    basicInfo: ResumeBasicInfoPayload
+
+    """
+    핵심 역량 payload입니다.
+    """
+    coreSkill: ResumeCoreSkillPayload
+
+    """
+    경력 payload입니다.
+    """
+    career: ResumeCareerPayload
+
+    """
+    경험 payload입니다.
+    """
+    experience: ResumeExperiencePayload
+
+    """
+    학력 payload입니다.
+    """
+    education: ResumeEducationPayload
+
+    """
+    수상 payload입니다.
+    """
+    award: ResumeAwardPayload
+
+    """
+    자격증 payload입니다.
+    """
+    certificate: ResumeCertificatePayload
+
+    """
+    어학 payload입니다.
+    """
+    language: ResumeLanguagePayload
+
+    """
+    기술 payload입니다.
+    """
+    skill: ResumeSkillPayload
+}
+
+"""
+기본 정보 payload 응답입니다.
+"""
+type ResumeBasicInfoPayload {
+    """
+    이름입니다.
+    """
+    name: String!
+
+    """
+    이메일 주소입니다.
+    """
+    email: String
+
+    """
+    전화번호입니다.
+    """
+    phone: String
+}
+
+"""
+핵심 역량 payload 응답입니다.
+"""
+type ResumeCoreSkillPayload {
+    """
+    핵심 역량 내용입니다.
+    """
+    content: String!
+}
+
+"""
+경력 payload 응답입니다.
+"""
+type ResumeCareerPayload {
+    """
+    회사명입니다.
+    """
+    companyName: String!
+
+    """
+    직무 또는 역할입니다.
+    """
+    role: String
+
+    """
+    재직 기간입니다.
+    """
+    period: Period
+
+    """
+    경력 상세 내용입니다.
+    """
+    contents: String!
+}
+
+"""
+경험 payload 응답입니다.
+"""
+type ResumeExperiencePayload {
+    """
+    경험 이름입니다.
+    """
+    name: String!
+
+    """
+    경험에서 맡은 역할입니다.
+    """
+    role: String
+
+    """
+    경험 수행 기간입니다.
+    """
+    period: Period
+
+    """
+    경험 상세 내용 목록입니다.
+    """
+    contents: String
+}
+
+"""
+학력 payload 응답입니다.
+"""
+type ResumeEducationPayload {
+    """
+    학교명입니다.
+    """
+    schoolName: String!
+
+    """
+    전공명입니다.
+    """
+    major: String
+
+    """
+    학위 또는 학력 구분입니다.
+    """
+    degree: String
+
+    """
+    학력 상태입니다. 예: 졸업 예정
+    """
+    status: String
+
+    """
+    재학 기간입니다.
+    """
+    period: Period
+}
+
+"""
+수상 payload 응답입니다.
+"""
+type ResumeAwardPayload {
+    """
+    수상명입니다.
+    """
+    name: String!
+
+    """
+    수상 기관명입니다.
+    """
+    organization: String
+
+    """
+    수상일입니다.
+    """
+    awardedAt: String
+}
+
+"""
+자격증 payload 응답입니다.
+"""
+type ResumeCertificatePayload {
+    """
+    자격증명입니다.
+    """
+    name: String!
+
+    """
+    발급 기관입니다.
+    """
+    organization: String
+
+    """
+    취득일입니다.
+    """
+    acquiredAt: String
+}
+
+"""
+기술 payload 응답입니다.
+"""
+type ResumeSkillPayload {
+    """
+    기술명입니다.
+    """
+    name: String!
+
+    """
+    숙련도 또는 수준입니다.
+    """
+    level: String
+}
+
+"""
+어학 payload 응답입니다.
+"""
+type ResumeLanguagePayload {
+    """
+    어학 시험명입니다.
+    """
+    examName: String!
+
+    """
+    어학 점수 또는 등급입니다.
+    """
+    scoreOrGrade: String!
+
+    """
+    어학 취득일입니다.
+    """
+    acquiredAt: String
+}
+
+"""
+이력서 템플릿 종류입니다.
+"""
+enum ResumeTemplate {
+    """
+    기본 이력서 템플릿입니다.
+    """
+    DEFAULT
+}
+
+"""
+이력서 상태입니다.
+"""
+enum ResumeStatusType {
+    """
+    활성 이력서입니다.
+    """
+    COMPLETED
+
+    """
+    임시 저장된 이력서입니다.
+    """
+    DRAFT
+}
+
+"""
+이력서 섹션 종류입니다.
+"""
+enum ResumeSectionType {
+    """
+    기본 정보 섹션입니다.
+    """
+    BASIC_INFO
+
+    """
+    핵심 역량 섹션입니다.
+    """
+    CORE_SKILL
+
+    """
+    경험 섹션입니다.
+    """
+    EXPERIENCE
+
+    """
+    경력 섹션입니다.
+    """
+    CAREER
+
+    """
+    학력 섹션입니다.
+    """
+    EDUCATION
+
+    """
+    어학 섹션입니다.
+    """
+    LANGUAGE
+
+    """
+    수상 섹션입니다.
+    """
+    AWARD
+
+    """
+    자격증 섹션입니다.
+    """
+    CERTIFICATE
+
+    """
+    기술 섹션입니다.
+    """
+    SKILL
+}

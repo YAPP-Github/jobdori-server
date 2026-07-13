@@ -28,7 +28,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester
 import org.springframework.graphql.test.tester.GraphQlTester
 import org.springframework.graphql.test.tester.entity
-import java.math.BigDecimal
 import java.time.LocalDate
 
 @GraphQLTest(ExperienceMutationResolver::class)
@@ -403,7 +402,7 @@ private fun graphQlExperience(
     tags = tags,
     title = title,
     contents = contents,
-    displayOrder = BigDecimal.ZERO,
+    displayOrder = 0.0,
     status = ExperienceStatus.ACTIVE,
 )
 
@@ -420,6 +419,6 @@ private fun graphQlProject(
         endAt = LocalDate.of(2025, 4, 30),
     ),
     role = role,
-    displayOrder = BigDecimal.ZERO,
+    displayOrder = 0.0,
     status = ExperienceProjectStatus.ACTIVE,
 )

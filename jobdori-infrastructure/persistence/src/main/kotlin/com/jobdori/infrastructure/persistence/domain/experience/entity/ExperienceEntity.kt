@@ -13,7 +13,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
-import java.math.BigDecimal
 
 @Table(name = "experience_v1")
 @Entity
@@ -35,8 +34,8 @@ class ExperienceEntity(
     @Column(nullable = false, columnDefinition = "jsonb")
     var contents: ExperienceContents,
 
-    @Column(nullable = false, precision = 20, scale = 10)
-    var displayOrder: BigDecimal,
+    @Column(nullable = false)
+    var displayOrder: Double,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)

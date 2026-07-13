@@ -188,6 +188,68 @@ include::./operation-sample.adoc[tag=importNotionExperiences]
 
 include::./operation-error.adoc[tag=importNotionExperiences]
 
+=== Resume
+
+==== 이력서 목록 조회
+
+Type: `Query`
+
+Operation: `resumes`
+
+include::./operation-sample.adoc[tag=resumes]
+
+include::./operation-error.adoc[tag=resumes]
+
+==== 이력서 상태별 개수 조회
+
+Type: `Query`
+
+Operation: `resumeCounts`
+
+include::./operation-sample.adoc[tag=resumeCounts]
+
+include::./operation-error.adoc[tag=resumeCounts]
+
+==== 이력서 상세 조회
+
+Type: `Query`
+
+Operation: `resume`
+
+include::./operation-sample.adoc[tag=resume]
+
+include::./operation-error.adoc[tag=resume]
+
+==== 이력서 생성
+
+Type: `Mutation`
+
+Operation: `createResume`
+
+include::./operation-sample.adoc[tag=createResume]
+
+include::./operation-error.adoc[tag=createResume]
+
+==== 이력서 수정
+
+Type: `Mutation`
+
+Operation: `updateResume`
+
+include::./operation-sample.adoc[tag=updateResume]
+
+include::./operation-error.adoc[tag=updateResume]
+
+==== 이력서 삭제
+
+Type: `Mutation`
+
+Operation: `deleteResume`
+
+include::./operation-sample.adoc[tag=deleteResume]
+
+include::./operation-error.adoc[tag=deleteResume]
+
 === JD
 
 ==== JD 단건 조회

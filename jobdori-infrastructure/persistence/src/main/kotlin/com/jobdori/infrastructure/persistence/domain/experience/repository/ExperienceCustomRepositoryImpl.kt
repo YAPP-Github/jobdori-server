@@ -2,7 +2,6 @@ package com.jobdori.infrastructure.persistence.domain.experience.repository
 
 import com.jobdori.core.domain.experience.ExperienceStatus
 import com.jobdori.infrastructure.persistence.domain.experience.entity.ExperienceEntity
-import com.jobdori.infrastructure.persistence.domain.experience.entity.ExperienceProjectCount
 import com.linecorp.kotlinjdsl.dsl.jpql.jpql
 import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
 import com.linecorp.kotlinjdsl.support.spring.data.jpa.extension.createQuery
@@ -54,9 +53,9 @@ class ExperienceCustomRepositoryImpl(
         workspaceId: Long,
         projectIds: Collection<Long>,
         status: ExperienceStatus,
-    ): List<ExperienceProjectCount> {
+    ): Map<Long, Long> {
         if (projectIds.isEmpty()) {
-            return emptyList()
+            return emptyMap()
         }
 
         val query = jpql {
@@ -75,6 +74,12 @@ class ExperienceCustomRepositoryImpl(
         }
 
         return entityManager.createQuery(query, jpqlRenderContext).resultList
+            .associate { it.projectId to it.experienceCount }
     }
+
+    data class ExperienceProjectCount(
+        val projectId: Long,
+        val experienceCount: Long,
+    )
 
 }

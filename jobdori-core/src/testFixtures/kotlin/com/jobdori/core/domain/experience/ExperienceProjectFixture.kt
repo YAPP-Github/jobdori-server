@@ -1,7 +1,6 @@
 package com.jobdori.core.domain.experience
 
 import com.jobdori.common.model.Period
-import java.math.BigDecimal
 
 object ExperienceProjectFixture {
 
@@ -12,7 +11,7 @@ object ExperienceProjectFixture {
         summary: String = "프로젝트 요약",
         period: Period? = null,
         role: String? = "백엔드 개발자",
-        displayOrder: BigDecimal = BigDecimal.ZERO,
+        displayOrder: Double = 0.0,
         status: ExperienceProjectStatus = ExperienceProjectStatus.ACTIVE,
     ) = ExperienceProject(
         id = id,

@@ -1,0 +1,86 @@
+query Resume {
+    resume(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 94123123213123123
+    ) {
+        resumeId
+        targetJdId
+        template
+        status
+        createdAt
+        updatedAt
+        sections {
+            sectionId
+            type
+            displayText
+            displayOrder
+            visible
+            createdAt
+            updatedAt
+            items {
+                itemId
+                displayOrder
+                visible
+                createdAt
+                updatedAt
+                payload {
+                    basicInfo {
+                        name
+                        email
+                        phone
+                    }
+                    coreSkill {
+                        content
+                    }
+                    career {
+                        companyName
+                        role
+                        period {
+                            startAt
+                            endAt
+                        }
+                        contents
+                    }
+                    experience {
+                        name
+                        role
+                        period {
+                            startAt
+                            endAt
+                        }
+                        contents
+                    }
+                    education {
+                        schoolName
+                        major
+                        degree
+                        status
+                        period {
+                            startAt
+                            endAt
+                        }
+                    }
+                    award {
+                        name
+                        organization
+                        awardedAt
+                    }
+                    language {
+                        examName
+                        scoreOrGrade
+                        acquiredAt
+                    }
+                    certificate {
+                        name
+                        organization
+                        acquiredAt
+                    }
+                    skill {
+                        name
+                        level
+                    }
+                }
+            }
+        }
+    }
+}

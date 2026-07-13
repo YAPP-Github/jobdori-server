@@ -1,0 +1,172 @@
+package com.jobdori.api.application.resume.dto.request
+
+import com.jobdori.api.application.resume.dto.ResumeStatusType
+import com.jobdori.common.error.ErrorDetail
+import com.jobdori.common.error.InvalidArgumentsException
+import com.jobdori.core.domain.resume.ResumeSectionType
+import com.jobdori.core.domain.resume.ResumeTemplate
+import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
+import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
+import com.jobdori.core.domain.resume.service.command.ResumeSectionSaveCommand
+import jakarta.validation.Valid
+
+data class SaveResumeRequest(
+    val targetJdId: String?,
+    val template: ResumeTemplate,
+    val status: ResumeStatusType,
+    @field:Valid
+    val sections: List<SaveResumeSectionRequest>,
+) {
+
+    fun toCommand(): ResumeSaveCommand {
+        validateSectionDisplayOrders()
+        validateSectionIds()
+        return ResumeSaveCommand(
+            targetJdId = 0,
+            template = template,
+            status = status.toDomain(),
+            sections = sections.map { it.toCommand() },
+        )
+    }
+
+    private fun validateSectionDisplayOrders() {
+        val duplicatedDisplayOrders = sections
+            .map { it.displayOrder }
+            .findDuplicateDisplayOrders()
+
+        if (duplicatedDisplayOrders.isNotEmpty()) {
+            throw InvalidArgumentsException(
+                message = "섹션 displayOrder는 중복될 수 없습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.displayOrder",
+                        reason = "같은 이력서 안에서 섹션 displayOrder는 중복될 수 없습니다.",
+                    ),
+                ),
+            )
+        }
+    }
+
+    private fun validateSectionIds() {
+        val sectionIds = sections.mapNotNull { it.sectionId }
+        val duplicateSectionIds = sectionIds.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+
+        if (duplicateSectionIds.isNotEmpty()) {
+            throw InvalidArgumentsException(
+                message = "섹션 sectionId는 중복될 수 없습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.sectionId",
+                        reason = "같은 이력서 안에서 섹션 sectionId는 중복될 수 없습니다. [duplicateSectionIds=$duplicateSectionIds]",
+                    ),
+                ),
+            )
+        }
+    }
+
+}
+
+data class SaveResumeSectionRequest(
+    val sectionId: Long?,
+    val type: ResumeSectionType,
+    val displayOrder: Double,
+    val visible: Boolean,
+    @field:Valid
+    val items: List<SaveResumeSectionItemRequest>,
+) {
+
+    fun toCommand(): ResumeSectionSaveCommand {
+        val itemCommands = items.map { it.toCommand() }
+        if (itemCommands.isEmpty()) {
+            throw InvalidArgumentsException("섹션에는 최소 하나 이상의 item이 필요합니다.")
+        }
+        validateItemDisplayOrders(itemCommands)
+        validateItemIds()
+        validateItemPayloadTypes(itemCommands)
+
+        return ResumeSectionSaveCommand(
+            sectionId = sectionId,
+            type = type,
+            displayOrder = displayOrder,
+            visible = visible,
+            items = itemCommands,
+        )
+    }
+
+    private fun validateItemPayloadTypes(itemCommands: List<ResumeSectionItemSaveCommand>) {
+        val mismatchedTypes = itemCommands
+            .map { it.payload.type }
+            .filter { it != type }
+            .toSet()
+
+        if (mismatchedTypes.isNotEmpty()) {
+            throw InvalidArgumentsException(
+                message = "섹션 타입과 아이템 payload 타입이 일치하지 않습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.items.payload",
+                        reason = "섹션 타입과 아이템 payload 타입은 같아야 합니다. [sectionType=$type, itemTypes=$mismatchedTypes]",
+                    ),
+                ),
+            )
+        }
+    }
+
+    private fun validateItemDisplayOrders(itemCommands: List<ResumeSectionItemSaveCommand>) {
+        val duplicatedDisplayOrders = itemCommands
+            .map { it.displayOrder }
+            .findDuplicateDisplayOrders()
+
+        if (duplicatedDisplayOrders.isNotEmpty()) {
+            throw InvalidArgumentsException(
+                message = "섹션 아이템 displayOrder는 중복될 수 없습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.items.displayOrder",
+                        reason = "같은 섹션 안에서 아이템 displayOrder는 중복될 수 없습니다.",
+                    ),
+                ),
+            )
+        }
+    }
+
+    private fun validateItemIds() {
+        val itemIds = items.mapNotNull { it.itemId }
+        val duplicateItemIds = itemIds.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+
+        if (duplicateItemIds.isNotEmpty()) {
+            throw InvalidArgumentsException(
+                message = "섹션 아이템 itemId는 중복될 수 없습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.items.itemId",
+                        reason = "같은 섹션 안에서 아이템 itemId는 중복될 수 없습니다. [duplicateItemIds=$duplicateItemIds]",
+                    ),
+                ),
+            )
+        }
+    }
+
+}
+
+data class SaveResumeSectionItemRequest(
+    val itemId: Long?,
+    val displayOrder: Double,
+    val visible: Boolean,
+    @field:Valid
+    val payload: ResumeSectionItemPayloadRequest,
+) {
+
+    fun toCommand() = ResumeSectionItemSaveCommand(
+        itemId = itemId,
+        payload = payload.toPayload(),
+        displayOrder = displayOrder,
+        visible = visible,
+    )
+
+}
+
+private fun List<Double>.findDuplicateDisplayOrders(): Set<Double> {
+    val seen = mutableSetOf<Double>()
+    return filterNot { seen.add(it) }.toSet()
+}

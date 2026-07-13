@@ -22,7 +22,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import java.math.BigDecimal
 import java.time.LocalDate
 
 class ExperienceProjectServiceTest : StringSpec({
@@ -209,6 +208,6 @@ private fun project(id: Long) = ExperienceProject(
     summary = "프로젝트 요약",
     period = null,
     role = "백엔드",
-    displayOrder = BigDecimal.ZERO,
+    displayOrder = 0.0,
     status = ExperienceProjectStatus.ACTIVE,
 )

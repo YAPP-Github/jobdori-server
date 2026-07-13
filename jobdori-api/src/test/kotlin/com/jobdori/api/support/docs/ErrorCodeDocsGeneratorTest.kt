@@ -9,6 +9,7 @@ import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
 import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
 import com.jobdori.core.domain.jd.error.JdErrorCode
 import com.jobdori.core.domain.notion.error.NotionErrorCode
+import com.jobdori.core.domain.resume.error.ResumeErrorCode
 import com.jobdori.core.domain.user.error.UserErrorCode
 import com.jobdori.core.domain.workspace.error.WorkspaceErrorCode
 import io.kotest.core.spec.style.FunSpec
@@ -44,6 +45,10 @@ internal class ErrorCodeDocsGeneratorTest : FunSpec({
         generateGraphQlErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/notion/notion-error.adoc"),
             errorCodes = NotionErrorCode.entries,
+        )
+        generateGraphQlErrorCodeDocs(
+            file = File("src/docs/asciidoc/graphql/resume/resume-error.adoc"),
+            errorCodes = ResumeErrorCode.entries,
         )
         generateGraphQlErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/jd/jd-error.adoc"),
@@ -277,6 +282,75 @@ private val graphQlOperationErrors = listOf(
             NotionErrorCode.CONNECTION_NEED_RECONNECT,
             NotionErrorCode.PAGE_ACCESS_DENIED,
             NotionErrorCode.API_REQUEST_FAILED,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Resume",
+        operation = "resumes",
+        title = "이력서 목록 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("resume/resumes.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Resume",
+        operation = "resumeCounts",
+        title = "이력서 상태별 개수 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("resume/resume-counts.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Resume",
+        operation = "resume",
+        title = "이력서 상세 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("resume/resume.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            ResumeErrorCode.E404_RESUME_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Resume",
+        operation = "createResume",
+        title = "이력서 생성",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("resume/create-resume.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Resume",
+        operation = "updateResume",
+        title = "이력서 수정",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("resume/update-resume.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            ResumeErrorCode.E404_RESUME_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Resume",
+        operation = "deleteResume",
+        title = "이력서 삭제",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("resume/delete-resume.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            ResumeErrorCode.E404_RESUME_NOT_FOUND,
         ),
     ),
     GraphQlOperationError(

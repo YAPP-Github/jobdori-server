@@ -1,0 +1,12 @@
+// 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
+
+[.api-table]
+[cols="28%,36%,36%",options="header"]
+|===
+| Code | Message | Description
+
+| resume_not_found
+| 존재하지 않는 이력서입니다
+| 이력서를 찾을 수 없는 경우
+
+|===

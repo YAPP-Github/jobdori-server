@@ -1,6 +1,6 @@
 auth:
   token:
-    access-token-ttl: 30m
+    access-token-ttl: 1h
     refresh-token-ttl: 14d
 
 jwt:

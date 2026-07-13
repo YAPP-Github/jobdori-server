@@ -10,7 +10,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import java.math.BigDecimal
 import java.time.LocalDate
 
 class ExperienceProjectCreatorTest : StringSpec({
@@ -44,7 +43,7 @@ class ExperienceProjectCreatorTest : StringSpec({
         project.summary shouldBe "채용 서비스 백엔드 개발"
         project.period shouldBe period
         project.role shouldBe "백엔드 개발자"
-        project.displayOrder shouldBe BigDecimal.ZERO
+        project.displayOrder shouldBe 0.0
         project.status shouldBe ExperienceProjectStatus.ACTIVE
     }
 
@@ -81,7 +80,7 @@ class ExperienceProjectCreatorTest : StringSpec({
         projects.map { it.summary } shouldContainExactly listOf("채용 서비스 백엔드 개발", "이력서 서비스 백엔드 개발")
         projects.map { it.period } shouldContainExactly listOf(period, null)
         projects.map { it.role } shouldContainExactly listOf("백엔드 개발자", null)
-        projects.map { it.displayOrder } shouldContainExactly listOf(BigDecimal.ZERO, BigDecimal.ZERO)
+        projects.map { it.displayOrder } shouldContainExactly listOf(0.0, 0.0)
         projects.map { it.status } shouldContainExactly listOf(
             ExperienceProjectStatus.ACTIVE,
             ExperienceProjectStatus.ACTIVE,

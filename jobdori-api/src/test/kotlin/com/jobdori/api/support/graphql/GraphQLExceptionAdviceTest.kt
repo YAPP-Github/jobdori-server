@@ -1,6 +1,8 @@
 package com.jobdori.api.support.graphql
 
 import com.jobdori.common.error.CommonErrorCode
+import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
+import com.jobdori.core.domain.jd.error.JdCrawlException
 import com.jobdori.core.domain.user.error.UserErrorCode
 import com.jobdori.core.domain.user.error.UserNotFoundException
 import graphql.execution.ExecutionStepInfo
@@ -108,6 +110,25 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
             "code" to UserErrorCode.E404_USER_NOT_FOUND.code,
+        )
+    }
+
+    "httpStatusCode가 422인 BaseException은 BAD_REQUEST로 변환한다" {
+        // given
+        val exception = JdCrawlException(
+            message = "접근 불가: https://example.com/jd",
+            errorCode = JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
+        )
+        val env = dataFetchingEnvironment()
+
+        // when
+        val error = handler.handleBaseException(exception, env)
+
+        // then
+        error.errorType shouldBe ErrorType.BAD_REQUEST
+        error.message shouldBe JdCrawlErrorCode.E422_JD_ACCESS_DENIED.message
+        error.extensions shouldContainExactly mapOf(
+            "code" to JdCrawlErrorCode.E422_JD_ACCESS_DENIED.code,
         )
     }
 

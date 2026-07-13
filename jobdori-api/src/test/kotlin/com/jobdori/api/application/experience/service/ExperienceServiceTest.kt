@@ -1,14 +1,10 @@
 package com.jobdori.api.application.experience.service
 
-import com.jobdori.api.application.experience.dto.request.CreateExperienceRequest
-import com.jobdori.api.application.experience.dto.request.UpdateExperienceRequest
-import com.jobdori.api.application.experience.dto.request.contents.ExperienceContentsRequest
-import com.jobdori.api.application.experience.dto.request.contents.FreeExperienceContentsRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.model.SliceResult
+import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
-import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.ExperienceProject
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
 import com.jobdori.core.domain.experience.ExperienceStatus
@@ -18,6 +14,8 @@ import com.jobdori.core.domain.experience.service.ExperienceProjectReader
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.experience.service.ExperienceRemover
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
+import com.jobdori.core.domain.experiencerecommendation.JdExperienceRecommendation
+import com.jobdori.core.domain.experiencerecommendation.RecommendedExperience
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
@@ -36,6 +34,7 @@ class ExperienceServiceTest : StringSpec({
     val experienceRemover = mockk<ExperienceRemover>()
     val experienceProjectReader = mockk<ExperienceProjectReader>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
+    val getExperienceRecommendationService = mockk<GetExperienceRecommendationService>()
     val experienceService = ExperienceService(
         workspaceAccessValidationService = workspaceAccessValidationService,
         experienceCreator = experienceCreator,
@@ -43,6 +42,7 @@ class ExperienceServiceTest : StringSpec({
         experienceModifier = experienceModifier,
         experienceRemover = experienceRemover,
         experienceProjectReader = experienceProjectReader,
+        getExperienceRecommendationService = getExperienceRecommendationService,
     )
 
     beforeTest {
@@ -62,12 +62,6 @@ class ExperienceServiceTest : StringSpec({
         // given
         val project = project(id = 3L)
         val contents = ExperienceContents.free("경험 내용")
-        val request = CreateExperienceRequest(
-            projectId = 3L,
-            tags = listOf("Kotlin"),
-            title = "경험",
-            contents = freeContentsRequest("경험 내용"),
-        )
         val experience = experience(id = 100L, projectId = 3L, contents = contents)
         every { experienceProjectReader.getProject(workspaceId = 1L, projectId = 3L) } returns project
         every {
@@ -87,7 +81,9 @@ class ExperienceServiceTest : StringSpec({
             userId = 10L,
             workspaceId = "workspace-id",
             projectId = 3L,
-            request = request,
+            tags = listOf("Kotlin"),
+            title = "경험",
+            contents = contents,
         )
 
         // then
@@ -160,6 +156,113 @@ class ExperienceServiceTest : StringSpec({
         verify(exactly = 0) { experienceProjectReader.getProjects(any(), any<Collection<Long>>()) }
     }
 
+    "경험 목록에 jdId를 주면 추천 결과의 매칭률과 이유를 경험에 조인한다" {
+        // given
+        val experiences = listOf(
+            experience(id = 1L, projectId = 3L),
+            experience(id = 2L, projectId = 3L),
+        )
+        every {
+            experienceReader.getExperiences(
+                workspaceId = 1L,
+                projectId = null,
+                cursor = null,
+                size = 2,
+            )
+        } returns SliceResult(items = experiences, nextCursor = null)
+        every {
+            getExperienceRecommendationService.getOrRefresh(1L, "jd-pub-1")
+        } returns JdExperienceRecommendation.newInstance(
+            jdId = 100L,
+            items = listOf(
+                RecommendedExperience(experienceId = 1L, matchRate = 87, reason = "핵심 역량과 맞닿아 있어요."),
+                RecommendedExperience(experienceId = 2L, matchRate = 40, reason = null),
+            ),
+            sourceSignature = "2:2026-01-01T00:00",
+        )
+
+        // when
+        val response = experienceService.getExperiences(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            projectId = null,
+            cursor = null,
+            size = 2,
+            includeProjects = false,
+            jdId = "jd-pub-1",
+        )
+
+        // then
+        response.experiences[0].matchRate shouldBe 87
+        response.experiences[0].reason shouldBe "핵심 역량과 맞닿아 있어요."
+        response.experiences[1].matchRate shouldBe 40
+        response.experiences[1].reason.shouldBeNull()
+        verify(exactly = 1) { getExperienceRecommendationService.getOrRefresh(1L, "jd-pub-1") }
+    }
+
+    "경험 목록에 jdId가 없으면 추천 서비스를 호출하지 않고 매칭률/이유가 비어 있다" {
+        // given
+        val experiences = listOf(experience(id = 1L, projectId = 3L))
+        every {
+            experienceReader.getExperiences(
+                workspaceId = 1L,
+                projectId = null,
+                cursor = null,
+                size = 2,
+            )
+        } returns SliceResult(items = experiences, nextCursor = null)
+
+        // when
+        val response = experienceService.getExperiences(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            projectId = null,
+            cursor = null,
+            size = 2,
+            includeProjects = false,
+        )
+
+        // then
+        response.experiences.single().matchRate.shouldBeNull()
+        response.experiences.single().reason.shouldBeNull()
+        verify(exactly = 0) { getExperienceRecommendationService.getOrRefresh(any(), any()) }
+    }
+
+    "경험 목록에 jdId를 주었지만 매칭 결과가 없는 경험은 매칭률/이유가 비어 있다" {
+        // given
+        val experiences = listOf(experience(id = 1L, projectId = 3L), experience(id = 2L, projectId = 3L))
+        every {
+            experienceReader.getExperiences(
+                workspaceId = 1L,
+                projectId = null,
+                cursor = null,
+                size = 2,
+            )
+        } returns SliceResult(items = experiences, nextCursor = null)
+        every {
+            getExperienceRecommendationService.getOrRefresh(1L, "jd-pub-1")
+        } returns JdExperienceRecommendation.newInstance(
+            jdId = 100L,
+            items = listOf(RecommendedExperience(experienceId = 1L, matchRate = 87, reason = "이유")),
+            sourceSignature = "2:2026-01-01T00:00",
+        )
+
+        // when
+        val response = experienceService.getExperiences(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            projectId = null,
+            cursor = null,
+            size = 2,
+            includeProjects = false,
+            jdId = "jd-pub-1",
+        )
+
+        // then
+        response.experiences.first { it.experienceId == 2L }.matchRate.shouldBeNull()
+        response.experiences.first { it.experienceId == 2L }.reason.shouldBeNull()
+    }
+
     "경험 검색에서 project를 요청하면 프로젝트를 한 번에 조회해 응답에 연결한다" {
         // given
         val experiences = listOf(
@@ -226,12 +329,6 @@ class ExperienceServiceTest : StringSpec({
     "경험 수정 시 변경 대상 프로젝트를 먼저 확인하고 수정 결과의 프로젝트를 응답에 연결한다" {
         // given
         val contents = ExperienceContents.free("수정 내용")
-        val request = UpdateExperienceRequest(
-            projectId = 5L,
-            tags = listOf("Spring"),
-            title = "수정 경험",
-            contents = freeContentsRequest("수정 내용"),
-        )
         val modified = experience(id = 1L, projectId = 5L, title = "수정 경험", contents = contents)
         every { experienceProjectReader.getProject(workspaceId = 1L, projectId = 5L) } returns project(id = 5L)
         every {
@@ -250,7 +347,10 @@ class ExperienceServiceTest : StringSpec({
             userId = 10L,
             workspaceId = "workspace-id",
             experienceId = 1L,
-            request = request,
+            projectId = 5L,
+            tags = listOf("Spring"),
+            title = "수정 경험",
+            contents = contents,
         )
 
         // then
@@ -286,11 +386,6 @@ private fun experience(
     contents = contents,
     displayOrder = BigDecimal.ZERO,
     status = ExperienceStatus.ACTIVE,
-)
-
-private fun freeContentsRequest(content: String) = ExperienceContentsRequest(
-    type = ExperienceContentsType.FREE,
-    free = FreeExperienceContentsRequest(content = content),
 )
 
 private fun project(id: Long) = ExperienceProject(

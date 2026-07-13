@@ -7,6 +7,7 @@ import com.jobdori.api.application.experience.dto.response.ExperienceListRespons
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
+import com.jobdori.common.logger.LoggerExtension.log
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.ExperienceCreator
@@ -169,8 +170,13 @@ class ExperienceService(
         }
 
         // jdId가 있으면 해당 JD 기준 매칭률/이유를 조인(경험 세트 변경 시 자동 재생성).
+        // 매칭은 부가 정보이므로 재생성(AI 호출 등) 실패가 경험 목록 응답 자체를 깨지 않게 격리한다.
         val matchByExperienceId = jdId
-            ?.let { getExperienceRecommendationService.getOrRefresh(workspace.id, it) }
+            ?.let {
+                runCatching { getExperienceRecommendationService.getOrRefresh(workspace.id, it) }
+                    .onFailure { e -> log.warn(e) { "JD 매칭 조회 실패, 매칭 없이 응답: jdId=$jdId" } }
+                    .getOrNull()
+            }
             ?.items?.associateBy { it.experienceId }
             .orEmpty()
 

@@ -1,0 +1,12 @@
+mutation PolishExperienceContents {
+    polishExperienceContents(
+        request: {
+            content: "이력서 저장 API를 만들었다. 섹션과 아이템이 복잡해서 저장 구조를 정리했고 테스트도 추가했다."
+        }
+    ) {
+        situation
+        task
+        action
+        result
+    }
+}

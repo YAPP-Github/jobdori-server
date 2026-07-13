@@ -8,8 +8,9 @@ VALUES
   (3, 1, 'jd_application_strategy','JD 지원 전략 생성',           '{"temperature":0.6}' FORMAT JSON, now(), now()),
   (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}' FORMAT JSON, now(), now()),
   (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}'  FORMAT JSON, now(), now()),
-  (6, 1, 'jd_key_points',          'JD 공고 핵심 요약',           '{"temperature":0.4}' FORMAT JSON, now(), now()),
-  (7, 1, 'experience_recommendation','JD-경험 매칭률·이유',        '{"temperature":0.2}' FORMAT JSON, now(), now());
+  (6, 1, 'experience.contents_polish','Free Style 경험 내용 STAR 변환', '{"temperature":0.2,"maxTokens":1200}' FORMAT JSON, now(), now()),
+  (7, 1, 'jd_key_points',          'JD 공고 핵심 요약',           '{"temperature":0.4}' FORMAT JSON, now(), now()),
+  (8, 1, 'experience_recommendation','JD-경험 매칭률·이유',        '{"temperature":0.2}' FORMAT JSON, now(), now());
 
 -- 1) JD 다중 공고 분할 (문서 JD-B.6)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
@@ -43,15 +44,22 @@ VALUES (5, 5, 'RESUME_EXPERIENCE_REWRITE',
 '당신은 IT/직무 이력서 작성 코치다. 입력으로 받은 원본 STAR(상황·과제·행동·결과)와 대상 JD의 핵심 역량을 바탕으로, 해당 경험을 이력서에 들어갈 한 문단으로 재작성한다. 규칙: (1) STAR에 담긴 사실(수치·기술·역할·결과)은 절대 바꾸거나 지어내지 마라. (2) JD 핵심 역량과 맞닿는 부분을 앞쪽에 배치하고 관련 키워드를 자연스럽게 녹인다. (3) 성과는 가능한 한 정량적으로 표현하되, 원본에 없는 수치는 만들어내지 마라. (4) 1인칭 주어·군더더기를 빼고 행동 동사 중심의 간결한 문체로 쓴다. (5) 길이와 톤은 다음 지시를 따른다: {tone}. 출력은 부가 설명 없이 재작성된 문단 텍스트만 반환한다.',
 null, null, now(), now());
 
--- 6) JD 공고 핵심 요약 — generateText, json_schema NULL(서술형)
+-- 6) Free Style 경험 내용 STAR 변환
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
-VALUES (6, 6, 'JD_KEY_POINTS',
+VALUES (6, 6, 'EXPERIENCE_CONTENTS_POLISH',
+'당신은 채용 도메인 경력 코치다. 입력된 경험 내용을 분석해 하나의 경험 카드에 들어갈 STAR(Situation·Task·Action·Result) 형식으로 재구성한다. 원문에 없는 사실·수치·기술·기간·역할을 절대 지어내지 마라. 원문에 명확한 단서가 없는 필드는 빈 문자열로 둔다. 각 필드는 이력서 작성자가 바로 다듬어 쓸 수 있도록 간결한 한국어 문장으로 작성한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["situation","task","action","result"],"properties":{"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"}}}',
+null, now(), now());
+
+-- 7) JD 공고 핵심 요약 — generateText, json_schema NULL(서술형)
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (7, 7, 'JD_KEY_POINTS',
 '당신은 채용 공고(JD) 분석 전문가다. 입력된 JD 본문을 읽고 이 공고가 어떤 인재를 원하는지 핵심을 지원자 관점에서 요약한다. 반드시 불릿·머리말·JSON 없이 자연스러운 한국어 문단(2~4문장)으로만 답하라. 공고가 강조하는 역할·책임, 특히 중요하게 보는 역량·태도를 중심으로 정리한다. JD에 명시되지 않은 사실은 지어내지 마라.',
 null, null, now(), now());
 
--- 7) JD-경험 매칭률·이유 — generateStructured. 전체 경험 채점 + 상위 5개만 이유.
+-- 8) JD-경험 매칭률·이유 — generateStructured. 전체 경험 채점 + 상위 5개만 이유.
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
-VALUES (7, 7, 'EXPERIENCE_RECOMMENDATION',
+VALUES (8, 8, 'EXPERIENCE_RECOMMENDATION',
 '당신은 채용 공고(JD)와 지원자의 경험을 매칭하는 전문가다. 입력으로 JD와 인덱스가 붙은 경험 목록([1], [2], ...)을 받는다. (1) scores: 모든 경험에 대해 그 경험이 이 JD에 얼마나 부합하는지 0~100 정수 matchRate를 매긴다(경험 하나도 빠뜨리지 마라). (2) reasons: matchRate가 가장 높은 상위 5개(경험이 5개 미만이면 전부)에 대해서만, 그 경험이 이 JD에 왜 적합한지 1~2문장으로 쓴다. 경험은 반드시 입력의 index로 참조한다. JD나 경험에 없는 사실을 지어내지 마라. 출력은 제공된 JSON 스키마를 100% 준수한다.',
 '{"type":"object","additionalProperties":false,"required":["scores","reasons"],"properties":{"scores":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","matchRate"],"properties":{"index":{"type":"integer"},"matchRate":{"type":"integer"}}}},"reasons":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","reason"],"properties":{"index":{"type":"integer"},"reason":{"type":"string"}}}}}}',
 null, now(), now());

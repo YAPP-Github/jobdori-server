@@ -1,4 +1,4 @@
-==== Refresh Access Token
+==== 액세스 토큰 갱신
 
 Refresh 토큰으로 새로운 Access 토큰을 발급하는 API입니다.
 
@@ -20,6 +20,14 @@ include::{snippets}/auth-refresh/response-headers.adoc[]
 
 ===== Examples
 
+====== HTTP Request
+
 include::{snippets}/auth-refresh/http-request.adoc[]
+
+====== Curl
+
+include::{snippets}/auth-refresh/curl-request.adoc[]
+
+====== HTTP Response
 
 include::{snippets}/auth-refresh/http-response.adoc[]

@@ -8,4 +8,5 @@ enum class PromptType {
     EXPERIENCE_RECOMMENDATION,     // jd-경험 매칭률(전량) + 상위 이유(구조화)
     EXPERIENCE_STAR_EXTRACTION,    // 경험 STAR 추출
     RESUME_EXPERIENCE_REWRITE,     // 이력서 문장 생성
+    EXPERIENCE_CONTENTS_POLISH,    // Free Style 경험 내용을 STAR로 변환
 }

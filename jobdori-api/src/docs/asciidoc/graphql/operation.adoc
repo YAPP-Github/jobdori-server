@@ -1,0 +1,191 @@
+// 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
+
+=== User
+
+==== 내 정보 조회
+
+Type: `Query`
+
+Operation: `me`
+
+include::./operation-sample.adoc[tag=me]
+
+include::./operation-error.adoc[tag=me]
+
+=== Experience
+
+==== 경험 단건 조회
+
+Type: `Query`
+
+Operation: `experience`
+
+include::./operation-sample.adoc[tag=experience]
+
+include::./operation-error.adoc[tag=experience]
+
+==== 경험 목록 조회
+
+Type: `Query`
+
+Operation: `experiences`
+
+include::./operation-sample.adoc[tag=experiences]
+
+include::./operation-error.adoc[tag=experiences]
+
+==== 경험 검색
+
+Type: `Query`
+
+Operation: `searchExperiences`
+
+include::./operation-sample.adoc[tag=searchExperiences]
+
+include::./operation-error.adoc[tag=searchExperiences]
+
+==== 경험 생성
+
+Type: `Mutation`
+
+Operation: `createExperience`
+
+include::./operation-sample.adoc[tag=createExperience]
+
+include::./operation-error.adoc[tag=createExperience]
+
+==== 경험 수정
+
+Type: `Mutation`
+
+Operation: `updateExperience`
+
+include::./operation-sample.adoc[tag=updateExperience]
+
+include::./operation-error.adoc[tag=updateExperience]
+
+==== 경험 삭제
+
+Type: `Mutation`
+
+Operation: `deleteExperience`
+
+include::./operation-sample.adoc[tag=deleteExperience]
+
+include::./operation-error.adoc[tag=deleteExperience]
+
+==== 경험 내용 다듬기
+
+Type: `Mutation`
+
+Operation: `polishExperienceContents`
+
+include::./operation-sample.adoc[tag=polishExperienceContents]
+
+include::./operation-error.adoc[tag=polishExperienceContents]
+
+=== Experience Project
+
+==== 경험 프로젝트 단건 조회
+
+Type: `Query`
+
+Operation: `experienceProject`
+
+include::./operation-sample.adoc[tag=experienceProject]
+
+include::./operation-error.adoc[tag=experienceProject]
+
+==== 경험 프로젝트 목록 조회
+
+Type: `Query`
+
+Operation: `experienceProjects`
+
+include::./operation-sample.adoc[tag=experienceProjects]
+
+include::./operation-error.adoc[tag=experienceProjects]
+
+==== 경험 프로젝트 생성
+
+Type: `Mutation`
+
+Operation: `createExperienceProject`
+
+include::./operation-sample.adoc[tag=createExperienceProject]
+
+include::./operation-error.adoc[tag=createExperienceProject]
+
+==== 경험 프로젝트 수정
+
+Type: `Mutation`
+
+Operation: `updateExperienceProject`
+
+include::./operation-sample.adoc[tag=updateExperienceProject]
+
+include::./operation-error.adoc[tag=updateExperienceProject]
+
+==== 경험 프로젝트 삭제
+
+Type: `Mutation`
+
+Operation: `deleteExperienceProject`
+
+include::./operation-sample.adoc[tag=deleteExperienceProject]
+
+include::./operation-error.adoc[tag=deleteExperienceProject]
+
+=== Notion
+
+==== Notion 연결
+
+Type: `Mutation`
+
+Operation: `connectNotion`
+
+include::./operation-sample.adoc[tag=connectNotion]
+
+include::./operation-error.adoc[tag=connectNotion]
+
+==== Notion 연결 해제
+
+Type: `Mutation`
+
+Operation: `disconnectNotion`
+
+include::./operation-sample.adoc[tag=disconnectNotion]
+
+include::./operation-error.adoc[tag=disconnectNotion]
+
+==== Notion 연결 목록 조회
+
+Type: `Query`
+
+Operation: `notionConnections`
+
+include::./operation-sample.adoc[tag=notionConnections]
+
+include::./operation-error.adoc[tag=notionConnections]
+
+==== Notion 페이지 검색
+
+Type: `Query`
+
+Operation: `notionPages`
+
+include::./operation-sample.adoc[tag=notionPages]
+
+include::./operation-error.adoc[tag=notionPages]
+
+==== Notion 경험 불러오기
+
+Type: `Mutation`
+
+Operation: `importNotionExperiences`
+
+include::./operation-sample.adoc[tag=importNotionExperiences]
+
+include::./operation-error.adoc[tag=importNotionExperiences]
+
+

@@ -1,10 +1,10 @@
-=== User
+// 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
 
-==== 내 정보 조회
+// tag::me[]
+커스텀 에러 코드:
 
-Type: `Query`
-
-Operation: `me`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -16,14 +16,13 @@ Operation: `me`
 | 유저를 찾을 수 없는 경우
 
 |===
+// end::me[]
 
-=== Experience
+// tag::experience[]
+커스텀 에러 코드:
 
-==== 경험 단건 조회
-
-Type: `Query`
-
-Operation: `experience`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -47,12 +46,13 @@ Operation: `experience`
 | `project` 필드를 함께 요청했으나 연결된 경험 프로젝트를 찾을 수 없는 경우
 
 |===
+// end::experience[]
 
-==== 경험 목록 조회
+// tag::experiences[]
+커스텀 에러 코드:
 
-Type: `Query`
-
-Operation: `experiences`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -72,12 +72,13 @@ Operation: `experiences`
 | `projectId`로 특정 프로젝트의 경험 목록을 조회했으나 프로젝트를 찾을 수 없는 경우
 
 |===
+// end::experiences[]
 
-==== 경험 검색
+// tag::searchExperiences[]
+커스텀 에러 코드:
 
-Type: `Query`
-
-Operation: `searchExperiences`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -93,12 +94,13 @@ Operation: `searchExperiences`
 | 워크스페이스를 찾을 수 없는 경우
 
 |===
+// end::searchExperiences[]
 
-==== 경험 생성
+// tag::experienceProject[]
+커스텀 에러 코드:
 
-Type: `Mutation`
-
-Operation: `createExperience`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -118,12 +120,61 @@ Operation: `createExperience`
 | 경험 프로젝트를 찾을 수 없는 경우
 
 |===
+// end::experienceProject[]
 
-==== 경험 수정
+// tag::experienceProjects[]
+커스텀 에러 코드:
 
-Type: `Mutation`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
-Operation: `updateExperience`
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+|===
+// end::experienceProjects[]
+
+// tag::createExperience[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+| experience_project_not_found
+| 존재하지 않는 프로젝트입니다
+| 경험 프로젝트를 찾을 수 없는 경우
+
+|===
+// end::createExperience[]
+
+// tag::updateExperience[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -147,12 +198,13 @@ Operation: `updateExperience`
 | 경험 프로젝트를 찾을 수 없는 경우
 
 |===
+// end::updateExperience[]
 
-==== 경험 삭제
+// tag::deleteExperience[]
+커스텀 에러 코드:
 
-Type: `Mutation`
-
-Operation: `deleteExperience`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -172,14 +224,41 @@ Operation: `deleteExperience`
 | 경험을 찾을 수 없는 경우
 
 |===
+// end::deleteExperience[]
 
-=== Experience Project
+// tag::polishExperienceContents[]
+커스텀 에러 코드: 없음
 
-==== 경험 프로젝트 단건 조회
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요.
+// end::polishExperienceContents[]
 
-Type: `Query`
+// tag::createExperienceProject[]
+커스텀 에러 코드:
 
-Operation: `experienceProject`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+|===
+// end::createExperienceProject[]
+
+// tag::updateExperienceProject[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -199,54 +278,13 @@ Operation: `experienceProject`
 | 경험 프로젝트를 찾을 수 없는 경우
 
 |===
+// end::updateExperienceProject[]
 
-==== 경험 프로젝트 목록 조회
+// tag::deleteExperienceProject[]
+커스텀 에러 코드:
 
-Type: `Query`
-
-Operation: `experienceProjects`
-
-[.api-table]
-[cols="28%,32%,40%",options="header"]
-|===
-| Code | Message | Description
-
-| workspace_access_denied
-| 워크스페이스에 접근할 권한이 없습니다.
-| 워크스페이스 접근 권한이 없는 경우
-
-| workspace_not_found
-| 워크스페이스를 찾을 수 없습니다.
-| 워크스페이스를 찾을 수 없는 경우
-
-|===
-
-==== 경험 프로젝트 생성
-
-Type: `Mutation`
-
-Operation: `createExperienceProject`
-
-[.api-table]
-[cols="28%,32%,40%",options="header"]
-|===
-| Code | Message | Description
-
-| workspace_access_denied
-| 워크스페이스에 접근할 권한이 없습니다.
-| 워크스페이스 접근 권한이 없는 경우
-
-| workspace_not_found
-| 워크스페이스를 찾을 수 없습니다.
-| 워크스페이스를 찾을 수 없는 경우
-
-|===
-
-==== 경험 프로젝트 수정
-
-Type: `Mutation`
-
-Operation: `updateExperienceProject`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -266,12 +304,13 @@ Operation: `updateExperienceProject`
 | 경험 프로젝트를 찾을 수 없는 경우
 
 |===
+// end::deleteExperienceProject[]
 
-==== 경험 프로젝트 삭제
+// tag::connectNotion[]
+커스텀 에러 코드:
 
-Type: `Mutation`
-
-Operation: `deleteExperienceProject`
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
 
 [.api-table]
 [cols="28%,32%,40%",options="header"]
@@ -286,10 +325,131 @@ Operation: `deleteExperienceProject`
 | 워크스페이스를 찾을 수 없습니다.
 | 워크스페이스를 찾을 수 없는 경우
 
-| experience_project_not_found
-| 존재하지 않는 프로젝트입니다
-| 경험 프로젝트를 찾을 수 없는 경우
+| notion_api_request_failed
+| Notion API 요청에 실패했습니다.
+| Notion OAuth 토큰 교환 요청이 실패한 경우
 
 |===
+// end::connectNotion[]
+
+// tag::disconnectNotion[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+|===
+// end::disconnectNotion[]
+
+// tag::notionConnections[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+|===
+// end::notionConnections[]
+
+// tag::notionPages[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+| notion_connection_not_found
+| Notion 연결을 찾을 수 없습니다.
+| 요청한 Notion 연결이 없거나 접근 권한이 없는 경우
+
+| notion_connection_need_reconnect
+| Notion을 다시 연결해야 합니다.
+| Notion 토큰 갱신에 실패했거나 연결 권한이 해제된 경우
+
+| notion_page_access_denied
+| Notion 페이지에 접근할 수 없습니다.
+| 해당 페이지가 연결에 공유되지 않았거나 권한이 없는 경우
+
+| notion_api_request_failed
+| Notion API 요청에 실패했습니다.
+| Notion API 호출이 실패한 경우
+
+|===
+// end::notionPages[]
+
+// tag::importNotionExperiences[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+| notion_connection_not_found
+| Notion 연결을 찾을 수 없습니다.
+| 요청한 Notion 연결이 없거나 접근 권한이 없는 경우
+
+| notion_connection_need_reconnect
+| Notion을 다시 연결해야 합니다.
+| Notion 토큰 갱신에 실패했거나 연결 권한이 해제된 경우
+
+| notion_page_access_denied
+| Notion 페이지에 접근할 수 없습니다.
+| 해당 페이지가 연결에 공유되지 않았거나 권한이 없는 경우
+
+| notion_api_request_failed
+| Notion API 요청에 실패했습니다.
+| Notion API 호출이 실패한 경우
+
+|===
+// end::importNotionExperiences[]
 
 

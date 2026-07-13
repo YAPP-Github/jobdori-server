@@ -1,0 +1,194 @@
+extend type Query {
+    """
+    워크스페이스에 연결된 Notion 연결 목록을 조회합니다.
+    """
+    notionConnections(
+        """
+        워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
+        """
+        cursor: String,
+        """
+        한 번에 조회할 Notion 연결 개수입니다. (1 이상 30 이하)
+        """
+        size: Int!
+    ): NotionConnections!
+
+    """
+    연결된 Notion 워크스페이스에서 페이지를 검색합니다.
+    """
+    notionPages(
+        """
+        워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        Notion 연결 ID입니다.
+        """
+        connectionId: ID!,
+        """
+        페이지 검색어입니다 (선택)
+        """
+        query: String,
+        """
+        다음 페이지를 조회할 때 사용하는 Notion 커서입니다. (첫 페이지는 null)
+        """
+        cursor: String,
+        """
+        한 번에 조회할 Notion 페이지 개수입니다. (1 이상 100 이하)
+        """
+        size: Int!
+    ): NotionPages!
+}
+
+extend type Mutation {
+    """
+    워크스페이스에 Notion을 연결합니다.
+    """
+    connectNotion(
+        """
+        Notion을 연결할 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        Notion 연결 요청입니다.
+        """
+        request: ConnectNotionRequest!
+    ): NotionConnection!
+
+    """
+    워크스페이스에서 Notion 연결을 해제합니다.
+    """
+    disconnectNotion(
+        """
+        Notion 연결이 속한 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        Notion 연결 ID입니다.
+        """
+        connectionId: ID!
+    ): Boolean!
+
+    """
+    Notion 페이지 내용을 경험으로 가져옵니다.
+    """
+    importNotionExperiences(
+        """
+        경험을 가져올 워크스페이스 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        Notion 경험 가져오기 요청입니다.
+        """
+        request: NotionExperienceImportRequest!
+    ): Boolean!
+}
+
+"""
+Notion 연결 요청입니다.
+"""
+input ConnectNotionRequest {
+    """
+    Notion OAuth authorization code입니다.
+    """
+    authorizationCode: String!
+
+    """
+    Notion OAuth redirect URI입니다.
+    """
+    redirectUri: String!
+}
+
+"""
+Notion 경험 가져오기 요청입니다.
+"""
+input NotionExperienceImportRequest {
+    """
+    Notion 연결 ID입니다.
+    """
+    connectionId: ID!
+
+    """
+    가져올 Notion 페이지 ID입니다.
+    """
+    pageId: String!
+}
+
+"""
+Notion 연결 목록입니다.
+"""
+type NotionConnections {
+    """
+    조회된 Notion 연결 목록입니다.
+    """
+    connections: [NotionConnection!]!
+
+    """
+    다음 페이지 조회에 사용하는 커서 정보입니다.
+    """
+    cursor: Cursor!
+}
+
+"""
+Notion 페이지 목록입니다.
+"""
+type NotionPages {
+    """
+    조회된 Notion 페이지 목록입니다.
+    """
+    pages: [NotionPageSummary!]!
+
+    """
+    다음 페이지 조회에 사용하는 커서 정보입니다.
+    """
+    cursor: Cursor!
+}
+
+"""
+Notion 연결입니다.
+"""
+type NotionConnection {
+    """
+    Notion 연결 ID입니다.
+    """
+    connectionId: ID!
+
+    """
+    Notion 워크스페이스 이름입니다.
+    """
+    notionWorkspaceName: String
+
+    """
+    Notion 워크스페이스 아이콘 URL입니다.
+    """
+    notionWorkspaceIcon: String
+}
+
+"""
+Notion 페이지 요약입니다.
+"""
+type NotionPageSummary {
+    """
+    Notion 페이지 ID입니다.
+    """
+    pageId: ID!
+
+    """
+    Notion 페이지 제목입니다.
+    """
+    title: String!
+
+    """
+    Notion 페이지 URL입니다.
+    """
+    url: String
+
+    """
+    마지막 수정 시각입니다.
+    """
+    lastEditedTime: String
+}

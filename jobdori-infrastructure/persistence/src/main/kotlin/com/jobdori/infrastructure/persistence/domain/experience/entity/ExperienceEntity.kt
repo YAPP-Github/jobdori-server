@@ -4,12 +4,11 @@ import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceStatus
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
+import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
@@ -45,18 +44,8 @@ class ExperienceEntity(
 ) : AuditableEntity() {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SnowflakeId
     var id: Long = 0L
-
-    fun update(domain: Experience) {
-        workspaceId = domain.workspaceId
-        projectId = domain.projectId
-        tags = domain.tags
-        title = domain.title
-        contents = domain.contents
-        displayOrder = domain.displayOrder
-        status = domain.status
-    }
 
     fun toDomain() = Experience(
         id = id,

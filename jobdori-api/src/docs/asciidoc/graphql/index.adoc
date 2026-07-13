@@ -86,9 +86,6 @@ query Experiences($workspaceId: ID!, $cursor: String, $size: Int!) {
 }
 ----
 
-== 커스텀 에러 코드
+== APIs
 
-전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
-아래 표에는 각 GraphQL operation에서 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
-
-include::./operation-error.adoc[]
+include::./operation.adoc[]

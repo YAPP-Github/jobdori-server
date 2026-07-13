@@ -1,8 +1,8 @@
 {
-  me {
-    userId
-    email
-    name
-    profileImageUrl
-  }
+    me {
+        userId
+        email
+        name
+        profileImageUrl
+    }
 }

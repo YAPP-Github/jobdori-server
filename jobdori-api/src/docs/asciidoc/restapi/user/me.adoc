@@ -1,19 +1,27 @@
-==== Get My User
+==== 내 유저 정보 조회
 
 인증된 사용자의 정보를 조회하는 API입니다.
 
 include::{snippets}/user-me/request-path.adoc[]
 
-====== Response Fields
+===== Response Fields
 
 include::{snippets}/user-me/response-fields.adoc[]
 
-====== Examples
+===== Examples
+
+====== HTTP Request
 
 include::{snippets}/user-me/http-request.adoc[]
 
+====== Curl
+
+include::{snippets}/user-me/curl-request.adoc[]
+
+====== HTTP Response
+
 include::{snippets}/user-me/http-response.adoc[]
 
-====== Error Codes
+===== Error Codes
 
 include::{snippets}/user-me/error-codes.adoc[]

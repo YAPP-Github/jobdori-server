@@ -78,7 +78,8 @@ internal class UserControllerTest(
                         fieldWithPath("result.profileImageUrl").type(JsonFieldType.STRING)
                             .description("사용자 프로필 이미지 URL").optional(),
                         fieldWithPath("result.workspaces").type(JsonFieldType.ARRAY).description("사용자가 속한 워크스페이스 목록"),
-                        fieldWithPath("result.workspaces[].workspaceId").type(JsonFieldType.STRING).description("워크스페이스 ID"),
+                        fieldWithPath("result.workspaces[].workspaceId").type(JsonFieldType.STRING)
+                            .description("워크스페이스 ID"),
                     ),
                     ErrorCodeSnippet.errorCodeSnippet(
                         UserErrorCode.E404_USER_NOT_FOUND,

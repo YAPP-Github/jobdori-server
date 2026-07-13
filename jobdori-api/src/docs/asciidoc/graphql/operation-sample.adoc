@@ -1,0 +1,560 @@
+// 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
+
+// tag::me[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query Me {
+    me {
+        userId
+        email
+        name
+        profileImageUrl
+        workspaces {
+            workspaceId
+        }
+    }
+}
+----
+====
+// end::me[]
+
+// tag::experience[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query Experience {
+    experience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+    ) {
+        experienceId
+        tags
+        title
+        project {
+            projectId
+            name
+            summary
+            period {
+                startAt
+                endAt
+            }
+            role
+            experienceCount
+        }
+        contents {
+            type
+            star {
+                situation
+                task
+                action
+                result
+            }
+            free {
+                content
+            }
+        }
+    }
+}
+----
+====
+// end::experience[]
+
+// tag::experiences[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query Experiences {
+    experiences(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+        cursor: null
+        size: 10
+    ) {
+        experiences {
+            experienceId
+            tags
+            title
+            project {
+                projectId
+                name
+            }
+            contents {
+                type
+                star {
+                    situation
+                    task
+                    action
+                    result
+                }
+                free {
+                    content
+                }
+            }
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}
+----
+====
+// end::experiences[]
+
+// tag::searchExperiences[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query SearchExperiences {
+    searchExperiences(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        keyword: "GraphQL"
+        cursor: null
+        size: 10
+    ) {
+        experiences {
+            experienceId
+            tags
+            title
+            project {
+                projectId
+                name
+            }
+            contents {
+                type
+                star {
+                    situation
+                    task
+                    action
+                    result
+                }
+                free {
+                    content
+                }
+            }
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}
+----
+====
+// end::searchExperiences[]
+
+// tag::experienceProject[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query ExperienceProject {
+    experienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}
+----
+====
+// end::experienceProject[]
+
+// tag::experienceProjects[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query ExperienceProjects {
+    experienceProjects(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        cursor: null
+        size: 10
+    ) {
+        projects {
+            projectId
+            name
+            summary
+            period {
+                startAt
+                endAt
+            }
+            role
+            experienceCount
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}
+----
+====
+// end::experienceProjects[]
+
+// tag::createExperience[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation CreateExperience {
+    createExperience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: {
+            projectId: 1
+            tags: ["GraphQL", "Kotlin", "API"]
+            title: "이력서 생성 API 구현"
+            contents: {
+                type: STAR
+                star: {
+                    situation: "이력서 섹션과 아이템을 자유롭게 구성해야 하는 요구사항이 있었습니다."
+                    task: "클라이언트가 한 번의 요청으로 전체 이력서 스냅샷을 저장할 수 있는 API가 필요했습니다."
+                    action: "SaveResumeInput을 기준으로 섹션 타입과 payload를 검증하고, core 서비스에서 저장 흐름을 일관되게 처리했습니다."
+                    result: "생성, 수정 API의 입력 구조를 통일해 프론트엔드 연동 비용을 줄이고 테스트 커버리지를 확보했습니다."
+                }
+            }
+        }
+    ) {
+        experienceId
+        tags
+        title
+        project {
+            projectId
+            name
+        }
+        contents {
+            type
+            star {
+                situation
+                task
+                action
+                result
+            }
+            free {
+                content
+            }
+        }
+    }
+}
+----
+====
+// end::createExperience[]
+
+// tag::updateExperience[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation UpdateExperience {
+    updateExperience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+        request: {
+            projectId: 1
+            tags: ["GraphQL", "Spring Boot"]
+            title: "이력서 GraphQL API 개선"
+            contents: {
+                type: FREE
+                free: {
+                    content: "이력서 저장 API의 입력 검증을 보강하고 응답 필드를 정리했습니다."
+                }
+            }
+        }
+    ) {
+        experienceId
+        tags
+        title
+        project {
+            projectId
+            name
+        }
+        contents {
+            type
+            star {
+                situation
+                task
+                action
+                result
+            }
+            free {
+                content
+            }
+        }
+    }
+}
+----
+====
+// end::updateExperience[]
+
+// tag::deleteExperience[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation DeleteExperience {
+    deleteExperience(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        experienceId: 1
+    )
+}
+----
+====
+// end::deleteExperience[]
+
+// tag::polishExperienceContents[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation PolishExperienceContents {
+    polishExperienceContents(
+        request: {
+            content: "이력서 저장 API를 만들었다. 섹션과 아이템이 복잡해서 저장 구조를 정리했고 테스트도 추가했다."
+        }
+    ) {
+        situation
+        task
+        action
+        result
+    }
+}
+----
+====
+// end::polishExperienceContents[]
+
+// tag::createExperienceProject[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation CreateExperienceProject {
+    createExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        input: {
+            name: "잡도리 이력서 서비스"
+            summary: "사용자가 이력서와 경험을 구조화해 관리할 수 있는 채용 플랫폼 기능"
+            period: { startAt: "2025-01-01", endAt: "2025-06-30" }
+            role: "Backend Developer"
+        }
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}
+----
+====
+// end::createExperienceProject[]
+
+// tag::updateExperienceProject[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation UpdateExperienceProject {
+    updateExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+        request: {
+            name: "잡도리 이력서 플랫폼 고도화"
+            summary: "이력서 작성, 경험 정리, GraphQL API를 개선한 프로젝트"
+            period: { startAt: "2025-01-01", endAt: "2025-07-31" }
+            role: "Backend Developer"
+        }
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}
+----
+====
+// end::updateExperienceProject[]
+
+// tag::deleteExperienceProject[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation DeleteExperienceProject {
+    deleteExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+    )
+}
+----
+====
+// end::deleteExperienceProject[]
+
+// tag::connectNotion[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation ConnectNotion {
+    connectNotion(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: {
+            authorizationCode: "notion-oauth-authorization-code"
+            redirectUri: "http://localhost:3000/notion/callback"
+        }
+    ) {
+        connectionId
+        notionWorkspaceName
+        notionWorkspaceIcon
+    }
+}
+----
+====
+// end::connectNotion[]
+
+// tag::disconnectNotion[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation DisconnectNotion {
+    disconnectNotion(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        connectionId: 740000000000000001
+    )
+}
+----
+====
+// end::disconnectNotion[]
+
+// tag::notionConnections[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query NotionConnections {
+    notionConnections(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        cursor: null
+        size: 10
+    ) {
+        connections {
+            connectionId
+            notionWorkspaceName
+            notionWorkspaceIcon
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}
+----
+====
+// end::notionConnections[]
+
+// tag::notionPages[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query NotionPages {
+    notionPages(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        connectionId: 740000000000000001
+        query: "이력서"
+        cursor: null
+        size: 10
+    ) {
+        pages {
+            pageId
+            title
+            url
+            lastEditedTime
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}
+----
+====
+// end::notionPages[]
+
+// tag::importNotionExperiences[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation ImportNotionExperiences {
+    importNotionExperiences(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: {
+            connectionId: 740000000000000001
+            pageId: "notion-page-id"
+        }
+    )
+}
+----
+====
+// end::importNotionExperiences[]
+
+

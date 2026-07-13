@@ -1,0 +1,22 @@
+mutation UpdateExperienceProject {
+    updateExperienceProject(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        projectId: 1
+        request: {
+            name: "잡도리 이력서 플랫폼 고도화"
+            summary: "이력서 작성, 경험 정리, GraphQL API를 개선한 프로젝트"
+            period: { startAt: "2025-01-01", endAt: "2025-07-31" }
+            role: "Backend Developer"
+        }
+    ) {
+        projectId
+        name
+        summary
+        period {
+            startAt
+            endAt
+        }
+        role
+        experienceCount
+    }
+}

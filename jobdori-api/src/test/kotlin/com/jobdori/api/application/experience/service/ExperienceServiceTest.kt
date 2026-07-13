@@ -1,10 +1,15 @@
 package com.jobdori.api.application.experience.service
 
+import com.jobdori.api.application.experience.dto.request.CreateExperienceRequest
+import com.jobdori.api.application.experience.dto.request.UpdateExperienceRequest
+import com.jobdori.api.application.experience.dto.request.contents.ExperienceContentsRequest
+import com.jobdori.api.application.experience.dto.request.contents.FreeExperienceContentsRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.model.SliceResult
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
+import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.ExperienceProject
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
 import com.jobdori.core.domain.experience.ExperienceStatus
@@ -60,6 +65,12 @@ class ExperienceServiceTest : StringSpec({
         // given
         val project = project(id = 3L)
         val contents = ExperienceContents.free("경험 내용")
+        val request = CreateExperienceRequest(
+            projectId = 3L,
+            tags = listOf("Kotlin"),
+            title = "경험",
+            contents = freeContentsRequest("경험 내용"),
+        )
         val experience = experience(id = 100L, projectId = 3L, contents = contents)
         every { experienceProjectReader.getProject(workspaceId = 1L, projectId = 3L) } returns project
         every {
@@ -79,9 +90,7 @@ class ExperienceServiceTest : StringSpec({
             userId = 10L,
             workspaceId = "workspace-id",
             projectId = 3L,
-            tags = listOf("Kotlin"),
-            title = "경험",
-            contents = contents,
+            request = request,
         )
 
         // then
@@ -220,6 +229,12 @@ class ExperienceServiceTest : StringSpec({
     "경험 수정 시 변경 대상 프로젝트를 먼저 확인하고 수정 결과의 프로젝트를 응답에 연결한다" {
         // given
         val contents = ExperienceContents.free("수정 내용")
+        val request = UpdateExperienceRequest(
+            projectId = 5L,
+            tags = listOf("Spring"),
+            title = "수정 경험",
+            contents = freeContentsRequest("수정 내용"),
+        )
         val modified = experience(id = 1L, projectId = 5L, title = "수정 경험", contents = contents)
         every { experienceProjectReader.getProject(workspaceId = 1L, projectId = 5L) } returns project(id = 5L)
         every {
@@ -238,10 +253,7 @@ class ExperienceServiceTest : StringSpec({
             userId = 10L,
             workspaceId = "workspace-id",
             experienceId = 1L,
-            projectId = 5L,
-            tags = listOf("Spring"),
-            title = "수정 경험",
-            contents = contents,
+            request = request,
         )
 
         // then
@@ -277,6 +289,11 @@ private fun experience(
     contents = contents,
     displayOrder = BigDecimal.ZERO,
     status = ExperienceStatus.ACTIVE,
+)
+
+private fun freeContentsRequest(content: String) = ExperienceContentsRequest(
+    type = ExperienceContentsType.FREE,
+    free = FreeExperienceContentsRequest(content = content),
 )
 
 private fun project(id: Long) = ExperienceProject(

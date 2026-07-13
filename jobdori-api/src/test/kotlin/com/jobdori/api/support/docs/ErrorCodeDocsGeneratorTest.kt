@@ -3,9 +3,9 @@ package com.jobdori.api.support.docs
 import com.jobdori.api.DocsTest
 import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorCode
-import com.jobdori.common.error.FileErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
+import com.jobdori.core.domain.notion.error.NotionErrorCode
 import com.jobdori.core.domain.user.error.UserErrorCode
 import com.jobdori.core.domain.workspace.error.WorkspaceErrorCode
 import io.kotest.core.spec.style.FunSpec
@@ -38,8 +38,20 @@ internal class ErrorCodeDocsGeneratorTest : FunSpec({
             file = File("src/docs/asciidoc/graphql/experience/experience-error.adoc"),
             errorCodes = ExperienceErrorCode.entries + ExperienceProjectErrorCode.entries,
         )
+        generateGraphQlErrorCodeDocs(
+            file = File("src/docs/asciidoc/graphql/notion/notion-error.adoc"),
+            errorCodes = NotionErrorCode.entries,
+        )
         generateGraphQlOperationErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/operation-error.adoc"),
+            operationErrors = graphQlOperationErrors,
+        )
+        generateGraphQlOperationSampleDocs(
+            file = File("src/docs/asciidoc/graphql/operation-sample.adoc"),
+            operationErrors = graphQlOperationErrors,
+        )
+        generateGraphQlOperationDocs(
+            file = File("src/docs/asciidoc/graphql/operation.adoc"),
             operationErrors = graphQlOperationErrors,
         )
     }
@@ -52,6 +64,7 @@ private val graphQlOperationErrors = listOf(
         operation = "me",
         title = "내 정보 조회",
         type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("user/me.graphql"),
         errorCodes = operationErrorCodes(
             UserErrorCode.E404_USER_NOT_FOUND,
         ),
@@ -61,6 +74,7 @@ private val graphQlOperationErrors = listOf(
         operation = "experience",
         title = "경험 단건 조회",
         type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("experience/experience.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -73,6 +87,7 @@ private val graphQlOperationErrors = listOf(
         operation = "experiences",
         title = "경험 목록 조회",
         type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("experience/experiences.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -84,6 +99,7 @@ private val graphQlOperationErrors = listOf(
         operation = "searchExperiences",
         title = "경험 검색",
         type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("experience/search-experiences.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -94,6 +110,7 @@ private val graphQlOperationErrors = listOf(
         operation = "experienceProject",
         title = "경험 프로젝트 단건 조회",
         type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("experience/experience-project.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -105,6 +122,7 @@ private val graphQlOperationErrors = listOf(
         operation = "experienceProjects",
         title = "경험 프로젝트 목록 조회",
         type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("experience/experience-projects.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -115,6 +133,7 @@ private val graphQlOperationErrors = listOf(
         operation = "createExperience",
         title = "경험 생성",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("experience/create-experience.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -126,6 +145,7 @@ private val graphQlOperationErrors = listOf(
         operation = "updateExperience",
         title = "경험 수정",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("experience/update-experience.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -138,6 +158,7 @@ private val graphQlOperationErrors = listOf(
         operation = "deleteExperience",
         title = "경험 삭제",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("experience/delete-experience.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -145,10 +166,19 @@ private val graphQlOperationErrors = listOf(
         ),
     ),
     GraphQlOperationError(
+        category = "Experience",
+        operation = "polishExperienceContents",
+        title = "경험 내용 다듬기",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("experience/polish-experience-contents.graphql"),
+        errorCodes = emptyList(),
+    ),
+    GraphQlOperationError(
         category = "Experience Project",
         operation = "createExperienceProject",
         title = "경험 프로젝트 생성",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("experience/create-experience-project.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -159,6 +189,7 @@ private val graphQlOperationErrors = listOf(
         operation = "updateExperienceProject",
         title = "경험 프로젝트 수정",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("experience/update-experience-project.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -170,10 +201,75 @@ private val graphQlOperationErrors = listOf(
         operation = "deleteExperienceProject",
         title = "경험 프로젝트 삭제",
         type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("experience/delete-experience-project.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
             ExperienceProjectErrorCode.E404_EXPERIENCE_PROJECT_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "connectNotion",
+        title = "Notion 연결",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("notion/connect-notion.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            NotionErrorCode.API_REQUEST_FAILED to "Notion OAuth 토큰 교환 요청이 실패한 경우",
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "disconnectNotion",
+        title = "Notion 연결 해제",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("notion/disconnect-notion.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "notionConnections",
+        title = "Notion 연결 목록 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("notion/notion-connections.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "notionPages",
+        title = "Notion 페이지 검색",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("notion/notion-pages.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            NotionErrorCode.CONNECTION_NOT_FOUND,
+            NotionErrorCode.CONNECTION_NEED_RECONNECT,
+            NotionErrorCode.PAGE_ACCESS_DENIED,
+            NotionErrorCode.API_REQUEST_FAILED,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Notion",
+        operation = "importNotionExperiences",
+        title = "Notion 경험 불러오기",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("notion/import-notion-experiences.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            NotionErrorCode.CONNECTION_NOT_FOUND,
+            NotionErrorCode.CONNECTION_NEED_RECONNECT,
+            NotionErrorCode.PAGE_ACCESS_DENIED,
+            NotionErrorCode.API_REQUEST_FAILED,
         ),
     ),
 )
@@ -231,6 +327,70 @@ private fun generateGraphQlOperationErrorCodeDocs(
     writeErrorCodeDocs(
         file = file,
         content = buildString {
+            operationErrors.forEach { operationError ->
+                appendLine("// tag::${operationError.operation}[]")
+                if (operationError.errorCodes.isEmpty()) {
+                    appendLine("커스텀 에러 코드: 없음")
+                    appendLine()
+                    appendLine("전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요.")
+                } else {
+                    appendLine("커스텀 에러 코드:")
+                    appendLine()
+                    appendLine("전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +")
+                    appendLine("아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.")
+                    appendLine()
+                    appendLine("[.api-table]")
+                    appendLine("[cols=\"28%,32%,40%\",options=\"header\"]")
+                    appendLine("|===")
+                    appendLine("| Code | Message | Description")
+                    appendLine()
+                    operationError.errorCodes.forEach { entry ->
+                        appendLine("| ${entry.errorCode.code}")
+                        appendLine("| ${entry.errorCode.message}")
+                        appendLine("| ${entry.description}")
+                        appendLine()
+                    }
+                    appendLine("|===")
+                }
+                appendLine("// end::${operationError.operation}[]")
+                appendLine()
+            }
+        },
+    )
+}
+
+private fun generateGraphQlOperationSampleDocs(
+    file: File,
+    operationErrors: List<GraphQlOperationError>,
+) {
+    writeErrorCodeDocs(
+        file = file,
+        content = buildString {
+            operationErrors.forEach { operationError ->
+                appendLine("// tag::${operationError.operation}[]")
+                appendLine("[.graphql-sample]")
+                appendLine("====")
+                appendLine("요청 샘플:")
+                appendLine()
+                appendLine("[source,graphql]")
+                appendLine("----")
+                appendLine(operationError.sampleFile.readText().trimEnd())
+                appendLine("----")
+                appendLine("====")
+                appendLine("// end::${operationError.operation}[]")
+                appendLine()
+            }
+        },
+    )
+}
+
+private fun generateGraphQlOperationDocs(
+    file: File,
+    operationErrors: List<GraphQlOperationError>,
+) {
+    writeErrorCodeDocs(
+        file = file,
+        content = buildString {
             operationErrors.groupBy { it.category }
                 .forEach { (category, categoryOperationErrors) ->
                     appendLine("=== $category")
@@ -242,18 +402,9 @@ private fun generateGraphQlOperationErrorCodeDocs(
                         appendLine()
                         appendLine("Operation: `${operationError.operation}`")
                         appendLine()
-                        appendLine("[.api-table]")
-                        appendLine("[cols=\"28%,32%,40%\",options=\"header\"]")
-                        appendLine("|===")
-                        appendLine("| Code | Message | Description")
+                        appendLine("include::./operation-sample.adoc[tag=${operationError.operation}]")
                         appendLine()
-                        operationError.errorCodes.forEach { entry ->
-                            appendLine("| ${entry.errorCode.code}")
-                            appendLine("| ${entry.errorCode.message}")
-                            appendLine("| ${entry.description}")
-                            appendLine()
-                        }
-                        appendLine("|===")
+                        appendLine("include::./operation-error.adoc[tag=${operationError.operation}]")
                         appendLine()
                     }
                 }
@@ -269,7 +420,11 @@ private fun writeErrorCodeDocs(
     if (!file.exists()) {
         file.createNewFile()
     }
-    file.printWriter().use { out -> out.println(content) }
+    file.printWriter().use { out ->
+        out.println("// 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.")
+        out.println()
+        out.println(content)
+    }
 }
 
 private fun Iterable<ErrorCode>.sorted(): List<ErrorCode> {
@@ -281,6 +436,7 @@ private data class GraphQlOperationError(
     val operation: String,
     val title: String,
     val type: GraphQlOperationType,
+    val sampleFile: File,
     val errorCodes: List<GraphQlOperationErrorCode>,
 )
 
@@ -311,4 +467,8 @@ private infix fun ErrorCode.to(description: String): GraphQlOperationErrorCode {
         errorCode = this,
         description = description,
     )
+}
+
+private fun graphQlSample(path: String): File {
+    return File("http/graphql/$path")
 }

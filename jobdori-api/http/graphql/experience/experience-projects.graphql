@@ -1,0 +1,23 @@
+query ExperienceProjects {
+    experienceProjects(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        cursor: null
+        size: 10
+    ) {
+        projects {
+            projectId
+            name
+            summary
+            period {
+                startAt
+                endAt
+            }
+            role
+            experienceCount
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}

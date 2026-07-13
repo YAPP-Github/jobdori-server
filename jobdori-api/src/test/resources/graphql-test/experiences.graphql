@@ -1,12 +1,12 @@
 {
-  experiences(workspaceId: "workspace-id", cursor: null, size: 2) {
-    experiences {
-      experienceId
-      title
+    experiences(workspaceId: "workspace-id", cursor: null, size: 2) {
+        experiences {
+            experienceId
+            title
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
     }
-    cursor {
-      nextCursor
-      hasNext
-    }
-  }
 }

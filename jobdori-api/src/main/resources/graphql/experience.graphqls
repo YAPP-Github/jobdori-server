@@ -142,6 +142,16 @@ extend type Mutation {
     ): Boolean!
 
     """
+    Free Style 경험 내용을 STAR 형식으로 다듬습니다.
+    """
+    polishExperienceContents(
+        """
+        STAR 형식으로 변환할 Free Style 경험 내용입니다.
+        """
+        request: PolishExperienceContentsRequest!
+    ): StarExperienceContents!
+
+    """
     경험 프로젝트를 생성합니다.
     """
     createExperienceProject(
@@ -236,6 +246,16 @@ input UpdateExperienceRequest {
     변경할 경험 상세 내용입니다.
     """
     contents: ExperienceContentsRequest
+}
+
+"""
+경험 내용 AI 다듬기 입력입니다.
+"""
+input PolishExperienceContentsRequest {
+    """
+    STAR 형식으로 변환할 자유 서술 경험 내용입니다.
+    """
+    content: String!
 }
 
 """
@@ -500,7 +520,7 @@ type ExperienceProject {
     """
     경험 프로젝트에 연결된 활성 경험 개수입니다.
     """
-    experienceCount: Int
+    experienceCount: Long
 }
 
 """

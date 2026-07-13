@@ -188,4 +188,76 @@ include::./operation-sample.adoc[tag=importNotionExperiences]
 
 include::./operation-error.adoc[tag=importNotionExperiences]
 
+=== JD
+
+==== JD 단건 조회
+
+Type: `Query`
+
+Operation: `jd`
+
+include::./operation-sample.adoc[tag=jd]
+
+include::./operation-error.adoc[tag=jd]
+
+==== JD 목록 조회
+
+Type: `Query`
+
+Operation: `jds`
+
+include::./operation-sample.adoc[tag=jds]
+
+include::./operation-error.adoc[tag=jds]
+
+==== JD 인사이트 조회
+
+Type: `Query`
+
+Operation: `jdInsight`
+
+include::./operation-sample.adoc[tag=jdInsight]
+
+include::./operation-error.adoc[tag=jdInsight]
+
+==== JD 등록
+
+Type: `Mutation`
+
+Operation: `registerJd`
+
+include::./operation-sample.adoc[tag=registerJd]
+
+include::./operation-error.adoc[tag=registerJd]
+
+==== 비로그인 JD 분석
+
+Type: `Mutation`
+
+Operation: `analyzeGuestJd`
+
+include::./operation-sample.adoc[tag=analyzeGuestJd]
+
+include::./operation-error.adoc[tag=analyzeGuestJd]
+
+==== JD 완료 처리
+
+Type: `Mutation`
+
+Operation: `markJdCompleted`
+
+include::./operation-sample.adoc[tag=markJdCompleted]
+
+include::./operation-error.adoc[tag=markJdCompleted]
+
+==== JD 삭제
+
+Type: `Mutation`
+
+Operation: `deleteJd`
+
+include::./operation-sample.adoc[tag=deleteJd]
+
+include::./operation-error.adoc[tag=deleteJd]
+
 

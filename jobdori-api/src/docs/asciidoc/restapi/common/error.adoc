@@ -1,6 +1,6 @@
 // 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
 
-[cols="10%,20%,30%,40%",options="header"]
+[cols="10%,20%,30%,40%", options="header"]
 |===
 | Status Code | Error Code | Message | Description
 

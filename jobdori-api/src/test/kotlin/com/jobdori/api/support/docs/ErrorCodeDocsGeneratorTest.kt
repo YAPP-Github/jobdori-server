@@ -3,8 +3,11 @@ package com.jobdori.api.support.docs
 import com.jobdori.api.DocsTest
 import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorCode
+import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
+import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
+import com.jobdori.core.domain.jd.error.JdErrorCode
 import com.jobdori.core.domain.notion.error.NotionErrorCode
 import com.jobdori.core.domain.user.error.UserErrorCode
 import com.jobdori.core.domain.workspace.error.WorkspaceErrorCode
@@ -41,6 +44,10 @@ internal class ErrorCodeDocsGeneratorTest : FunSpec({
         generateGraphQlErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/notion/notion-error.adoc"),
             errorCodes = NotionErrorCode.entries,
+        )
+        generateGraphQlErrorCodeDocs(
+            file = File("src/docs/asciidoc/graphql/jd/jd-error.adoc"),
+            errorCodes = JdErrorCode.entries + JdCrawlErrorCode.entries,
         )
         generateGraphQlOperationErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/operation-error.adoc"),
@@ -270,6 +277,103 @@ private val graphQlOperationErrors = listOf(
             NotionErrorCode.CONNECTION_NEED_RECONNECT,
             NotionErrorCode.PAGE_ACCESS_DENIED,
             NotionErrorCode.API_REQUEST_FAILED,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "jd",
+        title = "JD 단건 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("jd/jd.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            JdErrorCode.E404_JD_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "jds",
+        title = "JD 목록 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("jd/jds.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "jdInsight",
+        title = "JD 인사이트 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("jd/jd-insight.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            JdErrorCode.E404_JD_NOT_FOUND,
+            AiErrorCode.E429_AI_RATE_LIMITED to "최초 조회로 인사이트를 생성하는 중 AI 요청 한도를 초과한 경우",
+            AiErrorCode.E500_AI_GENERATION_FAILED to "최초 조회로 인사이트를 생성하는 중 AI 응답 생성에 실패한 경우",
+            AiErrorCode.E503_AI_UNAVAILABLE to "최초 조회로 인사이트를 생성하는 중 AI 서비스에 접근할 수 없는 경우",
+            AiErrorCode.E504_AI_TIMEOUT to "최초 조회로 인사이트를 생성하는 중 AI 응답이 지연된 경우",
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "registerJd",
+        title = "JD 등록",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("jd/register-jd.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            JdCrawlErrorCode.E400_JD_INVALID_URL,
+            JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
+            JdCrawlErrorCode.E422_JD_FETCH_FAILED,
+            AiErrorCode.E429_AI_RATE_LIMITED,
+            AiErrorCode.E500_AI_GENERATION_FAILED,
+            AiErrorCode.E503_AI_UNAVAILABLE,
+            AiErrorCode.E504_AI_TIMEOUT,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "analyzeGuestJd",
+        title = "비로그인 JD 분석",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("jd/analyze-guest-jd.graphql"),
+        errorCodes = operationErrorCodes(
+            JdCrawlErrorCode.E400_JD_INVALID_URL,
+            JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
+            JdCrawlErrorCode.E422_JD_FETCH_FAILED,
+            AiErrorCode.E429_AI_RATE_LIMITED,
+            AiErrorCode.E500_AI_GENERATION_FAILED,
+            AiErrorCode.E503_AI_UNAVAILABLE,
+            AiErrorCode.E504_AI_TIMEOUT,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "markJdCompleted",
+        title = "JD 완료 처리",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("jd/mark-jd-completed.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            JdErrorCode.E404_JD_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "deleteJd",
+        title = "JD 삭제",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("jd/delete-jd.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            JdErrorCode.E404_JD_NOT_FOUND,
         ),
     ),
 )

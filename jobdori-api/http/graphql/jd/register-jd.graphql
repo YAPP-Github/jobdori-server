@@ -1,0 +1,17 @@
+mutation RegisterJd {
+    registerJd(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: { sourceUrl: "https://example.com/jd" }
+    ) {
+        jd {
+            jdId
+            companyName
+            positionTitle
+            status
+        }
+        candidates {
+            title
+            body
+        }
+    }
+}

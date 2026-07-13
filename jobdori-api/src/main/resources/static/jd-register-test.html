@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JD 등록 테스트 · Jobdori</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 820px; margin: 0 auto; padding: 24px; line-height: 1.5; }
+    h1 { font-size: 1.3rem; margin: 0 0 4px; }
+    h2 { font-size: 1rem; margin: 22px 0 8px; }
+    .hint { color: #888; font-size: .85rem; margin: 0 0 20px; }
+    label { display: block; font-weight: 600; font-size: .85rem; margin: 14px 0 4px; }
+    input[type=text], textarea { width: 100%; padding: 8px; font: inherit; border: 1px solid #999; border-radius: 6px; background: transparent; color: inherit; }
+    textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, monospace; font-size: .85rem; }
+    button { padding: 10px 20px; font: inherit; font-weight: 600; border: 0; border-radius: 6px; background: #2d6cdf; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: default; }
+    button.sub { background: #555; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+    .tab { flex: 1; background: transparent; color: #888; border: 1px solid #999; }
+    .tab.active { background: #2d6cdf; color: #fff; border-color: #2d6cdf; }
+    .urlrow { display: flex; gap: 8px; }
+    .urlrow input { flex: 1; }
+    .counter { font-size: .78rem; color: #888; text-align: right; margin-top: 4px; }
+    .counter.bad { color: #d33; }
+    .hidden { display: none; }
+    .meta { font-size: .8rem; color: #888; margin: 16px 0 6px; }
+    pre { background: #00000010; padding: 14px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin: 8px 0 0; font-size: .82rem; }
+    .err { color: #d33; } .ok { color: #2a2; } .warn { color: #c80; }
+    dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: .88rem; margin: 0; }
+    dt { font-weight: 600; color: #888; } dd { margin: 0; }
+    dd ul { margin: 0; padding-left: 18px; }
+    .cand { border: 1px solid #999; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
+    .cand.sel { border-color: #2d6cdf; background: #2d6cdf1a; }
+    .cand .t { font-weight: 600; }
+    .cand .b { font-size: .78rem; color: #888; margin-top: 3px; max-height: 2.6em; overflow: hidden; }
+    #toast { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); display: grid; gap: 8px; width: min(560px, 92%); z-index: 9; }
+    .t-item { padding: 10px 14px; border-radius: 6px; font-size: .85rem; color: #fff; background: #333; box-shadow: 0 3px 12px #0004; }
+    .t-item.e { background: #d33; } .t-item.w { background: #c80; }
+  </style>
+</head>
+<body>
+  <div id="toast"></div>
+  <h1>JD 등록 테스트</h1>
+  <p class="hint">URL/붙여넣기로 JD를 등록하고 7필드 추출·다중공고 후보를 확인합니다. (GraphQL <code>registerJd</code> · 토큰은 <code>/api/test-tokens</code>로 자동 발급 · local/dev 전용)</p>
+
+  <div class="tabs">
+    <button class="tab active" data-mode="url">URL 입력 (HM0001)</button>
+    <button class="tab" data-mode="text">붙여넣기 (HM0005)</button>
+  </div>
+
+  <div id="urlPanel">
+    <label>JD 링크</label>
+    <div class="urlrow">
+      <input type="text" id="url" placeholder="분석할 공고의 링크를 입력해주세요">
+      <button id="urlGo">&gt;</button>
+    </div>
+  </div>
+
+  <div id="textPanel" class="hidden">
+    <label>JD 전문 (500~10,000자)</label>
+    <textarea id="text" maxlength="10000" placeholder="JD 전문을 여기에 붙여넣으세요"></textarea>
+    <div class="counter" id="counter">0 / 최소 500자</div>
+    <button id="textGo" style="margin-top:10px" disabled>분석하기 &gt;</button>
+  </div>
+
+  <div class="meta" id="meta"></div>
+
+  <div id="reportBox" class="hidden">
+    <h2>분석 결과 (HM0003)</h2>
+    <dl id="report"></dl>
+  </div>
+
+  <div id="candBox" class="hidden">
+    <h2>어떤 JD의 이력서를 만들어볼까요? (HM0002)</h2>
+    <div id="candList"></div>
+    <button id="candConfirm" disabled>확인</button>
+  </div>
+
+  <h2>Raw 응답</h2>
+  <pre id="out">결과가 여기에 표시됩니다.</pre>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function toast(msg, k = '') {
+      const el = document.createElement('div');
+      el.className = 't-item ' + k; el.textContent = msg;
+      $('toast').appendChild(el); setTimeout(() => el.remove(), 4500);
+    }
+
+    // --- 같은 오리진(/api/…)이므로 상대경로 호출: CORS/설정 불필요 ---
+    let cachedToken = null;
+    async function getToken() {
+      if (cachedToken) return cachedToken;
+      const r = await fetch('test-tokens');
+      if (!r.ok) throw { message: `토큰 발급 실패 (${r.status})` };
+      const j = await r.json();
+      cachedToken = (j.result || j.data || j).accessToken;
+      if (!cachedToken) throw { message: '토큰 파싱 실패' };
+      return cachedToken;
+    }
+
+    // 공통 GraphQL 호출(토큰 자동) — raw 응답을 out에 표시하고 에러는 code와 함께 throw
+    async function gql(query, variables) {
+      const token = await getToken();
+      const res = await fetch('graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ query, variables }),
+      });
+      const json = await res.json();
+      $('out').textContent = JSON.stringify(json, null, 2);
+      if (json.errors && json.errors.length) {
+        const e = json.errors[0];
+        throw { code: e.extensions && e.extensions.code, message: e.message };
+      }
+      return json.data;
+    }
+
+    // 토큰 사용자의 워크스페이스 id(me 쿼리로 자동 조회) — JD는 워크스페이스 단위
+    let cachedWorkspaceId = null;
+    async function getWorkspaceId() {
+      if (cachedWorkspaceId) return cachedWorkspaceId;
+      const data = await gql('query { me { workspaces { workspaceId } } }', {});
+      cachedWorkspaceId = data.me.workspaces && data.me.workspaces[0] && data.me.workspaces[0].workspaceId;
+      if (!cachedWorkspaceId) throw { message: '워크스페이스가 없습니다(토큰 사용자에 워크스페이스 필요)' };
+      return cachedWorkspaceId;
+    }
+
+    const MUTATION = `mutation($workspaceId: ID!, $request: JdRegisterRequest!){
+      registerJd(workspaceId: $workspaceId, request: $request){
+        jd { jdId companyName positionTitle companyIntro responsibilities requiredExperiences preferredExperiences hiringProcess createdAt }
+        candidates { title body }
+      }
+    }`;
+
+    async function registerJd(request) {
+      const workspaceId = await getWorkspaceId();
+      const data = await gql(MUTATION, { workspaceId, request });
+      return data.registerJd;
+    }
+
+    function handleError(err) {
+      const c = err.code;
+      if (c === 'jd_invalid_url') toast('유효하지 않은 URL 형식입니다. 다시 확인해주세요.', 'e');
+      else if (c === 'jd_fetch_failed' || c === 'jd_access_denied') { toast('내용을 불러올 수 없습니다. 직접 복사하여 입력해주세요.', 'w'); setMode('text'); }
+      else if (c === 'invalid_arguments') toast(err.message || '입력을 확인해주세요.', 'e');
+      else toast('오류: ' + (err.message || c || '알 수 없음'), 'e');
+    }
+
+    const esc = s => String(s).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    const li = a => (a && a.length) ? '<ul>' + a.map(x => `<li>${esc(x)}</li>`).join('') + '</ul>' : '—';
+
+    function hideResults() { $('reportBox').classList.add('hidden'); $('candBox').classList.add('hidden'); }
+    function render(d) {
+      hideResults();
+      if (d.jd) {
+        const j = d.jd;
+        $('report').innerHTML = `
+          <dt>기업명</dt><dd>${esc(j.companyName) || '—'}</dd>
+          <dt>포지션</dt><dd>${esc(j.positionTitle) || '—'}</dd>
+          <dt>기업/팀 소개</dt><dd>${esc(j.companyIntro) || '—'}</dd>
+          <dt>업무 내용</dt><dd>${li(j.responsibilities)}</dd>
+          <dt>필요 경험</dt><dd>${li(j.requiredExperiences)}</dd>
+          <dt>우대 경험</dt><dd>${li(j.preferredExperiences)}</dd>
+          <dt>전형 절차</dt><dd>${li(j.hiringProcess)}</dd>
+          <dt>JD ID</dt><dd><code>${esc(j.jdId)}</code></dd>`;
+        $('reportBox').classList.remove('hidden');
+      } else if (d.candidates && d.candidates.length) {
+        renderCandidates(d.candidates);
+      } else toast('결과가 비어 있습니다.', 'e');
+    }
+
+    let selected = null;
+    function renderCandidates(cs) {
+      selected = null; $('candConfirm').disabled = true;
+      $('candList').innerHTML = cs.map((c, i) => `<div class="cand" data-i="${i}"><div class="t">${esc(c.title) || '(제목 없음)'}</div><div class="b">${esc(c.body)}</div></div>`).join('');
+      $('candList').querySelectorAll('.cand').forEach(el => el.addEventListener('click', () => {
+        $('candList').querySelectorAll('.cand').forEach(x => x.classList.remove('sel'));
+        el.classList.add('sel'); selected = cs[+el.dataset.i]; $('candConfirm').disabled = false;
+      }));
+      $('candBox').classList.remove('hidden');
+    }
+    $('candConfirm').addEventListener('click', () => selected && submit({ body: selected.body }, $('candConfirm'), '분석 중...'));
+
+    async function submit(request, btn, loading) {
+      const orig = btn.textContent; btn.disabled = true; btn.textContent = loading;
+      $('meta').innerHTML = '호출 중...'; const t0 = performance.now();
+      try {
+        const d = await registerJd(request);
+        $('meta').innerHTML = `<span class="ok">성공</span> · ${Math.round(performance.now() - t0)}ms`;
+        render(d);
+      } catch (err) {
+        $('meta').innerHTML = `<span class="err">실패</span> · ${Math.round(performance.now() - t0)}ms`;
+        handleError(err);
+      } finally { btn.disabled = false; btn.textContent = orig; }
+    }
+
+    function setMode(m) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mode === m));
+      $('urlPanel').classList.toggle('hidden', m !== 'url');
+      $('textPanel').classList.toggle('hidden', m !== 'text');
+    }
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setMode(t.dataset.mode)));
+
+    $('urlGo').addEventListener('click', () => {
+      const u = $('url').value.trim();
+      if (!u) return toast('URL을 입력해주세요.', 'e');
+      submit({ sourceUrl: u }, $('urlGo'), '…');
+    });
+    $('url').addEventListener('keydown', e => { if (e.key === 'Enter') $('urlGo').click(); });
+
+    $('text').addEventListener('input', () => {
+      const n = $('text').value.length, c = $('counter');
+      c.textContent = `${n} / 최소 500자`; c.classList.toggle('bad', n > 0 && n < 500);
+      $('textGo').disabled = n < 500 || n > 10000;
+    });
+    $('textGo').addEventListener('click', () => submit({ body: $('text').value }, $('textGo'), '분석 중...'));
+  </script>
+</body>
+</html>

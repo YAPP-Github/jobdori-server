@@ -41,6 +41,7 @@ class ExperienceQueryResolver(
         @UserId userId: Long,
         @Argument workspaceId: String,
         @Argument projectId: Long?,
+        @Argument jdId: String?,
         @Valid @Arguments request: ListExperienceRequest,
         env: DataFetchingEnvironment,
     ): ExperienceListResponse = experienceService.getExperiences(
@@ -50,6 +51,7 @@ class ExperienceQueryResolver(
         cursor = request.cursor,
         size = request.size,
         includeProjects = env.selectionSet.contains("experiences/project"),
+        jdId = jdId,
     )
 
     @QueryMapping

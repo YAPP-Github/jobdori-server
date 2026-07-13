@@ -46,7 +46,8 @@ internal class ExperienceQueryResolverTest(
                 null,
                 null,
                 2,
-                false
+                false,
+                null
             )
         } returns ExperienceListResponse(
             experiences = listOf(
@@ -71,7 +72,7 @@ internal class ExperienceQueryResolverTest(
             .path("experiences.cursor.hasNext").entity<Boolean>().isEqualTo(true)
 
         verify(exactly = 1) { accessTokenService.getUserId("access-token") }
-        verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, false) }
+        verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, null) }
         verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any(), any()) }
     }
 
@@ -94,7 +95,8 @@ internal class ExperienceQueryResolverTest(
                 null,
                 null,
                 2,
-                true
+                true,
+                null
             )
         } returns ExperienceListResponse(
             experiences = listOf(
@@ -131,8 +133,57 @@ internal class ExperienceQueryResolverTest(
             .path("experiences.experiences[0].project.name").entity<String>().isEqualTo("신규 브랜드 런칭 캠페인")
             .path("experiences.experiences[1].project.projectId").entity<String>().isEqualTo("3")
 
-        verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, true) }
+        verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, true, null) }
         verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any(), any()) }
+    }
+
+    "experiences에 jdId를 주면 각 경험에 매칭률과 이유를 함께 반환한다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        every {
+            experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1")
+        } returns ExperienceListResponse(
+            experiences = listOf(
+                ExperienceResponse.from(
+                    experience = graphQlExperience(5L, ExperienceContents.star("s", "t", "a", "r")),
+                    project = null,
+                    matchRate = 87,
+                    reason = "이 JD의 핵심 역량과 맞닿는 경험이에요.",
+                ),
+                ExperienceResponse.from(
+                    experience = graphQlExperience(4L, ExperienceContents.free("free")),
+                    project = null,
+                    matchRate = 40,
+                    reason = null,
+                ),
+            ),
+            cursor = CursorResponse(nextCursor = "4"),
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                {
+                  experiences(workspaceId: "workspace-id", jdId: "jd-pub-1", cursor: null, size: 2) {
+                    experiences {
+                      experienceId
+                      matchRate
+                      reason
+                    }
+                    cursor {
+                      nextCursor
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("experiences.experiences[0].experienceId").entity<String>().isEqualTo("5")
+            .path("experiences.experiences[0].matchRate").entity<Int>().isEqualTo(87)
+            .path("experiences.experiences[0].reason").entity<String>().isEqualTo("이 JD의 핵심 역량과 맞닿는 경험이에요.")
+            .path("experiences.experiences[1].matchRate").entity<Int>().isEqualTo(40)
+            .path("experiences.experiences[1].reason").valueIsNull()
+
+        verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1") }
     }
 
     "경험 프로젝트 단건을 조회한다" {

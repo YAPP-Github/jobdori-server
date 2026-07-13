@@ -54,6 +54,19 @@ class StaticJdCrawlerClientTest : StringSpec() {
             verify(exactly = 1) { urlGuard.validate(url) }
         }
 
+        "리다이렉트를 자동으로 따르지 않고 홉마다 URL 가드로 재검증한다(SSRF 우회 차단)" {
+            val redirectTarget = server.url("/final").toString()
+            server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", redirectTarget))
+            server.enqueue(MockResponse().setBody("<html><body><article>담당 업무 상세 내용</article></body></html>"))
+            val start = server.url("/jd").toString()
+
+            val body = client(JdCrawlerProperties(minBodyLength = 5)).fetchBody(start)
+
+            body shouldContain "담당 업무"
+            verify(exactly = 1) { urlGuard.validate(start) }
+            verify(exactly = 1) { urlGuard.validate(redirectTarget) }   // 리다이렉트 목적지도 검증됨
+        }
+
         "User-Agent 헤더를 실어 요청한다" {
             server.enqueue(MockResponse().setBody("<html><body><article>담당 업무 상세</article></body></html>"))
 

@@ -1,0 +1,345 @@
+extend type Query {
+    """
+    등록된 JD 단건을 조회합니다.
+    """
+    jd(
+        """
+        조회할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        조회할 JD의 ID입니다.
+        """
+        id: ID!
+    ): Jd
+
+    """
+    워크스페이스의 JD 목록을 조회합니다.
+    """
+    jds(
+        """
+        조회할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        정렬 기준입니다. LATEST(최신순, 기본값) 또는 NAME(회사명 가나다순).
+        """
+        sort: JdSortType! = LATEST,
+        """
+        상태 필터입니다. 생략하면 전체, IN_PROGRESS/COMPLETED면 해당 상태만. (AR0001 진행 중/완료 섹션)
+        """
+        status: JdStatus
+    ): [Jd!]!
+
+    """
+    JD의 AI 인사이트(공고 핵심/지원 전략)를 조회합니다.
+    최초 조회 시 AI로 생성/저장하며, 이후에는 저장된 값을 반환합니다.
+    """
+    jdInsight(
+        """
+        조회할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        조회할 JD의 ID입니다.
+        """
+        jdId: ID!
+    ): JdInsight
+}
+
+extend type Mutation {
+    """
+    JD를 URL(크롤) 또는 붙여넣기(본문)로 등록합니다.
+    본문에 여러 공고가 있으면 저장하지 않고 후보 목록(candidates)을 반환하고,
+    하나면 7필드(기업명/포지션/소개/업무/필요/우대경험/전형절차)를 추출/저장해 jd를 반환합니다.
+    크롤/추출 실패 시 오류를 반환합니다.
+    """
+    registerJd(
+        """
+        등록할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        등록 입력입니다. sourceUrl(크롤) 또는 body(붙여넣기) 중 정확히 하나를 채웁니다.
+        """
+        request: JdRegisterRequest!
+    ): JdRegisterResult!
+
+    """
+    비로그인 상태에서 JD를 분석합니다. (온보딩 유입용)
+    저장하지 않고 7필드 추출과 AI 인사이트(공고 핵심/지원 전략)를 즉시 반환합니다.
+    본문에 여러 공고가 있으면 후보 목록(candidates)을 반환하며, 하나를 골라 body로 다시 분석합니다.
+    인증이 필요 없는 공개 요청입니다.
+    """
+    analyzeGuestJd(
+        """
+        분석 입력입니다. sourceUrl(크롤) 또는 body(붙여넣기) 중 정확히 하나를 채웁니다.
+        """
+        request: JdRegisterRequest!
+    ): GuestJdAnalysisResult!
+
+    """
+    JD를 삭제합니다. 연관된 AI 인사이트/경험 추천 캐시도 함께 영구 삭제됩니다.
+    워크스페이스 밖 JD면 오류를 반환합니다.
+    """
+    deleteJd(
+        """
+        JD가 속한 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        삭제할 JD의 ID입니다.
+        """
+        id: ID!
+    ): Boolean!
+
+    """
+    이력서 생성이 완료된 JD를 완료 상태(COMPLETED)로 전환합니다. (AR0001 진행 중 -> 완료)
+    이미 완료면 그대로 반환하며, 워크스페이스 밖 JD면 오류를 반환합니다.
+    """
+    markJdCompleted(
+        """
+        JD가 속한 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        완료 처리할 JD의 ID입니다.
+        """
+        id: ID!
+    ): Jd!
+}
+
+"""
+JD 등록 입력입니다. sourceUrl 또는 body 중 정확히 하나여야 합니다.
+"""
+input JdRegisterRequest {
+    """
+    등록할 JD 공고의 URL입니다. (크롤 등록)
+    """
+    sourceUrl: String
+
+    """
+    붙여넣은 JD 본문입니다. (붙여넣기 등록)
+    """
+    body: String
+}
+
+"""
+JD 등록 결과입니다. 단일 공고면 jd, 다중 공고면 candidates가 채워집니다.
+"""
+type JdRegisterResult {
+    """
+    등록된 JD입니다. (단일 공고)
+    """
+    jd: Jd
+
+    """
+    저장되지 않은 공고 후보 목록입니다. (다중 공고 - 하나를 골라 body로 재등록)
+    """
+    candidates: [JdCandidate!]
+}
+
+"""
+다중 공고 후보입니다.
+"""
+type JdCandidate {
+    """
+    공고 제목입니다. (없으면 빈 문자열)
+    """
+    title: String!
+
+    """
+    공고 원문 본문입니다. (재등록 시 body로 전달)
+    """
+    body: String!
+}
+
+"""
+JD입니다.
+"""
+type Jd {
+    """
+    JD를 식별하는 ID입니다.
+    """
+    jdId: ID!
+
+    """
+    원본 공고 URL입니다. (붙여넣기 등록이면 null)
+    """
+    sourceUrl: String
+
+    """
+    등록에 사용된 공고 원문입니다. 원문 조회 화면용이며, 기능 이전에 등록된 JD는 null입니다.
+    """
+    sourceBody: String
+
+    """
+    기업 이름입니다. (추출 실패 시 빈 문자열)
+    """
+    companyName: String!
+
+    """
+    포지션 이름입니다. (추출 실패 시 빈 문자열)
+    """
+    positionTitle: String!
+
+    """
+    기업/팀 소개입니다.
+    """
+    companyIntro: String!
+
+    """
+    업무 내용 목록입니다.
+    """
+    responsibilities: [String!]!
+
+    """
+    필요 경험(자격요건) 목록입니다.
+    """
+    requiredExperiences: [String!]!
+
+    """
+    우대 경험 목록입니다.
+    """
+    preferredExperiences: [String!]!
+
+    """
+    전형 절차 목록입니다.
+    """
+    hiringProcess: [String!]!
+
+    """
+    핵심 역량 태그입니다. AI가 공고에서 추출한 상위 핵심 역량(최대 5개). 아카이브 카드용.
+    """
+    coreCompetencies: [String!]!
+
+    """
+    이력서 생성 진행 상태입니다. (AR0001 진행 중/완료 섹션 구분)
+    """
+    status: JdStatus!
+
+    """
+    등록일입니다. (ISO-8601)
+    """
+    createdAt: String
+}
+
+"""
+JD 목록 정렬 기준입니다.
+"""
+enum JdSortType {
+    """
+    최신순(등록 역순)입니다.
+    """
+    LATEST
+
+    """
+    회사명 가나다순입니다.
+    """
+    NAME
+}
+
+"""
+JD의 이력서 생성 진행 상태입니다.
+"""
+enum JdStatus {
+    """
+    이력서 미완성(등록 직후 기본)입니다.
+    """
+    IN_PROGRESS
+
+    """
+    연결된 이력서 생성 완료입니다.
+    """
+    COMPLETED
+}
+
+"""
+JD의 AI 인사이트입니다.
+"""
+type JdInsight {
+    """
+    공고 핵심입니다. 공고가 원하는 인재상/핵심 요구를 요약한 서술형 문단입니다.
+    """
+    keyPoints: String!
+
+    """
+    지원 전략입니다. 어떤 경험을 어떻게 강조하면 좋을지 조언하는 서술형 문단입니다.
+    """
+    strategy: String!
+}
+
+"""
+비로그인 JD 분석 결과입니다. 단일 공고면 analysis, 다중 공고면 candidates가 채워집니다.
+"""
+type GuestJdAnalysisResult {
+    """
+    분석 결과입니다. (단일 공고)
+    """
+    analysis: GuestJdAnalysis
+
+    """
+    저장되지 않은 공고 후보 목록입니다. (다중 공고 - 하나를 골라 body로 재분석)
+    """
+    candidates: [JdCandidate!]
+}
+
+"""
+비로그인 JD 분석 결과(단일 공고)입니다. 저장되지 않으며 jdId가 없습니다.
+"""
+type GuestJdAnalysis {
+    """
+    원본 공고 URL입니다. (붙여넣기 분석이면 null)
+    """
+    sourceUrl: String
+
+    """
+    분석에 사용된 공고 원문입니다.
+    """
+    sourceBody: String
+
+    """
+    기업 이름입니다. (추출 실패 시 빈 문자열)
+    """
+    companyName: String!
+
+    """
+    포지션 이름입니다. (추출 실패 시 빈 문자열)
+    """
+    positionTitle: String!
+
+    """
+    기업/팀 소개입니다.
+    """
+    companyIntro: String!
+
+    """
+    업무 내용 목록입니다.
+    """
+    responsibilities: [String!]!
+
+    """
+    필요 경험(자격요건) 목록입니다.
+    """
+    requiredExperiences: [String!]!
+
+    """
+    우대 경험 목록입니다.
+    """
+    preferredExperiences: [String!]!
+
+    """
+    전형 절차 목록입니다.
+    """
+    hiringProcess: [String!]!
+
+    """
+    핵심 역량 태그입니다. AI가 공고에서 추출한 상위 핵심 역량(최대 5개).
+    """
+    coreCompetencies: [String!]!
+
+    """
+    AI 인사이트(공고 핵심/지원 전략)입니다.
+    """
+    insight: JdInsight!
+}

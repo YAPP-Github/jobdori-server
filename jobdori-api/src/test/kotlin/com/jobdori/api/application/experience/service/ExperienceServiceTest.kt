@@ -6,6 +6,7 @@ import com.jobdori.api.application.experience.dto.request.contents.ExperienceCon
 import com.jobdori.api.application.experience.dto.request.contents.FreeExperienceContentsRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.model.SliceResult
+import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
@@ -36,6 +37,7 @@ class ExperienceServiceTest : StringSpec({
     val experienceRemover = mockk<ExperienceRemover>()
     val experienceProjectReader = mockk<ExperienceProjectReader>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
+    val getExperienceRecommendationService = mockk<GetExperienceRecommendationService>()
     val experienceService = ExperienceService(
         workspaceAccessValidationService = workspaceAccessValidationService,
         experienceCreator = experienceCreator,
@@ -43,6 +45,7 @@ class ExperienceServiceTest : StringSpec({
         experienceModifier = experienceModifier,
         experienceRemover = experienceRemover,
         experienceProjectReader = experienceProjectReader,
+        getExperienceRecommendationService = getExperienceRecommendationService,
     )
 
     beforeTest {

@@ -119,6 +119,17 @@ class ExperienceRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
+    override fun findAllActiveByWorkspaceId(workspaceId: Long): List<Experience> =
+        jpaRepository.findAllByWorkspaceIdAndStatus(workspaceId, ExperienceStatus.ACTIVE)
+            .map { it.toDomain() }
+
+    @Transactional(readOnly = true)
+    override fun experienceSignature(workspaceId: Long): String {
+        val view = jpaRepository.signatureView(workspaceId, ExperienceStatus.ACTIVE)
+        return "${view.cnt}:${view.maxUpdatedAt}"
+    }
+
+    @Transactional(readOnly = true)
     override fun countByWorkspaceIdAndProjectIds(
         workspaceId: Long,
         projectIds: Collection<Long>,

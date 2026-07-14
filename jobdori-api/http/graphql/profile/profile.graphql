@@ -1,0 +1,47 @@
+query Profile {
+    profile(workspaceId: "00000000-0000-0000-0000-000000000002") {
+        profileId
+        name
+        phone
+        email
+        coreCompetency
+        educations {
+            school
+            major
+            degree
+            status
+            period {
+                startAt
+                endAt
+            }
+        }
+        careers {
+            company
+            position
+            period {
+                startAt
+                endAt
+            }
+            description
+        }
+        languageTests {
+            testName
+            score
+            acquiredAt
+        }
+        awards {
+            title
+            organization
+            awardedAt
+        }
+        certifications {
+            name
+            issuer
+            acquiredAt
+        }
+        skills {
+            name
+            level
+        }
+    }
+}

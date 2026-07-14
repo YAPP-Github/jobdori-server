@@ -3,14 +3,16 @@ VALUES (1, 'gpt-4o-mini', 'OPEN_AI', now(), now());
 
 INSERT INTO ai_model_configs_v1 (id, ai_model_id, name, description, parameters, created_at, updated_at)
 VALUES
-  (1, 1, 'jd_multi_posting_split', 'JD 다중 공고 분할',           '{"temperature":0.0}' FORMAT JSON, now(), now()),
-  (2, 1, 'jd_meta',                'JD 메타(기업명·포지션·소개·업무·필요/우대경험·전형절차) 추출', '{"temperature":0.2}' FORMAT JSON, now(), now()),
-  (3, 1, 'jd_application_strategy','JD 지원 전략 생성',           '{"temperature":0.6}' FORMAT JSON, now(), now()),
-  (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}' FORMAT JSON, now(), now()),
-  (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}'  FORMAT JSON, now(), now()),
-  (6, 1, 'experience.contents_polish','Free Style 경험 내용 STAR 변환', '{"temperature":0.2,"maxTokens":1200}' FORMAT JSON, now(), now()),
-  (7, 1, 'jd_key_points',          'JD 공고 핵심 요약',           '{"temperature":0.4}' FORMAT JSON, now(), now()),
-  (8, 1, 'experience_recommendation','JD-경험 매칭률·이유',        '{"temperature":0.2}' FORMAT JSON, now(), now());
+  (1, 1, 'jd_multi_posting_split', 'JD 다중 공고 분할',           '{"temperature":0.0}', now(), now()),
+  (2, 1, 'jd_meta',                'JD 메타(기업명·포지션·소개·업무·필요/우대경험·전형절차) 추출', '{"temperature":0.2}', now(), now()),
+  (3, 1, 'jd_application_strategy','JD 지원 전략 생성',           '{"temperature":0.6}', now(), now()),
+  (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}', now(), now()),
+  (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}' , now(), now()),
+  (6, 1, 'experience.contents_polish','Free Style 경험 내용 STAR 변환', '{"temperature":0.2,"maxTokens":1200}', now(), now()),
+  (7, 1, 'jd_key_points',          'JD 공고 핵심 요약',           '{"temperature":0.4}', now(), now()),
+  (8, 1, 'experience_recommendation','JD-경험 매칭률·이유',        '{"temperature":0.2}', now(), now()),
+  (9, 1, 'profile.core_competency', '프로필 핵심역량 생성',        '{"temperature":0.6,"maxTokens":900}', now(), now()),
+  (10, 1, 'profile.text_polish',    '프로필 텍스트 다듬기',        '{"temperature":0.4,"maxTokens":1200}', now(), now());
 
 -- 1) JD 다중 공고 분할 (문서 JD-B.6)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
@@ -63,3 +65,26 @@ VALUES (8, 8, 'EXPERIENCE_RECOMMENDATION',
 '당신은 채용 공고(JD)와 지원자의 경험을 매칭하는 전문가다. 입력으로 JD와 인덱스가 붙은 경험 목록([1], [2], ...)을 받는다. (1) scores: 모든 경험에 대해 그 경험이 이 JD에 얼마나 부합하는지 0~100 정수 matchRate를 매긴다(경험 하나도 빠뜨리지 마라). (2) reasons: matchRate가 가장 높은 상위 5개(경험이 5개 미만이면 전부)에 대해서만, 그 경험이 이 JD에 왜 적합한지 1~2문장으로 쓴다. 경험은 반드시 입력의 index로 참조한다. JD나 경험에 없는 사실을 지어내지 마라. 출력은 제공된 JSON 스키마를 100% 준수한다.',
 '{"type":"object","additionalProperties":false,"required":["scores","reasons"],"properties":{"scores":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","matchRate"],"properties":{"index":{"type":"integer"},"matchRate":{"type":"integer"}}}},"reasons":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","reason"],"properties":{"index":{"type":"integer"},"reason":{"type":"string"}}}}}}',
 null, now(), now());
+-- 9) 프로필 핵심역량 생성 - generateText, json_schema NULL(서술형)
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (9, 9, 'PROFILE_CORE_COMPETENCY_GENERATION',
+'당신은 채용 도메인 경력 코치다. 입력된 이력서 기본 정보(경력·프로젝트·스킬)를 바탕으로 지원자의 핵심역량 소개 문단을 작성한다. 반드시 불릿·머리말·JSON 없이 자연스러운 한국어 문단으로만 답하고, 공백 포함 500자를 넘기지 마라. 입력에서 드러나는 강점·성과·역량을 중심으로 쓰되, 입력에 없는 사실·수치·기술을 절대 지어내지 마라. 입력 정보가 부족하면 있는 정보만으로 짧게 작성한다.',
+null, null, now(), now());
+
+-- 10) 프로필 텍스트 다듬기 - generateText, json_schema NULL. [항목]/[글자수 제한]/[원문]을 userPrompt로 받는다.
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (10, 10, 'PROFILE_TEXT_POLISH',
+'당신은 채용 도메인 경력 코치다. 입력의 [원문]을 이력서의 [항목]에 어울리는 표현으로 다듬는다. 원문의 사실·수치·기술·기간을 절대 바꾸거나 지어내지 말고, 문장을 간결하고 전문적인 한국어로 정리한다. 결과는 [글자수 제한] 이내로 작성한다. 반드시 다듬은 텍스트만 반환하고 설명·머리말·따옴표를 붙이지 마라.',
+null, null, now(), now());
+-- 키워드 사전 시드 (자동완성 제안용)
+INSERT INTO keyword_dictionary_v1 (id, type, name, created_at, updated_at)
+VALUES
+    (1, 'LANGUAGE_TEST', '토익', now(), now()),
+    (2, 'LANGUAGE_TEST', '토익스피킹', now(), now()),
+    (3, 'LANGUAGE_TEST', '토플', now(), now()),
+    (4, 'LANGUAGE_TEST', '오픽', now(), now()),
+    (5, 'CERTIFICATION', '정보처리기사', now(), now()),
+    (6, 'CERTIFICATION', 'SQLD', now(), now()),
+    (7, 'SKILL', 'GA4', now(), now()),
+    (8, 'SKILL', 'SQL', now(), now()),
+    (9, 'SKILL', 'Figma', now(), now());

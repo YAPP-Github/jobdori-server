@@ -450,6 +450,58 @@ private val graphQlOperationErrors = listOf(
             JdErrorCode.E404_JD_NOT_FOUND,
         ),
     ),
+    GraphQlOperationError(
+        category = "Profile",
+        operation = "profile",
+        title = "이력서 기본 정보 프로필 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("profile/profile.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Profile",
+        operation = "suggestKeywords",
+        title = "키워드 자동완성 제안",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("profile/suggest-keywords.graphql"),
+        errorCodes = emptyList(),
+    ),
+    GraphQlOperationError(
+        category = "Profile",
+        operation = "updateProfile",
+        title = "이력서 기본 정보 프로필 수정",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("profile/update-profile.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Profile",
+        operation = "generateCoreCompetency",
+        title = "핵심역량 AI 생성",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("profile/generate-core-competency.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            AiErrorCode.E500_AI_GENERATION_FAILED,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Profile",
+        operation = "polishProfileText",
+        title = "프로필 텍스트 AI 다듬기",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("profile/polish-profile-text.graphql"),
+        errorCodes = operationErrorCodes(
+            AiErrorCode.E500_AI_GENERATION_FAILED,
+        ),
+    ),
 )
 
 private fun generateRestErrorCodeDocs(

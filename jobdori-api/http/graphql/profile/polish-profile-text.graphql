@@ -1,0 +1,8 @@
+mutation PolishProfileText {
+    polishProfileText(
+        request: {
+            text: "런칭 캠페인에서 메시지 A/B 테스트를 수행해서 전환율을 많이 개선했음"
+            kind: CAREER_DESCRIPTION
+        }
+    )
+}

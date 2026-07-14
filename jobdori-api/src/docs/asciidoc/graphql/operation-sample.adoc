@@ -1175,4 +1175,195 @@ mutation DeleteJd {
 ====
 // end::deleteJd[]
 
+// tag::profile[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query Profile {
+    profile(workspaceId: "00000000-0000-0000-0000-000000000002") {
+        profileId
+        name
+        phone
+        email
+        coreCompetency
+        educations {
+            school
+            major
+            degree
+            status
+            period {
+                startAt
+                endAt
+            }
+        }
+        careers {
+            company
+            position
+            period {
+                startAt
+                endAt
+            }
+            description
+        }
+        languageTests {
+            testName
+            score
+            acquiredAt
+        }
+        awards {
+            title
+            organization
+            awardedAt
+        }
+        certifications {
+            name
+            issuer
+            acquiredAt
+        }
+        skills {
+            name
+            level
+        }
+    }
+}
+----
+====
+// end::profile[]
+
+// tag::suggestKeywords[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query SuggestKeywords {
+    suggestKeywords(type: LANGUAGE_TEST, keyword: "토익", size: 10)
+}
+----
+====
+// end::suggestKeywords[]
+
+// tag::updateProfile[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation UpdateProfile {
+    updateProfile(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        request: {
+            name: "김지윤"
+            phone: "010-3358-9065"
+            email: "rlajae14@gmail.com"
+            coreCompetency: "콘텐츠 기획과 데이터 기반 개선에 강점이 있는 마케터입니다."
+            educations: [
+                {
+                    school: "잡도리대학교"
+                    major: "경영학과"
+                    degree: BACHELOR
+                    status: EXPECTED_GRADUATION
+                    period: {
+                        startAt: "2020-03-01"
+                        endAt: "2026-02-28"
+                    }
+                }
+            ]
+            careers: [
+                {
+                    company: "잡도리컴퍼니"
+                    position: "마케팅 인턴"
+                    period: {
+                        startAt: "2024-07-01"
+                        endAt: "2024-12-31"
+                    }
+                    description: "신규 서비스 런칭 캠페인의 콘텐츠 기획과 성과 분석을 담당했습니다."
+                }
+            ]
+            certifications: [
+                {
+                    name: "GAIQ"
+                    issuer: "Google"
+                    acquiredAt: "2024-05-10"
+                }
+            ]
+            skills: [
+                {
+                    name: "GA4"
+                    level: HIGH
+                }
+            ]
+        }
+    ) {
+        profileId
+        name
+        phone
+        email
+        coreCompetency
+        educations {
+            school
+            degree
+            status
+            period {
+                startAt
+                endAt
+            }
+        }
+        careers {
+            company
+            position
+            description
+        }
+        certifications {
+            name
+            acquiredAt
+        }
+        skills {
+            name
+            level
+        }
+    }
+}
+----
+====
+// end::updateProfile[]
+
+// tag::generateCoreCompetency[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation GenerateCoreCompetency {
+    generateCoreCompetency(workspaceId: "00000000-0000-0000-0000-000000000002")
+}
+----
+====
+// end::generateCoreCompetency[]
+
+// tag::polishProfileText[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation PolishProfileText {
+    polishProfileText(
+        request: {
+            text: "런칭 캠페인에서 메시지 A/B 테스트를 수행해서 전환율을 많이 개선했음"
+            kind: CAREER_DESCRIPTION
+        }
+    )
+}
+----
+====
+// end::polishProfileText[]
+
 

@@ -31,9 +31,13 @@
   <select id="promptType">
     <option value="JD_MULTI_POSTING_SPLIT">JD_MULTI_POSTING_SPLIT (다중 공고 분할 · structured)</option>
     <option value="JD_META_EXTRACTION" selected>JD_META_EXTRACTION (기업·직무·정제본문·태그 · structured)</option>
+    <option value="JD_KEY_POINTS">JD_KEY_POINTS (공고 핵심 요약 · text)</option>
     <option value="JD_APPLICATION_STRATEGY">JD_APPLICATION_STRATEGY (지원 전략 · text)</option>
+    <option value="EXPERIENCE_RECOMMENDATION">EXPERIENCE_RECOMMENDATION (JD-경험 매칭 · structured)</option>
     <option value="EXPERIENCE_STAR_EXTRACTION">EXPERIENCE_STAR_EXTRACTION (경험 STAR · structured)</option>
-    <option value="RESUME_EXPERIENCE_REWRITE">RESUME_EXPERIENCE_REWRITE (이력서 문장 · text)</option>
+    <option value="EXPERIENCE_CONTENTS_POLISH">EXPERIENCE_CONTENTS_POLISH (자유 경험 → STAR · structured)</option>
+    <option value="PROFILE_CORE_COMPETENCY_GENERATION">PROFILE_CORE_COMPETENCY_GENERATION (핵심역량 생성 · text)</option>
+    <option value="PROFILE_TEXT_POLISH">PROFILE_TEXT_POLISH (프로필 텍스트 다듬기 · text)</option>
   </select>
 
   <label>userPrompt (입력 텍스트)</label>
@@ -61,6 +65,27 @@
 
   <script>
     const $ = id => document.getElementById(id);
+
+    // 실서비스에서 코드가 userPrompt를 조립하는 타입은 그 형식을 placeholder로 안내
+    // (GenerateExperienceRecommendationService, ProfileAiService 참고)
+    const PLACEHOLDERS = {
+      EXPERIENCE_RECOMMENDATION:
+        '## JD\n네이버 백엔드 개발자 채용. 자격요건: Kotlin/Java 3년, Spring.\n\n' +
+        '## 경험 목록\n[1] 주문 시스템 개선\n태그: Kotlin, MSA\n상황: ...\n과제: ...\n행동: ...\n결과: ...\n\n[2] ...',
+      PROFILE_CORE_COMPETENCY_GENERATION:
+        '[경력]\n- 회사명 / 백엔드 개발 (2022-01 - 2024-05): 주문 시스템 개발\n[스킬]\nKotlin, Spring, MySQL',
+      PROFILE_TEXT_POLISH:
+        '[항목] 핵심역량\n[글자수 제한] 500자\n[원문]\n다듬을 텍스트...',
+    };
+    const DEFAULT_PLACEHOLDER = 'JD 본문, 경험 원문 등 입력...';
+    const INITIAL_SAMPLE = $('userPrompt').value;
+    $('promptType').addEventListener('change', () => {
+      const ph = PLACEHOLDERS[$('promptType').value];
+      $('userPrompt').placeholder = ph || DEFAULT_PLACEHOLDER;
+      // 형식이 특수한 타입: 손대지 않은 기본 JD 샘플이 그대로 전송되지 않게 비워서 형식 안내를 노출
+      if (ph && $('userPrompt').value === INITIAL_SAMPLE) $('userPrompt').value = '';
+    });
+
     $('send').addEventListener('click', async () => {
       const btn = $('send'), out = $('out'), meta = $('meta');
       const fd = new FormData();

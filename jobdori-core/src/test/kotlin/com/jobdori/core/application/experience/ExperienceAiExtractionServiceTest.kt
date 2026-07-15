@@ -33,6 +33,7 @@ class ExperienceAiExtractionServiceTest : StringSpec({
 
     "AI 구조화 응답을 가져온 경험 저장 커맨드로 변환한다" {
         val prompt = PromptTemplate(
+            type = PromptType.EXPERIENCE_STAR_EXTRACTION,
             modelName = "gpt-4o-mini",
             parameters = AiParameters(temperature = 0.2, maxTokens = 4096),
             systemPrompt = "경험을 STAR로 추출한다",

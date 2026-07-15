@@ -8,6 +8,7 @@ import com.jobdori.core.domain.ai.error.AiException
 import kotlin.reflect.KClass
 
 data class PromptTemplate(
+    val type: PromptType,
     val modelName: String,
     val parameters: AiParameters,
     val systemPrompt: String,   // DB에서 로드(튜닝 대상). USER 프롬프트는 DB에 두지 않는다(B안)
@@ -20,7 +21,8 @@ data class PromptTemplate(
             modelName,
             systemPrompt,
             userPrompt,
-            parameters
+            parameters,
+            useCase = useCase(),
         )
 
     /** JSON 스키마 강제 구조화 요청으로 빌드 (generateStructured용) — 텍스트 경로와 대칭 */
@@ -32,5 +34,11 @@ data class PromptTemplate(
             parameters,
             responseType,
             jsonSchema ?: throw AiException("jsonSchema 누락", AiErrorCode.E500_AI_GENERATION_FAILED),
+            useCase = useCase(),
         )
+
+    /** PromptType 이름을 로그용 카멜케이스로 변환 (JD_META_EXTRACTION -> jdMetaExtraction) */
+    private fun useCase(): String = type.name.lowercase().split("_")
+        .mapIndexed { i, word -> if (i == 0) word else word.replaceFirstChar(Char::uppercase) }
+        .joinToString("")
 }

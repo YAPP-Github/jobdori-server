@@ -28,6 +28,7 @@ class ExperienceContentsPolishServiceTest : StringSpec({
         every {
             promptTemplateRepository.findByType(PromptType.EXPERIENCE_CONTENTS_POLISH)
         } returns PromptTemplate(
+            type = PromptType.EXPERIENCE_CONTENTS_POLISH,
             modelName = "gpt-4o-mini",
             parameters = AiParameters(temperature = 0.2, maxTokens = 1200),
             systemPrompt = "Free Style 경험 내용을 STAR로 변환한다.",

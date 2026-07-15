@@ -8,23 +8,14 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import jakarta.persistence.UniqueConstraint
 
-@Table(
-    name = "workspace_v1",
-    uniqueConstraints = [
-        UniqueConstraint(
-            name = "uk_workspace_owner_user_id",
-            columnNames = ["owner_user_id"],
-        ),
-    ],
-)
+@Table(name = "workspace_v1")
 @Entity
 class WorkspaceEntity(
     @Column(nullable = false, length = 50, unique = true, updatable = false)
     var publicId: String,
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, unique = true, updatable = false)
     var ownerUserId: Long,
 ) : AuditableEntity() {
 

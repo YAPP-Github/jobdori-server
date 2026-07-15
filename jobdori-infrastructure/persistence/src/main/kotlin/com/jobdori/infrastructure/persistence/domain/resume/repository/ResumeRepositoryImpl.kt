@@ -34,7 +34,7 @@ class ResumeRepositoryImpl(
             return emptyList()
         }
 
-        return resumeJpaRepository.findAllByWorkspaceIdAndStatusInOrderByUpdatedAtDescIdDesc(
+        return resumeJpaRepository.findAllByWorkspaceIdAndStatusInOrderByIdDesc(
             workspaceId = workspaceId,
             statuses = statuses,
         ).map { it.toDomain() }

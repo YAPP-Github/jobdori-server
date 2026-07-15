@@ -12,7 +12,7 @@ interface ResumeJpaRepository : JpaRepository<ResumeEntity, Long>, ResumeCustomR
         statuses: Collection<ResumeStatus>,
     ): ResumeEntity?
 
-    fun findAllByWorkspaceIdAndStatusInOrderByUpdatedAtDescIdDesc(
+    fun findAllByWorkspaceIdAndStatusInOrderByIdDesc(
         workspaceId: Long,
         statuses: Collection<ResumeStatus>,
     ): List<ResumeEntity>

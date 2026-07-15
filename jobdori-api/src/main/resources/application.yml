@@ -65,3 +65,6 @@ server:
     accesslog:
       enabled: false   # 로컬/테스트에서 ./logs 디렉토리 생성 방지
 
+logging:
+  level:
+    com.jobdori: DEBUG

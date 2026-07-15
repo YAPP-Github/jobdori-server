@@ -19,10 +19,23 @@ class SplitJdPostingsService(
     fun split(body: String): List<JdPosting> {
         val template = promptTemplateRepository.findByType(PromptType.JD_MULTI_POSTING_SPLIT)
             ?: throw AiException("프롬프트 없음: JD_MULTI_POSTING_SPLIT", AiErrorCode.E500_AI_GENERATION_FAILED)
-        val result = aiChatClient.generateStructured(template.buildStructured(body, JdPostingSplitResult::class))
+        val lines = body.lines()
+        // 모델이 본문을 재출력하지 않도록 줄 번호를 붙여 보내고 줄 범위만 받는다(레이턴시는 출력 토큰에 비례)
+        val numbered = lines.mapIndexed { i, line -> "${i + 1}| $line" }.joinToString("\n")
+        val result = aiChatClient.generateStructured(template.buildStructured(numbered, JdPostingSplitResult::class))
         return result.postings
+            .mapNotNull { slice(it, lines) }
             .distinctBy { it.title.ifBlank { it.body } }
             .take(JdPolicy.MAX_SPLIT_CANDIDATES)
             .ifEmpty { listOf(JdPosting(body = body)) }
+    }
+
+    /** 모델이 반환한 줄 범위가 어긋나도 등록이 죽지 않도록, 범위가 유효하지 않으면 버리고 폴백(전체 1건)에 맡긴다 */
+    private fun slice(range: JdPostingSplitResult.PostingRange, lines: List<String>): JdPosting? {
+        if (range.startLine < 1 || range.startLine > lines.size || range.endLine < range.startLine) return null
+        val body = lines.subList(range.startLine - 1, minOf(range.endLine, lines.size))
+            .joinToString("\n").trim()
+        if (body.isBlank()) return null
+        return JdPosting(title = range.title, body = body)
     }
 }

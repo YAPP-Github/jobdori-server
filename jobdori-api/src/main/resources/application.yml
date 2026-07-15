@@ -20,8 +20,8 @@ server:
 spring:
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 10MB
+      max-request-size: 10MB
   mvc:
     servlet:
       path: /api
@@ -60,7 +60,6 @@ sentry:
   enabled: false
   logging:
     enabled: false
-
 server:
   tomcat:
     accesslog:

@@ -50,6 +50,9 @@ tasks.register<Zip>("elasticBeanstalkBundle") {
 
     from(tasks.bootJar.flatMap { it.archiveFile })
     from(project.file("Procfile"))
+    from(project.file(".platform")) {
+        into(".platform")
+    }
 }
 
 tasks.docsTest {

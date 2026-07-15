@@ -21,8 +21,8 @@ class AnalyzeGuestJdService(
     fun analyzeByUrl(url: String): GuestJdAnalysisResult =
         analyze(sourceUrl = url, body = crawler.fetchBody(url))
 
-    fun analyzeByText(body: String): GuestJdAnalysisResult =
-        analyze(sourceUrl = null, body = body)
+    fun analyzeByText(body: String, sourceUrl: String? = null): GuestJdAnalysisResult =
+        analyze(sourceUrl = sourceUrl, body = body)
 
     private fun analyze(sourceUrl: String?, body: String): GuestJdAnalysisResult {
         if (body.length !in JdPolicy.MIN_JD_BODY_LENGTH..JdPolicy.MAX_JD_LENGTH) {

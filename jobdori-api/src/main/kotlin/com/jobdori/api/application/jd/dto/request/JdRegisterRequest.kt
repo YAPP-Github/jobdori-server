@@ -14,8 +14,9 @@ data class JdRegisterRequest(
     val body: String? = null,
 ) {
 
+    // body가 있으면 크롤 없이 body로 처리하고 sourceUrl은 출처 메타로만 저장한다(다중 공고 후보 재등록 시 출처 보존)
     @JsonIgnore
-    @AssertTrue(message = "sourceUrl 또는 body 중 정확히 하나여야 합니다")
-    fun isExactlyOne(): Boolean = sourceUrl.isNullOrBlank() != body.isNullOrBlank()
+    @AssertTrue(message = "sourceUrl 또는 body 중 하나는 필요합니다")
+    fun isAtLeastOne(): Boolean = !sourceUrl.isNullOrBlank() || !body.isNullOrBlank()
 
 }

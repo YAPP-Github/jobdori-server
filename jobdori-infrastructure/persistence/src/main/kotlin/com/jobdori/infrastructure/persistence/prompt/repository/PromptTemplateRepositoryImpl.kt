@@ -20,6 +20,7 @@ class PromptTemplateRepositoryImpl(
         val model = modelJpaRepository.findByIdOrNull(config.aiModelId) ?: return null
 
         return PromptTemplate(
+            type = type,
             modelName = model.name,
             parameters = config.parameters,
             systemPrompt = prompt.content,

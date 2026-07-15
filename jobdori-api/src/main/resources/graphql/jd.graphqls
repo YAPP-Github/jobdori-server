@@ -60,7 +60,8 @@ extend type Mutation {
         """
         workspaceId: ID!,
         """
-        등록 입력입니다. sourceUrl(크롤) 또는 body(붙여넣기) 중 정확히 하나를 채웁니다.
+        등록 입력입니다. body가 있으면 크롤 없이 body로 등록하고 sourceUrl은 출처로만 저장합니다.
+        body가 없으면 sourceUrl을 크롤해 등록합니다.
         """
         request: JdRegisterRequest!
     ): JdRegisterResult!
@@ -110,7 +111,8 @@ extend type Mutation {
 }
 
 """
-JD 등록 입력입니다. sourceUrl 또는 body 중 정확히 하나여야 합니다.
+JD 등록 입력입니다. sourceUrl 또는 body 중 하나는 필요합니다.
+body가 있으면 크롤 없이 body로 처리하고, sourceUrl은 출처 메타로만 저장됩니다.
 """
 input JdRegisterRequest {
     """

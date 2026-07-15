@@ -40,10 +40,11 @@ class JdResolver(
         @Valid @Argument request: JdRegisterRequest,
     ): JdRegisterResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
-        val result = if (!request.sourceUrl.isNullOrBlank()) {
-            registerJdService.registerByUrl(workspace.id, request.sourceUrl)
+        // body 우선: 다중 공고 후보를 body로 재등록할 때 sourceUrl은 출처 메타로만 저장
+        val result = if (!request.body.isNullOrBlank()) {
+            registerJdService.registerByText(workspace.id, request.body, request.sourceUrl)
         } else {
-            registerJdService.registerByText(workspace.id, request.body!!)
+            registerJdService.registerByUrl(workspace.id, request.sourceUrl!!)
         }
         return JdRegisterResponse.from(result)
     }
@@ -54,10 +55,10 @@ class JdResolver(
     fun analyzeGuestJd(
         @Valid @Argument request: JdRegisterRequest,
     ): GuestJdAnalysisResponse {
-        val result = if (!request.sourceUrl.isNullOrBlank()) {
-            analyzeGuestJdService.analyzeByUrl(request.sourceUrl)
+        val result = if (!request.body.isNullOrBlank()) {
+            analyzeGuestJdService.analyzeByText(request.body, request.sourceUrl)
         } else {
-            analyzeGuestJdService.analyzeByText(request.body!!)
+            analyzeGuestJdService.analyzeByUrl(request.sourceUrl!!)
         }
         return GuestJdAnalysisResponse.from(result)
     }

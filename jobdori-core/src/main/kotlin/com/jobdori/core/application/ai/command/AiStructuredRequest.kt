@@ -9,4 +9,6 @@ data class AiStructuredRequest<T: Any>(
     val parameters: AiParameters,
     val responseType: KClass<T>,
     val jsonSchema: String,
+    /** 호출 목적 식별자(PromptType 이름). 사용량/비용 로그 집계 키로만 쓴다. */
+    val useCase: String = "unknown",
 )

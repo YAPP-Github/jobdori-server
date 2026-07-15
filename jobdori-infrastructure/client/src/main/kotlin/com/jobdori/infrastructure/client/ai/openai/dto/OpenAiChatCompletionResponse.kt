@@ -27,6 +27,7 @@ data class OpenAiChatCompletionResponse(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Choice(
         val message: Message,
+        @JsonProperty("finish_reason") val finishReason: String? = null,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)

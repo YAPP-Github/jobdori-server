@@ -17,8 +17,8 @@ VALUES
 -- 1) JD 다중 공고 분할 (문서 JD-B.6)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (1, 1, 'JD_MULTI_POSTING_SPLIT',
-'당신은 채용 공고 텍스트 파서다. 입력 텍스트에 서로 다른 채용 공고가 여러 개 들어 있으면 각각을 분리해 배열로 반환한다. 각 항목은 그 공고의 제목(title, 없으면 빈 문자열)과 본문(body, 원문 그대로 — 다른 공고 내용을 섞지 마라)으로 구성한다. 공고가 하나뿐이면 원문 전체를 담은 항목 1개만 반환한다. 목차·네비·푸터 등 공고가 아닌 텍스트는 무시한다. 원문에 없는 내용을 지어내지 마라. 출력은 제공된 JSON 스키마를 100% 준수한다.',
-'{"type":"object","additionalProperties":false,"required":["postings"],"properties":{"postings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["title","body"],"properties":{"title":{"type":"string"},"body":{"type":"string"}}}}}}',
+'당신은 채용 공고 텍스트 파서다. 입력은 각 줄 앞에 "줄번호| "가 붙은 채용 공고 텍스트다. 입력에 서로 다른 채용 공고가 여러 개 들어 있으면 각 공고가 차지하는 줄 범위를 배열로 반환한다. 각 항목은 그 공고의 제목(title, 없으면 빈 문자열), 시작 줄 번호(startLine), 끝 줄 번호(endLine)로 구성한다(1부터 시작, 양 끝 포함). 본문 텍스트는 절대 출력하지 마라. 공고가 하나뿐이면 전체 범위를 담은 항목 1개만 반환한다. 목차·네비·푸터 등 공고가 아닌 줄은 범위에서 제외하되, 공고에 속한 줄을 빠뜨리지 마라. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["postings"],"properties":{"postings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["title","startLine","endLine"],"properties":{"title":{"type":"string"},"startLine":{"type":"integer"},"endLine":{"type":"integer"}}}}}}',
 null, now(), now());
 
 -- 2) JD 메타 추출 (문서 Task 5.2) — 7필드: 기업명·포지션·기업/팀 소개·업무·필요/우대 경험·전형 절차

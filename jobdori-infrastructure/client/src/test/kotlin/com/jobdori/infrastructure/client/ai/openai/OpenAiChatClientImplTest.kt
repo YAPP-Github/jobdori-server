@@ -98,16 +98,23 @@ class OpenAiChatClientImplTest : StringSpec() {
             sent shouldContain "\"schema\":{\"type\":\"object\""   // 중첩 객체로 재직렬화됨
         }
 
-        "429 응답은 E429_AI_RATE_LIMITED로 매핑된다" {
-            server.enqueue(MockResponse().setResponseCode(429))
+        "429 응답은 재시도 소진 후 E429_AI_RATE_LIMITED로 매핑된다" {
+            repeat(3) { server.enqueue(MockResponse().setResponseCode(429)) }   // 최초 1회 + 재시도 2회
             shouldThrow<AiException> { client.generateText(textRequest()) }
                 .errorCode shouldBe AiErrorCode.E429_AI_RATE_LIMITED
+            server.requestCount shouldBe 3
         }
 
-        "5xx 응답은 E503_AI_UNAVAILABLE로 매핑된다" {
-            server.enqueue(MockResponse().setResponseCode(500))
+        "5xx 응답은 재시도 소진 후 E503_AI_UNAVAILABLE로 매핑된다" {
+            repeat(3) { server.enqueue(MockResponse().setResponseCode(500)) }
             shouldThrow<AiException> { client.generateText(textRequest()) }
                 .errorCode shouldBe AiErrorCode.E503_AI_UNAVAILABLE
+        }
+
+        "429 뒤에 성공 응답이 오면 재시도로 회복한다" {
+            server.enqueue(MockResponse().setResponseCode(429))
+            server.enqueue(jsonResponse("""{"choices":[{"message":{"role":"assistant","content":"ok"}}]}"""))
+            client.generateText(textRequest()) shouldBe "ok"
         }
 
         "429 외 4xx(예: 401)는 E500_AI_GENERATION_FAILED로 매핑된다" {

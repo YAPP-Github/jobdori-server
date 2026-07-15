@@ -21,8 +21,8 @@ class RegisterJdService(
     fun registerByUrl(workspaceId: Long, url: String): JdRegisterResult =
         register(workspaceId, sourceUrl = url, body = crawler.fetchBody(url))
 
-    fun registerByText(workspaceId: Long, body: String): JdRegisterResult =
-        register(workspaceId, sourceUrl = null, body = body)
+    fun registerByText(workspaceId: Long, body: String, sourceUrl: String? = null): JdRegisterResult =
+        register(workspaceId, sourceUrl = sourceUrl, body = body)
 
     private fun register(workspaceId: Long, sourceUrl: String?, body: String): JdRegisterResult {
         if (body.length !in JdPolicy.MIN_JD_BODY_LENGTH..JdPolicy.MAX_JD_LENGTH) {

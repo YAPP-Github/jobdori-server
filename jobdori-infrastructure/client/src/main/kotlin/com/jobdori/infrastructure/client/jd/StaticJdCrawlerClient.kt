@@ -47,17 +47,32 @@ class StaticJdCrawlerClient(
         )
         .build()
 
+    // 호출당 사용량 로그(jd_crawl ...) 한 줄을 남긴다. ai_call 로그와 같은 key=value 형식으로,
+    // 키 이름은 로그 쿼리 호환성을 위해 함부로 바꾸지 않는다.
     override fun fetchBody(url: String): String {
-        val html = fetchHtml(url)
-        // 구조화 데이터 우선: __NEXT_DATA__(Next.js) → JSON-LD JobPosting → 일반 본문 추출 폴백
-        val body = nextDataJdParser.parse(url, html)
-            ?: jsonLdJdParser.parse(url, html)
-            ?: extractText(html, url)
-        if (body.length >= properties.minBodyLength) return body
-
-        log.warn { "JD 정적 크롤링 본문 부족: url=$url, length=${body.length}" }
-        throw JdCrawlException("본문 수집 실패(붙여넣기로 입력): $url", JdCrawlErrorCode.E422_JD_FETCH_FAILED)
+        val started = System.nanoTime()
+        return runCatching {
+            val html = fetchHtml(url)
+            // 구조화 데이터 우선: __NEXT_DATA__(Next.js) → JSON-LD JobPosting → 일반 본문 추출 폴백
+            val body = nextDataJdParser.parse(url, html)
+                ?: jsonLdJdParser.parse(url, html)
+                ?: extractText(html, url)
+            if (body.length < properties.minBodyLength) {
+                log.warn { "JD 정적 크롤링 본문 부족: url=$url, length=${body.length}" }
+                throw JdCrawlException("본문 수집 실패(붙여넣기로 입력): $url", JdCrawlErrorCode.E422_JD_FETCH_FAILED)
+            }
+            body
+        }
+            .onSuccess { body ->
+                log.info { "jd_crawl success=true latencyMs=${elapsedMs(started)} bodyLength=${body.length} url=$url" }
+            }
+            .onFailure { e ->
+                log.warn { "jd_crawl success=false latencyMs=${elapsedMs(started)} error=${e.javaClass.simpleName} url=$url" }
+            }
+            .getOrThrow()
     }
+
+    private fun elapsedMs(startNanos: Long): Long = (System.nanoTime() - startNanos) / 1_000_000
 
     private fun fetchHtml(startUrl: String): ByteArray? {
         var url = startUrl

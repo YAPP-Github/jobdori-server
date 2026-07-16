@@ -11,7 +11,9 @@ import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationSe
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.model.SliceResult
 import com.jobdori.core.application.jd.GetJdService
+import com.jobdori.core.application.jdinsight.GetJdInsightService
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.jdinsight.JdInsight
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
@@ -44,6 +46,7 @@ class ResumeServiceTest : StringSpec({
     val resumeRemover = mockk<ResumeRemover>()
     val resumeModifier = mockk<ResumeModifier>()
     val getJdService = mockk<GetJdService>()
+    val getJdInsightService = mockk<GetJdInsightService>()
     val resumeService = ResumeService(
         workspaceAccessValidationService = workspaceAccessValidationService,
         resumeCreator = resumeCreator,
@@ -51,6 +54,7 @@ class ResumeServiceTest : StringSpec({
         resumeRemover = resumeRemover,
         resumeModifier = resumeModifier,
         getJdService = getJdService,
+        getJdInsightService = getJdInsightService,
     )
 
     beforeTest {
@@ -364,6 +368,40 @@ class ResumeServiceTest : StringSpec({
         // then
         response.targetJd?.jdId shouldBe "jd-public-id"
         response.targetJd?.companyName shouldBe "잡도리"
+    }
+
+    "이력서 상세에 jdInsight를 요청하면 조회해 응답한다" {
+        // given
+        every {
+            resumeReader.getResume(workspaceId = 1L, resumeId = 103L)
+        } returns ResumeFixture.create(id = 103L, workspaceId = 1L, targetJdId = 20L)
+        every {
+            getJdService.getJd(workspaceId = 1L, id = 20L)
+        } returns targetJd()
+        every {
+            getJdInsightService.getOrGenerate(workspaceId = 1L, jdPublicId = "jd-public-id")
+        } returns JdInsight(
+            id = 30L,
+            jdId = 20L,
+            keyPoints = "핵심 포인트",
+            strategy = "지원 전략",
+        )
+
+        // when
+        val response = resumeService.getResume(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            resumeId = 103L,
+            includeSections = false,
+            includeSectionItems = false,
+            includeTargetJd = false,
+            includeJdInsight = true,
+        )
+
+        // then
+        response.targetJd shouldBe null
+        response.jdInsight?.keyPoints shouldBe "핵심 포인트"
+        response.jdInsight?.strategy shouldBe "지원 전략"
     }
 
     "이력서 저장 요청의 섹션 displayOrder가 중복되면 예외가 발생한다" {

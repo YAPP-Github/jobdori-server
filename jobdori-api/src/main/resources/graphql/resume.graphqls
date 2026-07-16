@@ -424,6 +424,11 @@ type Resume {
     targetJd: Jd
 
     """
+    대상 JD의 AI 인사이트입니다. 요청할 때만 조회하거나 생성합니다.
+    """
+    jdInsight: JdInsight
+
+    """
     이력서 템플릿입니다.
     """
     template: ResumeTemplate!

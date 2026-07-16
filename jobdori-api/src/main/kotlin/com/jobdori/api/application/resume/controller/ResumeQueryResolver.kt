@@ -33,7 +33,7 @@ class ResumeQueryResolver(
         statuses = statuses,
         cursor = request.cursor,
         size = request.size,
-        includeTargetJd = env.selectionSet.contains("targetJd"),
+        includeTargetJd = env.selectionSet.contains("resumes/targetJd"),
     )
 
     @QueryMapping
@@ -58,6 +58,7 @@ class ResumeQueryResolver(
         includeSections = env.selectionSet.contains("sections"),
         includeSectionItems = env.selectionSet.contains("sections/items"),
         includeTargetJd = env.selectionSet.contains("targetJd"),
+        includeJdInsight = env.selectionSet.contains("jdInsight"),
     )
 
 }

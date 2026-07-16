@@ -5,6 +5,7 @@ import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.error.ResumeNotFoundException
 import com.jobdori.core.domain.resume.repository.ResumeRepository
+import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.model.SliceResult
 import org.springframework.stereotype.Service
 
@@ -19,10 +20,18 @@ class ResumeReader(
         cursor: String?,
         size: Int,
     ): SliceResult<Resume> {
+        val cursorId = cursor?.let {
+            val parsedCursor = it.toLongOrNull()
+            if (parsedCursor == null || parsedCursor < 0) {
+                throw InvalidArgumentsException("유효하지 않은 커서 값입니다: $it")
+            }
+            parsedCursor
+        }
+
         val resumes = resumeRepository.findAllByWorkspaceIdAndStatuses(
             workspaceId = workspaceId,
             statuses = statuses,
-            cursorId = cursor?.toLongOrNull(),
+            cursorId = cursorId,
             size = size + 1,
         )
         val page = resumes.take(size)

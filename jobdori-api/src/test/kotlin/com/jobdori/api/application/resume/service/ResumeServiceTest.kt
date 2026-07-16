@@ -9,6 +9,11 @@ import com.jobdori.api.application.resume.dto.request.SaveResumeSectionItemReque
 import com.jobdori.api.application.resume.dto.request.SaveResumeSectionRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
+import com.jobdori.common.model.SliceResult
+import com.jobdori.core.application.jd.GetJdService
+import com.jobdori.core.application.jdinsight.GetJdInsightService
+import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.jdinsight.JdInsight
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
@@ -40,12 +45,16 @@ class ResumeServiceTest : StringSpec({
     val resumeReader = mockk<ResumeReader>()
     val resumeRemover = mockk<ResumeRemover>()
     val resumeModifier = mockk<ResumeModifier>()
+    val getJdService = mockk<GetJdService>()
+    val getJdInsightService = mockk<GetJdInsightService>()
     val resumeService = ResumeService(
         workspaceAccessValidationService = workspaceAccessValidationService,
         resumeCreator = resumeCreator,
         resumeReader = resumeReader,
         resumeRemover = resumeRemover,
         resumeModifier = resumeModifier,
+        getJdService = getJdService,
+        getJdInsightService = getJdInsightService,
     )
 
     beforeTest {
@@ -267,6 +276,134 @@ class ResumeServiceTest : StringSpec({
         }
     }
 
+    "이력서 목록의 대상 JD를 한 번에 조회한다" {
+        // given
+        every {
+            resumeReader.getResumes(
+                workspaceId = 1L,
+                statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+                cursor = null,
+                size = 10,
+            )
+        } returns SliceResult(
+            items = listOf(
+                ResumeFixture.create(id = 100L, workspaceId = 1L, targetJdId = 20L),
+                ResumeFixture.create(id = 101L, workspaceId = 1L, targetJdId = 20L),
+            ),
+            nextCursor = "101",
+        )
+        every {
+            getJdService.getJds(workspaceId = 1L, ids = listOf(20L, 20L))
+        } returns listOf(targetJd())
+
+        // when
+        val response = resumeService.getResumes(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            statuses = null,
+            cursor = null,
+            size = 10,
+            includeTargetJd = true,
+        )
+
+        // then
+        response.resumes.map { it.targetJd?.jdId } shouldBe listOf("jd-public-id", "jd-public-id")
+        response.cursor.nextCursor shouldBe "101"
+        response.cursor.hasNext shouldBe true
+        verify(exactly = 1) {
+            getJdService.getJds(workspaceId = 1L, ids = listOf(20L, 20L))
+        }
+    }
+
+    "이력서 목록에 targetJd를 요청하지 않으면 JD를 조회하지 않는다" {
+        // given
+        every {
+            resumeReader.getResumes(
+                workspaceId = 1L,
+                statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+                cursor = "102",
+                size = 10,
+            )
+        } returns SliceResult(
+            items = listOf(ResumeFixture.create(id = 102L, workspaceId = 1L, targetJdId = 99L)),
+            nextCursor = null,
+        )
+
+        // when
+        val response = resumeService.getResumes(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            statuses = null,
+            cursor = "102",
+            size = 10,
+            includeTargetJd = false,
+        )
+
+        // then
+        response.resumes.single().targetJd shouldBe null
+        verify(exactly = 0) {
+            getJdService.getJds(workspaceId = 1L, ids = listOf(99L))
+        }
+    }
+
+    "이력서의 targetJdId로 대상 JD를 조회해 응답한다" {
+        // given
+        every {
+            resumeReader.getResume(workspaceId = 1L, resumeId = 100L)
+        } returns ResumeFixture.create(id = 100L, workspaceId = 1L, targetJdId = 20L)
+        every {
+            getJdService.getJd(workspaceId = 1L, id = 20L)
+        } returns targetJd()
+
+        // when
+        val response = resumeService.getResume(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            resumeId = 100L,
+            includeSections = false,
+            includeSectionItems = false,
+            includeTargetJd = true,
+        )
+
+        // then
+        response.targetJd?.jdId shouldBe "jd-public-id"
+        response.targetJd?.companyName shouldBe "잡도리"
+    }
+
+    "이력서 상세에 jdInsight를 요청하면 조회해 응답한다" {
+        // given
+        every {
+            resumeReader.getResume(workspaceId = 1L, resumeId = 103L)
+        } returns ResumeFixture.create(id = 103L, workspaceId = 1L, targetJdId = 20L)
+        every {
+            getJdService.getJd(workspaceId = 1L, id = 20L)
+        } returns targetJd()
+        every {
+            getJdInsightService.getOrGenerate(workspaceId = 1L, jdPublicId = "jd-public-id")
+        } returns JdInsight(
+            id = 30L,
+            jdId = 20L,
+            keyPoints = "핵심 포인트",
+            strategy = "지원 전략",
+        )
+
+        // when
+        val response = resumeService.getResume(
+            userId = 10L,
+            workspaceId = "workspace-id",
+            resumeId = 103L,
+            includeSections = false,
+            includeSectionItems = false,
+            includeTargetJd = false,
+            includeJdInsight = true,
+        )
+
+        // then
+        response.targetJd shouldBe null
+        response.jdInsight?.keyPoints shouldBe "핵심 포인트"
+        response.jdInsight?.strategy shouldBe "지원 전략"
+    }
+
     "이력서 저장 요청의 섹션 displayOrder가 중복되면 예외가 발생한다" {
         // given
         val request = SaveResumeRequest(
@@ -344,6 +481,21 @@ class ResumeServiceTest : StringSpec({
     }
 
 })
+
+private fun targetJd() = Jd(
+    id = 20L,
+    publicId = "jd-public-id",
+    workspaceId = 1L,
+    sourceUrl = null,
+    companyName = "잡도리",
+    positionTitle = "백엔드 개발자",
+    companyIntro = "",
+    responsibilities = emptyList(),
+    requiredExperiences = emptyList(),
+    preferredExperiences = emptyList(),
+    hiringProcess = emptyList(),
+    coreCompetencies = emptyList(),
+)
 
 private fun saveRequest() = SaveResumeRequest(
     targetJdId = null,

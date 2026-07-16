@@ -1,5 +1,6 @@
 package com.jobdori.infrastructure.persistence.domain.experience.entity
 
+import com.jobdori.common.model.Period
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceStatus
@@ -13,6 +14,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
+import java.time.LocalDate
 
 @Table(name = "experience_v1")
 @Entity
@@ -34,6 +36,15 @@ class ExperienceEntity(
     @Column(nullable = false, columnDefinition = "jsonb")
     var contents: ExperienceContents,
 
+    @Column
+    var startAt: LocalDate?,
+
+    @Column
+    var endAt: LocalDate?,
+
+    @Column(length = 100)
+    var role: String?,
+
     @Column(nullable = false)
     var displayOrder: Double,
 
@@ -53,9 +64,16 @@ class ExperienceEntity(
         tags = tags,
         title = title,
         contents = contents,
+        period = toPeriod(),
+        role = role,
         displayOrder = displayOrder,
         status = status,
     )
+
+    private fun toPeriod(): Period? {
+        if (startAt == null && endAt == null) return null
+        return Period(startAt = startAt, endAt = endAt)
+    }
 
     companion object {
         fun from(domain: Experience) = ExperienceEntity(
@@ -64,6 +82,9 @@ class ExperienceEntity(
             tags = domain.tags,
             title = domain.title,
             contents = domain.contents,
+            startAt = domain.period?.startAt,
+            endAt = domain.period?.endAt,
+            role = domain.role,
             displayOrder = domain.displayOrder,
             status = domain.status,
         ).also { it.id = domain.id }

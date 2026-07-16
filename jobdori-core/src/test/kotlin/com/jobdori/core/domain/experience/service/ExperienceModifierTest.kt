@@ -37,6 +37,8 @@ class ExperienceModifierTest : StringSpec({
             tags = listOf("GraphQL"),
             title = "GraphQL API 개선",
             contents = contents,
+            period = null,
+            role = null,
         )
 
         // then
@@ -48,9 +50,9 @@ class ExperienceModifierTest : StringSpec({
         )
     }
 
-    "수정 값이 null이면 기존 값을 유지한다" {
+    "nullable 수정 값이 null이면 기존 값을 제거한다" {
         // given
-        val experience = ExperienceFixture.create(id = 1L, workspaceId = 10L, projectId = 5L)
+        val experience = ExperienceFixture.create(id = 1L, workspaceId = 10L, projectId = 5L).copy(role = "기존 역할")
         every { experienceRepository.findByIdAndWorkspaceId(1L, 10L) } returns experience
         every { experienceRepository.save(any()) } answers { firstArg() }
 
@@ -58,14 +60,23 @@ class ExperienceModifierTest : StringSpec({
         val modified = experienceModifier.modify(
             workspaceId = 10L,
             experienceId = 1L,
-            projectId = null,
-            tags = null,
-            title = null,
-            contents = null,
+            projectId = 6L,
+            tags = emptyList(),
+            title = "수정 경험",
+            contents = ExperienceContents.free("수정 내용"),
+            period = null,
+            role = null,
         )
 
         // then
-        modified shouldBe experience
+        modified shouldBe experience.copy(
+            projectId = 6L,
+            tags = emptyList(),
+            title = "수정 경험",
+            contents = ExperienceContents.free("수정 내용"),
+            period = null,
+            role = null,
+        )
     }
 
     "수정할 경험이 없으면 예외를 던진다" {
@@ -81,6 +92,8 @@ class ExperienceModifierTest : StringSpec({
                 tags = listOf("GraphQL"),
                 title = "GraphQL API 개선",
                 contents = ExperienceContents.free("수정 내용"),
+                period = null,
+                role = null,
             )
         }
     }

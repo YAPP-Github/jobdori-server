@@ -1,5 +1,6 @@
 package com.jobdori.core.domain.experience.service
 
+import com.jobdori.common.model.Period
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.error.ExperienceNotFoundException
@@ -16,23 +17,25 @@ class ExperienceModifier(
     fun modify(
         workspaceId: Long,
         experienceId: Long,
-        projectId: Long?,
-        tags: List<String>?,
-        title: String?,
-        contents: ExperienceContents?,
+        projectId: Long,
+        tags: List<String>,
+        title: String,
+        contents: ExperienceContents,
+        period: Period?,
+        role: String?,
     ): Experience {
         val experience = experienceRepository.findByIdAndWorkspaceId(experienceId, workspaceId)
             ?: throw ExperienceNotFoundException(
                 "존재하지 않는 경험입니다. [workspaceId=$workspaceId, experienceId=$experienceId]",
             )
-        val targetProjectId = projectId ?: experience.projectId
-
         return experienceRepository.save(
             experience.copy(
-                projectId = targetProjectId,
-                tags = tags ?: experience.tags,
-                title = title ?: experience.title,
-                contents = contents ?: experience.contents,
+                projectId = projectId,
+                tags = tags,
+                title = title,
+                contents = contents,
+                period = period,
+                role = role,
             ),
         )
     }

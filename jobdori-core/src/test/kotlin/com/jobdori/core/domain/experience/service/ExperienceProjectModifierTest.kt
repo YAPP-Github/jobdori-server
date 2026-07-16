@@ -53,9 +53,9 @@ class ExperienceProjectModifierTest : StringSpec({
         )
     }
 
-    "수정 값이 null이면 기존 값을 유지한다" {
+    "nullable 수정 값이 null이면 기존 값을 제거한다" {
         // given
-        val project = ExperienceProjectFixture.create(id = 1L, workspaceId = 10L)
+        val project = ExperienceProjectFixture.create(id = 1L, workspaceId = 10L, role = "기존 역할")
         every { experienceProjectRepository.findByIdAndWorkspaceId(1L, 10L) } returns project
         every { experienceProjectRepository.save(any()) } answers { firstArg() }
 
@@ -63,14 +63,19 @@ class ExperienceProjectModifierTest : StringSpec({
         val modified = experienceProjectModifier.modify(
             workspaceId = 10L,
             projectId = 1L,
-            name = null,
-            summary = null,
+            name = "수정 프로젝트",
+            summary = "수정 요약",
             period = null,
             role = null,
         )
 
         // then
-        modified shouldBe project
+        modified shouldBe project.copy(
+            name = "수정 프로젝트",
+            summary = "수정 요약",
+            period = null,
+            role = null,
+        )
     }
 
     "수정할 경험 프로젝트가 없으면 예외를 던진다" {

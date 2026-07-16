@@ -11,6 +11,7 @@ import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeEntity
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeSectionEntity
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeSectionItemEntity
 import org.springframework.stereotype.Repository
+import org.springframework.data.domain.PageRequest
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
@@ -29,15 +30,29 @@ class ResumeRepositoryImpl(
     override fun findAllByWorkspaceIdAndStatuses(
         workspaceId: Long,
         statuses: Collection<ResumeStatus>,
+        cursorId: Long?,
+        size: Int,
     ): List<Resume> {
         if (statuses.isEmpty()) {
             return emptyList()
         }
 
-        return resumeJpaRepository.findAllByWorkspaceIdAndStatusInOrderByIdDesc(
-            workspaceId = workspaceId,
-            statuses = statuses,
-        ).map { it.toDomain() }
+        val pageable = PageRequest.of(0, size)
+        val entities = if (cursorId == null) {
+            resumeJpaRepository.findAllByWorkspaceIdAndStatusInOrderByIdDesc(
+                workspaceId = workspaceId,
+                statuses = statuses,
+                pageable = pageable,
+            )
+        } else {
+            resumeJpaRepository.findAllByWorkspaceIdAndStatusInAndIdLessThanOrderByIdDesc(
+                workspaceId = workspaceId,
+                statuses = statuses,
+                id = cursorId,
+                pageable = pageable,
+            )
+        }
+        return entities.map { it.toDomain() }
     }
 
     @Transactional(readOnly = true)

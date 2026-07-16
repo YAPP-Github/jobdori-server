@@ -45,6 +45,9 @@ create table experience_v1 (
     tags jsonb not null,
     title varchar(150) not null,
     contents jsonb not null,
+    start_at date,
+    end_at date,
+    role varchar(100),
     display_order float(53) not null,
     status varchar(30) not null,
     created_at timestamp(6),
@@ -313,4 +316,3 @@ create table workspace_v1 (
     primary key (id),
     constraint uk_workspace_owner_user_id unique (owner_user_id)
 );
-

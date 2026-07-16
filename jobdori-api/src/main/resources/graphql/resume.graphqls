@@ -10,8 +10,16 @@ extend type Query {
         """
         조회할 이력서 상태 목록입니다 (생략하면 COMPLETED, DRAFT를 모두 조회)
         """
-        statuses: [ResumeStatusType!]
-    ): [ResumeSummary!]!
+        statuses: [ResumeStatusType!],
+        """
+        다음 페이지를 조회할 때 사용할 커서입니다.
+        """
+        cursor: String,
+        """
+        한 번에 조회할 이력서 개수입니다. (1 이상 30 이하)
+        """
+        size: Int!
+    ): Resumes!
 
     """
     워크스페이스의 이력서 수를 상태별로 조회합니다.
@@ -411,6 +419,16 @@ type Resume {
     resumeId: ID!
 
     """
+    이력서의 대상 JD입니다.
+    """
+    targetJd: Jd
+
+    """
+    대상 JD의 AI 인사이트입니다. 요청할 때만 조회하거나 생성합니다.
+    """
+    jdInsight: JdInsight
+
+    """
     이력서 템플릿입니다.
     """
     template: ResumeTemplate!
@@ -446,6 +464,11 @@ type ResumeSummary {
     resumeId: ID!
 
     """
+    이력서의 대상 JD입니다.
+    """
+    targetJd: Jd
+
+    """
     이력서 템플릿입니다.
     """
     template: ResumeTemplate!
@@ -464,6 +487,14 @@ type ResumeSummary {
     마지막 수정 시각입니다.
     """
     updatedAt: String!
+}
+
+"""
+이력서 목록과 커서 정보입니다.
+"""
+type Resumes {
+    resumes: [ResumeSummary!]!
+    cursor: Cursor!
 }
 
 """

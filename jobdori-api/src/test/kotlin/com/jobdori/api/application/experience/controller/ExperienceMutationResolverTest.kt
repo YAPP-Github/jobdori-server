@@ -146,6 +146,8 @@ internal class ExperienceMutationResolverTest(
                     workspaceId: "workspace-id",
                     experienceId: 100,
                     request: {
+                      projectId: 1,
+                      tags: ["회고"],
                       title: "프로젝트 회고",
                       contents: {
                         type: FREE,
@@ -326,6 +328,8 @@ internal class ExperienceMutationResolverTest(
                     workspaceId: "workspace-id",
                     projectId: 100,
                     request: {
+                      name: "신규 브랜드 런칭 캠페인",
+                      summary: "브랜드 런칭 캠페인을 진행한 프로젝트",
                       role: "Brand Growth Lead"
                     }
                   ) {

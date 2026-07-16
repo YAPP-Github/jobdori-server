@@ -244,6 +244,8 @@ class ExperienceServiceTest : StringSpec({
                 tags = listOf("Spring"),
                 title = "수정 경험",
                 contents = contents,
+                period = null,
+                role = null,
             )
         } returns modified
 

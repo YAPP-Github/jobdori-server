@@ -1,6 +1,8 @@
 package com.jobdori.api.application.resume.dto.response
 
 import com.jobdori.api.application.resume.dto.ResumeStatusType
+import com.jobdori.api.application.jd.dto.response.JdResponse
+import com.jobdori.api.application.jd.dto.response.JdInsightResponse
 import com.jobdori.common.time.toInstantAtSystemDefaultZone
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeDetail
@@ -12,6 +14,8 @@ import java.time.Instant
 
 data class ResumeResponse(
     val resumeId: Long,
+    val targetJd: JdResponse?,
+    val jdInsight: JdInsightResponse?,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
     val sections: List<ResumeSectionResponse>,
@@ -20,8 +24,14 @@ data class ResumeResponse(
 ) {
 
     companion object {
-        fun from(resume: Resume) = ResumeResponse(
+        fun from(
+            resume: Resume,
+            targetJd: JdResponse?,
+            jdInsight: JdInsightResponse? = null,
+        ) = ResumeResponse(
             resumeId = resume.id,
+            targetJd = targetJd,
+            jdInsight = jdInsight,
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
             sections = emptyList(),
@@ -29,8 +39,14 @@ data class ResumeResponse(
             updatedAt = resume.updatedAt.toInstantAtSystemDefaultZone(),
         )
 
-        fun from(detail: ResumeDetail) = ResumeResponse(
+        fun from(
+            detail: ResumeDetail,
+            targetJd: JdResponse?,
+            jdInsight: JdInsightResponse? = null,
+        ) = ResumeResponse(
             resumeId = detail.resume.id,
+            targetJd = targetJd,
+            jdInsight = jdInsight,
             template = detail.resume.template,
             status = ResumeStatusType.from(detail.resume.status),
             sections = detail.sections

@@ -48,6 +48,8 @@ class ExperienceService(
                 title = request.title,
                 contents = request.contents.toDomain(),
                 tags = request.tags,
+                period = request.period?.toPeriod(),
+                role = request.role,
             ),
         )
 
@@ -68,12 +70,10 @@ class ExperienceService(
             userId = userId,
         )
 
-        if (request.projectId != null) {
-            experienceProjectReader.getProject(
-                workspaceId = workspace.id,
-                projectId = request.projectId,
-            )
-        }
+        experienceProjectReader.getProject(
+            workspaceId = workspace.id,
+            projectId = request.projectId,
+        )
 
         val modified = experienceModifier.modify(
             workspaceId = workspace.id,
@@ -81,7 +81,9 @@ class ExperienceService(
             projectId = request.projectId,
             tags = request.tags,
             title = request.title,
-            contents = request.contents?.toDomain(),
+            contents = request.contents.toDomain(),
+            period = request.period?.toPeriod(),
+            role = request.role,
         )
         val project = experienceProjectReader.getProject(
             workspaceId = workspace.id,

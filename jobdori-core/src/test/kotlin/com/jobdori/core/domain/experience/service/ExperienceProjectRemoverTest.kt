@@ -1,5 +1,6 @@
 package com.jobdori.core.domain.experience.service
 
+import com.jobdori.core.domain.experience.ExperienceProject
 import com.jobdori.core.domain.experience.ExperienceProjectFixture
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
 import com.jobdori.core.domain.experience.error.ExperienceProjectNotFoundException
@@ -22,7 +23,7 @@ class ExperienceProjectRemoverTest : StringSpec({
     "경험 프로젝트 상태를 삭제로 변경한다" {
         // given
         val project = ExperienceProjectFixture.create(id = 1L, workspaceId = 10L)
-        val savedProject = slot<com.jobdori.core.domain.experience.ExperienceProject>()
+        val savedProject = slot<ExperienceProject>()
         every { experienceProjectRepository.findByIdAndWorkspaceId(1L, 10L) } returns project
         every { experienceProjectRepository.save(capture(savedProject)) } answers { firstArg() }
 

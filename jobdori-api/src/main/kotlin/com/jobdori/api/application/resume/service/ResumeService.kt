@@ -5,7 +5,13 @@ import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
 import com.jobdori.api.application.resume.dto.response.ResumeStatusCountResponse
 import com.jobdori.api.application.resume.dto.response.ResumeSummaryResponse
+import com.jobdori.api.application.resume.dto.response.ResumeListResponse
+import com.jobdori.api.application.common.dto.response.CursorResponse
+import com.jobdori.api.application.jd.dto.response.JdResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
+import com.jobdori.core.application.jd.GetJdService
+import com.jobdori.core.domain.resume.Resume
+import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.service.ResumeCreator
 import com.jobdori.core.domain.resume.service.ResumeReader
 import com.jobdori.core.domain.resume.service.ResumeRemover
@@ -19,23 +25,41 @@ class ResumeService(
     private val resumeReader: ResumeReader,
     private val resumeRemover: ResumeRemover,
     private val resumeModifier: ResumeModifier,
+    private val getJdService: GetJdService,
 ) {
 
     fun getResumes(
         userId: Long,
         workspaceId: String,
         statuses: List<ResumeStatusType>?,
-    ): List<ResumeSummaryResponse> {
+        cursor: String?,
+        size: Int,
+        includeTargetJd: Boolean = false,
+    ): ResumeListResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,
         )
         val allowedStatuses = resolveListStatuses(statuses)
 
-        return resumeReader.getResumes(
+        val result = resumeReader.getResumes(
             workspaceId = workspace.id,
             statuses = allowedStatuses,
-        ).map { ResumeSummaryResponse.from(it) }
+            cursor = cursor,
+            size = size,
+        )
+        val resumes = result.items
+        val targetJdsById = if (includeTargetJd) getTargetJds(workspace.id, resumes) else emptyMap()
+
+        return ResumeListResponse(
+            resumes = resumes.map { resume ->
+            ResumeSummaryResponse.from(
+                resume = resume,
+                targetJd = resume.targetJdId?.let(targetJdsById::get),
+            )
+            },
+            cursor = CursorResponse(nextCursor = result.nextCursor),
+        )
     }
 
     fun getResume(
@@ -44,6 +68,7 @@ class ResumeService(
         resumeId: Long,
         includeSections: Boolean,
         includeSectionItems: Boolean,
+        includeTargetJd: Boolean = false,
     ): ResumeResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -51,16 +76,22 @@ class ResumeService(
         )
 
         return when {
-            includeSectionItems -> ResumeResponse.from(
-                resumeReader.getDetail(workspaceId = workspace.id, resumeId = resumeId),
+            includeSectionItems -> toResponse(
+                workspaceId = workspace.id,
+                detail = resumeReader.getDetail(workspaceId = workspace.id, resumeId = resumeId),
+                includeTargetJd = includeTargetJd,
             )
 
-            includeSections -> ResumeResponse.from(
-                resumeReader.getSections(workspaceId = workspace.id, resumeId = resumeId),
+            includeSections -> toResponse(
+                workspaceId = workspace.id,
+                detail = resumeReader.getSections(workspaceId = workspace.id, resumeId = resumeId),
+                includeTargetJd = includeTargetJd,
             )
 
-            else -> ResumeResponse.from(
-                resumeReader.getResume(workspaceId = workspace.id, resumeId = resumeId),
+            else -> toResponse(
+                workspaceId = workspace.id,
+                resume = resumeReader.getResume(workspaceId = workspace.id, resumeId = resumeId),
+                includeTargetJd = includeTargetJd,
             )
         }
     }
@@ -91,17 +122,20 @@ class ResumeService(
         userId: Long,
         workspaceId: String,
         request: SaveResumeRequest,
+        includeTargetJd: Boolean = false,
     ): ResumeResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,
         )
 
-        return ResumeResponse.from(
-            resumeCreator.createDetail(
+        return toResponse(
+            workspaceId = workspace.id,
+            detail = resumeCreator.createDetail(
                 workspaceId = workspace.id,
                 command = request.toCommand(),
             ),
+            includeTargetJd = includeTargetJd,
         )
     }
 
@@ -110,18 +144,21 @@ class ResumeService(
         workspaceId: String,
         resumeId: Long,
         request: SaveResumeRequest,
+        includeTargetJd: Boolean = false,
     ): ResumeResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,
         )
 
-        return ResumeResponse.from(
-            resumeModifier.modifyDetail(
+        return toResponse(
+            workspaceId = workspace.id,
+            detail = resumeModifier.modifyDetail(
                 workspaceId = workspace.id,
                 resumeId = resumeId,
                 command = request.toCommand(),
             ),
+            includeTargetJd = includeTargetJd,
         )
     }
 
@@ -142,5 +179,24 @@ class ResumeService(
         )
         .distinct()
         .map { it.toDomain() }
+
+    private fun toResponse(workspaceId: Long, resume: Resume, includeTargetJd: Boolean) = ResumeResponse.from(
+        resume = resume,
+        targetJd = if (includeTargetJd) getTargetJd(workspaceId, resume) else null,
+    )
+
+    private fun toResponse(workspaceId: Long, detail: ResumeDetail, includeTargetJd: Boolean) = ResumeResponse.from(
+        detail = detail,
+        targetJd = if (includeTargetJd) getTargetJd(workspaceId = workspaceId, resume = detail.resume) else null,
+    )
+
+    private fun getTargetJd(workspaceId: Long, resume: Resume): JdResponse? = resume.targetJdId?.let { targetJdId ->
+        JdResponse.from(getJdService.getJd(workspaceId = workspaceId, id = targetJdId))
+    }
+
+    private fun getTargetJds(workspaceId: Long, resumes: List<Resume>): Map<Long, JdResponse> = getJdService.getJds(
+        workspaceId = workspaceId,
+        ids = resumes.mapNotNull { it.targetJdId },
+    ).associate { jd -> jd.id to JdResponse.from(jd) }
 
 }

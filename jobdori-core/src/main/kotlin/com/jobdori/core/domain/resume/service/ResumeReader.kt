@@ -5,6 +5,7 @@ import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.error.ResumeNotFoundException
 import com.jobdori.core.domain.resume.repository.ResumeRepository
+import com.jobdori.common.model.SliceResult
 import org.springframework.stereotype.Service
 
 @Service
@@ -12,10 +13,23 @@ class ResumeReader(
     private val resumeRepository: ResumeRepository,
 ) {
 
-    fun getResumes(workspaceId: Long, statuses: Collection<ResumeStatus>): List<Resume> {
-        return resumeRepository.findAllByWorkspaceIdAndStatuses(
+    fun getResumes(
+        workspaceId: Long,
+        statuses: Collection<ResumeStatus>,
+        cursor: String?,
+        size: Int,
+    ): SliceResult<Resume> {
+        val resumes = resumeRepository.findAllByWorkspaceIdAndStatuses(
             workspaceId = workspaceId,
             statuses = statuses,
+            cursorId = cursor?.toLongOrNull(),
+            size = size + 1,
+        )
+        val page = resumes.take(size)
+
+        return SliceResult(
+            items = page,
+            nextCursor = if (resumes.size > size) page.lastOrNull()?.id?.toString() else null,
         )
     }
 

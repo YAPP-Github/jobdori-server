@@ -167,6 +167,48 @@ class ResumeServiceTest : StringSpec({
         exception.details.single().field shouldBe "sections.items"
     }
 
+    "기본 아이템이 없으면 해당 섹션을 생성하지 않는다" {
+        val request = CreateResumeRequest(
+            targetJdId = null,
+            template = ResumeTemplate.DEFAULT,
+            status = ResumeStatusType.DRAFT,
+            sections = listOf(
+                SaveResumeSectionRequest(
+                    sectionId = null,
+                    type = ResumeSectionType.SKILL,
+                    displayOrder = 100.0,
+                    visible = true,
+                    items = emptyList(),
+                    useDefaultItems = true,
+                ),
+            ),
+        )
+        val profile = Profile(1L, 1L, "홍길동", null, null, null)
+        val profileDetail = ProfileDetail(
+            profile = profile,
+            sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+        )
+        val createdDetail = ResumeDetail(
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
+            sections = emptyList(),
+        )
+        every { profileReader.getOrCreateProfile(1L) } returns profile
+        every { profileReader.getDetail(profile) } returns profileDetail
+        every {
+            profileResumeSectionInitializer.initializeItems(profileDetail, ResumeSectionType.SKILL)
+        } returns emptyList()
+        every { resumeCreator.createDetail(workspaceId = 1L, command = any()) } returns createdDetail
+
+        resumeService.createResume(10L, "workspace-id", request)
+
+        verify(exactly = 1) {
+            resumeCreator.createDetail(
+                workspaceId = 1L,
+                command = withArg { it.sections shouldBe emptyList() },
+            )
+        }
+    }
+
     "이력서 수정 요청을 command로 변환해 modifier에 위임한다" {
         // given
         val request = saveRequest()

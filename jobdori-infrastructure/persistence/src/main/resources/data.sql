@@ -3,16 +3,14 @@ VALUES (1, 'gpt-4o-mini', 'OPEN_AI', now(), now());
 
 INSERT INTO ai_model_configs_v1 (id, ai_model_id, name, description, parameters, created_at, updated_at)
 VALUES
-  (1, 1, 'jd_multi_posting_split', 'JD 다중 공고 분할',           '{"temperature":0.0}', now(), now()),
-  (2, 1, 'jd_meta',                'JD 메타(기업명·포지션·소개·업무·필요/우대경험·전형절차) 추출', '{"temperature":0.2}', now(), now()),
-  (3, 1, 'jd_application_strategy','JD 지원 전략 생성',           '{"temperature":0.6}', now(), now()),
-  (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}', now(), now()),
-  (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}' , now(), now()),
-  (6, 1, 'experience.contents_polish','Free Style 경험 내용 STAR 변환', '{"temperature":0.2,"maxTokens":1200}', now(), now()),
-  (7, 1, 'jd_key_points',          'JD 공고 핵심 요약',           '{"temperature":0.4}', now(), now()),
-  (8, 1, 'experience_recommendation','JD-경험 매칭률·이유',        '{"temperature":0.2}', now(), now()),
-  (9, 1, 'profile.core_competency', '프로필 핵심역량 생성',        '{"temperature":0.6,"maxTokens":900}', now(), now()),
-  (10, 1, 'profile.text_polish',    '프로필 텍스트 다듬기',        '{"temperature":0.4,"maxTokens":1200}', now(), now());
+  (1, 1, 'jd_multi_posting_split', 'JD 다중 공고 분할',           '{"temperature":0.0}' FORMAT JSON, now(), now()),
+  (2, 1, 'jd_meta',                'JD 메타(기업명·포지션·소개·업무·필요/우대경험·전형절차) 추출', '{"temperature":0.2}' FORMAT JSON, now(), now()),
+  (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}' FORMAT JSON, now(), now()),
+  (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}' FORMAT JSON, now(), now()),
+  (6, 1, 'experience.contents_polish','Free Style 경험 내용 STAR 변환', '{"temperature":0.2,"maxTokens":1200}' FORMAT JSON, now(), now()),
+  (8, 1, 'experience_recommendation','JD-경험 매칭률·이유',        '{"temperature":0.2}' FORMAT JSON, now(), now()),
+  (9, 1, 'profile.core_competency', '프로필 핵심역량 생성',        '{"temperature":0.6,"maxTokens":900}' FORMAT JSON, now(), now()),
+  (10, 1, 'profile.text_polish',    '프로필 텍스트 다듬기',        '{"temperature":0.4,"maxTokens":1200}' FORMAT JSON, now(), now());
 
 -- 1) JD 다중 공고 분할 (문서 JD-B.6)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)

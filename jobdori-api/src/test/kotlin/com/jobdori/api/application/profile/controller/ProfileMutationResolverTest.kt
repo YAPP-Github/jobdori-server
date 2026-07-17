@@ -50,7 +50,7 @@ internal class ProfileMutationResolverTest(
                   updateProfile(
                     workspaceId: "workspace-id",
                     request: {
-                      name: "김지윤",
+                      name: "잡도리",
                       coreCompetency: "핵심역량 내용",
                       educations: [
                         {
@@ -89,7 +89,7 @@ internal class ProfileMutationResolverTest(
             )
             .execute()
             .path("updateProfile.profileId").entity<String>().isEqualTo("10")
-            .path("updateProfile.name").entity<String>().isEqualTo("김지윤")
+            .path("updateProfile.name").entity<String>().isEqualTo("잡도리")
             .path("updateProfile.coreCompetency").entity<String>().isEqualTo("핵심역량 내용")
             .path("updateProfile.educations[0].school").entity<String>().isEqualTo("잡도리대학교")
             .path("updateProfile.educations[0].degree").entity<String>().isEqualTo("BACHELOR")

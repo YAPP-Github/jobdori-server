@@ -19,6 +19,7 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldNotContain
 
 @IntegrationTest
 class ResumeRepositoryTest(
@@ -55,6 +56,23 @@ class ResumeRepositoryTest(
         detail.sections.flatMap { it.items }.map { it.payload.type } shouldContainExactly listOf(
             ResumeSectionType.BASIC_INFO,
             ResumeSectionType.CAREER,
+        )
+    }
+
+    "이력서 기본정보 개인정보를 암호화해서 저장하고 복호화해서 조회한다" {
+        val detail = resumeRepository.createDetail(
+            workspaceId = 10L,
+            command = saveCommand(),
+        )
+
+        val storedPayload = sectionItemJpaRepository.findAll().single().payload
+        storedPayload shouldNotContain "홍길동"
+        storedPayload shouldNotContain "hong@example.com"
+        storedPayload shouldNotContain "010-0000-0000"
+        detail.sections.single().items.single().payload shouldBe ResumeBasicInfoPayload(
+            name = "홍길동",
+            email = "hong@example.com",
+            phone = "010-0000-0000",
         )
     }
 

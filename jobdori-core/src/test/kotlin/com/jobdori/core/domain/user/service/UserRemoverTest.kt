@@ -1,8 +1,6 @@
 package com.jobdori.core.domain.user.service
 
 import com.jobdori.core.domain.user.User
-import com.jobdori.core.domain.user.UserIdentity
-import com.jobdori.core.domain.user.UserIdentityProvider
 import com.jobdori.core.domain.user.WithdrawalUser
 import com.jobdori.core.domain.user.error.UserNotFoundException
 import com.jobdori.core.domain.user.repository.UserIdentityRepository
@@ -25,9 +23,7 @@ class UserRemoverTest : StringSpec({
 
     "사용자를 백업한 뒤 식별 정보와 사용자를 삭제한다" {
         val user = User(1L, "public-id", "user@example.com", "홍길동", null)
-        val identity = UserIdentity(2L, 1L, UserIdentityProvider.GOOGLE, "google-id")
         every { userRepository.findById(1L) } returns user
-        every { userIdentityRepository.findAllByUserId(1L) } returns listOf(identity)
         every { withdrawalUserRepository.save(any()) } answers { firstArg<WithdrawalUser>().copy(id = 3L) }
         justRun { userIdentityRepository.deleteAllByUserId(1L) }
         justRun { userRepository.deleteById(1L) }
@@ -36,8 +32,7 @@ class UserRemoverTest : StringSpec({
 
         verifyOrder {
             userRepository.findById(1L)
-            userIdentityRepository.findAllByUserId(1L)
-            withdrawalUserRepository.save(WithdrawalUser.from(user, listOf(identity)))
+            withdrawalUserRepository.save(WithdrawalUser.from(user))
             userIdentityRepository.deleteAllByUserId(1L)
             userRepository.deleteById(1L)
         }

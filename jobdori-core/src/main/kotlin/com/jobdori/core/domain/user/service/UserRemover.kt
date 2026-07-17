@@ -19,9 +19,7 @@ class UserRemover(
     fun remove(userId: Long) {
         val user = userRepository.findById(userId)
             ?: throw UserNotFoundException("등록되지 않은 사용자($userId)입니다")
-        val identities = userIdentityRepository.findAllByUserId(userId)
-
-        withdrawalUserRepository.save(WithdrawalUser.from(user, identities))
+        withdrawalUserRepository.save(WithdrawalUser.from(user))
         userIdentityRepository.deleteAllByUserId(userId)
         userRepository.deleteById(userId)
     }

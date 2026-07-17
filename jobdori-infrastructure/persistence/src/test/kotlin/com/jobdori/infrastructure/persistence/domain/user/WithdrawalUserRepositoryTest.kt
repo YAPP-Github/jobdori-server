@@ -1,8 +1,6 @@
 package com.jobdori.infrastructure.persistence.domain.user
 
-import com.jobdori.core.domain.user.UserIdentityProvider
 import com.jobdori.core.domain.user.WithdrawalUser
-import com.jobdori.core.domain.user.WithdrawalUserIdentity
 import com.jobdori.core.domain.user.repository.WithdrawalUserRepository
 import com.jobdori.infrastructure.persistence.IntegrationTest
 import com.jobdori.infrastructure.persistence.domain.user.repository.WithdrawalUserJpaRepository
@@ -20,16 +18,10 @@ class WithdrawalUserRepositoryTest(
         withdrawalUserJpaRepository.deleteAll()
     }
 
-    "탈퇴 사용자의 원본 정보와 식별 정보를 저장한다" {
+    "탈퇴 사용자의 삭제 작업 식별 정보를 저장한다" {
         val withdrawalUser = WithdrawalUser(
             originalUserId = 10L,
             publicId = "withdrawn-user",
-            email = "withdrawn@example.com",
-            name = "탈퇴 사용자",
-            profileImageUrl = "https://example.com/profile.png",
-            userIdentities = listOf(
-                WithdrawalUserIdentity(UserIdentityProvider.GOOGLE, "google-user-id"),
-            ),
         )
 
         val saved = withdrawalUserRepository.save(withdrawalUser)
@@ -39,12 +31,6 @@ class WithdrawalUserRepositoryTest(
         withdrawalUserJpaRepository.findAll().single().also {
             it.originalUserId shouldBe 10L
             it.publicId shouldBe "withdrawn-user"
-            it.email shouldBe "withdrawn@example.com"
-            it.name shouldBe "탈퇴 사용자"
-            it.profileImageUrl shouldBe "https://example.com/profile.png"
-            it.userIdentities shouldBe listOf(
-                WithdrawalUserIdentity(UserIdentityProvider.GOOGLE, "google-user-id"),
-            )
         }
     }
 })

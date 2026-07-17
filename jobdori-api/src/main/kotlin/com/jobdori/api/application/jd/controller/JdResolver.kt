@@ -7,7 +7,6 @@ import com.jobdori.api.application.jd.dto.response.JdResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.api.support.auth.UserId
 import com.jobdori.core.application.jd.CompleteJdService
-import com.jobdori.core.application.jd.DeleteJdService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.jd.RegisterJdService
 import com.jobdori.core.domain.jd.JdSortType
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Controller
 @Controller
 class JdResolver(
     private val registerJdService: RegisterJdService,
-    private val deleteJdService: DeleteJdService,
     private val completeJdService: CompleteJdService,
     private val getJdService: GetJdService,
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
@@ -42,17 +40,6 @@ class JdResolver(
             registerJdService.registerByUrl(workspace.id, request.sourceUrl!!)
         }
         return JdRegisterResponse.from(result)
-    }
-
-    @MutationMapping
-    fun deleteJd(
-        @UserId userId: Long,
-        @Argument workspaceId: String,
-        @Argument id: String,
-    ): Boolean {
-        val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
-        deleteJdService.deleteJd(workspace.id, id)
-        return true
     }
 
     // 이력서 생성 완료 시 호출 -> JD를 COMPLETED로 전환(AR0001 진행 중 -> 완료). 향후 Resume 완료 플로우에서 연동.

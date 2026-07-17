@@ -292,16 +292,6 @@ include::./operation-sample.adoc[tag=markJdCompleted]
 
 include::./operation-error.adoc[tag=markJdCompleted]
 
-==== JD 삭제
-
-Type: `Mutation`
-
-Operation: `deleteJd`
-
-include::./operation-sample.adoc[tag=deleteJd]
-
-include::./operation-error.adoc[tag=deleteJd]
-
 === Profile
 
 ==== 이력서 기본 정보 프로필 조회

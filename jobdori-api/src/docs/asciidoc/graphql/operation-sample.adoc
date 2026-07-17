@@ -1307,23 +1307,6 @@ mutation MarkJdCompleted {
 ====
 // end::markJdCompleted[]
 
-// tag::deleteJd[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-mutation DeleteJd {
-    deleteJd(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        id: "00000000-0000-0000-0000-00000000000a"
-    )
-}
-----
-====
-// end::deleteJd[]
-
 // tag::profile[]
 [.graphql-sample]
 ====

@@ -10,6 +10,7 @@ import com.jobdori.core.domain.user.UserIdentity
 import com.jobdori.core.domain.user.UserIdentityProvider
 import com.jobdori.core.domain.user.service.UserIdentityReader
 import com.jobdori.core.domain.user.service.UserReader
+import com.jobdori.core.domain.user.service.UserRemover
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,6 +18,7 @@ class AuthService(
     private val googleAuthProcessor: GoogleAuthProcessor,
     private val authSignUpService: AuthSignUpService,
     private val userIdentityReader: UserIdentityReader,
+    private val userRemover: UserRemover,
     private val userReader: UserReader,
     private val authTokenProvider: AuthTokenProvider,
 ) {
@@ -56,6 +58,10 @@ class AuthService(
             )
         }
         return userReader.getUser(userIdentity.userId)
+    }
+
+    fun withdraw(userId: Long) {
+        userRemover.remove(userId)
     }
 
 }

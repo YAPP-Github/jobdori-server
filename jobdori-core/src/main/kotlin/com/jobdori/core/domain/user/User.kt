@@ -1,5 +1,6 @@
 package com.jobdori.core.domain.user
 
+import java.time.LocalDateTime
 import java.util.UUID
 
 data class User(
@@ -8,6 +9,8 @@ data class User(
     val email: String,
     val name: String,
     val profileImageUrl: String?,
+    val createdAt: LocalDateTime? = null,
+    val updatedAt: LocalDateTime? = null,
 ) {
 
     companion object {
@@ -22,6 +25,8 @@ data class User(
             email = email,
             name = name,
             profileImageUrl = profileImageUrl,
+            createdAt = null,
+            updatedAt = null,
         )
     }
 

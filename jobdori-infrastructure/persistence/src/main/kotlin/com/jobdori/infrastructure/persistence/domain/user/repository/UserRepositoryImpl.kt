@@ -28,4 +28,9 @@ class UserRepositoryImpl(
         return entity.toUser()
     }
 
+    @Transactional
+    override fun deleteById(id: Long) {
+        jpaRepository.deleteById(id)
+    }
+
 }

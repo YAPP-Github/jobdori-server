@@ -7,6 +7,8 @@ import com.jobdori.api.support.auth.AuthCookieUtils.ACCESS_TOKEN_COOKIE
 import com.jobdori.api.support.auth.AuthCookieUtils.REFRESH_TOKEN_COOKIE
 import com.jobdori.api.support.auth.AuthCookieUtils.expiredCookie
 import com.jobdori.api.support.auth.AuthCookieUtils.tokenCookie
+import com.jobdori.api.support.auth.Authenticated
+import com.jobdori.api.support.auth.UserId
 import com.jobdori.api.support.rest.ApiResponse
 import com.jobdori.core.application.auth.AuthService
 import com.jobdori.core.application.auth.RefreshTokenService
@@ -14,6 +16,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CookieValue
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -52,6 +55,18 @@ class AuthController(
     ): ResponseEntity<ApiResponse<Nothing?>> {
         refreshTokenService.validate(refreshToken)
         // TODO: 추후 리프레시 토큰을 저장하고 무효화 시켜야함...
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, expiredCookie(ACCESS_TOKEN_COOKIE).toString())
+            .header(HttpHeaders.SET_COOKIE, expiredCookie(REFRESH_TOKEN_COOKIE).toString())
+            .body(ApiResponse.OK)
+    }
+
+    @DeleteMapping("/v1/auth/withdrawal")
+    @Authenticated
+    fun withdraw(
+        @UserId userId: Long,
+    ): ResponseEntity<ApiResponse<Nothing?>> {
+        authService.withdraw(userId)
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, expiredCookie(ACCESS_TOKEN_COOKIE).toString())
             .header(HttpHeaders.SET_COOKIE, expiredCookie(REFRESH_TOKEN_COOKIE).toString())

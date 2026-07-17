@@ -32,6 +32,8 @@ class UserRepositoryTest(
             email = entity.email,
             name = entity.name,
             profileImageUrl = entity.profileImageUrl,
+            createdAt = entity.createdAt,
+            updatedAt = entity.updatedAt,
         )
     }
 
@@ -46,6 +48,8 @@ class UserRepositoryTest(
             email = entity.email,
             name = entity.name,
             profileImageUrl = entity.profileImageUrl,
+            createdAt = entity.createdAt,
+            updatedAt = entity.updatedAt,
         )
     }
 
@@ -68,6 +72,16 @@ class UserRepositoryTest(
             it.name shouldBe saved.name
             it.profileImageUrl shouldBe saved.profileImageUrl
         }
+    }
+
+    "ID로 사용자를 삭제한다" {
+        val target = userJpaRepository.save(UserEntity.from(UserFixture.create(publicId = "target")))
+        val other = userJpaRepository.save(UserEntity.from(UserFixture.create(publicId = "other")))
+
+        userRepository.deleteById(target.id)
+
+        userJpaRepository.findById(target.id).isEmpty shouldBe true
+        userJpaRepository.findById(other.id).isPresent shouldBe true
     }
 
 })

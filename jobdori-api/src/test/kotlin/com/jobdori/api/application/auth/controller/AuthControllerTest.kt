@@ -8,8 +8,10 @@ import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
 import com.jobdori.api.support.docs.RestDocsUtils.convertToString
 import com.jobdori.api.support.docs.RestDocsUtils.remarks
+import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.json.JsonUtils
 import com.jobdori.core.application.auth.AuthService
+import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.application.auth.RefreshTokenService
 import com.jobdori.core.application.auth.command.AuthCommand
 import com.jobdori.core.application.auth.result.AuthResult
@@ -17,16 +19,19 @@ import com.jobdori.core.domain.auth.AuthToken
 import com.jobdori.core.domain.auth.AuthTokenPair
 import com.jobdori.core.domain.auth.error.AuthErrorCode
 import com.jobdori.core.domain.user.UserIdentityProvider
+import com.jobdori.core.domain.user.error.UserErrorCode
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
 import io.mockk.every
 import io.mockk.justRun
+import io.mockk.verify
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockCookie
 import org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName
 import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
+import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.payload.JsonFieldType
@@ -34,6 +39,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.post
 import java.time.Instant
 
@@ -45,6 +51,8 @@ internal class AuthControllerTest(
     private val authService: AuthService,
     @MockkBean
     private val refreshTokenService: RefreshTokenService,
+    @MockkBean
+    private val accessTokenService: AccessTokenService,
 ) : StringSpec({
 
     val command = AuthCommand(
@@ -52,6 +60,56 @@ internal class AuthControllerTest(
         authorizationCode = "authorization-code",
         redirectUri = "https://jobdori.com/auth/callback",
     )
+
+    "인증된 사용자가 회원 탈퇴한다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        justRun { authService.withdraw(1L) }
+
+        mockMvc.delete("/v1/auth/withdrawal") {
+            header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
+        }.andExpect {
+            status { isOk() }
+            jsonPath("$.ok") { value(true) }
+            jsonPath("$.result") { doesNotExist() }
+            cookie { maxAge("access_token", 0) }
+            cookie { maxAge("refresh_token", 0) }
+        }.andDo {
+            handle(
+                document(
+                    "auth-withdrawal",
+                    RestDocsUtils.getDocumentRequest(),
+                    RestDocsUtils.getDocumentResponse(),
+                    PageHeaderSnippet.pageHeaderSnippet(),
+                    requestHeaders(
+                        headerWithName(HttpHeaders.AUTHORIZATION)
+                            .description("Bearer 액세스 토큰"),
+                    ),
+                    responseFields(
+                        fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
+                    ),
+                    responseHeaders(
+                        headerWithName(HttpHeaders.SET_COOKIE)
+                            .description("`access_token`, `refresh_token` 만료 쿠키"),
+                    ),
+                    ErrorCodeSnippet.errorCodeSnippet(
+                        UserErrorCode.E404_USER_NOT_FOUND,
+                    ),
+                ),
+            )
+        }
+
+        verify(exactly = 1) { authService.withdraw(1L) }
+    }
+
+    "인증 토큰이 없으면 회원 탈퇴할 수 없다" {
+        mockMvc.delete("/v1/auth/withdrawal")
+            .andExpect {
+                status { isUnauthorized() }
+                jsonPath("$.ok") { value(false) }
+                jsonPath("$.error.code") { value("invalid_auth_token") }
+                jsonPath("$.error.message") { value(CommonErrorCode.E401_INVALID_AUTH_TOKEN.message) }
+            }
+    }
 
     "로그인 후 인증 토큰을 발급한다" {
         every { authService.login(command) } returns AuthResult(

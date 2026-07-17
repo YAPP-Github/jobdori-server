@@ -5,3 +5,4 @@ include::./login.adoc[]
 include::./refresh.adoc[]
 
 include::./logout.adoc[]
+include::./withdrawal.adoc[]

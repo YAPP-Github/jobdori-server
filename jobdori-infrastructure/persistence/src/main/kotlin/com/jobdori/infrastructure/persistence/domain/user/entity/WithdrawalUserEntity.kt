@@ -11,7 +11,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
-import java.time.LocalDateTime
 
 @Table(name = "withdrawal_user_v1")
 @Entity
@@ -34,12 +33,6 @@ class WithdrawalUserEntity(
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "jsonb")
     var userIdentities: List<WithdrawalUserIdentity>,
-
-    @Column(nullable = false)
-    var userCreatedAt: LocalDateTime,
-
-    @Column(nullable = false)
-    var userUpdatedAt: LocalDateTime,
 ) : AuditableEntity() {
 
     @Id
@@ -54,8 +47,6 @@ class WithdrawalUserEntity(
             name = domain.name,
             profileImageUrl = domain.profileImageUrl,
             userIdentities = domain.userIdentities,
-            userCreatedAt = domain.userCreatedAt,
-            userUpdatedAt = domain.userUpdatedAt,
         )
     }
 

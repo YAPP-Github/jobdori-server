@@ -1,7 +1,5 @@
 package com.jobdori.core.domain.user
 
-import java.time.LocalDateTime
-
 data class WithdrawalUser(
     val id: Long = 0L,
     val originalUserId: Long,
@@ -10,8 +8,6 @@ data class WithdrawalUser(
     val name: String,
     val profileImageUrl: String?,
     val userIdentities: List<WithdrawalUserIdentity>,
-    val userCreatedAt: LocalDateTime,
-    val userUpdatedAt: LocalDateTime,
 ) {
 
     companion object {
@@ -22,8 +18,6 @@ data class WithdrawalUser(
             name = user.name,
             profileImageUrl = user.profileImageUrl,
             userIdentities = identities.map(WithdrawalUserIdentity::from),
-            userCreatedAt = requireNotNull(user.createdAt),
-            userUpdatedAt = requireNotNull(user.updatedAt),
         )
     }
 

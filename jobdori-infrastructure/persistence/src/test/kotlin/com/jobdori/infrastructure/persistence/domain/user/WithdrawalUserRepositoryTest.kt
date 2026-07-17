@@ -9,7 +9,6 @@ import com.jobdori.infrastructure.persistence.domain.user.repository.WithdrawalU
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import java.time.LocalDateTime
 
 @IntegrationTest
 class WithdrawalUserRepositoryTest(
@@ -22,8 +21,6 @@ class WithdrawalUserRepositoryTest(
     }
 
     "탈퇴 사용자의 원본 정보와 식별 정보를 저장한다" {
-        val createdAt = LocalDateTime.of(2026, 7, 1, 10, 30)
-        val updatedAt = LocalDateTime.of(2026, 7, 16, 18, 45)
         val withdrawalUser = WithdrawalUser(
             originalUserId = 10L,
             publicId = "withdrawn-user",
@@ -33,8 +30,6 @@ class WithdrawalUserRepositoryTest(
             userIdentities = listOf(
                 WithdrawalUserIdentity(UserIdentityProvider.GOOGLE, "google-user-id"),
             ),
-            userCreatedAt = createdAt,
-            userUpdatedAt = updatedAt,
         )
 
         val saved = withdrawalUserRepository.save(withdrawalUser)
@@ -50,8 +45,6 @@ class WithdrawalUserRepositoryTest(
             it.userIdentities shouldBe listOf(
                 WithdrawalUserIdentity(UserIdentityProvider.GOOGLE, "google-user-id"),
             )
-            it.userCreatedAt shouldBe createdAt
-            it.userUpdatedAt shouldBe updatedAt
         }
     }
 })

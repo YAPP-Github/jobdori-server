@@ -16,7 +16,6 @@ import io.mockk.mockk
 import io.mockk.confirmVerified
 import io.mockk.verify
 import io.mockk.verifyOrder
-import java.time.LocalDateTime
 
 class UserRemoverTest : StringSpec({
     val userRepository = mockk<UserRepository>()
@@ -25,8 +24,7 @@ class UserRemoverTest : StringSpec({
     val manager = UserRemover(userRepository, userIdentityRepository, withdrawalUserRepository)
 
     "사용자를 백업한 뒤 식별 정보와 사용자를 삭제한다" {
-        val now = LocalDateTime.now()
-        val user = User(1L, "public-id", "user@example.com", "홍길동", null, now, now)
+        val user = User(1L, "public-id", "user@example.com", "홍길동", null)
         val identity = UserIdentity(2L, 1L, UserIdentityProvider.GOOGLE, "google-id")
         every { userRepository.findById(1L) } returns user
         every { userIdentityRepository.findAllByUserId(1L) } returns listOf(identity)

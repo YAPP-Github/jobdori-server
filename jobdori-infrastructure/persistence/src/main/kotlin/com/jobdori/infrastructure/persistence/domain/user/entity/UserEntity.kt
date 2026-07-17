@@ -35,8 +35,6 @@ class UserEntity(
         email = email,
         name = name,
         profileImageUrl = profileImageUrl,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
     )
 
     companion object {

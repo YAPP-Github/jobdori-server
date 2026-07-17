@@ -32,8 +32,6 @@ class UserRepositoryTest(
             email = entity.email,
             name = entity.name,
             profileImageUrl = entity.profileImageUrl,
-            createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt,
         )
     }
 
@@ -48,8 +46,6 @@ class UserRepositoryTest(
             email = entity.email,
             name = entity.name,
             profileImageUrl = entity.profileImageUrl,
-            createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt,
         )
     }
 

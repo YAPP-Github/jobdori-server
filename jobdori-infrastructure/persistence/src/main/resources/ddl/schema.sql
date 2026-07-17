@@ -315,8 +315,6 @@ create table withdrawal_user_v1 (
     name varchar(50) not null,
     profile_image_url varchar(300),
     user_identities jsonb not null,
-    user_created_at timestamp(6) not null,
-    user_updated_at timestamp(6) not null,
     created_at timestamp(6),
     updated_at timestamp(6),
     primary key (id)

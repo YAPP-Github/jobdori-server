@@ -505,7 +505,7 @@ class ResumeServiceTest : StringSpec({
         response.targetJd?.companyName shouldBe "잡도리"
     }
 
-    "이력서 상세에 jdInsight를 요청하면 조회해 응답한다" {
+    "이력서 상세의 targetJd 하위에서 insight를 응답한다" {
         // given
         every {
             resumeReader.getResume(workspaceId = 1L, resumeId = 103L)
@@ -521,14 +521,12 @@ class ResumeServiceTest : StringSpec({
             resumeId = 103L,
             includeSections = false,
             includeSectionItems = false,
-            includeTargetJd = false,
-            includeJdInsight = true,
+            includeTargetJd = true,
         )
 
         // then
-        response.targetJd shouldBe null
-        response.jdInsight?.keyPoints shouldBe "핵심 포인트"
-        response.jdInsight?.strategy shouldBe "지원 전략"
+        response.targetJd?.insight?.keyPoints shouldBe "핵심 포인트"
+        response.targetJd?.insight?.strategy shouldBe "지원 전략"
     }
 
     "이력서 저장 요청의 섹션 displayOrder가 중복되면 예외가 발생한다" {

@@ -633,12 +633,12 @@ query Resume {
             preferredExperiences
             hiringProcess
             coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
             status
             createdAt
-        }
-        jdInsight {
-            keyPoints
-            strategy
         }
         template
         status
@@ -1486,5 +1486,4 @@ mutation PolishProfileText {
 ----
 ====
 // end::polishProfileText[]
-
 

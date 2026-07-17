@@ -50,5 +50,7 @@ class RegisterJdService(
         preferredExperiences = meta.preferredExperiences,
         hiringProcess = meta.hiringProcess,
         coreCompetencies = meta.coreCompetencies,
+        keyPoints = meta.keyPoints,
+        strategy = meta.strategy,
     )
 }

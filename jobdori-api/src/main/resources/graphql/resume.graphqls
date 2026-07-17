@@ -440,7 +440,7 @@ type Resume {
     targetJd: Jd
 
     """
-    대상 JD의 AI 인사이트입니다. 요청할 때만 조회하거나 생성합니다.
+    대상 JD 등록 시 생성해 저장한 AI 인사이트입니다. 요청할 때만 함께 조회합니다.
     """
     jdInsight: JdInsight
 

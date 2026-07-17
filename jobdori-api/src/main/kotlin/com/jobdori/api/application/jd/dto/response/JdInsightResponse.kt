@@ -1,6 +1,6 @@
 package com.jobdori.api.application.jd.dto.response
 
-import com.jobdori.core.domain.jdinsight.JdInsight
+import com.jobdori.core.domain.jd.Jd
 
 data class JdInsightResponse(
     val keyPoints: String,
@@ -8,9 +8,9 @@ data class JdInsightResponse(
 ) {
 
     companion object {
-        fun from(insight: JdInsight) = JdInsightResponse(
-            keyPoints = insight.keyPoints,
-            strategy = insight.strategy,
+        fun from(jd: Jd) = JdInsightResponse(
+            keyPoints = jd.keyPoints,
+            strategy = jd.strategy,
         )
     }
 

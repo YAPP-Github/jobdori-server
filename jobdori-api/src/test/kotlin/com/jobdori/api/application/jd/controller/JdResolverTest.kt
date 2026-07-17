@@ -6,18 +6,14 @@ import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.core.application.ai.jd.result.JdPosting
 import com.jobdori.core.application.auth.AccessTokenService
-import com.jobdori.core.application.jd.AnalyzeGuestJdService
 import com.jobdori.core.application.jd.CompleteJdService
 import com.jobdori.core.application.jd.DeleteJdService
 import com.jobdori.core.application.jd.GetJdService
-import com.jobdori.core.application.jd.GuestJdAnalysisResult
 import com.jobdori.core.application.jd.JdRegisterResult
 import com.jobdori.core.application.jd.RegisterJdService
-import com.jobdori.core.application.jdinsight.GetJdInsightService
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdSortType
 import com.jobdori.core.domain.jd.JdStatus
-import com.jobdori.core.domain.jdinsight.JdInsight
 import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
@@ -37,15 +33,11 @@ internal class JdResolverTest(
     @MockkBean
     private val registerJdService: RegisterJdService,
     @MockkBean
-    private val analyzeGuestJdService: AnalyzeGuestJdService,
-    @MockkBean
     private val deleteJdService: DeleteJdService,
     @MockkBean
     private val completeJdService: CompleteJdService,
     @MockkBean
     private val getJdService: GetJdService,
-    @MockkBean
-    private val getJdInsightService: GetJdInsightService,
     @MockkBean
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
 ) : StringSpec({
@@ -124,69 +116,13 @@ internal class JdResolverTest(
         verify(exactly = 1) { registerJdService.registerByText(10L, multiBody) }
     }
 
-    "비로그인 상태로 URL을 분석하면 추출 결과와 인사이트를 저장 없이 반환한다" {
-        every { analyzeGuestJdService.analyzeByUrl("https://example.com/jd") } returns
-            GuestJdAnalysisResult.Analyzed(
-                jd = graphQlJd(companyName = "잡도리", positionTitle = "백엔드 개발자"),
-                insight = JdInsight(
-                    id = 0L,
-                    jdId = 0L,
-                    keyPoints = "주도적으로 문제를 정의할 사람을 원해요.",
-                    strategy = "정의·해결 사례를 강조하세요.",
-                ),
-            )
-
-        // 인증 헤더 없이(비로그인) 호출한다
-        graphQlTester
-            .document(
-                """
-                mutation {
-                  analyzeGuestJd(request: { sourceUrl: "https://example.com/jd" }) {
-                    analysis {
-                      companyName
-                      positionTitle
-                      insight { keyPoints strategy }
-                    }
-                    candidates { title }
-                  }
-                }
-                """.trimIndent(),
-            )
-            .execute()
-            .path("analyzeGuestJd.analysis.companyName").entity<String>().isEqualTo("잡도리")
-            .path("analyzeGuestJd.analysis.insight.keyPoints").entity<String>().isEqualTo("주도적으로 문제를 정의할 사람을 원해요.")
-            .path("analyzeGuestJd.candidates").valueIsNull()
-
-        verify(exactly = 1) { analyzeGuestJdService.analyzeByUrl("https://example.com/jd") }
-    }
-
-    "비로그인 분석 본문에 여러 공고가 있으면 후보 목록을 반환한다" {
-        val multiBody = "여러 공고가 섞인 본문 ".repeat(50)
-        every { analyzeGuestJdService.analyzeByText(multiBody) } returns
-            GuestJdAnalysisResult.MultiplePostings(
-                listOf(JdPosting(title = "백엔드 개발자", body = "본문 A")),
-            )
-
-        graphQlTester
-            .document(
-                """
-                mutation {
-                  analyzeGuestJd(request: { body: "$multiBody" }) {
-                    analysis { companyName }
-                    candidates { title body }
-                  }
-                }
-                """.trimIndent(),
-            )
-            .execute()
-            .path("analyzeGuestJd.analysis").valueIsNull()
-            .path("analyzeGuestJd.candidates[0].title").entity<String>().isEqualTo("백엔드 개발자")
-
-        verify(exactly = 1) { analyzeGuestJdService.analyzeByText(multiBody) }
-    }
-
     "publicId로 워크스페이스의 JD 단건을 조회한다" {
-        every { getJdService.getJd(10L, "jd-pub-1") } returns graphQlJd(publicId = "jd-pub-1", companyName = "잡도리")
+        every { getJdService.getJd(10L, "jd-pub-1") } returns graphQlJd(
+            publicId = "jd-pub-1",
+            companyName = "잡도리",
+            keyPoints = "주도적으로 문제를 정의할 사람을 원해요.",
+            strategy = "문제 해결 경험을 강조하세요.",
+        )
 
         authenticatedTester(graphQlTester)
             .document(
@@ -196,6 +132,7 @@ internal class JdResolverTest(
                     jdId
                     companyName
                     coreCompetencies
+                    insight { keyPoints strategy }
                   }
                 }
                 """.trimIndent(),
@@ -204,6 +141,8 @@ internal class JdResolverTest(
             .path("jd.jdId").entity<String>().isEqualTo("jd-pub-1")
             .path("jd.companyName").entity<String>().isEqualTo("잡도리")
             .path("jd.coreCompetencies").entityList(String::class.java).containsExactly("데이터 기반 개선", "협업")
+            .path("jd.insight.keyPoints").entity<String>().isEqualTo("주도적으로 문제를 정의할 사람을 원해요.")
+            .path("jd.insight.strategy").entity<String>().isEqualTo("문제 해결 경험을 강조하세요.")
 
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
     }
@@ -310,33 +249,6 @@ internal class JdResolverTest(
         verify(exactly = 1) { completeJdService.markCompleted(10L, "jd-pub-1") }
     }
 
-    "JD의 AI 인사이트(공고 핵심/지원 전략)를 조회한다" {
-        every { getJdInsightService.getOrGenerate(10L, "jd-pub-1") } returns
-            JdInsight(
-                id = 1L,
-                jdId = 100L,
-                keyPoints = "사용자 경험을 주도적으로 이끌 사람을 원해요.",
-                strategy = "사용자 중심 문제를 정의·해결한 사례를 강조하면 좋겠어요.",
-            )
-
-        authenticatedTester(graphQlTester)
-            .document(
-                """
-                query {
-                  jdInsight(workspaceId: "ws-1", jdId: "jd-pub-1") {
-                    keyPoints
-                    strategy
-                  }
-                }
-                """.trimIndent(),
-            )
-            .execute()
-            .path("jdInsight.keyPoints").entity<String>().isEqualTo("사용자 경험을 주도적으로 이끌 사람을 원해요.")
-            .path("jdInsight.strategy").entity<String>().isEqualTo("사용자 중심 문제를 정의·해결한 사례를 강조하면 좋겠어요.")
-
-        verify(exactly = 1) { getJdInsightService.getOrGenerate(10L, "jd-pub-1") }
-    }
-
 })
 
 private fun authenticatedTester(graphQlTester: GraphQlTester): GraphQlTester {
@@ -354,6 +266,8 @@ private fun graphQlJd(
     companyName: String = "잡도리",
     positionTitle: String = "백엔드 개발자",
     coreCompetencies: List<String> = listOf("데이터 기반 개선", "협업"),
+    keyPoints: String = "공고 핵심",
+    strategy: String = "지원 전략",
     status: JdStatus = JdStatus.IN_PROGRESS,
 ) = Jd(
     id = id,
@@ -368,5 +282,7 @@ private fun graphQlJd(
     preferredExperiences = emptyList(),
     hiringProcess = emptyList(),
     coreCompetencies = coreCompetencies,
+    keyPoints = keyPoints,
+    strategy = strategy,
     status = status,
 )

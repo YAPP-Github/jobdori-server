@@ -13,6 +13,10 @@ query Jd {
         preferredExperiences
         hiringProcess
         coreCompetencies
+        insight {
+            keyPoints
+            strategy
+        }
         status
         createdAt
     }

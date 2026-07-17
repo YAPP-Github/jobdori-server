@@ -12,9 +12,7 @@ import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationSe
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.model.SliceResult
 import com.jobdori.core.application.jd.GetJdService
-import com.jobdori.core.application.jdinsight.GetJdInsightService
 import com.jobdori.core.domain.jd.Jd
-import com.jobdori.core.domain.jdinsight.JdInsight
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
@@ -52,7 +50,6 @@ class ResumeServiceTest : StringSpec({
     val resumeRemover = mockk<ResumeRemover>()
     val resumeModifier = mockk<ResumeModifier>()
     val getJdService = mockk<GetJdService>()
-    val getJdInsightService = mockk<GetJdInsightService>()
     val profileReader = mockk<ProfileReader>()
     val profileResumeSectionInitializer = mockk<ProfileResumeSectionInitializer>()
     val resumeService = ResumeService(
@@ -62,7 +59,6 @@ class ResumeServiceTest : StringSpec({
         resumeRemover = resumeRemover,
         resumeModifier = resumeModifier,
         getJdService = getJdService,
-        getJdInsightService = getJdInsightService,
         profileReader = profileReader,
         profileResumeSectionInitializer = profileResumeSectionInitializer,
     )
@@ -517,14 +513,6 @@ class ResumeServiceTest : StringSpec({
         every {
             getJdService.getJd(workspaceId = 1L, id = 20L)
         } returns targetJd()
-        every {
-            getJdInsightService.getOrGenerate(workspaceId = 1L, jdPublicId = "jd-public-id")
-        } returns JdInsight(
-            id = 30L,
-            jdId = 20L,
-            keyPoints = "핵심 포인트",
-            strategy = "지원 전략",
-        )
 
         // when
         val response = resumeService.getResume(
@@ -634,6 +622,8 @@ private fun targetJd() = Jd(
     preferredExperiences = emptyList(),
     hiringProcess = emptyList(),
     coreCompetencies = emptyList(),
+    keyPoints = "핵심 포인트",
+    strategy = "지원 전략",
 )
 
 private fun saveRequest() = SaveResumeRequest(

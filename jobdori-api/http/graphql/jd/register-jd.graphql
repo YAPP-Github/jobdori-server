@@ -7,6 +7,10 @@ mutation RegisterJd {
             jdId
             companyName
             positionTitle
+            insight {
+                keyPoints
+                strategy
+            }
             status
         }
         candidates {

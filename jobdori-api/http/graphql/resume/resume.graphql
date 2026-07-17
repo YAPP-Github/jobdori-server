@@ -18,6 +18,10 @@ query Resume {
             status
             createdAt
         }
+        jdInsight {
+            keyPoints
+            strategy
+        }
         template
         status
         createdAt

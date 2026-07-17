@@ -636,6 +636,10 @@ query Resume {
             status
             createdAt
         }
+        jdInsight {
+            keyPoints
+            strategy
+        }
         template
         status
         createdAt
@@ -1201,6 +1205,10 @@ query Jd {
         preferredExperiences
         hiringProcess
         coreCompetencies
+        insight {
+            keyPoints
+            strategy
+        }
         status
         createdAt
     }
@@ -1233,26 +1241,6 @@ query Jds {
 ====
 // end::jds[]
 
-// tag::jdInsight[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-query JdInsight {
-    jdInsight(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        jdId: "00000000-0000-0000-0000-00000000000a"
-    ) {
-        keyPoints
-        strategy
-    }
-}
-----
-====
-// end::jdInsight[]
-
 // tag::registerJd[]
 [.graphql-sample]
 ====
@@ -1269,6 +1257,10 @@ mutation RegisterJd {
             jdId
             companyName
             positionTitle
+            insight {
+                keyPoints
+                strategy
+            }
             status
         }
         candidates {
@@ -1280,41 +1272,6 @@ mutation RegisterJd {
 ----
 ====
 // end::registerJd[]
-
-// tag::analyzeGuestJd[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-mutation AnalyzeGuestJd {
-    analyzeGuestJd(
-        request: { sourceUrl: "https://example.com/jd" }
-    ) {
-        analysis {
-            companyName
-            positionTitle
-            companyIntro
-            responsibilities
-            requiredExperiences
-            preferredExperiences
-            hiringProcess
-            coreCompetencies
-            insight {
-                keyPoints
-                strategy
-            }
-        }
-        candidates {
-            title
-            body
-        }
-    }
-}
-----
-====
-// end::analyzeGuestJd[]
 
 // tag::markJdCompleted[]
 [.graphql-sample]

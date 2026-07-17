@@ -58,6 +58,12 @@ class JdEntity(
     @Column(nullable = false, columnDefinition = "jsonb")
     var coreCompetencies: List<String>,
 
+    @Column(nullable = false, columnDefinition = "text")
+    var keyPoints: String,
+
+    @Column(nullable = false, columnDefinition = "text")
+    var strategy: String,
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     var status: JdStatus,
@@ -81,6 +87,8 @@ class JdEntity(
         preferredExperiences = preferredExperiences,
         hiringProcess = hiringProcess,
         coreCompetencies = coreCompetencies,
+        keyPoints = keyPoints,
+        strategy = strategy,
         status = status,
         createdAt = createdAt,
     )
@@ -99,6 +107,8 @@ class JdEntity(
             preferredExperiences = jd.preferredExperiences,
             hiringProcess = jd.hiringProcess,
             coreCompetencies = jd.coreCompetencies,
+            keyPoints = jd.keyPoints,
+            strategy = jd.strategy,
             status = jd.status,
         ).also { it.id = jd.id }
     }

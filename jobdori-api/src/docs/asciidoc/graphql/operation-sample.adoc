@@ -572,18 +572,28 @@ query Resumes {
         workspaceId: "00000000-0000-0000-0000-000000000002"
         statuses: [COMPLETED, DRAFT]
     ) {
-        resumeId
-        targetJd {
-            jdId
-            sourceUrl
-            companyName
-            positionTitle
+        resumes {
+            resumeId
+            targetJd {
+                jdId
+                sourceUrl
+                companyName
+                positionTitle
+                insight {
+                    keyPoints
+                    strategy
+                }
+                status
+            }
+            template
             status
+            createdAt
+            updatedAt
         }
-        template
-        status
-        createdAt
-        updatedAt
+        cursor {
+            nextCursor
+            hasNext
+        }
     }
 }
 ----
@@ -1486,4 +1496,3 @@ mutation PolishProfileText {
 ----
 ====
 // end::polishProfileText[]
-

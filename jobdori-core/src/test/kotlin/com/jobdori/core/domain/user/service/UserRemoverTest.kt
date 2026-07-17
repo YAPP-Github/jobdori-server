@@ -18,7 +18,7 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import java.time.LocalDateTime
 
-class UserWithdrawalManagerTest : StringSpec({
+class UserRemoverTest : StringSpec({
     val userRepository = mockk<UserRepository>()
     val userIdentityRepository = mockk<UserIdentityRepository>()
     val withdrawalUserRepository = mockk<WithdrawalUserRepository>()

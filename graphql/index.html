@@ -171,7 +171,6 @@
 <li><a href="#_jd_목록_조회">2.6.2. JD 목록 조회</a></li>
 <li><a href="#_jd_등록">2.6.3. JD 등록</a></li>
 <li><a href="#_jd_완료_처리">2.6.4. JD 완료 처리</a></li>
-<li><a href="#_jd_삭제">2.6.5. JD 삭제</a></li>
 </ul>
 </li>
 <li><a href="#_profile">2.7. Profile</a>
@@ -3181,70 +3180,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
         jdId
         status
     }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>커스텀 에러 코드:</p>
-</div>
-<div class="paragraph">
-<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
-아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch api-table">
-<colgroup>
-<col style="width: 28%;">
-<col style="width: 32%;">
-<col style="width: 40%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">Message</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_jd_삭제">2.6.5. JD 삭제</h4>
-<div class="paragraph">
-<p>Type: <code>Mutation</code></p>
-</div>
-<div class="paragraph">
-<p>Operation: <code>deleteJd</code></p>
-</div>
-<div class="exampleblock graphql-sample">
-<div class="content">
-<div class="paragraph">
-<p>요청 샘플:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation DeleteJd {
-    deleteJd(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        id: "00000000-0000-0000-0000-00000000000a"
-    )
 }</code></pre>
 </div>
 </div>

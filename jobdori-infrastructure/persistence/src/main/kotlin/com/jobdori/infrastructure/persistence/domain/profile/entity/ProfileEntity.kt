@@ -1,6 +1,7 @@
 package com.jobdori.infrastructure.persistence.domain.profile.entity
 
 import com.jobdori.core.domain.profile.Profile
+import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
 import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
@@ -16,14 +17,14 @@ class ProfileEntity(
     @Column(nullable = false, unique = true)
     var workspaceId: Long,
 
-    @Column(length = 50)
-    var name: String?,
+    @Column(name = "name_encrypted", columnDefinition = "text")
+    var nameEncrypted: String?,
 
-    @Column(length = 30)
-    var phone: String?,
+    @Column(name = "phone_encrypted", columnDefinition = "text")
+    var phoneEncrypted: String?,
 
-    @Column(length = 100)
-    var email: String?,
+    @Column(name = "email_encrypted", columnDefinition = "text")
+    var emailEncrypted: String?,
 
     @Column(columnDefinition = "text")
     var coreCompetency: String?,
@@ -33,21 +34,21 @@ class ProfileEntity(
     @SnowflakeId
     var id: Long = 0L
 
-    fun toDomain() = Profile(
+    fun toDomain(encryptor: StringEncryptor) = Profile(
         id = id,
         workspaceId = workspaceId,
-        name = name,
-        phone = phone,
-        email = email,
+        name = nameEncrypted?.let(encryptor::decrypt),
+        phone = phoneEncrypted?.let(encryptor::decrypt),
+        email = emailEncrypted?.let(encryptor::decrypt),
         coreCompetency = coreCompetency,
     )
 
     companion object {
-        fun from(domain: Profile) = ProfileEntity(
+        fun from(domain: Profile, encryptor: StringEncryptor) = ProfileEntity(
             workspaceId = domain.workspaceId,
-            name = domain.name,
-            phone = domain.phone,
-            email = domain.email,
+            nameEncrypted = domain.name?.let(encryptor::encrypt),
+            phoneEncrypted = domain.phone?.let(encryptor::encrypt),
+            emailEncrypted = domain.email?.let(encryptor::encrypt),
             coreCompetency = domain.coreCompetency,
         ).also { it.id = domain.id }
     }

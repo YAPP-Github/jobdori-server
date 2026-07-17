@@ -10,11 +10,13 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.springframework.jdbc.core.JdbcTemplate
 
 @IntegrationTest
 class NotionConnectionRepositoryTest(
     private val notionConnectionRepository: NotionConnectionRepository,
     private val notionConnectionJpaRepository: NotionConnectionJpaRepository,
+    private val jdbcTemplate: JdbcTemplate,
 ) : StringSpec({
 
     afterEach {
@@ -33,10 +35,17 @@ class NotionConnectionRepositoryTest(
         )
 
         // then
+        notionConnectionJpaRepository.flush()
         val entities = notionConnectionJpaRepository.findAll()
         entities shouldHaveSize 1
-        entities[0].accessTokenEncrypted shouldNotBe "plain-access-token"
-        entities[0].refreshTokenEncrypted shouldNotBe "plain-refresh-token"
+        entities[0].accessToken shouldBe "plain-access-token"
+        entities[0].refreshToken shouldBe "plain-refresh-token"
+        val encrypted = jdbcTemplate.queryForMap(
+            "select access_token_encrypted, refresh_token_encrypted from notion_connection_v1 where id = ?",
+            saved.id,
+        )
+        encrypted["access_token_encrypted"] shouldNotBe "plain-access-token"
+        encrypted["refresh_token_encrypted"] shouldNotBe "plain-refresh-token"
 
         val found = notionConnectionRepository.findByIdAndWorkspaceId(saved.id, 10L)
         found?.id shouldBe saved.id

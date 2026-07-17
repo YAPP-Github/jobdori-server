@@ -2,7 +2,6 @@ package com.jobdori.infrastructure.persistence.domain.notion.repository
 
 import com.jobdori.core.domain.notion.NotionConnection
 import com.jobdori.core.domain.notion.repository.NotionConnectionRepository
-import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.domain.notion.entity.NotionConnectionEntity
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class NotionConnectionRepositoryImpl(
     private val jpaRepository: NotionConnectionJpaRepository,
-    private val encryptor: StringEncryptor,
 ) : NotionConnectionRepository {
 
     @Transactional
@@ -22,20 +20,20 @@ class NotionConnectionRepositoryImpl(
                 notionWorkspaceId = connection.notionWorkspaceId,
                 botId = connection.botId,
             )?.also {
-                it.update(connection, encryptor)
-            } ?: NotionConnectionEntity.from(connection, encryptor)
+                it.update(connection)
+            } ?: NotionConnectionEntity.from(connection)
         } else {
             jpaRepository.findByIdAndWorkspaceId(connection.id, connection.workspaceId)?.also {
-                it.update(connection, encryptor)
-            } ?: NotionConnectionEntity.from(connection, encryptor)
+                it.update(connection)
+            } ?: NotionConnectionEntity.from(connection)
         }
 
-        return jpaRepository.save(entity).toDomain(encryptor)
+        return jpaRepository.save(entity).toDomain()
     }
 
     @Transactional(readOnly = true)
     override fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): NotionConnection? {
-        return jpaRepository.findByIdAndWorkspaceId(id, workspaceId)?.toDomain(encryptor)
+        return jpaRepository.findByIdAndWorkspaceId(id, workspaceId)?.toDomain()
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +49,7 @@ class NotionConnectionRepositoryImpl(
             )
         }
         return entities
-            .map { it.toDomain(encryptor) }
+            .map { it.toDomain() }
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +62,7 @@ class NotionConnectionRepositoryImpl(
             workspaceId = workspaceId,
             notionWorkspaceId = notionWorkspaceId,
             botId = botId,
-        )?.toDomain(encryptor)
+        )?.toDomain()
     }
 
     @Transactional

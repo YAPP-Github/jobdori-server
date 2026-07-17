@@ -1,11 +1,12 @@
 package com.jobdori.infrastructure.persistence.domain.profile.entity
 
 import com.jobdori.core.domain.profile.Profile
-import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
+import com.jobdori.infrastructure.persistence.support.converter.EncryptedStringConverter
 import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.Convert
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.DynamicUpdate
@@ -18,13 +19,16 @@ class ProfileEntity(
     var workspaceId: Long,
 
     @Column(name = "name_encrypted", columnDefinition = "text")
-    var nameEncrypted: String?,
+    @Convert(converter = EncryptedStringConverter::class)
+    var name: String?,
 
     @Column(name = "phone_encrypted", columnDefinition = "text")
-    var phoneEncrypted: String?,
+    @Convert(converter = EncryptedStringConverter::class)
+    var phone: String?,
 
     @Column(name = "email_encrypted", columnDefinition = "text")
-    var emailEncrypted: String?,
+    @Convert(converter = EncryptedStringConverter::class)
+    var email: String?,
 
     @Column(columnDefinition = "text")
     var coreCompetency: String?,
@@ -34,21 +38,21 @@ class ProfileEntity(
     @SnowflakeId
     var id: Long = 0L
 
-    fun toDomain(encryptor: StringEncryptor) = Profile(
+    fun toDomain() = Profile(
         id = id,
         workspaceId = workspaceId,
-        name = nameEncrypted?.let(encryptor::decrypt),
-        phone = phoneEncrypted?.let(encryptor::decrypt),
-        email = emailEncrypted?.let(encryptor::decrypt),
+        name = name,
+        phone = phone,
+        email = email,
         coreCompetency = coreCompetency,
     )
 
     companion object {
-        fun from(domain: Profile, encryptor: StringEncryptor) = ProfileEntity(
+        fun from(domain: Profile) = ProfileEntity(
             workspaceId = domain.workspaceId,
-            nameEncrypted = domain.name?.let(encryptor::encrypt),
-            phoneEncrypted = domain.phone?.let(encryptor::encrypt),
-            emailEncrypted = domain.email?.let(encryptor::encrypt),
+            name = domain.name,
+            phone = domain.phone,
+            email = domain.email,
             coreCompetency = domain.coreCompetency,
         ).also { it.id = domain.id }
     }

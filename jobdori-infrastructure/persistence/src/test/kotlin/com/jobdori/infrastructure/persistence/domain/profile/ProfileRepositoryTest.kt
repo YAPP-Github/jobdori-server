@@ -7,11 +7,13 @@ import com.jobdori.infrastructure.persistence.domain.profile.repository.ProfileJ
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.springframework.jdbc.core.JdbcTemplate
 
 @IntegrationTest
 class ProfileRepositoryTest(
     private val profileRepository: ProfileRepository,
     private val profileJpaRepository: ProfileJpaRepository,
+    private val jdbcTemplate: JdbcTemplate,
 ) : StringSpec({
 
     afterEach {
@@ -30,10 +32,15 @@ class ProfileRepositoryTest(
 
         val saved = profileRepository.save(profile)
 
-        val entity = profileJpaRepository.findAll().single()
-        entity.nameEncrypted shouldNotBe profile.name
-        entity.phoneEncrypted shouldNotBe profile.phone
-        entity.emailEncrypted shouldNotBe profile.email
+        profileJpaRepository.flush()
+        val encrypted = jdbcTemplate.queryForMap(
+            "select name_encrypted, phone_encrypted, email_encrypted from profile_v1 where workspace_id = ?",
+            profile.workspaceId,
+        )
+        encrypted["name_encrypted"] shouldNotBe profile.name
+        encrypted["phone_encrypted"] shouldNotBe profile.phone
+        encrypted["email_encrypted"] shouldNotBe profile.email
         profileRepository.findByWorkspaceId(profile.workspaceId) shouldBe saved
     }
+
 })

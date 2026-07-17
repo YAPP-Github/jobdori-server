@@ -33,4 +33,5 @@ class WithdrawalUserRepositoryTest(
             it.publicId shouldBe "withdrawn-user"
         }
     }
+
 })

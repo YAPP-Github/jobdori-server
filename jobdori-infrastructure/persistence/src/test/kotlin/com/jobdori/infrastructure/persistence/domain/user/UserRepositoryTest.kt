@@ -9,11 +9,13 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.springframework.jdbc.core.JdbcTemplate
 
 @IntegrationTest
 class UserRepositoryTest(
     private val userRepository: UserRepository,
     private val userJpaRepository: UserJpaRepository,
+    private val jdbcTemplate: JdbcTemplate,
 ) : StringSpec({
 
     afterEach {
@@ -46,15 +48,21 @@ class UserRepositoryTest(
         val saved = userRepository.save(UserFixture.create())
 
         // then
+        userJpaRepository.flush()
         val users = userJpaRepository.findAll()
         users shouldHaveSize 1
         users[0].also {
             it.id shouldBe saved.id
             it.publicId shouldBe saved.publicId
-            it.emailEncrypted shouldNotBe saved.email
+            it.email shouldBe saved.email
             it.name shouldBe saved.name
             it.profileImageUrl shouldBe saved.profileImageUrl
         }
+        jdbcTemplate.queryForObject(
+            "select email_encrypted from user_v1 where id = ?",
+            String::class.java,
+            saved.id,
+        ) shouldNotBe saved.email
     }
 
     "ID로 사용자를 삭제한다" {

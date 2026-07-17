@@ -1,10 +1,11 @@
 package com.jobdori.infrastructure.persistence.domain.notion.entity
 
 import com.jobdori.core.domain.notion.NotionConnection
-import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
+import com.jobdori.infrastructure.persistence.support.converter.EncryptedStringConverter
 import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Index
@@ -42,10 +43,12 @@ class NotionConnectionEntity(
     var botId: String,
 
     @Column(name = "access_token_encrypted", nullable = false, columnDefinition = "text")
-    var accessTokenEncrypted: String,
+    @Convert(converter = EncryptedStringConverter::class)
+    var accessToken: String,
 
     @Column(name = "refresh_token_encrypted", nullable = false, columnDefinition = "text")
-    var refreshTokenEncrypted: String,
+    @Convert(converter = EncryptedStringConverter::class)
+    var refreshToken: String,
 
     @Column(name = "last_refreshed_at")
     var lastRefreshedAt: LocalDateTime?,
@@ -55,35 +58,35 @@ class NotionConnectionEntity(
     @SnowflakeId
     var id: Long = 0L
 
-    fun update(connection: NotionConnection, encryptor: StringEncryptor) {
+    fun update(connection: NotionConnection) {
         workspaceName = connection.workspaceName
         workspaceIcon = connection.workspaceIcon
-        accessTokenEncrypted = encryptor.encrypt(connection.accessToken)
-        refreshTokenEncrypted = encryptor.encrypt(connection.refreshToken)
+        accessToken = connection.accessToken
+        refreshToken = connection.refreshToken
         lastRefreshedAt = connection.lastRefreshedAt
     }
 
-    fun toDomain(encryptor: StringEncryptor) = NotionConnection(
+    fun toDomain() = NotionConnection(
         id = id,
         workspaceId = workspaceId,
         notionWorkspaceId = notionWorkspaceId,
         workspaceName = workspaceName,
         workspaceIcon = workspaceIcon,
         botId = botId,
-        accessToken = encryptor.decrypt(accessTokenEncrypted),
-        refreshToken = encryptor.decrypt(refreshTokenEncrypted),
+        accessToken = accessToken,
+        refreshToken = refreshToken,
         lastRefreshedAt = lastRefreshedAt,
     )
 
     companion object {
-        fun from(connection: NotionConnection, encryptor: StringEncryptor) = NotionConnectionEntity(
+        fun from(connection: NotionConnection) = NotionConnectionEntity(
             workspaceId = connection.workspaceId,
             notionWorkspaceId = connection.notionWorkspaceId,
             workspaceName = connection.workspaceName,
             workspaceIcon = connection.workspaceIcon,
             botId = connection.botId,
-            accessTokenEncrypted = encryptor.encrypt(connection.accessToken),
-            refreshTokenEncrypted = encryptor.encrypt(connection.refreshToken),
+            accessToken = connection.accessToken,
+            refreshToken = connection.refreshToken,
             lastRefreshedAt = connection.lastRefreshedAt,
         ).also {
             it.id = connection.id

@@ -4,7 +4,20 @@ query Resume {
         resumeId: 94123123213123123
     ) {
         resumeId
-        targetJdId
+        targetJd {
+            jdId
+            sourceUrl
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            status
+            createdAt
+        }
         template
         status
         createdAt

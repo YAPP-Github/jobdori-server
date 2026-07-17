@@ -1,5 +1,6 @@
 package com.jobdori.api.application.resume.controller
 
+import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeRequest
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
 import com.jobdori.api.application.resume.service.ResumeService
@@ -19,7 +20,7 @@ class ResumeMutationResolver(
     fun createResume(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Valid @Argument input: SaveResumeRequest,
+        @Valid @Argument input: CreateResumeRequest,
         env: DataFetchingEnvironment,
     ): ResumeResponse = resumeService.createResume(
         userId = userId,

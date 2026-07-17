@@ -1,0 +1,177 @@
+mutation CreateResumeWithDefaultItems {
+    createResume(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        input: {
+            targetJdId: "00000000-0000-0000-0000-00000000000a"
+            template: DEFAULT
+            status: DRAFT
+            sections: [
+                {
+                    type: BASIC_INFO
+                    displayOrder: 10.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
+                }
+                {
+                    type: CORE_SKILL
+                    displayOrder: 20.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
+                }
+                {
+                    type: EXPERIENCE
+                    displayOrder: 30.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                experience: {
+                                    name: "이력서 관리 GraphQL API 개발"
+                                    role: "Backend Developer"
+                                    period: { startAt: "2025-01-01", endAt: "2025-06-30" }
+                                    contents: "이력서 생성, 조회, 수정, 삭제 GraphQL API 설계 및 구현"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CAREER
+                    displayOrder: 40.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
+                }
+                {
+                    type: EDUCATION
+                    displayOrder: 60.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
+                }
+                {
+                    type: AWARD
+                    displayOrder: 70.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
+                }
+                {
+                    type: LANGUAGE
+                    displayOrder: 80.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
+                }
+                {
+                    type: CERTIFICATE
+                    displayOrder: 90.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
+                }
+                {
+                    type: SKILL
+                    displayOrder: 100.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
+                }
+            ]
+        }
+    ) {
+        resumeId
+        targetJd {
+            jdId
+            sourceUrl
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            status
+            createdAt
+        }
+        template
+        status
+        createdAt
+        updatedAt
+        sections {
+            sectionId
+            type
+            displayText
+            displayOrder
+            visible
+            items {
+                itemId
+                displayOrder
+                visible
+                payload {
+                    basicInfo {
+                        name
+                        email
+                        phone
+                    }
+                    coreSkill {
+                        content
+                    }
+                    experience {
+                        name
+                        role
+                        period {
+                            startAt
+                            endAt
+                        }
+                        contents
+                    }
+                    career {
+                        companyName
+                        role
+                        period {
+                            startAt
+                            endAt
+                        }
+                        contents
+                    }
+                    education {
+                        schoolName
+                        major
+                        degree
+                        status
+                        period {
+                            startAt
+                            endAt
+                        }
+                    }
+                    award {
+                        name
+                        organization
+                        awardedAt
+                    }
+                    language {
+                        examName
+                        scoreOrGrade
+                        acquiredAt
+                    }
+                    certificate {
+                        name
+                        organization
+                        acquiredAt
+                    }
+                    skill {
+                        name
+                        level
+                    }
+                }
+            }
+        }
+    }
+}

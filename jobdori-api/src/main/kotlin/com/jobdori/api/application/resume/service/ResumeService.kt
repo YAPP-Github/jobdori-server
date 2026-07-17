@@ -1,5 +1,6 @@
 package com.jobdori.api.application.resume.service
 
+import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeRequest
 import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
@@ -16,9 +17,11 @@ import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.service.ResumeCreator
+import com.jobdori.core.domain.resume.service.ProfileResumeSectionInitializer
 import com.jobdori.core.domain.resume.service.ResumeReader
 import com.jobdori.core.domain.resume.service.ResumeRemover
 import com.jobdori.core.domain.resume.service.ResumeModifier
+import com.jobdori.core.domain.profile.service.ProfileReader
 import org.springframework.stereotype.Service
 
 @Service
@@ -30,6 +33,8 @@ class ResumeService(
     private val resumeModifier: ResumeModifier,
     private val getJdService: GetJdService,
     private val getJdInsightService: GetJdInsightService,
+    private val profileReader: ProfileReader,
+    private val profileResumeSectionInitializer: ProfileResumeSectionInitializer,
 ) {
 
     fun getResumes(
@@ -129,7 +134,7 @@ class ResumeService(
     fun createResume(
         userId: Long,
         workspaceId: String,
-        request: SaveResumeRequest,
+        request: CreateResumeRequest,
         includeTargetJd: Boolean = false,
     ): ResumeResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
@@ -137,11 +142,30 @@ class ResumeService(
             userId = userId,
         )
 
+        val resolvedTargetJdId = request.targetJdId?.let { publicId ->
+            getJdService.getJd(workspaceId = workspace.id, publicId = publicId).id
+        }
+        val command = request.toCommand(resolvedTargetJdId).let { command ->
+            if (request.sections.none { it.useDefaultItems }) command
+            else {
+                val profile = profileReader.getOrCreateProfile(workspace.id)
+                val profileDetail = profileReader.getDetail(profile)
+                command.copy(
+                    sections = command.sections.mapIndexed { index, section ->
+                        if (!request.sections[index].useDefaultItems) section
+                        else section.copy(
+                            items = profileResumeSectionInitializer.initializeItems(profileDetail, section.type),
+                        )
+                    },
+                )
+            }
+        }
+
         return toResponse(
             workspaceId = workspace.id,
             detail = resumeCreator.createDetail(
                 workspaceId = workspace.id,
-                command = request.toCommand(),
+                command = command,
             ),
             includeTargetJd = includeTargetJd,
         )
@@ -159,12 +183,16 @@ class ResumeService(
             userId = userId,
         )
 
+        val resolvedTargetJdId = request.targetJdId?.let { publicId ->
+            getJdService.getJd(workspaceId = workspace.id, publicId = publicId).id
+        }
+
         return toResponse(
             workspaceId = workspace.id,
             detail = resumeModifier.modifyDetail(
                 workspaceId = workspace.id,
                 resumeId = resumeId,
-                command = request.toCommand(),
+                command = request.toCommand(resolvedTargetJdId),
             ),
             includeTargetJd = includeTargetJd,
         )

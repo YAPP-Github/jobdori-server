@@ -7,8 +7,6 @@ import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.common.model.Period
 import com.jobdori.core.application.auth.AccessTokenService
-import com.jobdori.core.domain.keyword.KeywordType
-import com.jobdori.core.domain.keyword.service.KeywordReader
 import com.jobdori.core.domain.profile.Profile
 import com.jobdori.core.domain.profile.ProfileDetail
 import com.jobdori.core.domain.profile.ProfileSections
@@ -35,8 +33,6 @@ internal class ProfileQueryResolverTest(
     private val accessTokenService: AccessTokenService,
     @MockkBean
     private val profileService: ProfileService,
-    @MockkBean
-    private val keywordReader: KeywordReader,
 ) : StringSpec({
 
     beforeTest {
@@ -90,27 +86,6 @@ internal class ProfileQueryResolverTest(
 
         verify(exactly = 1) { accessTokenService.getUserId("access-token") }
         verify(exactly = 1) { profileService.getProfile(userId = 1L, workspaceId = "workspace-id") }
-    }
-
-    "키워드 자동완성 제안을 조회한다" {
-        every {
-            keywordReader.suggest(type = KeywordType.LANGUAGE_TEST, keyword = "토익", size = 10)
-        } returns listOf("토익", "토익스피킹")
-
-        authenticatedTester(graphQlTester)
-            .document(
-                """
-                query {
-                  suggestKeywords(type: LANGUAGE_TEST, keyword: "토익", size: 10)
-                }
-                """.trimIndent(),
-            )
-            .execute()
-            .path("suggestKeywords").entity<List<String>>().isEqualTo(listOf("토익", "토익스피킹"))
-
-        verify(exactly = 1) {
-            keywordReader.suggest(type = KeywordType.LANGUAGE_TEST, keyword = "토익", size = 10)
-        }
     }
 
 })

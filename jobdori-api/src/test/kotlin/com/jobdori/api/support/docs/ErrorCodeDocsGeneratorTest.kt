@@ -431,14 +431,6 @@ private val graphQlOperationErrors = listOf(
     ),
     GraphQlOperationError(
         category = "Profile",
-        operation = "suggestKeywords",
-        title = "키워드 자동완성 제안",
-        type = GraphQlOperationType.QUERY,
-        sampleFile = graphQlSample("profile/suggest-keywords.graphql"),
-        errorCodes = emptyList(),
-    ),
-    GraphQlOperationError(
-        category = "Profile",
         operation = "updateProfile",
         title = "이력서 기본 정보 프로필 수정",
         type = GraphQlOperationType.MUTATION,

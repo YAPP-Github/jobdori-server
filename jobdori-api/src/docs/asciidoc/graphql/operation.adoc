@@ -314,16 +314,6 @@ include::./operation-sample.adoc[tag=profile]
 
 include::./operation-error.adoc[tag=profile]
 
-==== 키워드 자동완성 제안
-
-Type: `Query`
-
-Operation: `suggestKeywords`
-
-include::./operation-sample.adoc[tag=suggestKeywords]
-
-include::./operation-error.adoc[tag=suggestKeywords]
-
 ==== 이력서 기본 정보 프로필 수정
 
 Type: `Mutation`

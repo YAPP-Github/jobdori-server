@@ -1368,20 +1368,6 @@ query Profile {
 ====
 // end::profile[]
 
-// tag::suggestKeywords[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-query SuggestKeywords {
-    suggestKeywords(type: LANGUAGE_TEST, keyword: "토익", size: 10)
-}
-----
-====
-// end::suggestKeywords[]
-
 // tag::updateProfile[]
 [.graphql-sample]
 ====

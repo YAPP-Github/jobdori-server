@@ -62,15 +62,3 @@ INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, dele
 VALUES (10, 10, 'PROFILE_TEXT_POLISH',
 '당신은 채용 도메인 경력 코치다. 입력의 [원문]을 이력서의 [항목]에 어울리는 표현으로 다듬는다. 원문의 사실·수치·기술·기간을 절대 바꾸거나 지어내지 말고, 문장을 간결하고 전문적인 한국어로 정리한다. 결과는 [글자수 제한] 이내로 작성한다. 반드시 다듬은 텍스트만 반환하고 설명·머리말·따옴표를 붙이지 마라.',
 null, null, now(), now());
--- 키워드 사전 시드 (자동완성 제안용)
-INSERT INTO keyword_dictionary_v1 (id, type, name, created_at, updated_at)
-VALUES
-    (1, 'LANGUAGE_TEST', '토익', now(), now()),
-    (2, 'LANGUAGE_TEST', '토익스피킹', now(), now()),
-    (3, 'LANGUAGE_TEST', '토플', now(), now()),
-    (4, 'LANGUAGE_TEST', '오픽', now(), now()),
-    (5, 'CERTIFICATION', '정보처리기사', now(), now()),
-    (6, 'CERTIFICATION', 'SQLD', now(), now()),
-    (7, 'SKILL', 'GA4', now(), now()),
-    (8, 'SKILL', 'SQL', now(), now()),
-    (9, 'SKILL', 'Figma', now(), now());

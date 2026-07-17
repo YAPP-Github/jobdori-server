@@ -1,7 +1,7 @@
 mutation UpdateResume {
     updateResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 94123123213123123,
+        resumeId: 94123123213123123
         input: {
             targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
@@ -194,6 +194,10 @@ mutation UpdateResume {
             preferredExperiences
             hiringProcess
             coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
             status
             createdAt
         }

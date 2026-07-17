@@ -28,7 +28,7 @@ extend type Query {
         """
         상태 필터입니다. 생략하면 전체, IN_PROGRESS/COMPLETED면 해당 상태만. (AR0001 진행 중/완료 섹션)
         """
-        status: JdStatus
+        status: JdStatus = null
     ): [Jd!]!
 
     """
@@ -118,12 +118,12 @@ input JdRegisterRequest {
     """
     등록할 JD 공고의 URL입니다. (크롤 등록)
     """
-    sourceUrl: String
+    sourceUrl: String = null
 
     """
     붙여넣은 JD 본문입니다. (붙여넣기 등록)
     """
-    body: String
+    body: String = null
 }
 
 """

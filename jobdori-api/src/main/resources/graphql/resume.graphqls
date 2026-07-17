@@ -10,15 +10,15 @@ extend type Query {
         """
         조회할 이력서 상태 목록입니다 (생략하면 COMPLETED, DRAFT를 모두 조회)
         """
-        statuses: [ResumeStatusType!],
+        statuses: [ResumeStatusType!] = null,
         """
         다음 페이지를 조회할 때 사용할 커서입니다.
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 이력서 개수입니다. (1 이상 30 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): Resumes!
 
     """

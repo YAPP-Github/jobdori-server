@@ -23,9 +23,9 @@ data class UpdateExperienceRequest(
     val contents: ExperienceContentsRequest,
 
     @field:Valid
-    val period: PeriodRequest? = null,
+    val period: PeriodRequest?,
 
     @field:Pattern(regexp = "(?s).*\\S.*", message = "must not be blank")
     @field:Size(max = 100)
-    val role: String? = null,
+    val role: String?,
 )

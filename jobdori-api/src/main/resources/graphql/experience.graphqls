@@ -24,19 +24,19 @@ extend type Query {
         """
         특정 프로젝트의 경험만 조회할 때 사용하는 프로젝트 ID입니다 (선택)
         """
-        projectId: ID,
+        projectId: ID = null,
         """
         JD ID입니다. 주면 각 경험에 해당 JD 기준 matchRate와 reason(상위 5개)을 채웁니다. (선택)
         """
-        jdId: ID,
+        jdId: ID = null,
         """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 경험 개수입니다. (1 이상 30 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): Experiences!
 
     """
@@ -64,11 +64,11 @@ extend type Query {
         """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 경험 프로젝트 개수입니다. (1 이상 30 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): ExperienceProjects!
 
     """
@@ -86,11 +86,11 @@ extend type Query {
         """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 경험 개수입니다. (1 이상 30 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): Experiences!
 }
 
@@ -282,12 +282,12 @@ input ExperienceContentsRequest {
     """
     STAR 형식의 상세 내용입니다.
     """
-    star: StarExperienceContentsRequest
+    star: StarExperienceContentsRequest = null
 
     """
     FREE 형식의 상세 내용입니다.
     """
-    free: FreeExperienceContentsRequest
+    free: FreeExperienceContentsRequest = null
 }
 
 """

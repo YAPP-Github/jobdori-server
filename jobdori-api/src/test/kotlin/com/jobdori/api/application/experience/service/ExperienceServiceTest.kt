@@ -233,6 +233,8 @@ class ExperienceServiceTest : StringSpec({
             tags = listOf("Spring"),
             title = "수정 경험",
             contents = freeContentsRequest("수정 내용"),
+            role = null,
+            period = null,
         )
         val modified = experience(id = 1L, projectId = 5L, title = "수정 경험", contents = contents)
         every { experienceProjectReader.getProject(workspaceId = 1L, projectId = 5L) } returns project(id = 5L)

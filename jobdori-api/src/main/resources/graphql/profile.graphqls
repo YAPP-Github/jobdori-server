@@ -376,52 +376,52 @@ input UpdateProfileRequest {
     """
     변경할 이름입니다.
     """
-    name: String
+    name: String = null
 
     """
     변경할 전화번호입니다. (형식: 010-1234-5678, 빈 문자열 = 비우기)
     """
-    phone: String
+    phone: String = null
 
     """
     변경할 이메일입니다.
     """
-    email: String
+    email: String = null
 
     """
     변경할 핵심역량입니다. (최대 500자)
     """
-    coreCompetency: String
+    coreCompetency: String = null
 
     """
     변경할 학력 목록입니다. (전체 교체)
     """
-    educations: [ProfileEducationRequest!]
+    educations: [ProfileEducationRequest!] = null
 
     """
     변경할 경력 목록입니다. (전체 교체)
     """
-    careers: [ProfileCareerRequest!]
+    careers: [ProfileCareerRequest!] = null
 
     """
     변경할 어학 목록입니다. (전체 교체)
     """
-    languageTests: [ProfileLanguageTestRequest!]
+    languageTests: [ProfileLanguageTestRequest!] = null
 
     """
     변경할 수상 목록입니다. (전체 교체)
     """
-    awards: [ProfileAwardRequest!]
+    awards: [ProfileAwardRequest!] = null
 
     """
     변경할 자격증 목록입니다. (전체 교체)
     """
-    certifications: [ProfileCertificationRequest!]
+    certifications: [ProfileCertificationRequest!] = null
 
     """
     변경할 스킬 목록입니다. (전체 교체)
     """
-    skills: [ProfileSkillRequest!]
+    skills: [ProfileSkillRequest!] = null
 }
 
 """

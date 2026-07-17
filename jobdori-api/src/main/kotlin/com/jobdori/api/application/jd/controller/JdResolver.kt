@@ -2,6 +2,7 @@ package com.jobdori.api.application.jd.controller
 
 import com.jobdori.api.application.jd.dto.request.JdRegisterRequest
 import com.jobdori.api.application.jd.dto.response.JdRegisterResponse
+import com.jobdori.api.application.jd.dto.response.JdInsightResponse
 import com.jobdori.api.application.jd.dto.response.JdResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.api.support.auth.UserId
@@ -73,6 +74,16 @@ class JdResolver(
     ): JdResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
         return JdResponse.from(getJdService.getJd(workspace.id, id))
+    }
+
+    @QueryMapping
+    fun jdInsight(
+        @UserId userId: Long,
+        @Argument workspaceId: String,
+        @Argument jdId: String,
+    ): JdInsightResponse {
+        val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
+        return JdInsightResponse.from(getJdService.getJd(workspace.id, jdId))
     }
 
     @QueryMapping

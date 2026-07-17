@@ -147,6 +147,31 @@ internal class JdResolverTest(
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
     }
 
+    "하위 호환 API로 JD 인사이트를 조회한다" {
+        every { getJdService.getJd(10L, "jd-pub-1") } returns graphQlJd(
+            publicId = "jd-pub-1",
+            keyPoints = "주도적으로 문제를 정의할 사람을 원해요.",
+            strategy = "문제 해결 경험을 강조하세요.",
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                query {
+                  jdInsight(workspaceId: "ws-1", jdId: "jd-pub-1") {
+                    keyPoints
+                    strategy
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("jdInsight.keyPoints").entity<String>().isEqualTo("주도적으로 문제를 정의할 사람을 원해요.")
+            .path("jdInsight.strategy").entity<String>().isEqualTo("문제 해결 경험을 강조하세요.")
+
+        verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
+    }
+
     "sort를 생략하면 최신순(LATEST)으로 status 필터 없이 JD 목록을 조회한다" {
         every { getJdService.getJds(10L, JdSortType.LATEST, null) } returns
             listOf(graphQlJd(publicId = "jd-pub-2", companyName = "잡도리"))

@@ -1,6 +1,7 @@
 package com.jobdori.infrastructure.persistence.domain.user.entity
 
 import com.jobdori.core.domain.user.User
+import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -15,8 +16,8 @@ class UserEntity(
     @Column(nullable = false, length = 50, unique = true, updatable = false)
     var publicId: String,
 
-    @Column(nullable = false, length = 320)
-    var email: String,
+    @Column(name = "email_encrypted", nullable = false, columnDefinition = "text")
+    var emailEncrypted: String,
 
     @Column(nullable = false, length = 50)
     var name: String,
@@ -29,18 +30,18 @@ class UserEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 
-    fun toUser() = User(
+    fun toUser(encryptor: StringEncryptor) = User(
         id = id,
         publicId = publicId,
-        email = email,
+        email = encryptor.decrypt(emailEncrypted),
         name = name,
         profileImageUrl = profileImageUrl,
     )
 
     companion object {
-        fun from(user: User) = UserEntity(
+        fun from(user: User, encryptor: StringEncryptor) = UserEntity(
             publicId = user.publicId,
-            email = user.email,
+            emailEncrypted = encryptor.encrypt(user.email),
             name = user.name,
             profileImageUrl = user.profileImageUrl,
         ).also { it.id = user.id }

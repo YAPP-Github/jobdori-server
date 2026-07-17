@@ -1,15 +1,14 @@
 package com.jobdori.infrastructure.persistence.domain.user
 
-import com.jobdori.core.domain.user.User
 import com.jobdori.core.domain.user.UserFixture
 import com.jobdori.core.domain.user.repository.UserRepository
 import com.jobdori.infrastructure.persistence.IntegrationTest
-import com.jobdori.infrastructure.persistence.domain.user.entity.UserEntity
 import com.jobdori.infrastructure.persistence.domain.user.repository.UserJpaRepository
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 
 @IntegrationTest
 class UserRepositoryTest(
@@ -23,30 +22,18 @@ class UserRepositoryTest(
 
     "ID로 사용자를 조회한다" {
         // given
-        val entity = userJpaRepository.save(UserEntity.from(UserFixture.create()))
+        val saved = userRepository.save(UserFixture.create())
 
         // when & then
-        userRepository.findById(entity.id) shouldBe User(
-            id = entity.id,
-            publicId = entity.publicId,
-            email = entity.email,
-            name = entity.name,
-            profileImageUrl = entity.profileImageUrl,
-        )
+        userRepository.findById(saved.id) shouldBe saved
     }
 
     "Public ID로 사용자를 조회한다" {
         // given
-        val entity = userJpaRepository.save(UserEntity.from(UserFixture.create()))
+        val saved = userRepository.save(UserFixture.create())
 
         // when & then
-        userRepository.findByPublicId(entity.publicId) shouldBe User(
-            id = entity.id,
-            publicId = entity.publicId,
-            email = entity.email,
-            name = entity.name,
-            profileImageUrl = entity.profileImageUrl,
-        )
+        userRepository.findByPublicId(saved.publicId) shouldBe saved
     }
 
     "존재하지 않는 사용자는 null을 반환한다" {
@@ -64,15 +51,15 @@ class UserRepositoryTest(
         users[0].also {
             it.id shouldBe saved.id
             it.publicId shouldBe saved.publicId
-            it.email shouldBe saved.email
+            it.emailEncrypted shouldNotBe saved.email
             it.name shouldBe saved.name
             it.profileImageUrl shouldBe saved.profileImageUrl
         }
     }
 
     "ID로 사용자를 삭제한다" {
-        val target = userJpaRepository.save(UserEntity.from(UserFixture.create(publicId = "target")))
-        val other = userJpaRepository.save(UserEntity.from(UserFixture.create(publicId = "other")))
+        val target = userRepository.save(UserFixture.create(publicId = "target"))
+        val other = userRepository.save(UserFixture.create(publicId = "other"))
 
         userRepository.deleteById(target.id)
 

@@ -2,6 +2,7 @@ package com.jobdori.api.application.resume.service
 
 import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.resume.dto.request.ResumeBasicInfoPayloadRequest
+import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
 import com.jobdori.api.application.resume.dto.request.ResumeLanguagePayloadRequest
 import com.jobdori.api.application.resume.dto.request.ResumeSectionItemPayloadRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeRequest
@@ -24,10 +25,15 @@ import com.jobdori.core.domain.resume.ResumeSectionItemFixture
 import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
+import com.jobdori.core.domain.profile.Profile
+import com.jobdori.core.domain.profile.ProfileDetail
+import com.jobdori.core.domain.profile.ProfileSections
 import com.jobdori.core.domain.resume.service.ResumeCreator
 import com.jobdori.core.domain.resume.service.ResumeModifier
 import com.jobdori.core.domain.resume.service.ResumeReader
 import com.jobdori.core.domain.resume.service.ResumeRemover
+import com.jobdori.core.domain.resume.service.ProfileResumeSectionInitializer
+import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.assertions.throwables.shouldThrow
@@ -47,6 +53,8 @@ class ResumeServiceTest : StringSpec({
     val resumeModifier = mockk<ResumeModifier>()
     val getJdService = mockk<GetJdService>()
     val getJdInsightService = mockk<GetJdInsightService>()
+    val profileReader = mockk<ProfileReader>()
+    val profileResumeSectionInitializer = mockk<ProfileResumeSectionInitializer>()
     val resumeService = ResumeService(
         workspaceAccessValidationService = workspaceAccessValidationService,
         resumeCreator = resumeCreator,
@@ -55,6 +63,8 @@ class ResumeServiceTest : StringSpec({
         resumeModifier = resumeModifier,
         getJdService = getJdService,
         getJdInsightService = getJdInsightService,
+        profileReader = profileReader,
+        profileResumeSectionInitializer = profileResumeSectionInitializer,
     )
 
     beforeTest {
@@ -68,6 +78,135 @@ class ResumeServiceTest : StringSpec({
             publicId = "workspace-id",
             ownerUserId = 10L,
         )
+    }
+
+    "프로필 초기화 옵션으로 이력서를 생성하면 프로필 섹션을 command에 포함한다" {
+        val request = CreateResumeRequest(
+            targetJdId = null,
+            template = ResumeTemplate.DEFAULT,
+            status = ResumeStatusType.COMPLETED,
+            sections = listOf(
+                SaveResumeSectionRequest(
+                    sectionId = null,
+                    type = ResumeSectionType.BASIC_INFO,
+                    displayOrder = 10.0,
+                    visible = true,
+                    items = emptyList(),
+                    useDefaultItems = true,
+                ),
+            ),
+        )
+        val profile = Profile(1L, 1L, "홍길동", null, null, null)
+        val profileDetail = ProfileDetail(
+            profile = profile,
+            sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+        )
+        val initializedItems = saveRequest().toCommand().sections.single().items
+        val createdDetail = ResumeDetail(
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
+            sections = emptyList(),
+        )
+        every { profileReader.getOrCreateProfile(1L) } returns profile
+        every { profileReader.getDetail(profile) } returns profileDetail
+        every {
+            profileResumeSectionInitializer.initializeItems(profileDetail, ResumeSectionType.BASIC_INFO)
+        } returns initializedItems
+        every { resumeCreator.createDetail(workspaceId = 1L, command = any()) } returns createdDetail
+
+        resumeService.createResume(10L, "workspace-id", request)
+
+        verify(exactly = 1) {
+            resumeCreator.createDetail(
+                workspaceId = 1L,
+                command = withArg {
+                    it.status shouldBe ResumeStatus.COMPLETED
+                    it.sections.single().items shouldBe initializedItems
+                },
+            )
+        }
+        verify(exactly = 0) {
+            getJdService.getJd(workspaceId = 1L, publicId = any())
+        }
+    }
+
+    "targetJdId가 있으면 JD public ID를 내부 ID로 변환해 생성한다" {
+        val request = CreateResumeRequest(
+            targetJdId = "jd-public-id",
+            template = ResumeTemplate.DEFAULT,
+            status = ResumeStatusType.DRAFT,
+            sections = listOf(basicInfoSection(displayOrder = 10.0)),
+        )
+        val createdDetail = ResumeDetail(
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L, targetJdId = 20L),
+            sections = emptyList(),
+        )
+        every { getJdService.getJd(workspaceId = 1L, publicId = "jd-public-id") } returns targetJd()
+        every { resumeCreator.createDetail(workspaceId = 1L, command = any()) } returns createdDetail
+
+        resumeService.createResume(10L, "workspace-id", request)
+
+        verify(exactly = 1) {
+            resumeCreator.createDetail(
+                workspaceId = 1L,
+                command = withArg { it.targetJdId shouldBe 20L },
+            )
+        }
+    }
+
+    "기본 아이템 생성과 직접 입력한 items를 함께 지정하면 예외가 발생한다" {
+        val section = basicInfoSection(displayOrder = 10.0).copy(useDefaultItems = true)
+        val request = CreateResumeRequest(
+            targetJdId = null,
+            template = ResumeTemplate.DEFAULT,
+            status = ResumeStatusType.DRAFT,
+            sections = listOf(section),
+        )
+
+        val exception = shouldThrow<InvalidArgumentsException> { request.toCommand() }
+
+        exception.details.single().field shouldBe "sections.items"
+    }
+
+    "기본 아이템이 없으면 해당 섹션을 생성하지 않는다" {
+        val request = CreateResumeRequest(
+            targetJdId = null,
+            template = ResumeTemplate.DEFAULT,
+            status = ResumeStatusType.DRAFT,
+            sections = listOf(
+                SaveResumeSectionRequest(
+                    sectionId = null,
+                    type = ResumeSectionType.SKILL,
+                    displayOrder = 100.0,
+                    visible = true,
+                    items = emptyList(),
+                    useDefaultItems = true,
+                ),
+            ),
+        )
+        val profile = Profile(1L, 1L, "홍길동", null, null, null)
+        val profileDetail = ProfileDetail(
+            profile = profile,
+            sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+        )
+        val createdDetail = ResumeDetail(
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
+            sections = emptyList(),
+        )
+        every { profileReader.getOrCreateProfile(1L) } returns profile
+        every { profileReader.getDetail(profile) } returns profileDetail
+        every {
+            profileResumeSectionInitializer.initializeItems(profileDetail, ResumeSectionType.SKILL)
+        } returns emptyList()
+        every { resumeCreator.createDetail(workspaceId = 1L, command = any()) } returns createdDetail
+
+        resumeService.createResume(10L, "workspace-id", request)
+
+        verify(exactly = 1) {
+            resumeCreator.createDetail(
+                workspaceId = 1L,
+                command = withArg { it.sections shouldBe emptyList() },
+            )
+        }
     }
 
     "이력서 수정 요청을 command로 변환해 modifier에 위임한다" {

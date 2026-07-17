@@ -323,7 +323,7 @@ private val graphQlOperationErrors = listOf(
         operation = "createResume",
         title = "이력서 생성",
         type = GraphQlOperationType.MUTATION,
-        sampleFile = graphQlSample("resume/create-resume.graphql"),
+        sampleFile = graphQlSample("resume/create-resume-from-profile.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,

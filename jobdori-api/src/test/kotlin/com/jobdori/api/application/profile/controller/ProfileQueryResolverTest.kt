@@ -77,8 +77,8 @@ internal class ProfileQueryResolverTest(
             )
             .execute()
             .path("profile.profileId").entity<String>().isEqualTo("10")
-            .path("profile.name").entity<String>().isEqualTo("김지윤")
-            .path("profile.phone").entity<String>().isEqualTo("010-3358-9065")
+            .path("profile.name").entity<String>().isEqualTo("잡도리")
+            .path("profile.phone").entity<String>().isEqualTo("010-1111-2222")
             .path("profile.email").entity<String>().isEqualTo("rlajae14@gmail.com")
             .path("profile.coreCompetency").entity<String>().isEqualTo("핵심역량 내용")
             .path("profile.educations[0].school").entity<String>().isEqualTo("잡도리대학교")
@@ -127,8 +127,8 @@ private fun authenticatedTester(graphQlTester: GraphQlTester): GraphQlTester {
 internal fun graphQlProfileDetail() = ProfileDetail(
     profile = Profile.newInstance(workspaceId = 1L).copy(
         id = 10L,
-        name = "김지윤",
-        phone = "010-3358-9065",
+        name = "잡도리",
+        phone = "010-1111-2222",
         email = "rlajae14@gmail.com",
         coreCompetency = "핵심역량 내용",
     ),

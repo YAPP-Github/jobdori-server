@@ -7,6 +7,7 @@ import java.util.Base64
 class CryptoProperties(
     secret: String,
 ) {
+
     val key: ByteArray = try {
         Base64.getDecoder().decode(secret)
     } catch (exception: IllegalArgumentException) {
@@ -20,4 +21,5 @@ class CryptoProperties(
     companion object {
         private const val MIN_KEY_SIZE = 32
     }
+
 }

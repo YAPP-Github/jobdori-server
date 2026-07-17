@@ -1,0 +1,35 @@
+==== 회원 탈퇴
+
+인증된 사용자의 계정을 탈퇴 처리하는 API입니다.
+
+include::{snippets}/auth-withdrawal/request-path.adoc[]
+
+===== Request Headers
+
+include::{snippets}/auth-withdrawal/request-headers.adoc[]
+
+===== Response Fields
+
+include::{snippets}/auth-withdrawal/response-fields.adoc[]
+
+===== Response Headers
+
+include::{snippets}/auth-withdrawal/response-headers.adoc[]
+
+===== Examples
+
+====== HTTP Request
+
+include::{snippets}/auth-withdrawal/http-request.adoc[]
+
+====== Curl
+
+include::{snippets}/auth-withdrawal/curl-request.adoc[]
+
+====== HTTP Response
+
+include::{snippets}/auth-withdrawal/http-response.adoc[]
+
+===== Error Codes
+
+include::{snippets}/auth-withdrawal/error-codes.adoc[]

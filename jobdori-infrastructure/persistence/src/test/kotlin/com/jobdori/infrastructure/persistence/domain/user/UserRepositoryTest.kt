@@ -70,4 +70,14 @@ class UserRepositoryTest(
         }
     }
 
+    "ID로 사용자를 삭제한다" {
+        val target = userJpaRepository.save(UserEntity.from(UserFixture.create(publicId = "target")))
+        val other = userJpaRepository.save(UserEntity.from(UserFixture.create(publicId = "other")))
+
+        userRepository.deleteById(target.id)
+
+        userJpaRepository.findById(target.id).isEmpty shouldBe true
+        userJpaRepository.findById(other.id).isPresent shouldBe true
+    }
+
 })

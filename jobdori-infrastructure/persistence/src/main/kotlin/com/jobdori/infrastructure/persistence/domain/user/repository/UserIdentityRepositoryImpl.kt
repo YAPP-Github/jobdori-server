@@ -32,4 +32,14 @@ class UserIdentityRepositoryImpl(
         return entity.toDomain()
     }
 
+    @Transactional(readOnly = true)
+    override fun findAllByUserId(userId: Long): List<UserIdentity> {
+        return jpaRepository.findAllByUserId(userId).map(UserIdentityEntity::toDomain)
+    }
+
+    @Transactional
+    override fun deleteAllByUserId(userId: Long) {
+        jpaRepository.deleteAllByUserId(userId)
+    }
+
 }

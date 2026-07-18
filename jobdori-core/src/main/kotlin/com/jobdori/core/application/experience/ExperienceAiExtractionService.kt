@@ -91,7 +91,8 @@ data class ExtractedExperienceProject(
             return null
         }
 
-        val commands = experiences.mapNotNull { experience -> experience.toCommand() }
+        val projectPeriod = period.toPeriod() ?: PeriodParser.parse(periodText)
+        val commands = experiences.mapNotNull { experience -> experience.toCommand(projectPeriod, role) }
         if (commands.isEmpty()) {
             return null
         }
@@ -111,6 +112,9 @@ data class ExtractedExperienceProject(
 
 data class ExtractedExperience(
     val title: String = "",
+    val period: ExtractedPeriod = ExtractedPeriod(),
+    val periodText: String = "",
+    val role: String = "",
     val situation: String = "",
     val task: String = "",
     val action: String = "",
@@ -118,7 +122,7 @@ data class ExtractedExperience(
     val competencyTags: List<String> = emptyList(),
 ) {
 
-    fun toCommand(): ExperienceCreateCommand? {
+    fun toCommand(projectPeriod: Period?, projectRole: String): ExperienceCreateCommand? {
         val normalizedTitle = title.trim().ifBlank { action.trim() }.ifBlank { result.trim() }
         if (normalizedTitle.isBlank()) {
             return null
@@ -137,6 +141,8 @@ data class ExtractedExperience(
                 action = action.trim(),
                 result = result.trim(),
             ),
+            period = period.toPeriod() ?: PeriodParser.parse(periodText) ?: projectPeriod,
+            role = role.trim().ifBlank { projectRole.trim() }.ifBlank { null },
         )
     }
 

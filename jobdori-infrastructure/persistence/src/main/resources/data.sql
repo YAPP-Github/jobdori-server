@@ -5,9 +5,11 @@ INSERT INTO ai_model_configs_v1 (id, ai_model_id, name, description, parameters,
 VALUES
   (1, 1, 'jd_multi_posting_split', 'JD 다중 공고 분할',           '{"temperature":0.0}' FORMAT JSON, now(), now()),
   (2, 1, 'jd_meta',                'JD 메타(기업명·포지션·소개·업무·필요/우대경험·전형절차) 추출', '{"temperature":0.2}' FORMAT JSON, now(), now()),
+  (3, 1, 'jd_application_strategy','JD 지원 전략 생성',           '{"temperature":0.6}' FORMAT JSON, now(), now()),
   (4, 1, 'experience.extract_star','경험 STAR 재구조화',          '{"temperature":0.2,"maxTokens":4096}' FORMAT JSON, now(), now()),
   (5, 1, 'resume.rewrite_experience','경험 문장 자동 작성',       '{"temperature":0.6,"maxTokens":900}' FORMAT JSON, now(), now()),
   (6, 1, 'experience.contents_polish','Free Style 경험 내용 STAR 변환', '{"temperature":0.2,"maxTokens":1200}' FORMAT JSON, now(), now()),
+  (7, 1, 'jd_key_points',          'JD 공고 핵심 요약',           '{"temperature":0.4}' FORMAT JSON, now(), now()),
   (8, 1, 'experience_recommendation','JD-경험 매칭률·이유',        '{"temperature":0.2}' FORMAT JSON, now(), now()),
   (9, 1, 'profile.core_competency', '프로필 핵심역량 생성',        '{"temperature":0.6,"maxTokens":900}' FORMAT JSON, now(), now()),
   (10, 1, 'profile.text_polish',    '프로필 텍스트 다듬기',        '{"temperature":0.4,"maxTokens":1200}' FORMAT JSON, now(), now());
@@ -25,6 +27,12 @@ VALUES (2, 2, 'JD_META_EXTRACTION',
 '당신은 채용 공고(JD) 분석 전문가다. 입력된 JD 본문에서 아래 10개 항목을 한 번에 분석한다. (1) 기업이름(companyName) — 채용하는 회사명. 없으면 빈 문자열. (2) 포지션 이름(positionTitle) — 지원하는 직무명. 본문 제목·헤딩·"[포지션]" 라벨·"○○ 채용/모집" 문구에서 찾는다. 기업명·홍보 수식어는 빼고 직무명 중심으로 적는다. (3) 기업/팀 소개(companyIntro). (4) 업무 내용(responsibilities)·(5) 필요 경험(requiredExperiences)·(6) 우대 경험(preferredExperiences)·(7) 전형 절차(hiringProcess)는 각각 항목 단위 문자열 배열로 반환한다. (8) 핵심 역량 태그(coreCompetencies)는 실제로 강조된 짧은 키워드로 최대 5개를 반환한다. (9) 공고 핵심(keyPoints)은 원하는 인재상과 핵심 요구를 지원자 관점의 자연스러운 한국어 문단 2~4문장으로 요약한다. (10) 지원 전략(strategy)은 어떤 경험을 어떻게 강조할지 자연스러운 한국어 문단 2~4문장으로 조언한다. 본문에 명시된 사실만 사용하고 사실·수치·기술명·고유명사를 지어내지 마라. 없는 추출 항목은 빈 문자열 또는 빈 배열로 둔다. 업무·필요 경험·우대 경험은 명사형 종결로 통일하고 전형 절차는 단계명 형태를 유지한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
 '{"type":"object","additionalProperties":false,"required":["companyName","positionTitle","companyIntro","responsibilities","requiredExperiences","preferredExperiences","hiringProcess","coreCompetencies","keyPoints","strategy"],"properties":{"companyName":{"type":"string"},"positionTitle":{"type":"string"},"companyIntro":{"type":"string"},"responsibilities":{"type":"array","items":{"type":"string"}},"requiredExperiences":{"type":"array","items":{"type":"string"}},"preferredExperiences":{"type":"array","items":{"type":"string"}},"hiringProcess":{"type":"array","items":{"type":"string"}},"coreCompetencies":{"type":"array","items":{"type":"string"},"maxItems":5},"keyPoints":{"type":"string"},"strategy":{"type":"string"}}}',
 null, now(), now());
+
+-- 3) JD 지원 전략 생성 — generateText, json_schema NULL. 서비스에선 JD_META_EXTRACTION에 통합(#73), 프롬프트 테스트용
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (3, 3, 'JD_APPLICATION_STRATEGY',
+'당신은 취업 코치다. 입력된 JD 본문을 분석해 지원자에게 지원 전략을 대화체로 조언한다. 반드시 아래 3단계 흐름의 자연스러운 한국어 문단(2~4문장)으로만 답하라(불릿·머리말·JSON 금지). (1) "JD는 ~한 업무를 ~하게 하는 사람을 원해요"처럼 JD가 원하는 핵심 인재상을 요약한다. (2) "그러니까 ~한 경험을 ~하게 표현해서"처럼 지원자가 어떤 경험을 어떻게 강조하면 좋을지 조언한다. (3) "지원하는 게 좋겠어요"처럼 격려로 마무리한다. JD에 없는 사실을 지어내지 마라.',
+null, null, now(), now());
 
 -- 4) 경험 STAR 재구조화 (동료 담당 — 로컬 테스트 편의)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
@@ -44,6 +52,12 @@ VALUES (6, 6, 'EXPERIENCE_CONTENTS_POLISH',
 '당신은 채용 도메인 경력 코치다. 입력된 경험 내용을 분석해 하나의 경험 카드에 들어갈 STAR(Situation·Task·Action·Result) 형식으로 재구성한다. 원문에 없는 사실·수치·기술·기간·역할을 절대 지어내지 마라. 원문에 명확한 단서가 없는 필드는 빈 문자열로 둔다. 각 필드는 이력서 작성자가 바로 다듬어 쓸 수 있도록 간결한 한국어 문장으로 작성한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
 '{"type":"object","additionalProperties":false,"required":["situation","task","action","result"],"properties":{"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"}}}',
 null, now(), now());
+
+-- 7) JD 공고 핵심 요약 — generateText, json_schema NULL(서술형). 서비스에선 JD_META_EXTRACTION에 통합(#73), 프롬프트 테스트용
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (7, 7, 'JD_KEY_POINTS',
+'당신은 채용 공고(JD) 분석 전문가다. 입력된 JD 본문을 읽고 이 공고가 어떤 인재를 원하는지 핵심을 지원자 관점에서 요약한다. 반드시 불릿·머리말·JSON 없이 자연스러운 한국어 문단(2~4문장)으로만 답하라. 공고가 강조하는 역할·책임, 특히 중요하게 보는 역량·태도를 중심으로 정리한다. JD에 명시되지 않은 사실은 지어내지 마라.',
+null, null, now(), now());
 
 -- 8) JD-경험 매칭률·이유 — generateStructured. 전체 경험 채점 + 상위 5개만 이유.
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)

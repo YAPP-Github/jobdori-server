@@ -3,6 +3,7 @@ package com.jobdori.api.application.resume.service
 import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeRequest
 import com.jobdori.api.application.resume.dto.ResumeStatusType
+import com.jobdori.api.application.resume.dto.ResumeSaveMode
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
 import com.jobdori.api.application.resume.dto.response.ResumeStatusCountResponse
 import com.jobdori.api.application.resume.dto.response.ResumeSummaryResponse
@@ -11,14 +12,18 @@ import com.jobdori.api.application.common.dto.response.CursorResponse
 import com.jobdori.api.application.jd.dto.response.JdResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.core.application.jd.GetJdService
+import com.jobdori.core.application.resume.ResumeExperiencePolishService
+import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeDetail
+import com.jobdori.core.domain.resume.ResumeExperiencePayload
 import com.jobdori.core.domain.resume.service.ResumeCreator
 import com.jobdori.core.domain.resume.service.ProfileResumeSectionInitializer
 import com.jobdori.core.domain.resume.service.ResumeReader
 import com.jobdori.core.domain.resume.service.ResumeRemover
 import com.jobdori.core.domain.resume.service.ResumeModifier
+import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.profile.service.ProfileReader
 import org.springframework.stereotype.Service
 
@@ -32,6 +37,7 @@ class ResumeService(
     private val getJdService: GetJdService,
     private val profileReader: ProfileReader,
     private val profileResumeSectionInitializer: ProfileResumeSectionInitializer,
+    private val resumeExperiencePolishService: ResumeExperiencePolishService,
 ) {
 
     fun getResumes(
@@ -135,10 +141,11 @@ class ResumeService(
             userId = userId,
         )
 
-        val resolvedTargetJdId = request.targetJdId?.let { publicId ->
-            getJdService.getJd(workspaceId = workspace.id, publicId = publicId).id
+        validatePolishTargetJd(request.saveMode, request.targetJdId)
+        val targetJd = request.targetJdId?.let { publicId ->
+            getJdService.getJd(workspaceId = workspace.id, publicId = publicId)
         }
-        val command = request.toCommand(resolvedTargetJdId).let { command ->
+        val command = request.toCommand(targetJd?.id).let { command ->
             if (request.sections.none { it.useDefaultItems }) command
             else {
                 val profile = profileReader.getOrCreateProfile(workspace.id)
@@ -152,7 +159,7 @@ class ResumeService(
                     },
                 )
             }
-        }
+        }.let { polishExperienceContents(it, request.saveMode, targetJd) }
 
         return toResponse(
             workspaceId = workspace.id,
@@ -176,16 +183,18 @@ class ResumeService(
             userId = userId,
         )
 
-        val resolvedTargetJdId = request.targetJdId?.let { publicId ->
-            getJdService.getJd(workspaceId = workspace.id, publicId = publicId).id
+        validatePolishTargetJd(request.saveMode, request.targetJdId)
+        val targetJd = request.targetJdId?.let { publicId ->
+            getJdService.getJd(workspaceId = workspace.id, publicId = publicId)
         }
+        val command = polishExperienceContents(request.toCommand(targetJd?.id), request.saveMode, targetJd)
 
         return toResponse(
             workspaceId = workspace.id,
             detail = resumeModifier.modifyDetail(
                 workspaceId = workspace.id,
                 resumeId = resumeId,
-                command = request.toCommand(resolvedTargetJdId),
+                command = command,
             ),
             includeTargetJd = includeTargetJd,
         )
@@ -200,6 +209,37 @@ class ResumeService(
         resumeRemover.remove(
             workspaceId = workspace.id,
             resumeId = resumeId,
+        )
+    }
+
+    private fun validatePolishTargetJd(saveMode: ResumeSaveMode, targetJdId: String?) {
+        if (saveMode == ResumeSaveMode.POLISH && targetJdId == null) {
+            throw InvalidArgumentsException("첨삭 저장에는 대상 채용공고 ID가 필요합니다.")
+        }
+    }
+
+    private fun polishExperienceContents(
+        command: ResumeSaveCommand,
+        saveMode: ResumeSaveMode,
+        targetJd: Jd?,
+    ): ResumeSaveCommand {
+        if (saveMode != ResumeSaveMode.POLISH || targetJd == null) return command
+
+        return command.copy(
+            sections = command.sections.map { section ->
+                section.copy(
+                    items = section.items.map { item ->
+                        val payload = item.payload
+                        val contents = (payload as? ResumeExperiencePayload)?.contents
+                        if (payload !is ResumeExperiencePayload || contents.isNullOrBlank()) item
+                        else item.copy(
+                            payload = payload.copy(
+                                contents = resumeExperiencePolishService.polish(contents, targetJd),
+                            ),
+                        )
+                    },
+                )
+            },
         )
     }
 

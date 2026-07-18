@@ -6,6 +6,7 @@ mutation UpdateResume {
             targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
             status: COMPLETED
+            saveMode: POLISH
             sections: [
                 {
                     type: BASIC_INFO

@@ -5,6 +5,7 @@ mutation CreateResume {
             targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
             status: DRAFT
+            saveMode: POLISH
             sections: [
                 {
                     type: CORE_SKILL

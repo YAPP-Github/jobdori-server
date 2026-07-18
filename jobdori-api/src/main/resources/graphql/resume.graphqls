@@ -99,6 +99,11 @@ extend type Mutation {
 """
 input CreateResumeInput {
     """
+    이력서 저장 모드입니다. POLISH는 대상 채용공고를 기준으로 경험 내용을 첨삭합니다.
+    """
+    saveMode: ResumeSaveMode! = NORMAL
+
+    """
     이력서가 맞춤 대상 채용공고와 연결되는 경우의 채용공고 ID입니다.
     """
     targetJdId: ID
@@ -124,6 +129,11 @@ input CreateResumeInput {
 """
 input SaveResumeInput {
     """
+    이력서 저장 모드입니다. POLISH는 대상 채용공고를 기준으로 경험 내용을 첨삭합니다.
+    """
+    saveMode: ResumeSaveMode! = NORMAL
+
+    """
     이력서가 맞춤 대상 채용공고와 연결되는 경우의 채용공고 ID입니다.
     """
     targetJdId: ID
@@ -142,6 +152,17 @@ input SaveResumeInput {
     저장할 섹션 목록입니다. 요청에 없는 기존 섹션은 삭제됩니다.
     """
     sections: [SaveResumeSectionInput!]!
+}
+
+"""
+이력서 저장 시 경험 내용을 처리하는 방식입니다.
+"""
+enum ResumeSaveMode {
+    """입력한 내용을 그대로 저장합니다."""
+    NORMAL
+
+    """대상 채용공고를 기준으로 경험 contents를 첨삭하여 저장합니다."""
+    POLISH
 }
 
 """

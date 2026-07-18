@@ -13,6 +13,28 @@ class ExperienceCustomRepositoryImpl(
     private val jpqlRenderContext: JpqlRenderContext,
 ) : ExperienceCustomRepository {
 
+    override fun updateStatusByWorkspaceIdAndProjectId(
+        workspaceId: Long,
+        projectId: Long,
+        status: ExperienceStatus,
+    ) {
+        val query = jpql {
+            update(
+                entity(ExperienceEntity::class),
+            ).set(
+                path(ExperienceEntity::status),
+                status,
+            ).where(
+                path(ExperienceEntity::workspaceId).eq(workspaceId)
+                    .and(path(ExperienceEntity::projectId).eq(projectId)),
+            )
+        }
+
+        entityManager.flush()
+        entityManager.createQuery(query, jpqlRenderContext).executeUpdate()
+        entityManager.clear()
+    }
+
     override fun searchAllByWorkspaceIdAndStatus(
         workspaceId: Long,
         status: ExperienceStatus,

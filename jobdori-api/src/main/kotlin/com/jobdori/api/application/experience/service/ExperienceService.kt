@@ -9,7 +9,6 @@ import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.logger.LoggerExtension.log
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
-import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.ExperienceCreator
 import com.jobdori.core.domain.experience.service.ExperienceModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader

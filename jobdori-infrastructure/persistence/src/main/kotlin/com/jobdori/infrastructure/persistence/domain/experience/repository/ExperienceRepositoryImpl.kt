@@ -28,6 +28,19 @@ class ExperienceRepositoryImpl(
             .map { it.toDomain() }
     }
 
+    @Transactional
+    override fun updateStatusByWorkspaceIdAndProjectId(
+        workspaceId: Long,
+        projectId: Long,
+        status: ExperienceStatus,
+    ) {
+        jpaRepository.updateStatusByWorkspaceIdAndProjectId(
+            workspaceId = workspaceId,
+            projectId = projectId,
+            status = status,
+        )
+    }
+
     @Transactional(readOnly = true)
     override fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): Experience? {
         return jpaRepository.findByIdAndWorkspaceIdAndStatus(

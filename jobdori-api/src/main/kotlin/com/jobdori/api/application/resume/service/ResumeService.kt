@@ -1,30 +1,30 @@
 package com.jobdori.api.application.resume.service
 
+import com.jobdori.api.application.common.dto.response.CursorResponse
+import com.jobdori.api.application.jd.dto.response.JdResponse
+import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
+import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeRequest
-import com.jobdori.api.application.resume.dto.ResumeStatusType
-import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
+import com.jobdori.api.application.resume.dto.response.ResumeListResponse
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
 import com.jobdori.api.application.resume.dto.response.ResumeStatusCountResponse
 import com.jobdori.api.application.resume.dto.response.ResumeSummaryResponse
-import com.jobdori.api.application.resume.dto.response.ResumeListResponse
-import com.jobdori.api.application.common.dto.response.CursorResponse
-import com.jobdori.api.application.jd.dto.response.JdResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
+import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.resume.ResumeExperiencePolishService
-import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeExperiencePayload
-import com.jobdori.core.domain.resume.service.ResumeCreator
 import com.jobdori.core.domain.resume.service.ProfileResumeSectionInitializer
+import com.jobdori.core.domain.resume.service.ResumeCreator
+import com.jobdori.core.domain.resume.service.ResumeModifier
 import com.jobdori.core.domain.resume.service.ResumeReader
 import com.jobdori.core.domain.resume.service.ResumeRemover
-import com.jobdori.core.domain.resume.service.ResumeModifier
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
-import com.jobdori.core.domain.profile.service.ProfileReader
 import org.springframework.stereotype.Service
 
 @Service
@@ -65,10 +65,10 @@ class ResumeService(
 
         return ResumeListResponse(
             resumes = resumes.map { resume ->
-            ResumeSummaryResponse.from(
-                resume = resume,
-                targetJd = resume.targetJdId?.let(targetJdsById::get),
-            )
+                ResumeSummaryResponse.from(
+                    resume = resume,
+                    targetJd = resume.targetJdId?.let(targetJdsById::get),
+                )
             },
             cursor = CursorResponse(nextCursor = result.nextCursor),
         )
@@ -225,6 +225,16 @@ class ResumeService(
     ): ResumeSaveCommand {
         if (optimizationMode != ResumeOptimizationMode.JOB_SPECIFIC || targetJd == null) return command
 
+        val polishTargets = command.sections.flatMap { section ->
+            section.items.mapNotNull { item ->
+                (item.payload as? ResumeExperiencePayload)?.contents?.takeIf { it.isNotBlank() }
+            }
+        }
+        if (polishTargets.isEmpty()) {
+            return command
+        }
+
+        val polishedContents = resumeExperiencePolishService.polish(polishTargets, targetJd).iterator()
         return command.copy(
             sections = command.sections.map { section ->
                 section.copy(
@@ -234,7 +244,7 @@ class ResumeService(
                         if (payload !is ResumeExperiencePayload || contents.isNullOrBlank()) item
                         else item.copy(
                             payload = payload.copy(
-                                contents = resumeExperiencePolishService.polish(contents, targetJd),
+                                contents = polishedContents.next(),
                             ),
                         )
                     },

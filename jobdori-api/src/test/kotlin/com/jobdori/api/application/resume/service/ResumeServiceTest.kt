@@ -167,7 +167,7 @@ class ResumeServiceTest : StringSpec({
             optimizationMode = saveRequest.optimizationMode,
         )
         every { getJdService.getJd(1L, jd.publicId) } returns jd
-        every { resumeExperiencePolishService.polish("원본 내용", jd) } returns "생성 첨삭 내용"
+        every { resumeExperiencePolishService.polish(listOf("원본 내용"), jd) } returns listOf("생성 첨삭 내용")
         every { resumeCreator.createDetail(1L, any()) } returns ResumeDetail(
             resume = ResumeFixture.create(id = 100L, workspaceId = 1L, targetJdId = jd.id),
             sections = emptyList(),
@@ -359,7 +359,7 @@ class ResumeServiceTest : StringSpec({
             sections = emptyList(),
         )
         every { getJdService.getJd(workspaceId = 1L, publicId = jd.publicId) } returns jd
-        every { resumeExperiencePolishService.polish("원본 내용", jd) } returns "첨삭 내용"
+        every { resumeExperiencePolishService.polish(listOf("원본 내용"), jd) } returns listOf("첨삭 내용")
         every { resumeModifier.modifyDetail(1L, 100L, any()) } returns detail
 
         resumeService.modifyResume(10L, "workspace-id", 100L, request)

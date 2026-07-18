@@ -14,21 +14,29 @@ class ResumeExperiencePolishService(
     private val aiChatClient: AiChatClient,
 ) {
 
-    fun polish(contents: String, jd: Jd): String {
+    fun polish(contents: List<String>, jd: Jd): List<String> {
+        if (contents.isEmpty()) return emptyList()
+
         val template = promptTemplateRepository.findByType(PromptType.RESUME_EXPERIENCE_REWRITE)
             ?: throw AiException("이력서 경험 첨삭 프롬프트를 찾을 수 없습니다.", AiErrorCode.E500_AI_GENERATION_FAILED)
 
-        val request = template.copy(
+        val result = aiChatClient.generateStructured(template.copy(
             systemPrompt = template.systemPrompt.replace(
                 "{tone}",
                 "원문의 분량과 형식을 최대한 유지하면서 간결하고 전문적인 한국어로 작성한다.",
             ),
-        ).build(buildUserPrompt(contents, jd))
+        ).buildStructured(buildUserPrompt(contents, jd), ResumeExperiencePolishResult::class))
 
-        return aiChatClient.generateText(request).trim()
+        val polishedByIndex = result.items.associate { it.index to it.content.trim() }
+        return contents.indices.map { index ->
+            polishedByIndex[index + 1] ?: throw AiException(
+                "이력서 경험 첨삭 결과가 누락되었습니다: index=${index + 1}",
+                AiErrorCode.E500_AI_GENERATION_FAILED,
+            )
+        }
     }
 
-    private fun buildUserPrompt(contents: String, jd: Jd): String = """
+    private fun buildUserPrompt(contents: List<String>, jd: Jd): String = """
         ## 대상 JD
         회사: ${jd.companyName}
         포지션: ${jd.positionTitle}
@@ -39,7 +47,16 @@ class ResumeExperiencePolishService(
         공고 핵심: ${jd.keyPoints}
         지원 전략: ${jd.strategy}
 
-        ## 첨삭할 경험 contents
-        $contents
+        ## 첨삭할 경험 contents 목록
+        ${contents.mapIndexed { index, content -> "[${index + 1}] $content" }.joinToString("\n")}
     """.trimIndent()
 }
+
+internal data class ResumeExperiencePolishResult(
+    val items: List<ResumeExperiencePolishItem>,
+)
+
+internal data class ResumeExperiencePolishItem(
+    val index: Int,
+    val content: String,
+)

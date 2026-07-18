@@ -15,6 +15,7 @@ data class JdResponse(
     val preferredExperiences: List<String>,
     val hiringProcess: List<String>,
     val coreCompetencies: List<String>,
+    val insight: JdInsightResponse,
     val status: JdStatus,
     val createdAt: String?,
 ) {
@@ -32,6 +33,7 @@ data class JdResponse(
             preferredExperiences = jd.preferredExperiences,
             hiringProcess = jd.hiringProcess,
             coreCompetencies = jd.coreCompetencies,
+            insight = JdInsightResponse.from(jd),
             status = jd.status,
             createdAt = jd.createdAt?.toString(),
         )

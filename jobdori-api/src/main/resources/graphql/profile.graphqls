@@ -9,23 +9,6 @@ extend type Query {
         workspaceId: ID!
     ): Profile!
 
-    """
-    키워드 사전에서 자동완성 제안을 조회합니다. 다른 사용자가 저장한 시험명/자격명/기술명이 재사용됩니다.
-    """
-    suggestKeywords(
-        """
-        키워드 종류입니다.
-        """
-        type: KeywordType!,
-        """
-        검색어입니다.
-        """
-        keyword: String!,
-        """
-        최대 제안 개수입니다. (1 이상 20 이하)
-        """
-        size: Int! = 10
-    ): [String!]!
 }
 
 extend type Mutation {
@@ -122,26 +105,6 @@ type Profile {
     스킬 목록입니다.
     """
     skills: [ProfileSkill!]!
-}
-
-"""
-키워드 종류입니다.
-"""
-enum KeywordType {
-    """
-    어학 시험명
-    """
-    LANGUAGE_TEST
-
-    """
-    자격명
-    """
-    CERTIFICATION
-
-    """
-    기술/도구명
-    """
-    SKILL
 }
 
 """

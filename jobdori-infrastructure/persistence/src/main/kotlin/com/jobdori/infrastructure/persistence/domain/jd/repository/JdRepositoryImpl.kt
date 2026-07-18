@@ -30,7 +30,4 @@ class JdRepositoryImpl(
     override fun findAllByWorkspaceId(workspaceId: Long): List<Jd> =
         jdJpa.findAllByWorkspaceId(workspaceId).map { it.toDomain() }
 
-    @Transactional
-    override fun deleteById(id: Long) = jdJpa.deleteById(id)
-
 }

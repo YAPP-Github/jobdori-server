@@ -58,7 +58,6 @@ class ResumeQueryResolver(
         includeSections = env.selectionSet.contains("sections"),
         includeSectionItems = env.selectionSet.contains("sections/items"),
         includeTargetJd = env.selectionSet.contains("targetJd"),
-        includeJdInsight = env.selectionSet.contains("jdInsight"),
     )
 
 }

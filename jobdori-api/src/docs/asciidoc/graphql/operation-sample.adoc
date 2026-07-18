@@ -572,18 +572,28 @@ query Resumes {
         workspaceId: "00000000-0000-0000-0000-000000000002"
         statuses: [COMPLETED, DRAFT]
     ) {
-        resumeId
-        targetJd {
-            jdId
-            sourceUrl
-            companyName
-            positionTitle
+        resumes {
+            resumeId
+            targetJd {
+                jdId
+                sourceUrl
+                companyName
+                positionTitle
+                insight {
+                    keyPoints
+                    strategy
+                }
+                status
+            }
+            template
             status
+            createdAt
+            updatedAt
         }
-        template
-        status
-        createdAt
-        updatedAt
+        cursor {
+            nextCursor
+            hasNext
+        }
     }
 }
 ----
@@ -633,6 +643,10 @@ query Resume {
             preferredExperiences
             hiringProcess
             coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
             status
             createdAt
         }
@@ -917,7 +931,7 @@ mutation CreateResumeWithDefaultItems {
 mutation UpdateResume {
     updateResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 94123123213123123,
+        resumeId: 94123123213123123
         input: {
             targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
@@ -1110,6 +1124,10 @@ mutation UpdateResume {
             preferredExperiences
             hiringProcess
             coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
             status
             createdAt
         }
@@ -1201,6 +1219,10 @@ query Jd {
         preferredExperiences
         hiringProcess
         coreCompetencies
+        insight {
+            keyPoints
+            strategy
+        }
         status
         createdAt
     }
@@ -1233,26 +1255,6 @@ query Jds {
 ====
 // end::jds[]
 
-// tag::jdInsight[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-query JdInsight {
-    jdInsight(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        jdId: "00000000-0000-0000-0000-00000000000a"
-    ) {
-        keyPoints
-        strategy
-    }
-}
-----
-====
-// end::jdInsight[]
-
 // tag::registerJd[]
 [.graphql-sample]
 ====
@@ -1269,6 +1271,10 @@ mutation RegisterJd {
             jdId
             companyName
             positionTitle
+            insight {
+                keyPoints
+                strategy
+            }
             status
         }
         candidates {
@@ -1280,41 +1286,6 @@ mutation RegisterJd {
 ----
 ====
 // end::registerJd[]
-
-// tag::analyzeGuestJd[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-mutation AnalyzeGuestJd {
-    analyzeGuestJd(
-        request: { sourceUrl: "https://example.com/jd" }
-    ) {
-        analysis {
-            companyName
-            positionTitle
-            companyIntro
-            responsibilities
-            requiredExperiences
-            preferredExperiences
-            hiringProcess
-            coreCompetencies
-            insight {
-                keyPoints
-                strategy
-            }
-        }
-        candidates {
-            title
-            body
-        }
-    }
-}
-----
-====
-// end::analyzeGuestJd[]
 
 // tag::markJdCompleted[]
 [.graphql-sample]
@@ -1335,23 +1306,6 @@ mutation MarkJdCompleted {
 ----
 ====
 // end::markJdCompleted[]
-
-// tag::deleteJd[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-mutation DeleteJd {
-    deleteJd(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        id: "00000000-0000-0000-0000-00000000000a"
-    )
-}
-----
-====
-// end::deleteJd[]
 
 // tag::profile[]
 [.graphql-sample]
@@ -1410,20 +1364,6 @@ query Profile {
 ----
 ====
 // end::profile[]
-
-// tag::suggestKeywords[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-query SuggestKeywords {
-    suggestKeywords(type: LANGUAGE_TEST, keyword: "토익", size: 10)
-}
-----
-====
-// end::suggestKeywords[]
 
 // tag::updateProfile[]
 [.graphql-sample]

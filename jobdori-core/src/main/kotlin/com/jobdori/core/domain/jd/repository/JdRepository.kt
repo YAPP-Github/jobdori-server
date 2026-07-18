@@ -8,5 +8,4 @@ interface JdRepository {
     fun findAllByIdsAndWorkspaceId(ids: Collection<Long>, workspaceId: Long): List<Jd>
     fun findByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long): Jd?
     fun findAllByWorkspaceId(workspaceId: Long): List<Jd>
-    fun deleteById(id: Long)
 }

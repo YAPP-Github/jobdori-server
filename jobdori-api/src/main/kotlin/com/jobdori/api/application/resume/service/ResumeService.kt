@@ -9,10 +9,8 @@ import com.jobdori.api.application.resume.dto.response.ResumeSummaryResponse
 import com.jobdori.api.application.resume.dto.response.ResumeListResponse
 import com.jobdori.api.application.common.dto.response.CursorResponse
 import com.jobdori.api.application.jd.dto.response.JdResponse
-import com.jobdori.api.application.jd.dto.response.JdInsightResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.core.application.jd.GetJdService
-import com.jobdori.core.application.jdinsight.GetJdInsightService
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeDetail
@@ -32,7 +30,6 @@ class ResumeService(
     private val resumeRemover: ResumeRemover,
     private val resumeModifier: ResumeModifier,
     private val getJdService: GetJdService,
-    private val getJdInsightService: GetJdInsightService,
     private val profileReader: ProfileReader,
     private val profileResumeSectionInitializer: ProfileResumeSectionInitializer,
 ) {
@@ -78,7 +75,6 @@ class ResumeService(
         includeSections: Boolean,
         includeSectionItems: Boolean,
         includeTargetJd: Boolean = false,
-        includeJdInsight: Boolean = false,
     ): ResumeResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -90,21 +86,18 @@ class ResumeService(
                 workspaceId = workspace.id,
                 detail = resumeReader.getDetail(workspaceId = workspace.id, resumeId = resumeId),
                 includeTargetJd = includeTargetJd,
-                includeJdInsight = includeJdInsight,
             )
 
             includeSections -> toResponse(
                 workspaceId = workspace.id,
                 detail = resumeReader.getSections(workspaceId = workspace.id, resumeId = resumeId),
                 includeTargetJd = includeTargetJd,
-                includeJdInsight = includeJdInsight,
             )
 
             else -> toResponse(
                 workspaceId = workspace.id,
                 resume = resumeReader.getResume(workspaceId = workspace.id, resumeId = resumeId),
                 includeTargetJd = includeTargetJd,
-                includeJdInsight = includeJdInsight,
             )
         }
     }
@@ -220,13 +213,11 @@ class ResumeService(
         workspaceId: Long,
         resume: Resume,
         includeTargetJd: Boolean,
-        includeJdInsight: Boolean = false,
     ): ResumeResponse {
-        val jd = getTargetJd(workspaceId, resume, includeTargetJd || includeJdInsight)
+        val jd = getTargetJd(workspaceId, resume, includeTargetJd)
         return ResumeResponse.from(
             resume = resume,
-            targetJd = jd?.takeIf { includeTargetJd }?.let(JdResponse::from),
-            jdInsight = getJdInsight(workspaceId, jd, includeJdInsight),
+            targetJd = jd?.let(JdResponse::from),
         )
     }
 
@@ -234,13 +225,11 @@ class ResumeService(
         workspaceId: Long,
         detail: ResumeDetail,
         includeTargetJd: Boolean,
-        includeJdInsight: Boolean = false,
     ): ResumeResponse {
-        val jd = getTargetJd(workspaceId, detail.resume, includeTargetJd || includeJdInsight)
+        val jd = getTargetJd(workspaceId, detail.resume, includeTargetJd)
         return ResumeResponse.from(
             detail = detail,
-            targetJd = jd?.takeIf { includeTargetJd }?.let(JdResponse::from),
-            jdInsight = getJdInsight(workspaceId, jd, includeJdInsight),
+            targetJd = jd?.let(JdResponse::from),
         )
     }
 
@@ -249,12 +238,6 @@ class ResumeService(
         else resume.targetJdId?.let { targetJdId ->
             getJdService.getJd(workspaceId = workspaceId, id = targetJdId)
         }
-
-    private fun getJdInsight(workspaceId: Long, jd: Jd?, include: Boolean): JdInsightResponse? =
-        if (!include || jd == null) null
-        else JdInsightResponse.from(
-            getJdInsightService.getOrGenerate(workspaceId = workspaceId, jdPublicId = jd.publicId),
-        )
 
     private fun getTargetJds(workspaceId: Long, resumes: List<Resume>): Map<Long, JdResponse> = getJdService.getJds(
         workspaceId = workspaceId,

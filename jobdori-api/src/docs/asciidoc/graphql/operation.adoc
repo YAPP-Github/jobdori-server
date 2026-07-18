@@ -272,16 +272,6 @@ include::./operation-sample.adoc[tag=jds]
 
 include::./operation-error.adoc[tag=jds]
 
-==== JD 인사이트 조회
-
-Type: `Query`
-
-Operation: `jdInsight`
-
-include::./operation-sample.adoc[tag=jdInsight]
-
-include::./operation-error.adoc[tag=jdInsight]
-
 ==== JD 등록
 
 Type: `Mutation`
@@ -292,16 +282,6 @@ include::./operation-sample.adoc[tag=registerJd]
 
 include::./operation-error.adoc[tag=registerJd]
 
-==== 비로그인 JD 분석
-
-Type: `Mutation`
-
-Operation: `analyzeGuestJd`
-
-include::./operation-sample.adoc[tag=analyzeGuestJd]
-
-include::./operation-error.adoc[tag=analyzeGuestJd]
-
 ==== JD 완료 처리
 
 Type: `Mutation`
@@ -311,16 +291,6 @@ Operation: `markJdCompleted`
 include::./operation-sample.adoc[tag=markJdCompleted]
 
 include::./operation-error.adoc[tag=markJdCompleted]
-
-==== JD 삭제
-
-Type: `Mutation`
-
-Operation: `deleteJd`
-
-include::./operation-sample.adoc[tag=deleteJd]
-
-include::./operation-error.adoc[tag=deleteJd]
 
 === Profile
 
@@ -333,16 +303,6 @@ Operation: `profile`
 include::./operation-sample.adoc[tag=profile]
 
 include::./operation-error.adoc[tag=profile]
-
-==== 키워드 자동완성 제안
-
-Type: `Query`
-
-Operation: `suggestKeywords`
-
-include::./operation-sample.adoc[tag=suggestKeywords]
-
-include::./operation-error.adoc[tag=suggestKeywords]
 
 ==== 이력서 기본 정보 프로필 수정
 

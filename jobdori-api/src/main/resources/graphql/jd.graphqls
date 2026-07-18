@@ -14,6 +14,21 @@ extend type Query {
     ): Jd
 
     """
+    JD의 AI 인사이트를 조회합니다.
+    하위 호환을 위한 독립 조회 API이며, 신규 API에서는 jd.insight를 사용할 수 있습니다.
+    """
+    jdInsight(
+        """
+        조회할 워크스페이스의 ID입니다.
+        """
+        workspaceId: ID!,
+        """
+        조회할 JD의 ID입니다.
+        """
+        jdId: ID!
+    ): JdInsight
+
+    """
     워크스페이스의 JD 목록을 조회합니다.
     """
     jds(
@@ -31,20 +46,6 @@ extend type Query {
         status: JdStatus = null
     ): [Jd!]!
 
-    """
-    JD의 AI 인사이트(공고 핵심/지원 전략)를 조회합니다.
-    최초 조회 시 AI로 생성/저장하며, 이후에는 저장된 값을 반환합니다.
-    """
-    jdInsight(
-        """
-        조회할 워크스페이스의 ID입니다.
-        """
-        workspaceId: ID!,
-        """
-        조회할 JD의 ID입니다.
-        """
-        jdId: ID!
-    ): JdInsight
 }
 
 extend type Mutation {
@@ -65,34 +66,6 @@ extend type Mutation {
         """
         request: JdRegisterRequest!
     ): JdRegisterResult!
-
-    """
-    비로그인 상태에서 JD를 분석합니다. (온보딩 유입용)
-    저장하지 않고 7필드 추출과 AI 인사이트(공고 핵심/지원 전략)를 즉시 반환합니다.
-    본문에 여러 공고가 있으면 후보 목록(candidates)을 반환하며, 하나를 골라 body로 다시 분석합니다.
-    인증이 필요 없는 공개 요청입니다.
-    """
-    analyzeGuestJd(
-        """
-        분석 입력입니다. sourceUrl(크롤) 또는 body(붙여넣기) 중 정확히 하나를 채웁니다.
-        """
-        request: JdRegisterRequest!
-    ): GuestJdAnalysisResult!
-
-    """
-    JD를 삭제합니다. 연관된 AI 인사이트/경험 추천 캐시도 함께 영구 삭제됩니다.
-    워크스페이스 밖 JD면 오류를 반환합니다.
-    """
-    deleteJd(
-        """
-        JD가 속한 워크스페이스의 ID입니다.
-        """
-        workspaceId: ID!,
-        """
-        삭제할 JD의 ID입니다.
-        """
-        id: ID!
-    ): Boolean!
 
     """
     이력서 생성이 완료된 JD를 완료 상태(COMPLETED)로 전환합니다. (AR0001 진행 중 -> 완료)
@@ -216,6 +189,11 @@ type Jd {
     coreCompetencies: [String!]!
 
     """
+    등록 시 AI가 생성해 저장한 공고 핵심과 지원 전략입니다.
+    """
+    insight: JdInsight!
+
+    """
     이력서 생성 진행 상태입니다. (AR0001 진행 중/완료 섹션 구분)
     """
     status: JdStatus!
@@ -269,79 +247,4 @@ type JdInsight {
     지원 전략입니다. 어떤 경험을 어떻게 강조하면 좋을지 조언하는 서술형 문단입니다.
     """
     strategy: String!
-}
-
-"""
-비로그인 JD 분석 결과입니다. 단일 공고면 analysis, 다중 공고면 candidates가 채워집니다.
-"""
-type GuestJdAnalysisResult {
-    """
-    분석 결과입니다. (단일 공고)
-    """
-    analysis: GuestJdAnalysis
-
-    """
-    저장되지 않은 공고 후보 목록입니다. (다중 공고 - 하나를 골라 body로 재분석)
-    """
-    candidates: [JdCandidate!]
-}
-
-"""
-비로그인 JD 분석 결과(단일 공고)입니다. 저장되지 않으며 jdId가 없습니다.
-"""
-type GuestJdAnalysis {
-    """
-    원본 공고 URL입니다. (붙여넣기 분석이면 null)
-    """
-    sourceUrl: String
-
-    """
-    분석에 사용된 공고 원문입니다.
-    """
-    sourceBody: String
-
-    """
-    기업 이름입니다. (추출 실패 시 빈 문자열)
-    """
-    companyName: String!
-
-    """
-    포지션 이름입니다. (추출 실패 시 빈 문자열)
-    """
-    positionTitle: String!
-
-    """
-    기업/팀 소개입니다.
-    """
-    companyIntro: String!
-
-    """
-    업무 내용 목록입니다.
-    """
-    responsibilities: [String!]!
-
-    """
-    필요 경험(자격요건) 목록입니다.
-    """
-    requiredExperiences: [String!]!
-
-    """
-    우대 경험 목록입니다.
-    """
-    preferredExperiences: [String!]!
-
-    """
-    전형 절차 목록입니다.
-    """
-    hiringProcess: [String!]!
-
-    """
-    핵심 역량 태그입니다. AI가 공고에서 추출한 상위 핵심 역량(최대 5개).
-    """
-    coreCompetencies: [String!]!
-
-    """
-    AI 인사이트(공고 핵심/지원 전략)입니다.
-    """
-    insight: JdInsight!
 }

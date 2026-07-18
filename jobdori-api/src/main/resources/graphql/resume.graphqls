@@ -123,9 +123,24 @@ input CreateResumeInput {
 이력서 수정에 사용하는 전체 스냅샷 입력입니다.
 """
 input SaveResumeInput {
+    """
+    이력서가 맞춤 대상 채용공고와 연결되는 경우의 채용공고 ID입니다.
+    """
     targetJdId: ID
+
+    """
+    이력서 렌더링에 사용할 템플릿입니다.
+    """
     template: ResumeTemplate!
+
+    """
+    생성할 이력서 상태입니다.
+    """
     status: ResumeStatusType!
+
+    """
+    저장할 섹션 목록입니다. 요청에 없는 기존 섹션은 삭제됩니다.
+    """
     sections: [SaveResumeSectionInput!]!
 }
 
@@ -438,11 +453,6 @@ type Resume {
     이력서의 대상 JD입니다.
     """
     targetJd: Jd
-
-    """
-    대상 JD의 AI 인사이트입니다. 요청할 때만 조회하거나 생성합니다.
-    """
-    jdInsight: JdInsight
 
     """
     이력서 템플릿입니다.

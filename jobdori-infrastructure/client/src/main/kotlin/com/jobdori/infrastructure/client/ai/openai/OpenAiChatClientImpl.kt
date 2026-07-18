@@ -8,6 +8,8 @@ import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
 import com.jobdori.infrastructure.client.ai.openai.dto.OpenAiChatCompletionRequest
 import com.jobdori.infrastructure.client.ai.openai.dto.OpenAiChatCompletionResponse
+import datadog.trace.api.llmobs.LLMObs
+import datadog.trace.api.llmobs.LLMObsSpan
 import org.springframework.stereotype.Component
 
 
@@ -55,6 +57,7 @@ class OpenAiChatClientImpl(
     private fun call(useCase: String, body: OpenAiChatCompletionRequest): OpenAiChatCompletionResponse {
         val started = System.nanoTime()
         var retries = 0
+        val llmSpan = LLMObs.startLLMSpan(useCase, body.model, "openai", null, null)
         return runCatching {
             var result: OpenAiChatCompletionResponse? = null
             while (result == null) {
@@ -69,8 +72,35 @@ class OpenAiChatClientImpl(
             }
             result
         }
-            .onSuccess { res -> OpenAiCallMetrics.logSuccess(useCase, body.model, started, retries, res) }
-            .onFailure { e -> OpenAiCallMetrics.logFailure(useCase, body.model, started, retries, e) }
+            .onSuccess { res ->
+                OpenAiCallMetrics.logSuccess(useCase, body.model, started, retries, res)
+                annotateLlmSpan(llmSpan, body, res)
+            }
+            .onFailure { e ->
+                OpenAiCallMetrics.logFailure(useCase, body.model, started, retries, e)
+                llmSpan.addThrowable(e)
+            }
+            .also { llmSpan.finish() }
             .getOrThrow()
+    }
+
+    private fun annotateLlmSpan(
+        span: LLMObsSpan,
+        body: OpenAiChatCompletionRequest,
+        res: OpenAiChatCompletionResponse,
+    ) {
+        span.annotateIO(
+            body.messages.map { LLMObs.LLMMessage.from(it.role, it.content) },
+            res.choices.map { LLMObs.LLMMessage.from(it.message.role, it.message.content) },
+        )
+        res.usage?.let {
+            span.setMetrics(
+                mapOf(
+                    "input_tokens" to it.promptTokens,
+                    "output_tokens" to it.completionTokens,
+                    "total_tokens" to it.totalTokens,
+                ),
+            )
+        }
     }
 }

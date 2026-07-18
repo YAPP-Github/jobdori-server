@@ -1,1 +1,1 @@
-web: java -jar application.jar
+web: java -javaagent:dd-java-agent.jar -Ddd.llmobs.enabled=true -Ddd.llmobs.ml.app=jobdori -jar application.jar

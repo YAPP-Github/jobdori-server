@@ -3,12 +3,16 @@ package com.jobdori.api.application.experience.service
 import com.jobdori.api.application.common.dto.response.CursorResponse
 import com.jobdori.api.application.experience.dto.request.CreateExperienceRequest
 import com.jobdori.api.application.experience.dto.request.UpdateExperienceRequest
+import com.jobdori.api.application.experience.dto.request.contents.ExperienceContentsRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceListResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.logger.LoggerExtension.log
+import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
+import com.jobdori.core.domain.experience.ExperienceContents
+import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.service.ExperienceCreator
 import com.jobdori.core.domain.experience.service.ExperienceModifier
 import com.jobdori.core.domain.experience.service.ExperienceProjectReader
@@ -26,6 +30,7 @@ class ExperienceService(
     private val experienceRemover: ExperienceRemover,
     private val experienceProjectReader: ExperienceProjectReader,
     private val getExperienceRecommendationService: GetExperienceRecommendationService,
+    private val experienceContentsPolishService: ExperienceContentsPolishService,
 ) {
 
     fun createExperience(
@@ -45,7 +50,7 @@ class ExperienceService(
             projectId = projectId,
             command = ExperienceCreateCommand(
                 title = request.title,
-                contents = request.contents.toDomain(),
+                contents = resolveContents(request.contents),
                 tags = request.tags,
                 period = request.period?.toPeriod(),
                 role = request.role,
@@ -80,7 +85,7 @@ class ExperienceService(
             projectId = request.projectId,
             tags = request.tags,
             title = request.title,
-            contents = request.contents.toDomain(),
+            contents = resolveContents(request.contents),
             period = request.period?.toPeriod(),
             role = request.role,
         )
@@ -233,6 +238,15 @@ class ExperienceService(
             },
             cursor = CursorResponse(nextCursor = experiences.nextCursor),
         )
+    }
+
+    private fun resolveContents(request: ExperienceContentsRequest): ExperienceContents {
+        return when (request.type) {
+            ExperienceContentsType.STAR -> request.toDomain()
+            ExperienceContentsType.FREE -> experienceContentsPolishService.polishFreeStyleToStar(
+                requireNotNull(request.free) { "FREE contents require free payload" }.content,
+            )
+        }
     }
 
 }

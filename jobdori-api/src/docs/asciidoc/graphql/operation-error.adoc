@@ -226,12 +226,6 @@
 |===
 // end::deleteExperience[]
 
-// tag::polishExperienceContents[]
-커스텀 에러 코드: 없음
-
-전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요.
-// end::polishExperienceContents[]
-
 // tag::createExperienceProject[]
 커스텀 에러 코드:
 
@@ -807,5 +801,4 @@
 
 |===
 // end::polishProfileText[]
-
 

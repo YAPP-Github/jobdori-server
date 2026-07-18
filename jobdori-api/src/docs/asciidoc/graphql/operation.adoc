@@ -74,16 +74,6 @@ include::./operation-sample.adoc[tag=deleteExperience]
 
 include::./operation-error.adoc[tag=deleteExperience]
 
-==== 경험 내용 다듬기
-
-Type: `Mutation`
-
-Operation: `polishExperienceContents`
-
-include::./operation-sample.adoc[tag=polishExperienceContents]
-
-include::./operation-error.adoc[tag=polishExperienceContents]
-
 === Experience Project
 
 ==== 경험 프로젝트 단건 조회
@@ -333,5 +323,4 @@ Operation: `polishProfileText`
 include::./operation-sample.adoc[tag=polishProfileText]
 
 include::./operation-error.adoc[tag=polishProfileText]
-
 

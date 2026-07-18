@@ -4,14 +4,11 @@ import com.jobdori.api.application.experience.dto.request.CreateExperienceProjec
 import com.jobdori.api.application.experience.dto.request.CreateExperienceRequest
 import com.jobdori.api.application.experience.dto.request.UpdateExperienceProjectRequest
 import com.jobdori.api.application.experience.dto.request.UpdateExperienceRequest
-import com.jobdori.api.application.experience.dto.request.contents.FreeExperienceContentsRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
-import com.jobdori.api.application.experience.dto.response.contents.StarExperienceContentsResponse
 import com.jobdori.api.application.experience.service.ExperienceProjectService
 import com.jobdori.api.application.experience.service.ExperienceService
 import com.jobdori.api.support.auth.UserId
-import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import jakarta.validation.Valid
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Controller
 class ExperienceMutationResolver(
     private val experienceService: ExperienceService,
     private val experienceProjectService: ExperienceProjectService,
-    private val experienceContentsPolishService: ExperienceContentsPolishService,
 ) {
 
     @MutationMapping
@@ -61,15 +57,6 @@ class ExperienceMutationResolver(
             experienceId = experienceId,
         )
         return true
-    }
-
-    @MutationMapping
-    fun polishExperienceContents(
-        @UserId userId: Long,
-        @Valid @Argument request: FreeExperienceContentsRequest,
-    ): StarExperienceContentsResponse {
-        val response = experienceContentsPolishService.polishFreeStyleToStar(content = request.content)
-        return StarExperienceContentsResponse.from(response)
     }
 
     @MutationMapping

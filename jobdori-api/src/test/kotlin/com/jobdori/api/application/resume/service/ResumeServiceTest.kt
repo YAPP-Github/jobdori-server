@@ -1,9 +1,11 @@
 package com.jobdori.api.application.resume.service
 
 import com.jobdori.api.application.resume.dto.ResumeStatusType
+import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
 import com.jobdori.api.application.resume.dto.request.ResumeBasicInfoPayloadRequest
 import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
 import com.jobdori.api.application.resume.dto.request.ResumeLanguagePayloadRequest
+import com.jobdori.api.application.resume.dto.request.ResumeExperiencePayloadRequest
 import com.jobdori.api.application.resume.dto.request.ResumeSectionItemPayloadRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeSectionItemRequest
@@ -12,12 +14,14 @@ import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationSe
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.model.SliceResult
 import com.jobdori.core.application.jd.GetJdService
+import com.jobdori.core.application.resume.ResumeExperiencePolishService
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
 import com.jobdori.core.domain.resume.ResumeFixture
 import com.jobdori.core.domain.resume.ResumeLanguagePayload
+import com.jobdori.core.domain.resume.ResumeExperiencePayload
 import com.jobdori.core.domain.resume.ResumeSectionFixture
 import com.jobdori.core.domain.resume.ResumeSectionItemFixture
 import com.jobdori.core.domain.resume.ResumeSectionType
@@ -52,6 +56,7 @@ class ResumeServiceTest : StringSpec({
     val getJdService = mockk<GetJdService>()
     val profileReader = mockk<ProfileReader>()
     val profileResumeSectionInitializer = mockk<ProfileResumeSectionInitializer>()
+    val resumeExperiencePolishService = mockk<ResumeExperiencePolishService>()
     val resumeService = ResumeService(
         workspaceAccessValidationService = workspaceAccessValidationService,
         resumeCreator = resumeCreator,
@@ -61,6 +66,7 @@ class ResumeServiceTest : StringSpec({
         getJdService = getJdService,
         profileReader = profileReader,
         profileResumeSectionInitializer = profileResumeSectionInitializer,
+        resumeExperiencePolishService = resumeExperiencePolishService,
     )
 
     beforeTest {
@@ -81,6 +87,7 @@ class ResumeServiceTest : StringSpec({
             targetJdId = null,
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.COMPLETED,
+            optimizationMode = ResumeOptimizationMode.NONE,
             sections = listOf(
                 SaveResumeSectionRequest(
                     sectionId = null,
@@ -149,6 +156,35 @@ class ResumeServiceTest : StringSpec({
         }
     }
 
+    "생성 요청도 JOB_SPECIFIC 모드이면 경험 contents만 첨삭한다" {
+        val jd = targetJd()
+        val saveRequest = experienceSaveRequest(ResumeOptimizationMode.JOB_SPECIFIC, jd.publicId)
+        val request = CreateResumeRequest(
+            targetJdId = saveRequest.targetJdId,
+            template = saveRequest.template,
+            status = saveRequest.status,
+            sections = saveRequest.sections,
+            optimizationMode = saveRequest.optimizationMode,
+        )
+        every { getJdService.getJd(1L, jd.publicId) } returns jd
+        every { resumeExperiencePolishService.polish(listOf("원본 내용"), jd) } returns listOf("생성 첨삭 내용")
+        every { resumeCreator.createDetail(1L, any()) } returns ResumeDetail(
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L, targetJdId = jd.id),
+            sections = emptyList(),
+        )
+
+        resumeService.createResume(10L, "workspace-id", request)
+
+        verify {
+            resumeCreator.createDetail(1L, withArg<ResumeSaveCommand> { command ->
+                val payload = command.sections.single().items.single().payload as ResumeExperiencePayload
+                payload.name shouldBe "프로젝트"
+                payload.role shouldBe "백엔드 개발"
+                payload.contents shouldBe "생성 첨삭 내용"
+            })
+        }
+    }
+
     "기본 아이템 생성과 직접 입력한 items를 함께 지정하면 예외가 발생한다" {
         val section = basicInfoSection(displayOrder = 10.0).copy(useDefaultItems = true)
         val request = CreateResumeRequest(
@@ -168,6 +204,7 @@ class ResumeServiceTest : StringSpec({
             targetJdId = null,
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,
+            optimizationMode = ResumeOptimizationMode.NONE,
             sections = listOf(
                 SaveResumeSectionRequest(
                     sectionId = null,
@@ -312,6 +349,63 @@ class ResumeServiceTest : StringSpec({
                 },
             )
         }
+    }
+
+    "JOB_SPECIFIC 모드는 JD를 기준으로 경험 contents만 첨삭해서 저장한다" {
+        val jd = targetJd()
+        val request = experienceSaveRequest(optimizationMode = ResumeOptimizationMode.JOB_SPECIFIC, targetJdId = jd.publicId)
+        val detail = ResumeDetail(
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
+            sections = emptyList(),
+        )
+        every { getJdService.getJd(workspaceId = 1L, publicId = jd.publicId) } returns jd
+        every { resumeExperiencePolishService.polish(listOf("원본 내용"), jd) } returns listOf("첨삭 내용")
+        every { resumeModifier.modifyDetail(1L, 100L, any()) } returns detail
+
+        resumeService.modifyResume(10L, "workspace-id", 100L, request)
+
+        verify(exactly = 1) {
+            resumeModifier.modifyDetail(
+                workspaceId = 1L,
+                resumeId = 100L,
+                command = withArg<ResumeSaveCommand> { command ->
+                    command.targetJdId shouldBe 20L
+                    val payload = command.sections.single().items.single().payload as ResumeExperiencePayload
+                    payload.name shouldBe "프로젝트"
+                    payload.role shouldBe "백엔드 개발"
+                    payload.period shouldBe null
+                    payload.contents shouldBe "첨삭 내용"
+                },
+            )
+        }
+    }
+
+    "NONE 모드는 경험 contents를 첨삭하지 않고 저장한다" {
+        val request = experienceSaveRequest(optimizationMode = ResumeOptimizationMode.NONE, targetJdId = null)
+        every { resumeModifier.modifyDetail(1L, 100L, any()) } returns ResumeDetail(
+            resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
+            sections = emptyList(),
+        )
+
+        resumeService.modifyResume(10L, "workspace-id", 100L, request)
+
+        verify(exactly = 0) { resumeExperiencePolishService.polish(any(), any()) }
+        verify {
+            resumeModifier.modifyDetail(1L, 100L, withArg<ResumeSaveCommand> { command ->
+                val payload = command.sections.single().items.single().payload as ResumeExperiencePayload
+                payload.contents shouldBe "원본 내용"
+            })
+        }
+    }
+
+    "JOB_SPECIFIC 모드에 대상 JD가 없으면 저장하지 않는다" {
+        val request = experienceSaveRequest(optimizationMode = ResumeOptimizationMode.JOB_SPECIFIC, targetJdId = null)
+
+        shouldThrow<InvalidArgumentsException> {
+            resumeService.modifyResume(10L, "workspace-id", 100L, request)
+        }
+
+        verify(exactly = 0) { resumeModifier.modifyDetail(any(), any(), any()) }
     }
 
     "이력서 조회 응답의 섹션과 아이템을 displayOrder 오름차순으로 정렬한다" {
@@ -746,6 +840,44 @@ private fun languageSaveRequest() = SaveResumeRequest(
                             scoreOrGrade = "900",
                             acquiredAt = LocalDate.of(2026, 1, 1),
                         ),
+                        skill = null,
+                    ),
+                ),
+            ),
+        ),
+    ),
+)
+
+private fun experienceSaveRequest(optimizationMode: ResumeOptimizationMode, targetJdId: String?) = SaveResumeRequest(
+    targetJdId = targetJdId,
+    template = ResumeTemplate.DEFAULT,
+    status = ResumeStatusType.DRAFT,
+    optimizationMode = optimizationMode,
+    sections = listOf(
+        SaveResumeSectionRequest(
+            sectionId = 200L,
+            type = ResumeSectionType.EXPERIENCE,
+            displayOrder = 10.0,
+            visible = true,
+            items = listOf(
+                SaveResumeSectionItemRequest(
+                    itemId = 300L,
+                    displayOrder = 1.0,
+                    visible = true,
+                    payload = ResumeSectionItemPayloadRequest(
+                        basicInfo = null,
+                        coreSkill = null,
+                        career = null,
+                        experience = ResumeExperiencePayloadRequest(
+                            name = "프로젝트",
+                            role = "백엔드 개발",
+                            period = null,
+                            contents = "원본 내용",
+                        ),
+                        education = null,
+                        award = null,
+                        certificate = null,
+                        language = null,
                         skill = null,
                     ),
                 ),

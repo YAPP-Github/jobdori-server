@@ -21,9 +21,23 @@ class ExperienceContentsPolishService(
         return aiChatClient.generateStructured(
             template.buildStructured(
                 userPrompt = content,
-                responseType = StarExperienceContents::class,
+                responseType = ExperienceContentsPolishResult::class,
             ),
-        )
+        ).toDomain()
     }
 
+}
+
+internal data class ExperienceContentsPolishResult(
+    val situation: String,
+    val task: String,
+    val action: String,
+    val result: String,
+) {
+    fun toDomain() = StarExperienceContents(
+        situation = situation,
+        task = task,
+        action = action,
+        result = result,
+    )
 }

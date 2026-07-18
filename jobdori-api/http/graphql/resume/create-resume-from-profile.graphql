@@ -5,6 +5,7 @@ mutation CreateResumeWithDefaultItems {
             targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
             status: DRAFT
+            optimizationMode: JOB_SPECIFIC
             sections: [
                 {
                     type: BASIC_INFO

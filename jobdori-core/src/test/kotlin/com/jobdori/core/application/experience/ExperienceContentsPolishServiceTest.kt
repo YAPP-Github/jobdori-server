@@ -3,7 +3,6 @@ package com.jobdori.core.application.experience
 import com.jobdori.core.application.ai.client.AiChatClient
 import com.jobdori.core.application.ai.command.AiParameters
 import com.jobdori.core.application.ai.command.AiStructuredRequest
-import com.jobdori.core.domain.experience.StarExperienceContents
 import com.jobdori.core.domain.prompt.PromptTemplate
 import com.jobdori.core.domain.prompt.PromptType
 import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
@@ -24,7 +23,7 @@ class ExperienceContentsPolishServiceTest : StringSpec({
     )
 
     "Free Style 경험 내용을 STAR 구조화 요청으로 변환한다" {
-        val requestSlot = slot<AiStructuredRequest<StarExperienceContents>>()
+        val requestSlot = slot<AiStructuredRequest<ExperienceContentsPolishResult>>()
         every {
             promptTemplateRepository.findByType(PromptType.EXPERIENCE_CONTENTS_POLISH)
         } returns PromptTemplate(
@@ -36,7 +35,7 @@ class ExperienceContentsPolishServiceTest : StringSpec({
         )
         every {
             aiChatClient.generateStructured(capture(requestSlot))
-        } returns StarExperienceContents(
+        } returns ExperienceContentsPolishResult(
             situation = "상황",
             task = "과제",
             action = "행동",
@@ -53,7 +52,7 @@ class ExperienceContentsPolishServiceTest : StringSpec({
         requestSlot.captured.systemPrompt shouldBe "Free Style 경험 내용을 STAR로 변환한다."
         requestSlot.captured.userPrompt shouldBe "성과를 개선한 경험"
         requestSlot.captured.parameters shouldBe AiParameters(temperature = 0.2, maxTokens = 1200)
-        requestSlot.captured.responseType shouldBe StarExperienceContents::class
+        requestSlot.captured.responseType shouldBe ExperienceContentsPolishResult::class
         requestSlot.captured.jsonSchema shouldBe """{"type":"object","required":["situation","task","action","result"]}"""
         verify(exactly = 1) { promptTemplateRepository.findByType(PromptType.EXPERIENCE_CONTENTS_POLISH) }
     }

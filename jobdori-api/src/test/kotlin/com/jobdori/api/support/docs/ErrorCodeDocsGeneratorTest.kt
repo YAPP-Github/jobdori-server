@@ -178,14 +178,6 @@ private val graphQlOperationErrors = listOf(
         ),
     ),
     GraphQlOperationError(
-        category = "Experience",
-        operation = "polishExperienceContents",
-        title = "경험 내용 다듬기",
-        type = GraphQlOperationType.MUTATION,
-        sampleFile = graphQlSample("experience/polish-experience-contents.graphql"),
-        errorCodes = emptyList(),
-    ),
-    GraphQlOperationError(
         category = "Experience Project",
         operation = "createExperienceProject",
         title = "경험 프로젝트 생성",

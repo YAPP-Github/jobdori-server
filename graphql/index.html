@@ -134,7 +134,6 @@
 <li><a href="#_경험_생성">2.2.4. 경험 생성</a></li>
 <li><a href="#_경험_수정">2.2.5. 경험 수정</a></li>
 <li><a href="#_경험_삭제">2.2.6. 경험 삭제</a></li>
-<li><a href="#_경험_내용_다듬기">2.2.7. 경험 내용 다듬기</a></li>
 </ul>
 </li>
 <li><a href="#_experience_project">2.3. Experience Project</a>
@@ -1203,44 +1202,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="_경험_내용_다듬기">2.2.7. 경험 내용 다듬기</h4>
-<div class="paragraph">
-<p>Type: <code>Mutation</code></p>
-</div>
-<div class="paragraph">
-<p>Operation: <code>polishExperienceContents</code></p>
-</div>
-<div class="exampleblock graphql-sample">
-<div class="content">
-<div class="paragraph">
-<p>요청 샘플:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation PolishExperienceContents {
-    polishExperienceContents(
-        request: {
-            content: "이력서 저장 API를 만들었다. 섹션과 아이템이 복잡해서 저장 구조를 정리했고 테스트도 추가했다."
-        }
-    ) {
-        situation
-        task
-        action
-        result
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>커스텀 에러 코드: 없음</p>
-</div>
-<div class="paragraph">
-<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
-</div>
 </div>
 </div>
 <div class="sect2">

@@ -1,7 +1,7 @@
 package com.jobdori.api.application.resume.dto.request
 
 import com.jobdori.api.application.resume.dto.ResumeStatusType
-import com.jobdori.api.application.resume.dto.ResumeSaveMode
+import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
 import com.jobdori.common.error.ErrorDetail
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.domain.resume.ResumeSectionType
@@ -17,7 +17,7 @@ data class SaveResumeRequest(
     val status: ResumeStatusType,
     @field:Valid
     val sections: List<SaveResumeSectionRequest>,
-    val saveMode: ResumeSaveMode = ResumeSaveMode.NORMAL,
+    val optimizationMode: ResumeOptimizationMode = ResumeOptimizationMode.NONE,
 ) {
 
     fun toCommand(resolvedTargetJdId: Long? = null): ResumeSaveCommand {
@@ -74,7 +74,7 @@ data class CreateResumeRequest(
     val status: ResumeStatusType,
     @field:Valid
     val sections: List<SaveResumeSectionRequest>,
-    val saveMode: ResumeSaveMode = ResumeSaveMode.NORMAL,
+    val optimizationMode: ResumeOptimizationMode = ResumeOptimizationMode.JOB_SPECIFIC,
 ) {
 
     fun toCommand(resolvedTargetJdId: Long? = null): ResumeSaveCommand {

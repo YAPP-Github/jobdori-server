@@ -1,7 +1,7 @@
 package com.jobdori.api.application.resume.service
 
 import com.jobdori.api.application.resume.dto.ResumeStatusType
-import com.jobdori.api.application.resume.dto.ResumeSaveMode
+import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
 import com.jobdori.api.application.resume.dto.request.ResumeBasicInfoPayloadRequest
 import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
 import com.jobdori.api.application.resume.dto.request.ResumeLanguagePayloadRequest
@@ -87,6 +87,7 @@ class ResumeServiceTest : StringSpec({
             targetJdId = null,
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.COMPLETED,
+            optimizationMode = ResumeOptimizationMode.NONE,
             sections = listOf(
                 SaveResumeSectionRequest(
                     sectionId = null,
@@ -155,15 +156,15 @@ class ResumeServiceTest : StringSpec({
         }
     }
 
-    "생성 요청도 POLISH 모드이면 경험 contents만 첨삭한다" {
+    "생성 요청도 JOB_SPECIFIC 모드이면 경험 contents만 첨삭한다" {
         val jd = targetJd()
-        val saveRequest = experienceSaveRequest(ResumeSaveMode.POLISH, jd.publicId)
+        val saveRequest = experienceSaveRequest(ResumeOptimizationMode.JOB_SPECIFIC, jd.publicId)
         val request = CreateResumeRequest(
             targetJdId = saveRequest.targetJdId,
             template = saveRequest.template,
             status = saveRequest.status,
             sections = saveRequest.sections,
-            saveMode = saveRequest.saveMode,
+            optimizationMode = saveRequest.optimizationMode,
         )
         every { getJdService.getJd(1L, jd.publicId) } returns jd
         every { resumeExperiencePolishService.polish("원본 내용", jd) } returns "생성 첨삭 내용"
@@ -203,6 +204,7 @@ class ResumeServiceTest : StringSpec({
             targetJdId = null,
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,
+            optimizationMode = ResumeOptimizationMode.NONE,
             sections = listOf(
                 SaveResumeSectionRequest(
                     sectionId = null,
@@ -349,9 +351,9 @@ class ResumeServiceTest : StringSpec({
         }
     }
 
-    "POLISH 모드는 JD를 기준으로 경험 contents만 첨삭해서 저장한다" {
+    "JOB_SPECIFIC 모드는 JD를 기준으로 경험 contents만 첨삭해서 저장한다" {
         val jd = targetJd()
-        val request = experienceSaveRequest(saveMode = ResumeSaveMode.POLISH, targetJdId = jd.publicId)
+        val request = experienceSaveRequest(optimizationMode = ResumeOptimizationMode.JOB_SPECIFIC, targetJdId = jd.publicId)
         val detail = ResumeDetail(
             resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
             sections = emptyList(),
@@ -378,8 +380,8 @@ class ResumeServiceTest : StringSpec({
         }
     }
 
-    "NORMAL 모드는 경험 contents를 첨삭하지 않고 저장한다" {
-        val request = experienceSaveRequest(saveMode = ResumeSaveMode.NORMAL, targetJdId = null)
+    "NONE 모드는 경험 contents를 첨삭하지 않고 저장한다" {
+        val request = experienceSaveRequest(optimizationMode = ResumeOptimizationMode.NONE, targetJdId = null)
         every { resumeModifier.modifyDetail(1L, 100L, any()) } returns ResumeDetail(
             resume = ResumeFixture.create(id = 100L, workspaceId = 1L),
             sections = emptyList(),
@@ -396,8 +398,8 @@ class ResumeServiceTest : StringSpec({
         }
     }
 
-    "POLISH 모드에 대상 JD가 없으면 저장하지 않는다" {
-        val request = experienceSaveRequest(saveMode = ResumeSaveMode.POLISH, targetJdId = null)
+    "JOB_SPECIFIC 모드에 대상 JD가 없으면 저장하지 않는다" {
+        val request = experienceSaveRequest(optimizationMode = ResumeOptimizationMode.JOB_SPECIFIC, targetJdId = null)
 
         shouldThrow<InvalidArgumentsException> {
             resumeService.modifyResume(10L, "workspace-id", 100L, request)
@@ -846,11 +848,11 @@ private fun languageSaveRequest() = SaveResumeRequest(
     ),
 )
 
-private fun experienceSaveRequest(saveMode: ResumeSaveMode, targetJdId: String?) = SaveResumeRequest(
+private fun experienceSaveRequest(optimizationMode: ResumeOptimizationMode, targetJdId: String?) = SaveResumeRequest(
     targetJdId = targetJdId,
     template = ResumeTemplate.DEFAULT,
     status = ResumeStatusType.DRAFT,
-    saveMode = saveMode,
+    optimizationMode = optimizationMode,
     sections = listOf(
         SaveResumeSectionRequest(
             sectionId = 200L,

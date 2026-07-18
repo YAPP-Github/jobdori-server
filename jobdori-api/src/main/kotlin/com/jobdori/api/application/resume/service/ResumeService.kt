@@ -3,7 +3,7 @@ package com.jobdori.api.application.resume.service
 import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeRequest
 import com.jobdori.api.application.resume.dto.ResumeStatusType
-import com.jobdori.api.application.resume.dto.ResumeSaveMode
+import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
 import com.jobdori.api.application.resume.dto.response.ResumeStatusCountResponse
 import com.jobdori.api.application.resume.dto.response.ResumeSummaryResponse
@@ -141,7 +141,7 @@ class ResumeService(
             userId = userId,
         )
 
-        validatePolishTargetJd(request.saveMode, request.targetJdId)
+        validatePolishTargetJd(request.optimizationMode, request.targetJdId)
         val targetJd = request.targetJdId?.let { publicId ->
             getJdService.getJd(workspaceId = workspace.id, publicId = publicId)
         }
@@ -159,7 +159,7 @@ class ResumeService(
                     },
                 )
             }
-        }.let { polishExperienceContents(it, request.saveMode, targetJd) }
+        }.let { polishExperienceContents(it, request.optimizationMode, targetJd) }
 
         return toResponse(
             workspaceId = workspace.id,
@@ -183,11 +183,11 @@ class ResumeService(
             userId = userId,
         )
 
-        validatePolishTargetJd(request.saveMode, request.targetJdId)
+        validatePolishTargetJd(request.optimizationMode, request.targetJdId)
         val targetJd = request.targetJdId?.let { publicId ->
             getJdService.getJd(workspaceId = workspace.id, publicId = publicId)
         }
-        val command = polishExperienceContents(request.toCommand(targetJd?.id), request.saveMode, targetJd)
+        val command = polishExperienceContents(request.toCommand(targetJd?.id), request.optimizationMode, targetJd)
 
         return toResponse(
             workspaceId = workspace.id,
@@ -212,18 +212,18 @@ class ResumeService(
         )
     }
 
-    private fun validatePolishTargetJd(saveMode: ResumeSaveMode, targetJdId: String?) {
-        if (saveMode == ResumeSaveMode.POLISH && targetJdId == null) {
+    private fun validatePolishTargetJd(optimizationMode: ResumeOptimizationMode, targetJdId: String?) {
+        if (optimizationMode == ResumeOptimizationMode.JOB_SPECIFIC && targetJdId == null) {
             throw InvalidArgumentsException("첨삭 저장에는 대상 채용공고 ID가 필요합니다.")
         }
     }
 
     private fun polishExperienceContents(
         command: ResumeSaveCommand,
-        saveMode: ResumeSaveMode,
+        optimizationMode: ResumeOptimizationMode,
         targetJd: Jd?,
     ): ResumeSaveCommand {
-        if (saveMode != ResumeSaveMode.POLISH || targetJd == null) return command
+        if (optimizationMode != ResumeOptimizationMode.JOB_SPECIFIC || targetJd == null) return command
 
         return command.copy(
             sections = command.sections.map { section ->

@@ -99,9 +99,9 @@ extend type Mutation {
 """
 input CreateResumeInput {
     """
-    이력서 저장 모드입니다. POLISH는 대상 채용공고를 기준으로 경험 내용을 첨삭합니다.
+    이력서 최적화 모드입니다. JOB_SPECIFIC은 대상 채용공고를 기준으로 경험 내용을 첨삭합니다.
     """
-    saveMode: ResumeSaveMode! = NORMAL
+    optimizationMode: ResumeOptimizationMode! = JOB_SPECIFIC
 
     """
     이력서가 맞춤 대상 채용공고와 연결되는 경우의 채용공고 ID입니다.
@@ -129,9 +129,9 @@ input CreateResumeInput {
 """
 input SaveResumeInput {
     """
-    이력서 저장 모드입니다. POLISH는 대상 채용공고를 기준으로 경험 내용을 첨삭합니다.
+    이력서 최적화 모드입니다. JOB_SPECIFIC은 대상 채용공고를 기준으로 경험 내용을 첨삭합니다.
     """
-    saveMode: ResumeSaveMode! = NORMAL
+    optimizationMode: ResumeOptimizationMode! = NONE
 
     """
     이력서가 맞춤 대상 채용공고와 연결되는 경우의 채용공고 ID입니다.
@@ -157,12 +157,12 @@ input SaveResumeInput {
 """
 이력서 저장 시 경험 내용을 처리하는 방식입니다.
 """
-enum ResumeSaveMode {
+enum ResumeOptimizationMode {
     """입력한 내용을 그대로 저장합니다."""
-    NORMAL
+    NONE
 
-    """대상 채용공고를 기준으로 경험 contents를 첨삭하여 저장합니다."""
-    POLISH
+    """대상 채용공고를 기준으로 경험 내용을 첨삭하여 저장합니다."""
+    JOB_SPECIFIC
 }
 
 """

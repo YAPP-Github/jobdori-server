@@ -1,6 +1,11 @@
 import java.time.LocalDate
 import java.time.ZoneId
 
+// dd-java-agent는 앱 클래스패스가 아니라 EB 번들에 -javaagent용으로만 들어간다
+val ddJavaAgent: Configuration by configurations.creating {
+    isTransitive = false
+}
+
 dependencies {
     // Modules
     implementation(project(":jobdori-core"))
@@ -24,6 +29,9 @@ dependencies {
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.sentry.logback)
     implementation(libs.sentry.spring.boot.starter)
+    // actuator 지표를 로컬 Datadog Agent(dogstatsd)로 전송
+    implementation(libs.micrometer.registry.statsd)
+    ddJavaAgent(libs.dd.java.agent)
 
     // Spring Rest Docs
     testImplementation(libs.spring.boot.restdocs)
@@ -49,9 +57,16 @@ tasks.register<Zip>("elasticBeanstalkBundle") {
     destinationDirectory.set(layout.buildDirectory.dir("distributions"))
 
     from(tasks.bootJar.flatMap { it.archiveFile })
+    from(ddJavaAgent) {
+        rename { "dd-java-agent.jar" }
+    }
     from(project.file("Procfile"))
     from(project.file(".platform")) {
         into(".platform")
+        // EB는 실행 권한 없는 훅 스크립트를 실행하지 않는다. Zip 기본 권한이 0644라 명시 필요
+        filesMatching("**/hooks/**") {
+            permissions { unix("0755") }
+        }
     }
 }
 

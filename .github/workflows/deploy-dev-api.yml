@@ -21,6 +21,14 @@ jobs:
       AWS_REGION: ap-northeast-2
       APPLICATION_NAME: jobdori-dev
       ENVIRONMENT_NAME: jobdori-dev
+      DD_SITE: us5.datadoghq.com
+      DD_ENV: dev
+      DD_SERVICE: jobdori-api
+      DD_TRACE_ENABLED: "true"
+      DD_RUNTIME_METRICS_ENABLED: "true"
+      DD_LOGS_INJECTION: "true"
+      DD_LLMOBS_ENABLED: "true"
+      DD_LLMOBS_ML_APP: scoop
 
     steps:
       - name: Checkout
@@ -88,7 +96,17 @@ jobs:
 
           aws elasticbeanstalk update-environment \
             --environment-name "${ENVIRONMENT_NAME}" \
-            --version-label "${version_label}"
+            --version-label "${version_label}" \
+            --option-settings \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_SITE,Value=${DD_SITE}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_ENV,Value=${DD_ENV}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_SERVICE,Value=${DD_SERVICE}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_VERSION,Value=${version_label}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_TRACE_ENABLED,Value=${DD_TRACE_ENABLED}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_RUNTIME_METRICS_ENABLED,Value=${DD_RUNTIME_METRICS_ENABLED}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_LOGS_INJECTION,Value=${DD_LOGS_INJECTION}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_LLMOBS_ENABLED,Value=${DD_LLMOBS_ENABLED}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_LLMOBS_ML_APP,Value=${DD_LLMOBS_ML_APP}"
 
           for attempt in {1..180}; do
             environment_status="$(aws elasticbeanstalk describe-environments \

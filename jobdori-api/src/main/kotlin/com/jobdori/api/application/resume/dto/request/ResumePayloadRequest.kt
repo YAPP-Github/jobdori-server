@@ -16,6 +16,7 @@ import com.jobdori.core.domain.resume.ResumeSkillPayload
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 fun interface ResumePayloadRequest<out T : ResumeSectionItemPayload> {
@@ -78,10 +79,12 @@ data class ResumeSectionItemPayloadRequest(
 }
 
 data class ResumeBasicInfoPayloadRequest(
+    @field:Size(max = 50)
     val name: String?,
     @field:Email(message = "올바른 이메일 형식이 아닙니다.")
+    @field:Size(max = 100)
     val email: String?,
-    @field:Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)")
+    @field:Pattern(regexp = "^$|^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)")
     val phone: String?,
 ) : ResumePayloadRequest<ResumeBasicInfoPayload> {
     override fun toPayload() = ResumeBasicInfoPayload(
@@ -92,15 +95,20 @@ data class ResumeBasicInfoPayloadRequest(
 }
 
 data class ResumeCoreSkillPayloadRequest(
+    @field:Size(max = 500)
     val content: String?,
 ) : ResumePayloadRequest<ResumeCoreSkillPayload> {
     override fun toPayload() = ResumeCoreSkillPayload(content = content)
 }
 
 data class ResumeCareerPayloadRequest(
+    @field:Size(max = 100)
     val companyName: String?,
+    @field:Size(max = 100)
     val role: String?,
+    @field:Valid
     val period: PeriodRequest?,
+    @field:Size(max = 500)
     val contents: String?,
 ) : ResumePayloadRequest<ResumeCareerPayload> {
     override fun toPayload() = ResumeCareerPayload(
@@ -112,9 +120,13 @@ data class ResumeCareerPayloadRequest(
 }
 
 data class ResumeExperiencePayloadRequest(
+    @field:Size(max = 150)
     val name: String?,
+    @field:Size(max = 100)
     val role: String?,
+    @field:Valid
     val period: PeriodRequest?,
+    @field:Size(max = 500)
     val contents: String?,
 ) : ResumePayloadRequest<ResumeExperiencePayload> {
     override fun toPayload() = ResumeExperiencePayload(
@@ -126,10 +138,15 @@ data class ResumeExperiencePayloadRequest(
 }
 
 data class ResumeEducationPayloadRequest(
+    @field:Size(max = 100)
     val schoolName: String?,
+    @field:Size(max = 100)
     val major: String?,
+    @field:Size(max = 50)
     val degree: String?,
+    @field:Size(max = 50)
     val status: String?,
+    @field:Valid
     val period: PeriodRequest?,
 ) : ResumePayloadRequest<ResumeEducationPayload> {
     override fun toPayload() = ResumeEducationPayload(
@@ -142,7 +159,9 @@ data class ResumeEducationPayloadRequest(
 }
 
 data class ResumeAwardPayloadRequest(
+    @field:Size(max = 100)
     val name: String?,
+    @field:Size(max = 100)
     val organization: String?,
     val awardedAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeAwardPayload> {
@@ -154,7 +173,9 @@ data class ResumeAwardPayloadRequest(
 }
 
 data class ResumeCertificatePayloadRequest(
+    @field:Size(max = 100)
     val name: String?,
+    @field:Size(max = 100)
     val organization: String?,
     val acquiredAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeCertificatePayload> {
@@ -166,14 +187,18 @@ data class ResumeCertificatePayloadRequest(
 }
 
 data class ResumeSkillPayloadRequest(
+    @field:Size(max = 100)
     val name: String?,
+    @field:Size(max = 50)
     val level: String?,
 ) : ResumePayloadRequest<ResumeSkillPayload> {
     override fun toPayload() = ResumeSkillPayload(name = name, level = level)
 }
 
 data class ResumeLanguagePayloadRequest(
+    @field:Size(max = 100)
     val examName: String?,
+    @field:Size(max = 50)
     val scoreOrGrade: String?,
     val acquiredAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeLanguagePayload> {

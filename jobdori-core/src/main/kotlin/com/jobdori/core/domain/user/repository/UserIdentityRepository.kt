@@ -17,4 +17,8 @@ interface UserIdentityRepository {
 
     fun save(userIdentity: UserIdentity): UserIdentity
 
+    fun findAllByUserId(userId: Long): List<UserIdentity>
+
+    fun deleteAllByUserId(userId: Long)
+
 }

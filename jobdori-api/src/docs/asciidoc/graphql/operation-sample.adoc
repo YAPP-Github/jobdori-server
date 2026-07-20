@@ -335,29 +335,6 @@ mutation DeleteExperience {
 ====
 // end::deleteExperience[]
 
-// tag::polishExperienceContents[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-mutation PolishExperienceContents {
-    polishExperienceContents(
-        request: {
-            content: "이력서 저장 API를 만들었다. 섹션과 아이템이 복잡해서 저장 구조를 정리했고 테스트도 추가했다."
-        }
-    ) {
-        situation
-        task
-        action
-        result
-    }
-}
-----
-====
-// end::polishExperienceContents[]
-
 // tag::createExperienceProject[]
 [.graphql-sample]
 ====
@@ -572,12 +549,28 @@ query Resumes {
         workspaceId: "00000000-0000-0000-0000-000000000002"
         statuses: [COMPLETED, DRAFT]
     ) {
-        resumeId
-        targetJdId
-        template
-        status
-        createdAt
-        updatedAt
+        resumes {
+            resumeId
+            targetJd {
+                jdId
+                sourceUrl
+                companyName
+                positionTitle
+                insight {
+                    keyPoints
+                    strategy
+                }
+                status
+            }
+            template
+            status
+            createdAt
+            updatedAt
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
     }
 }
 ----
@@ -616,7 +609,24 @@ query Resume {
         resumeId: 94123123213123123
     ) {
         resumeId
-        targetJdId
+        targetJd {
+            jdId
+            sourceUrl
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
+            status
+            createdAt
+        }
         template
         status
         createdAt
@@ -707,34 +717,34 @@ query Resume {
 
 [source,graphql]
 ----
-mutation CreateResume {
+mutation CreateResumeWithDefaultItems {
     createResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         input: {
-            targetJdId: "00000000-0000-0000-0000-000000000002"
+            targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
             status: DRAFT
+            optimizationMode: JOB_SPECIFIC
             sections: [
                 {
-                    type: CORE_SKILL
-                    displayOrder: 2.0
+                    type: BASIC_INFO
+                    displayOrder: 10.0
                     visible: true
-                    items: [
-                        {
-                            displayOrder: 1.0
-                            visible: true
-                            payload: {
-                                coreSkill: {
-                                    content: "Kotlin과 Spring Boot 기반 백엔드 서비스를 설계하고 개발합니다. PostgreSQL, JPA, Kotlin JDSL을 활용한 데이터 모델링과 조회 성능 개선 경험이 있으며, GraphQL과 REST API를 모두 운영 가능한 수준으로 구현해왔습니다."
-                                }
-                            }
-                        }
-                    ]
+                    items: []
+                    useDefaultItems: true
+                }
+                {
+                    type: CORE_SKILL
+                    displayOrder: 20.0
+                    visible: true
+                    items: []
+                    useDefaultItems: true
                 }
                 {
                     type: EXPERIENCE
-                    displayOrder: 3.0
+                    displayOrder: 30.0
                     visible: true
+                    useDefaultItems: false
                     items: [
                         {
                             displayOrder: 1.0
@@ -752,139 +762,64 @@ mutation CreateResume {
                 }
                 {
                     type: CAREER
-                    displayOrder: 4.0
+                    displayOrder: 40.0
                     visible: true
-                    items: [
-                        {
-                            displayOrder: 1.0
-                            visible: true
-                            payload: {
-                                career: {
-                                    companyName: "잡도리"
-                                    role: "Backend Developer"
-                                    period: { startAt: "2024-01-01", endAt: "2025-12-31" }
-                                    contents: "채용 플랫폼의 이력서, 경험 정리, 워크스페이스 도메인을 담당했습니다. Kotlin, Spring Boot, PostgreSQL 기반으로 API를 개발하고 core와 infrastructure의 책임을 분리해 유지보수성을 개선했습니다."
-                                }
-                            }
-                        }
-                    ]
+                    items: []
+                    useDefaultItems: true
                 }
                 {
                     type: EDUCATION
-                    displayOrder: 5.0
+                    displayOrder: 60.0
                     visible: true
-                    items: [
-                        {
-                            displayOrder: 1.0
-                            visible: true
-                            payload: {
-                                education: {
-                                    schoolName: "잡도리대학교"
-                                    major: "컴퓨터공학"
-                                    degree: "학사"
-                                    status: "졸업"
-                                    period: { startAt: "2018-03-01", endAt: "2024-02-29" }
-                                }
-                            }
-                        }
-                    ]
+                    items: []
+                    useDefaultItems: true
                 }
                 {
                     type: AWARD
-                    displayOrder: 6.0
+                    displayOrder: 70.0
                     visible: true
-                    items: [
-                        {
-                            displayOrder: 1.0
-                            visible: true
-                            payload: {
-                                award: {
-                                    name: "잡도리 해커톤 대상"
-                                    organization: "잡도리 테크랩"
-                                    awardedAt: "2024-08-01"
-                                }
-                            }
-                        }
-                    ]
+                    items: []
+                    useDefaultItems: true
                 }
                 {
                     type: LANGUAGE
-                    displayOrder: 7.0
+                    displayOrder: 80.0
                     visible: true
-                    items: [
-                        {
-                            displayOrder: 1.0
-                            visible: true
-                            payload: {
-                                language: {
-                                    examName: "TOEIC"
-                                    scoreOrGrade: "900"
-                                    acquiredAt: "2024-03-15"
-                                }
-                            }
-                        }
-                    ]
+                    items: []
+                    useDefaultItems: true
                 }
                 {
                     type: CERTIFICATE
-                    displayOrder: 8.0
+                    displayOrder: 90.0
                     visible: true
-                    items: [
-                        {
-                            displayOrder: 1.0
-                            visible: true
-                            payload: {
-                                certificate: {
-                                    name: "정보처리기사"
-                                    organization: "한국산업인력공단"
-                                    acquiredAt: "2024-05-20"
-                                }
-                            }
-                        }
-                    ]
+                    items: []
+                    useDefaultItems: true
                 }
                 {
                     type: SKILL
-                    displayOrder: 9.0
+                    displayOrder: 100.0
                     visible: true
-                    items: [
-                        {
-                            displayOrder: 1.0
-                            visible: true
-                            payload: {
-                                skill: {
-                                    name: "Kotlin"
-                                    level: "Advanced"
-                                }
-                            }
-                        }
-                        {
-                            displayOrder: 2.0
-                            visible: true
-                            payload: {
-                                skill: {
-                                    name: "Spring Boot"
-                                    level: "Advanced"
-                                }
-                            }
-                        }
-                        {
-                            displayOrder: 3.0
-                            visible: true
-                            payload: {
-                                skill: {
-                                    name: "PostgreSQL"
-                                    level: "Intermediate"
-                                }
-                            }
-                        }
-                    ]
+                    items: []
+                    useDefaultItems: true
                 }
             ]
         }
     ) {
         resumeId
-        targetJdId
+        targetJd {
+            jdId
+            sourceUrl
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            status
+            createdAt
+        }
         template
         status
         createdAt
@@ -899,6 +834,63 @@ mutation CreateResume {
                 itemId
                 displayOrder
                 visible
+                payload {
+                    basicInfo {
+                        name
+                        email
+                        phone
+                    }
+                    coreSkill {
+                        content
+                    }
+                    experience {
+                        name
+                        role
+                        period {
+                            startAt
+                            endAt
+                        }
+                        contents
+                    }
+                    career {
+                        companyName
+                        role
+                        period {
+                            startAt
+                            endAt
+                        }
+                        contents
+                    }
+                    education {
+                        schoolName
+                        major
+                        degree
+                        status
+                        period {
+                            startAt
+                            endAt
+                        }
+                    }
+                    award {
+                        name
+                        organization
+                        awardedAt
+                    }
+                    language {
+                        examName
+                        scoreOrGrade
+                        acquiredAt
+                    }
+                    certificate {
+                        name
+                        organization
+                        acquiredAt
+                    }
+                    skill {
+                        name
+                        level
+                    }
+                }
             }
         }
     }
@@ -917,16 +909,18 @@ mutation CreateResume {
 mutation UpdateResume {
     updateResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 94123123213123123,
+        resumeId: 94123123213123123
         input: {
-            targetJdId: "00000000-0000-0000-0000-000000000002"
+            targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
             status: COMPLETED
+            optimizationMode: JOB_SPECIFIC
             sections: [
                 {
                     type: BASIC_INFO
                     displayOrder: 1.0
                     visible: true
+                    useDefaultItems: false
                     items: [
                         {
                             displayOrder: 1.0
@@ -945,6 +939,7 @@ mutation UpdateResume {
                     type: CORE_SKILL
                     displayOrder: 2.0
                     visible: true
+                    useDefaultItems: false
                     items: [
                         {
                             displayOrder: 1.0
@@ -957,11 +952,164 @@ mutation UpdateResume {
                         }
                     ]
                 }
+                {
+                    type: EXPERIENCE
+                    displayOrder: 3.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                experience: {
+                                    name: "이력서 관리 GraphQL API 개발"
+                                    role: "Backend Developer"
+                                    period: { startAt: "2025-01-01", endAt: "2025-06-30" }
+                                    contents: "이력서 생성, 조회, 수정, 삭제 API 설계 및 구현"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CAREER
+                    displayOrder: 4.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                career: {
+                                    companyName: "잡도리"
+                                    role: "Backend Developer"
+                                    period: { startAt: "2024-01-01", endAt: "2025-12-31" }
+                                    contents: "채용 플랫폼 백엔드 개발 및 운영"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: EDUCATION
+                    displayOrder: 5.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                education: {
+                                    schoolName: "잡도리대학교"
+                                    major: "컴퓨터공학"
+                                    degree: "BACHELOR"
+                                    status: "GRADUATED"
+                                    period: { startAt: "2018-03-01", endAt: "2024-02-29" }
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: AWARD
+                    displayOrder: 6.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                award: {
+                                    name: "잡도리 해커톤 대상"
+                                    organization: "잡도리 테크랩"
+                                    awardedAt: "2024-08-01"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: LANGUAGE
+                    displayOrder: 7.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                language: {
+                                    examName: "TOEIC"
+                                    scoreOrGrade: "900"
+                                    acquiredAt: "2024-03-15"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CERTIFICATE
+                    displayOrder: 8.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                certificate: {
+                                    name: "정보처리기사"
+                                    organization: "한국산업인력공단"
+                                    acquiredAt: "2024-05-20"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: SKILL
+                    displayOrder: 9.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                skill: {
+                                    name: "Kotlin"
+                                    level: "HIGH"
+                                }
+                            }
+                        }
+                    ]
+                }
             ]
         }
     ) {
         resumeId
-        targetJdId
+        targetJd {
+            jdId
+            sourceUrl
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
+            status
+            createdAt
+        }
         template
         status
         createdAt
@@ -976,6 +1124,33 @@ mutation UpdateResume {
                 itemId
                 displayOrder
                 visible
+                payload {
+                    basicInfo { name email phone }
+                    coreSkill { content }
+                    experience {
+                        name
+                        role
+                        period { startAt endAt }
+                        contents
+                    }
+                    career {
+                        companyName
+                        role
+                        period { startAt endAt }
+                        contents
+                    }
+                    education {
+                        schoolName
+                        major
+                        degree
+                        status
+                        period { startAt endAt }
+                    }
+                    award { name organization awardedAt }
+                    language { examName scoreOrGrade acquiredAt }
+                    certificate { name organization acquiredAt }
+                    skill { name level }
+                }
             }
         }
     }
@@ -1023,6 +1198,10 @@ query Jd {
         preferredExperiences
         hiringProcess
         coreCompetencies
+        insight {
+            keyPoints
+            strategy
+        }
         status
         createdAt
     }
@@ -1055,26 +1234,6 @@ query Jds {
 ====
 // end::jds[]
 
-// tag::jdInsight[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-query JdInsight {
-    jdInsight(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        jdId: "00000000-0000-0000-0000-00000000000a"
-    ) {
-        keyPoints
-        strategy
-    }
-}
-----
-====
-// end::jdInsight[]
-
 // tag::registerJd[]
 [.graphql-sample]
 ====
@@ -1091,6 +1250,10 @@ mutation RegisterJd {
             jdId
             companyName
             positionTitle
+            insight {
+                keyPoints
+                strategy
+            }
             status
         }
         candidates {
@@ -1102,41 +1265,6 @@ mutation RegisterJd {
 ----
 ====
 // end::registerJd[]
-
-// tag::analyzeGuestJd[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-mutation AnalyzeGuestJd {
-    analyzeGuestJd(
-        request: { sourceUrl: "https://example.com/jd" }
-    ) {
-        analysis {
-            companyName
-            positionTitle
-            companyIntro
-            responsibilities
-            requiredExperiences
-            preferredExperiences
-            hiringProcess
-            coreCompetencies
-            insight {
-                keyPoints
-                strategy
-            }
-        }
-        candidates {
-            title
-            body
-        }
-    }
-}
-----
-====
-// end::analyzeGuestJd[]
 
 // tag::markJdCompleted[]
 [.graphql-sample]
@@ -1157,23 +1285,6 @@ mutation MarkJdCompleted {
 ----
 ====
 // end::markJdCompleted[]
-
-// tag::deleteJd[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-mutation DeleteJd {
-    deleteJd(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        id: "00000000-0000-0000-0000-00000000000a"
-    )
-}
-----
-====
-// end::deleteJd[]
 
 // tag::profile[]
 [.graphql-sample]
@@ -1233,20 +1344,6 @@ query Profile {
 ====
 // end::profile[]
 
-// tag::suggestKeywords[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-query SuggestKeywords {
-    suggestKeywords(type: LANGUAGE_TEST, keyword: "토익", size: 10)
-}
-----
-====
-// end::suggestKeywords[]
-
 // tag::updateProfile[]
 [.graphql-sample]
 ====
@@ -1258,8 +1355,8 @@ mutation UpdateProfile {
     updateProfile(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         request: {
-            name: "김지윤"
-            phone: "010-3358-9065"
+            name: "잡도리"
+            phone: "010-1111-2222"
             email: "rlajae14@gmail.com"
             coreCompetency: "콘텐츠 기획과 데이터 기반 개선에 강점이 있는 마케터입니다."
             educations: [

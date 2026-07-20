@@ -1,6 +1,7 @@
 package com.jobdori.core.domain.experience.repository
 
 import com.jobdori.core.domain.experience.Experience
+import com.jobdori.core.domain.experience.ExperienceStatus
 
 interface ExperienceRepository {
 
@@ -27,6 +28,12 @@ interface ExperienceRepository {
     ): List<Experience>
 
     fun countByWorkspaceIdAndProjectIds(workspaceId: Long, projectIds: Collection<Long>): Map<Long, Long>
+
+    fun updateStatusByWorkspaceIdAndProjectId(
+        workspaceId: Long,
+        projectId: Long,
+        status: ExperienceStatus,
+    )
 
     // 워크스페이스의 ACTIVE 경험 전체(비페이지네이션). AI 추천 입력용.
     fun findAllActiveByWorkspaceId(workspaceId: Long): List<Experience>

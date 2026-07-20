@@ -2,9 +2,10 @@ mutation CreateResume {
     createResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         input: {
-            targetJdId: "00000000-0000-0000-0000-000000000002"
+            targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
             status: DRAFT
+            optimizationMode: JOB_SPECIFIC
             sections: [
                 {
                     type: CORE_SKILL
@@ -175,7 +176,20 @@ mutation CreateResume {
         }
     ) {
         resumeId
-        targetJdId
+        targetJd {
+            jdId
+            sourceUrl
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            status
+            createdAt
+        }
         template
         status
         createdAt
@@ -190,6 +204,33 @@ mutation CreateResume {
                 itemId
                 displayOrder
                 visible
+                payload {
+                    basicInfo { name email phone }
+                    coreSkill { content }
+                    experience {
+                        name
+                        role
+                        period { startAt endAt }
+                        contents
+                    }
+                    career {
+                        companyName
+                        role
+                        period { startAt endAt }
+                        contents
+                    }
+                    education {
+                        schoolName
+                        major
+                        degree
+                        status
+                        period { startAt endAt }
+                    }
+                    award { name organization awardedAt }
+                    language { examName scoreOrGrade acquiredAt }
+                    certificate { name organization acquiredAt }
+                    skill { name level }
+                }
             }
         }
     }

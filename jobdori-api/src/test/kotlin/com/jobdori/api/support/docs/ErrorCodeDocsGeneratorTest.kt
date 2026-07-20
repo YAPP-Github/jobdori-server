@@ -178,14 +178,6 @@ private val graphQlOperationErrors = listOf(
         ),
     ),
     GraphQlOperationError(
-        category = "Experience",
-        operation = "polishExperienceContents",
-        title = "경험 내용 다듬기",
-        type = GraphQlOperationType.MUTATION,
-        sampleFile = graphQlSample("experience/polish-experience-contents.graphql"),
-        errorCodes = emptyList(),
-    ),
-    GraphQlOperationError(
         category = "Experience Project",
         operation = "createExperienceProject",
         title = "경험 프로젝트 생성",
@@ -323,7 +315,7 @@ private val graphQlOperationErrors = listOf(
         operation = "createResume",
         title = "이력서 생성",
         type = GraphQlOperationType.MUTATION,
-        sampleFile = graphQlSample("resume/create-resume.graphql"),
+        sampleFile = graphQlSample("resume/create-resume-from-profile.graphql"),
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
@@ -378,22 +370,6 @@ private val graphQlOperationErrors = listOf(
     ),
     GraphQlOperationError(
         category = "JD",
-        operation = "jdInsight",
-        title = "JD 인사이트 조회",
-        type = GraphQlOperationType.QUERY,
-        sampleFile = graphQlSample("jd/jd-insight.graphql"),
-        errorCodes = operationErrorCodes(
-            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
-            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
-            JdErrorCode.E404_JD_NOT_FOUND,
-            AiErrorCode.E429_AI_RATE_LIMITED to "최초 조회로 인사이트를 생성하는 중 AI 요청 한도를 초과한 경우",
-            AiErrorCode.E500_AI_GENERATION_FAILED to "최초 조회로 인사이트를 생성하는 중 AI 응답 생성에 실패한 경우",
-            AiErrorCode.E503_AI_UNAVAILABLE to "최초 조회로 인사이트를 생성하는 중 AI 서비스에 접근할 수 없는 경우",
-            AiErrorCode.E504_AI_TIMEOUT to "최초 조회로 인사이트를 생성하는 중 AI 응답이 지연된 경우",
-        ),
-    ),
-    GraphQlOperationError(
-        category = "JD",
         operation = "registerJd",
         title = "JD 등록",
         type = GraphQlOperationType.MUTATION,
@@ -401,22 +377,6 @@ private val graphQlOperationErrors = listOf(
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
-            JdCrawlErrorCode.E400_JD_INVALID_URL,
-            JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
-            JdCrawlErrorCode.E422_JD_FETCH_FAILED,
-            AiErrorCode.E429_AI_RATE_LIMITED,
-            AiErrorCode.E500_AI_GENERATION_FAILED,
-            AiErrorCode.E503_AI_UNAVAILABLE,
-            AiErrorCode.E504_AI_TIMEOUT,
-        ),
-    ),
-    GraphQlOperationError(
-        category = "JD",
-        operation = "analyzeGuestJd",
-        title = "비로그인 JD 분석",
-        type = GraphQlOperationType.MUTATION,
-        sampleFile = graphQlSample("jd/analyze-guest-jd.graphql"),
-        errorCodes = operationErrorCodes(
             JdCrawlErrorCode.E400_JD_INVALID_URL,
             JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
             JdCrawlErrorCode.E422_JD_FETCH_FAILED,
@@ -439,18 +399,6 @@ private val graphQlOperationErrors = listOf(
         ),
     ),
     GraphQlOperationError(
-        category = "JD",
-        operation = "deleteJd",
-        title = "JD 삭제",
-        type = GraphQlOperationType.MUTATION,
-        sampleFile = graphQlSample("jd/delete-jd.graphql"),
-        errorCodes = operationErrorCodes(
-            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
-            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
-            JdErrorCode.E404_JD_NOT_FOUND,
-        ),
-    ),
-    GraphQlOperationError(
         category = "Profile",
         operation = "profile",
         title = "이력서 기본 정보 프로필 조회",
@@ -460,14 +408,6 @@ private val graphQlOperationErrors = listOf(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
         ),
-    ),
-    GraphQlOperationError(
-        category = "Profile",
-        operation = "suggestKeywords",
-        title = "키워드 자동완성 제안",
-        type = GraphQlOperationType.QUERY,
-        sampleFile = graphQlSample("profile/suggest-keywords.graphql"),
-        errorCodes = emptyList(),
     ),
     GraphQlOperationError(
         category = "Profile",

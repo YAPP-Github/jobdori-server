@@ -32,6 +32,12 @@ Cookie: refresh_token={{refreshToken}}
     client.global.set("accessToken", response.body.result.accessToken);
 %}
 
+
 ### Logout
 POST {{host}}/v1/auth/logout
 Cookie: refresh_token={{refreshToken}}
+
+
+### Withdraw account
+DELETE {{host}}/v1/auth/withdrawal
+Authorization: Bearer {{accessToken}}

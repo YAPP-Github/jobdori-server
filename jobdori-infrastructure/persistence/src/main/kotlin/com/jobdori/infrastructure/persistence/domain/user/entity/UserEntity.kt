@@ -1,8 +1,10 @@
 package com.jobdori.infrastructure.persistence.domain.user.entity
 
 import com.jobdori.core.domain.user.User
+import com.jobdori.infrastructure.persistence.support.converter.EncryptedStringConverter
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
 import jakarta.persistence.Column
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -15,7 +17,8 @@ class UserEntity(
     @Column(nullable = false, length = 50, unique = true, updatable = false)
     var publicId: String,
 
-    @Column(nullable = false, length = 320)
+    @Column(name = "email_encrypted", nullable = false, columnDefinition = "text")
+    @Convert(converter = EncryptedStringConverter::class)
     var email: String,
 
     @Column(nullable = false, length = 50)

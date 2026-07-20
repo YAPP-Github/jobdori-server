@@ -1,5 +1,6 @@
 package com.jobdori.api.application.experience.dto.response
 
+import com.jobdori.api.application.common.dto.response.PeriodResponse
 import com.jobdori.api.application.experience.dto.response.contents.ExperienceContentsResponse
 import com.jobdori.core.domain.experience.Experience
 
@@ -9,6 +10,8 @@ data class ExperienceResponse(
     val tags: List<String>,
     val title: String,
     val contents: ExperienceContentsResponse,
+    val period: PeriodResponse?,
+    val role: String?,
     // jdId를 준 피드 조회에서만 채워진다. reason은 매칭률 상위 5개만.
     val matchRate: Int? = null,
     val reason: String? = null,
@@ -26,6 +29,8 @@ data class ExperienceResponse(
             tags = experience.tags,
             title = experience.title,
             contents = ExperienceContentsResponse.from(experience.contents),
+            period = experience.period?.let(PeriodResponse::from),
+            role = experience.role,
             matchRate = matchRate,
             reason = reason,
         )

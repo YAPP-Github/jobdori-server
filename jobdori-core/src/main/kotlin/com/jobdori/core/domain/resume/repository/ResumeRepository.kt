@@ -9,7 +9,12 @@ interface ResumeRepository {
 
     fun save(resume: Resume): Resume
 
-    fun findAllByWorkspaceIdAndStatuses(workspaceId: Long, statuses: Collection<ResumeStatus>): List<Resume>
+    fun findAllByWorkspaceIdAndStatuses(
+        workspaceId: Long,
+        statuses: Collection<ResumeStatus>,
+        cursorId: Long?,
+        size: Int,
+    ): List<Resume>
 
     fun countByWorkspaceIdAndStatuses(workspaceId: Long, statuses: Collection<ResumeStatus>): Map<ResumeStatus, Long>
 

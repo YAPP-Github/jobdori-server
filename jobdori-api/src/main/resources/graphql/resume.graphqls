@@ -10,8 +10,16 @@ extend type Query {
         """
         조회할 이력서 상태 목록입니다 (생략하면 COMPLETED, DRAFT를 모두 조회)
         """
-        statuses: [ResumeStatusType!]
-    ): [ResumeSummary!]!
+        statuses: [ResumeStatusType!] = null,
+        """
+        다음 페이지를 조회할 때 사용할 커서입니다.
+        """
+        cursor: String = null,
+        """
+        한 번에 조회할 이력서 개수입니다. (1 이상 30 이하)
+        """
+        size: Int! = 10
+    ): Resumes!
 
     """
     워크스페이스의 이력서 수를 상태별로 조회합니다.
@@ -50,7 +58,7 @@ extend type Mutation {
         """
         생성할 이력서 전체 스냅샷입니다.
         """
-        input: SaveResumeInput!
+        input: CreateResumeInput!
     ): Resume!
 
     """
@@ -87,9 +95,14 @@ extend type Mutation {
 }
 
 """
-이력서 생성 및 수정에 사용하는 전체 스냅샷 입력입니다.
+이력서 생성에 사용하는 전체 스냅샷 입력입니다.
 """
-input SaveResumeInput {
+input CreateResumeInput {
+    """
+    이력서 최적화 모드입니다. JOB_SPECIFIC은 대상 채용공고를 기준으로 경험 내용을 첨삭합니다.
+    """
+    optimizationMode: ResumeOptimizationMode! = JOB_SPECIFIC
+
     """
     이력서가 맞춤 대상 채용공고와 연결되는 경우의 채용공고 ID입니다.
     """
@@ -101,7 +114,7 @@ input SaveResumeInput {
     template: ResumeTemplate!
 
     """
-    저장할 이력서 상태입니다.
+    생성할 이력서 상태입니다.
     """
     status: ResumeStatusType!
 
@@ -109,6 +122,47 @@ input SaveResumeInput {
     저장할 섹션 목록입니다. 요청에 없는 기존 섹션은 삭제됩니다.
     """
     sections: [SaveResumeSectionInput!]!
+}
+
+"""
+이력서 수정에 사용하는 전체 스냅샷 입력입니다.
+"""
+input SaveResumeInput {
+    """
+    이력서 최적화 모드입니다. JOB_SPECIFIC은 대상 채용공고를 기준으로 경험 내용을 첨삭합니다.
+    """
+    optimizationMode: ResumeOptimizationMode! = NONE
+
+    """
+    이력서가 맞춤 대상 채용공고와 연결되는 경우의 채용공고 ID입니다.
+    """
+    targetJdId: ID
+
+    """
+    이력서 렌더링에 사용할 템플릿입니다.
+    """
+    template: ResumeTemplate!
+
+    """
+    생성할 이력서 상태입니다.
+    """
+    status: ResumeStatusType!
+
+    """
+    저장할 섹션 목록입니다. 요청에 없는 기존 섹션은 삭제됩니다.
+    """
+    sections: [SaveResumeSectionInput!]!
+}
+
+"""
+이력서 저장 시 경험 내용을 처리하는 방식입니다.
+"""
+enum ResumeOptimizationMode {
+    """입력한 내용을 그대로 저장합니다."""
+    NONE
+
+    """대상 채용공고를 기준으로 경험 내용을 첨삭하여 저장합니다."""
+    JOB_SPECIFIC
 }
 
 """
@@ -139,6 +193,12 @@ input SaveResumeSectionInput {
     섹션에 포함할 아이템 목록입니다. 요청에 없는 기존 아이템은 삭제됩니다.
     """
     items: [SaveResumeSectionItemInput!]!
+
+    """
+    생성 시 섹션 타입에 맞는 기본 아이템을 만들지 여부입니다. true이면 items는 비어 있어야 합니다.
+    수정 요청에서는 사용할 수 없습니다.
+    """
+    useDefaultItems: Boolean! = false
 }
 
 """
@@ -223,7 +283,7 @@ input ResumeBasicInfoPayloadInput {
     """
     이름입니다.
     """
-    name: String!
+    name: String
 
     """
     이메일 주소입니다.
@@ -243,7 +303,7 @@ input ResumeCoreSkillPayloadInput {
     """
     핵심 역량 내용입니다.
     """
-    content: String!
+    content: String
 }
 
 """
@@ -253,7 +313,7 @@ input ResumeCareerPayloadInput {
     """
     회사명입니다.
     """
-    companyName: String!
+    companyName: String
 
     """
     직무 또는 역할입니다.
@@ -268,7 +328,7 @@ input ResumeCareerPayloadInput {
     """
     경력 상세 내용입니다.
     """
-    contents: String!
+    contents: String
 }
 
 """
@@ -278,7 +338,7 @@ input ResumeExperiencePayloadInput {
     """
     경험 이름입니다.
     """
-    name: String!
+    name: String
 
     """
     경험에서 맡은 역할입니다.
@@ -303,7 +363,7 @@ input ResumeEducationPayloadInput {
     """
     학교명입니다.
     """
-    schoolName: String!
+    schoolName: String
 
     """
     전공명입니다.
@@ -333,7 +393,7 @@ input ResumeAwardPayloadInput {
     """
     수상명입니다.
     """
-    name: String!
+    name: String
 
     """
     수상 기관명입니다.
@@ -353,7 +413,7 @@ input ResumeCertificatePayloadInput {
     """
     자격증명입니다.
     """
-    name: String!
+    name: String
 
     """
     발급 기관입니다.
@@ -373,7 +433,7 @@ input ResumeSkillPayloadInput {
     """
     기술명입니다.
     """
-    name: String!
+    name: String
 
     """
     숙련도 또는 수준입니다.
@@ -388,12 +448,12 @@ input ResumeLanguagePayloadInput {
     """
     어학 시험명입니다.
     """
-    examName: String!
+    examName: String
 
     """
     어학 점수 또는 등급입니다.
     """
-    scoreOrGrade: String!
+    scoreOrGrade: String
 
     """
     어학 취득일입니다.
@@ -409,6 +469,11 @@ type Resume {
     이력서 ID입니다.
     """
     resumeId: ID!
+
+    """
+    이력서의 대상 JD입니다.
+    """
+    targetJd: Jd
 
     """
     이력서 템플릿입니다.
@@ -446,6 +511,11 @@ type ResumeSummary {
     resumeId: ID!
 
     """
+    이력서의 대상 JD입니다.
+    """
+    targetJd: Jd
+
+    """
     이력서 템플릿입니다.
     """
     template: ResumeTemplate!
@@ -464,6 +534,14 @@ type ResumeSummary {
     마지막 수정 시각입니다.
     """
     updatedAt: String!
+}
+
+"""
+이력서 목록과 커서 정보입니다.
+"""
+type Resumes {
+    resumes: [ResumeSummary!]!
+    cursor: Cursor!
 }
 
 """
@@ -618,7 +696,7 @@ type ResumeBasicInfoPayload {
     """
     이름입니다.
     """
-    name: String!
+    name: String
 
     """
     이메일 주소입니다.
@@ -638,7 +716,7 @@ type ResumeCoreSkillPayload {
     """
     핵심 역량 내용입니다.
     """
-    content: String!
+    content: String
 }
 
 """
@@ -648,7 +726,7 @@ type ResumeCareerPayload {
     """
     회사명입니다.
     """
-    companyName: String!
+    companyName: String
 
     """
     직무 또는 역할입니다.
@@ -663,7 +741,7 @@ type ResumeCareerPayload {
     """
     경력 상세 내용입니다.
     """
-    contents: String!
+    contents: String
 }
 
 """
@@ -673,7 +751,7 @@ type ResumeExperiencePayload {
     """
     경험 이름입니다.
     """
-    name: String!
+    name: String
 
     """
     경험에서 맡은 역할입니다.
@@ -698,7 +776,7 @@ type ResumeEducationPayload {
     """
     학교명입니다.
     """
-    schoolName: String!
+    schoolName: String
 
     """
     전공명입니다.
@@ -728,7 +806,7 @@ type ResumeAwardPayload {
     """
     수상명입니다.
     """
-    name: String!
+    name: String
 
     """
     수상 기관명입니다.
@@ -748,7 +826,7 @@ type ResumeCertificatePayload {
     """
     자격증명입니다.
     """
-    name: String!
+    name: String
 
     """
     발급 기관입니다.
@@ -768,7 +846,7 @@ type ResumeSkillPayload {
     """
     기술명입니다.
     """
-    name: String!
+    name: String
 
     """
     숙련도 또는 수준입니다.
@@ -783,12 +861,12 @@ type ResumeLanguagePayload {
     """
     어학 시험명입니다.
     """
-    examName: String!
+    examName: String
 
     """
     어학 점수 또는 등급입니다.
     """
-    scoreOrGrade: String!
+    scoreOrGrade: String
 
     """
     어학 취득일입니다.

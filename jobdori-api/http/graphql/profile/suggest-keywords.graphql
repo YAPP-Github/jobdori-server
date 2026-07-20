@@ -1,3 +1,0 @@
-query SuggestKeywords {
-    suggestKeywords(type: LANGUAGE_TEST, keyword: "토익", size: 10)
-}

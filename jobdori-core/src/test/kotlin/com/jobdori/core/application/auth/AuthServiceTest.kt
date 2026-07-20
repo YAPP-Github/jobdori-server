@@ -12,9 +12,11 @@ import com.jobdori.core.domain.user.UserIdentity
 import com.jobdori.core.domain.user.UserIdentityProvider
 import com.jobdori.core.domain.user.service.UserIdentityReader
 import com.jobdori.core.domain.user.service.UserReader
+import com.jobdori.core.domain.user.service.UserRemover
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
@@ -27,11 +29,13 @@ class AuthServiceTest : StringSpec({
     val authTokenProvider = mockk<AuthTokenProvider>()
     val userIdentityReader = mockk<UserIdentityReader>()
     val userReader = mockk<UserReader>()
+    val userRemover = mockk<UserRemover>()
 
     val service = AuthService(
         googleAuthProcessor = googleAuthProcessor,
         authSignUpService = authSignUpService,
         userIdentityReader = userIdentityReader,
+        userRemover = userRemover,
         userReader = userReader,
         authTokenProvider = authTokenProvider,
     )
@@ -53,6 +57,14 @@ class AuthServiceTest : StringSpec({
             expiresAt = Instant.parse("2030-01-15T00:00:00Z"),
         ),
     )
+
+    "회원 탈퇴를 사용자 탈퇴 매니저에 위임한다" {
+        justRun { userRemover.remove(1L) }
+
+        service.withdraw(1L)
+
+        verify(exactly = 1) { userRemover.remove(1L) }
+    }
 
     "Google 식별 정보로 사용자를 조회하고 JWT를 발급한다" {
         // given

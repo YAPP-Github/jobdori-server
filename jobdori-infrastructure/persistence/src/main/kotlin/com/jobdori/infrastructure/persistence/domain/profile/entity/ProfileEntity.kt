@@ -2,9 +2,11 @@ package com.jobdori.infrastructure.persistence.domain.profile.entity
 
 import com.jobdori.core.domain.profile.Profile
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
+import com.jobdori.infrastructure.persistence.support.converter.EncryptedStringConverter
 import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.Convert
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.DynamicUpdate
@@ -16,13 +18,16 @@ class ProfileEntity(
     @Column(nullable = false, unique = true)
     var workspaceId: Long,
 
-    @Column(length = 50)
+    @Column(name = "name_encrypted", columnDefinition = "text")
+    @Convert(converter = EncryptedStringConverter::class)
     var name: String?,
 
-    @Column(length = 30)
+    @Column(name = "phone_encrypted", columnDefinition = "text")
+    @Convert(converter = EncryptedStringConverter::class)
     var phone: String?,
 
-    @Column(length = 100)
+    @Column(name = "email_encrypted", columnDefinition = "text")
+    @Convert(converter = EncryptedStringConverter::class)
     var email: String?,
 
     @Column(columnDefinition = "text")

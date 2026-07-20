@@ -92,7 +92,7 @@ class ExperienceProjectServiceTest : StringSpec({
         // given
         val request = UpdateExperienceProjectRequest(
             name = "수정 프로젝트",
-            summary = null,
+            summary = "수정 요약",
             period = PeriodRequest(
                 startAt = LocalDate.of(2025, 4, 1),
                 endAt = LocalDate.of(2025, 6, 30),
@@ -104,7 +104,7 @@ class ExperienceProjectServiceTest : StringSpec({
                 workspaceId = 1L,
                 projectId = 3L,
                 name = "수정 프로젝트",
-                summary = null,
+                summary = "수정 요약",
                 period = Period(LocalDate.of(2025, 4, 1), LocalDate.of(2025, 6, 30)),
                 role = "리드",
             )

@@ -197,6 +197,36 @@ class ExperienceRepositoryTest(
         ) shouldContainExactly emptyMap()
     }
 
+    "프로젝트의 경험 상태를 모두 변경한다" {
+        // given
+        val target1 = experienceJpaRepository.save(
+            ExperienceEntity.from(ExperienceFixture.create(workspaceId = 10L, projectId = 100L)),
+        )
+        val target2 = experienceJpaRepository.save(
+            ExperienceEntity.from(ExperienceFixture.create(workspaceId = 10L, projectId = 100L)),
+        )
+        val otherProject = experienceJpaRepository.save(
+            ExperienceEntity.from(ExperienceFixture.create(workspaceId = 10L, projectId = 200L)),
+        )
+        val otherWorkspace = experienceJpaRepository.save(
+            ExperienceEntity.from(ExperienceFixture.create(workspaceId = 20L, projectId = 100L)),
+        )
+
+        // when
+        experienceRepository.updateStatusByWorkspaceIdAndProjectId(
+            workspaceId = 10L,
+            projectId = 100L,
+            status = ExperienceStatus.DELETED,
+        )
+
+        // then
+        val experiences = experienceJpaRepository.findAll().associateBy { it.id }
+        experiences.getValue(target1.id).status shouldBe ExperienceStatus.DELETED
+        experiences.getValue(target2.id).status shouldBe ExperienceStatus.DELETED
+        experiences.getValue(otherProject.id).status shouldBe ExperienceStatus.ACTIVE
+        experiences.getValue(otherWorkspace.id).status shouldBe ExperienceStatus.ACTIVE
+    }
+
     "워크스페이스 내 제목 또는 내용에 검색어가 포함된 활성 경험을 조회한다" {
         // given
         val titleMatched = experienceJpaRepository.save(

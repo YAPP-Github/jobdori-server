@@ -150,6 +150,35 @@ class ExperienceAiExtractionServiceTest : StringSpec({
         group?.project?.period?.endAt shouldBe null
     }
 
+    "경험 기간과 역할을 우선 사용하고 비어 있으면 프로젝트 값을 사용한다" {
+        val project = ExtractedExperienceProject(
+            name = "채용 플랫폼",
+            period = ExtractedPeriod(startYear = 2024, startMonth = 1, endYear = 2024, endMonth = 12),
+            role = "프로젝트 역할",
+            experiences = listOf(
+                ExtractedExperience(
+                    title = "개별 역할 경험",
+                    period = ExtractedPeriod(startYear = 2024, startMonth = 3, endYear = 2024, endMonth = 6),
+                    role = "경험 역할",
+                    action = "기능을 개발했다",
+                ),
+                ExtractedExperience(
+                    title = "프로젝트 값 상속 경험",
+                    action = "서비스를 운영했다",
+                ),
+            ),
+        )
+
+        val experiences = project.toCommandGroup()?.experiences.orEmpty()
+
+        experiences[0].period?.startAt shouldBe LocalDate.of(2024, 3, 1)
+        experiences[0].period?.endAt shouldBe LocalDate.of(2024, 6, 30)
+        experiences[0].role shouldBe "경험 역할"
+        experiences[1].period?.startAt shouldBe LocalDate.of(2024, 1, 1)
+        experiences[1].period?.endAt shouldBe LocalDate.of(2024, 12, 31)
+        experiences[1].role shouldBe "프로젝트 역할"
+    }
+
     "경험 추출 프롬프트가 없으면 AI 예외를 던진다" {
         every { promptTemplateRepository.findByType(PromptType.EXPERIENCE_STAR_EXTRACTION) } returns null
 

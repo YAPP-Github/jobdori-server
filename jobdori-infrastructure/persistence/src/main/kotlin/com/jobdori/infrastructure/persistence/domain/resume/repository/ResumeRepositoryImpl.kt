@@ -7,10 +7,12 @@ import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.repository.ResumeRepository
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
+import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeEntity
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeSectionEntity
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeSectionItemEntity
 import org.springframework.stereotype.Repository
+import org.springframework.data.domain.PageRequest
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
@@ -18,6 +20,7 @@ class ResumeRepositoryImpl(
     private val resumeJpaRepository: ResumeJpaRepository,
     private val sectionJpaRepository: ResumeSectionJpaRepository,
     private val sectionItemJpaRepository: ResumeSectionItemJpaRepository,
+    private val encryptor: StringEncryptor,
 ) : ResumeRepository {
 
     @Transactional
@@ -29,15 +32,29 @@ class ResumeRepositoryImpl(
     override fun findAllByWorkspaceIdAndStatuses(
         workspaceId: Long,
         statuses: Collection<ResumeStatus>,
+        cursorId: Long?,
+        size: Int,
     ): List<Resume> {
         if (statuses.isEmpty()) {
             return emptyList()
         }
 
-        return resumeJpaRepository.findAllByWorkspaceIdAndStatusInOrderByIdDesc(
-            workspaceId = workspaceId,
-            statuses = statuses,
-        ).map { it.toDomain() }
+        val pageable = PageRequest.of(0, size)
+        val entities = if (cursorId == null) {
+            resumeJpaRepository.findAllByWorkspaceIdAndStatusInOrderByIdDesc(
+                workspaceId = workspaceId,
+                statuses = statuses,
+                pageable = pageable,
+            )
+        } else {
+            resumeJpaRepository.findAllByWorkspaceIdAndStatusInAndIdLessThanOrderByIdDesc(
+                workspaceId = workspaceId,
+                statuses = statuses,
+                id = cursorId,
+                pageable = pageable,
+            )
+        }
+        return entities.map { it.toDomain() }
     }
 
     @Transactional(readOnly = true)
@@ -103,7 +120,7 @@ class ResumeRepositoryImpl(
         } else {
             sectionItemJpaRepository.findAllBySectionIdInOrderBySectionIdAscDisplayOrderAscIdAsc(
                 sectionIds = sectionIds,
-            ).map { it.toDomain() }
+            ).map { it.toDomain(encryptor) }
                 .groupBy { it.sectionId }
         }
 
@@ -234,14 +251,14 @@ class ResumeRepositoryImpl(
                     ?.also {
                         it.sectionId = section.id
                         it.payloadType = itemCommand.payload.type
-                        it.payload = com.jobdori.common.json.JsonUtils.toJson(itemCommand.payload)
+                        it.payload = ResumeSectionItemEntity.serializePayload(itemCommand.payload, encryptor)
                         it.displayOrder = itemCommand.displayOrder
                         it.visible = itemCommand.visible
                     }
                     ?: ResumeSectionItemEntity(
                         sectionId = section.id,
                         payloadType = itemCommand.payload.type,
-                        payload = com.jobdori.common.json.JsonUtils.toJson(itemCommand.payload),
+                        payload = ResumeSectionItemEntity.serializePayload(itemCommand.payload, encryptor),
                         displayOrder = itemCommand.displayOrder,
                         visible = itemCommand.visible,
                     )

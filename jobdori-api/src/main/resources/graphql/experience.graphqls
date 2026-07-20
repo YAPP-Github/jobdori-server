@@ -24,19 +24,19 @@ extend type Query {
         """
         특정 프로젝트의 경험만 조회할 때 사용하는 프로젝트 ID입니다 (선택)
         """
-        projectId: ID,
+        projectId: ID = null,
         """
         JD ID입니다. 주면 각 경험에 해당 JD 기준 matchRate와 reason(상위 5개)을 채웁니다. (선택)
         """
-        jdId: ID,
+        jdId: ID = null,
         """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 경험 개수입니다. (1 이상 30 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): Experiences!
 
     """
@@ -64,11 +64,11 @@ extend type Query {
         """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 경험 프로젝트 개수입니다. (1 이상 30 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): ExperienceProjects!
 
     """
@@ -86,11 +86,11 @@ extend type Query {
         """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 경험 개수입니다. (1 이상 30 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): Experiences!
 }
 
@@ -140,16 +140,6 @@ extend type Mutation {
         """
         experienceId: ID!
     ): Boolean!
-
-    """
-    Free Style 경험 내용을 STAR 형식으로 다듬습니다.
-    """
-    polishExperienceContents(
-        """
-        STAR 형식으로 변환할 Free Style 경험 내용입니다.
-        """
-        request: PolishExperienceContentsRequest!
-    ): StarExperienceContents!
 
     """
     경험 프로젝트를 생성합니다.
@@ -221,6 +211,12 @@ input CreateExperienceRequest {
     경험 상세 내용입니다.
     """
     contents: ExperienceContentsRequest!
+
+    """경험 수행 기간입니다."""
+    period: PeriodInput
+
+    """경험에서 맡은 역할입니다."""
+    role: String
 }
 
 """
@@ -230,32 +226,28 @@ input UpdateExperienceRequest {
     """
     변경할 경험 프로젝트 ID입니다.
     """
-    projectId: ID
+    projectId: ID!
 
     """
     변경할 태그 목록입니다.
     """
-    tags: [String!]
+    tags: [String!]!
 
     """
     변경할 경험 제목입니다.
     """
-    title: String
+    title: String!
 
     """
     변경할 경험 상세 내용입니다.
     """
-    contents: ExperienceContentsRequest
-}
+    contents: ExperienceContentsRequest!
 
-"""
-경험 내용 AI 다듬기 입력입니다.
-"""
-input PolishExperienceContentsRequest {
-    """
-    STAR 형식으로 변환할 자유 서술 경험 내용입니다.
-    """
-    content: String!
+    """변경할 경험 수행 기간입니다."""
+    period: PeriodInput
+
+    """변경할 경험 역할입니다."""
+    role: String
 }
 
 """
@@ -270,12 +262,12 @@ input ExperienceContentsRequest {
     """
     STAR 형식의 상세 내용입니다.
     """
-    star: StarExperienceContentsRequest
+    star: StarExperienceContentsRequest = null
 
     """
     FREE 형식의 상세 내용입니다.
     """
-    free: FreeExperienceContentsRequest
+    free: FreeExperienceContentsRequest = null
 }
 
 """
@@ -345,12 +337,12 @@ input UpdateExperienceProjectRequest {
     """
     변경할 경험 프로젝트 이름입니다.
     """
-    name: String
+    name: String!
 
     """
     변경할 경험 프로젝트 요약입니다.
     """
-    summary: String
+    summary: String!
 
     """
     변경할 경험 프로젝트 진행 기간입니다.
@@ -421,6 +413,12 @@ type Experience {
     경험 상세 내용입니다.
     """
     contents: ExperienceContents!
+
+    """경험 수행 기간입니다."""
+    period: Period
+
+    """경험에서 맡은 역할입니다."""
+    role: String
 
     """
     JD 기준 매칭률(0~100)입니다. experiences 조회에 jdId를 준 경우에만 채워집니다.

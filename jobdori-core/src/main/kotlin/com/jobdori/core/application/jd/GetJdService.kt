@@ -26,4 +26,14 @@ class GetJdService(
         jdRepository.findByPublicIdAndWorkspaceId(publicId, workspaceId)
             ?: throw JdNotFoundException("등록되지 않은 JD($publicId)입니다")
 
+    @Transactional(readOnly = true)
+    fun getJd(workspaceId: Long, id: Long): Jd =
+        jdRepository.findByIdAndWorkspaceId(id, workspaceId)
+            ?: throw JdNotFoundException("등록되지 않은 JD($id)입니다")
+
+    @Transactional(readOnly = true)
+    fun getJds(workspaceId: Long, ids: Collection<Long>): List<Jd> =
+        if (ids.isEmpty()) emptyList()
+        else jdRepository.findAllByIdsAndWorkspaceId(ids.distinct(), workspaceId)
+
 }

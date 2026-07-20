@@ -15,14 +15,19 @@ class JdRepositoryImpl(
     override fun save(jd: Jd): Jd = jdJpa.save(JdEntity.from(jd)).toDomain()
 
     @Transactional(readOnly = true)
+    override fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): Jd? =
+        jdJpa.findByIdAndWorkspaceId(id, workspaceId)?.toDomain()
+
+    @Transactional(readOnly = true)
+    override fun findAllByIdsAndWorkspaceId(ids: Collection<Long>, workspaceId: Long): List<Jd> =
+        jdJpa.findAllByIdInAndWorkspaceId(ids, workspaceId).map { it.toDomain() }
+
+    @Transactional(readOnly = true)
     override fun findByPublicIdAndWorkspaceId(publicId: String, workspaceId: Long): Jd? =
         jdJpa.findByPublicIdAndWorkspaceId(publicId, workspaceId)?.toDomain()
 
     @Transactional(readOnly = true)
     override fun findAllByWorkspaceId(workspaceId: Long): List<Jd> =
         jdJpa.findAllByWorkspaceId(workspaceId).map { it.toDomain() }
-
-    @Transactional
-    override fun deleteById(id: Long) = jdJpa.deleteById(id)
 
 }

@@ -8,13 +8,13 @@
 
 ## 기술 스택
 
-- Kotlin 2 (JDK 25)
-- Spring Boot 4
-- REST API, GraphQL
-- PostgreSQL
-- Spring Data JPA, Kotlin JDSL
-- Spring REST Docs
-- Kotest
+- Backend: Kotlin 2, JDK 25, Spring Boot 4
+- API: REST API, GraphQL
+- Database: PostgreSQL
+- Persistence: Spring Data JPA, Kotlin JDSL
+- Test & Docs: Kotest, Spring REST Docs
+- Infrastructure: AWS Elastic Beanstalk, Terraform
+- CI/CD: GitHub Actions
 
 ## 모듈 구조
 

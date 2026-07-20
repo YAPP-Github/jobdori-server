@@ -10,11 +10,11 @@ extend type Query {
         """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 Notion 연결 개수입니다. (1 이상 30 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): NotionConnections!
 
     """
@@ -32,15 +32,15 @@ extend type Query {
         """
         페이지 검색어입니다 (선택)
         """
-        query: String,
+        query: String = null,
         """
         다음 페이지를 조회할 때 사용하는 Notion 커서입니다. (첫 페이지는 null)
         """
-        cursor: String,
+        cursor: String = null,
         """
         한 번에 조회할 Notion 페이지 개수입니다. (1 이상 100 이하)
         """
-        size: Int!
+        size: Int! = 10
     ): NotionPages!
 }
 

@@ -1,16 +1,18 @@
 mutation UpdateResume {
     updateResume(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 94123123213123123,
+        resumeId: 94123123213123123
         input: {
-            targetJdId: "00000000-0000-0000-0000-000000000002"
+            targetJdId: "00000000-0000-0000-0000-00000000000a"
             template: DEFAULT
             status: COMPLETED
+            optimizationMode: JOB_SPECIFIC
             sections: [
                 {
                     type: BASIC_INFO
                     displayOrder: 1.0
                     visible: true
+                    useDefaultItems: false
                     items: [
                         {
                             displayOrder: 1.0
@@ -29,6 +31,7 @@ mutation UpdateResume {
                     type: CORE_SKILL
                     displayOrder: 2.0
                     visible: true
+                    useDefaultItems: false
                     items: [
                         {
                             displayOrder: 1.0
@@ -41,11 +44,164 @@ mutation UpdateResume {
                         }
                     ]
                 }
+                {
+                    type: EXPERIENCE
+                    displayOrder: 3.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                experience: {
+                                    name: "이력서 관리 GraphQL API 개발"
+                                    role: "Backend Developer"
+                                    period: { startAt: "2025-01-01", endAt: "2025-06-30" }
+                                    contents: "이력서 생성, 조회, 수정, 삭제 API 설계 및 구현"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CAREER
+                    displayOrder: 4.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                career: {
+                                    companyName: "잡도리"
+                                    role: "Backend Developer"
+                                    period: { startAt: "2024-01-01", endAt: "2025-12-31" }
+                                    contents: "채용 플랫폼 백엔드 개발 및 운영"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: EDUCATION
+                    displayOrder: 5.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                education: {
+                                    schoolName: "잡도리대학교"
+                                    major: "컴퓨터공학"
+                                    degree: "BACHELOR"
+                                    status: "GRADUATED"
+                                    period: { startAt: "2018-03-01", endAt: "2024-02-29" }
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: AWARD
+                    displayOrder: 6.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                award: {
+                                    name: "잡도리 해커톤 대상"
+                                    organization: "잡도리 테크랩"
+                                    awardedAt: "2024-08-01"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: LANGUAGE
+                    displayOrder: 7.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                language: {
+                                    examName: "TOEIC"
+                                    scoreOrGrade: "900"
+                                    acquiredAt: "2024-03-15"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: CERTIFICATE
+                    displayOrder: 8.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                certificate: {
+                                    name: "정보처리기사"
+                                    organization: "한국산업인력공단"
+                                    acquiredAt: "2024-05-20"
+                                }
+                            }
+                        }
+                    ]
+                }
+                {
+                    type: SKILL
+                    displayOrder: 9.0
+                    visible: true
+                    useDefaultItems: false
+                    items: [
+                        {
+                            displayOrder: 1.0
+                            visible: true
+                            payload: {
+                                skill: {
+                                    name: "Kotlin"
+                                    level: "HIGH"
+                                }
+                            }
+                        }
+                    ]
+                }
             ]
         }
     ) {
         resumeId
-        targetJdId
+        targetJd {
+            jdId
+            sourceUrl
+            companyName
+            positionTitle
+            companyIntro
+            responsibilities
+            requiredExperiences
+            preferredExperiences
+            hiringProcess
+            coreCompetencies
+            insight {
+                keyPoints
+                strategy
+            }
+            status
+            createdAt
+        }
         template
         status
         createdAt
@@ -60,6 +216,33 @@ mutation UpdateResume {
                 itemId
                 displayOrder
                 visible
+                payload {
+                    basicInfo { name email phone }
+                    coreSkill { content }
+                    experience {
+                        name
+                        role
+                        period { startAt endAt }
+                        contents
+                    }
+                    career {
+                        companyName
+                        role
+                        period { startAt endAt }
+                        contents
+                    }
+                    education {
+                        schoolName
+                        major
+                        degree
+                        status
+                        period { startAt endAt }
+                    }
+                    award { name organization awardedAt }
+                    language { examName scoreOrGrade acquiredAt }
+                    certificate { name organization acquiredAt }
+                    skill { name level }
+                }
             }
         }
     }

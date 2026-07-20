@@ -13,6 +13,7 @@ import com.jobdori.core.domain.resume.ResumeSectionItem
 import com.jobdori.core.domain.resume.ResumeSectionItemPayload
 import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeSkillPayload
+import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
 import com.jobdori.infrastructure.persistence.support.sequence.SnowflakeId
 import jakarta.persistence.Column
@@ -49,10 +50,10 @@ class ResumeSectionItemEntity(
     @SnowflakeId
     var id: Long = 0L
 
-    fun toDomain() = ResumeSectionItem(
+    fun toDomain(encryptor: StringEncryptor) = ResumeSectionItem(
         id = id,
         sectionId = sectionId,
-        payload = parsePayload(payloadType, payload),
+        payload = parsePayload(payloadType, payload, encryptor),
         displayOrder = displayOrder,
         visible = visible,
         createdAt = createdAt,
@@ -60,10 +61,10 @@ class ResumeSectionItemEntity(
     )
 
     companion object {
-        fun from(domain: ResumeSectionItem) = ResumeSectionItemEntity(
+        fun from(domain: ResumeSectionItem, encryptor: StringEncryptor) = ResumeSectionItemEntity(
             sectionId = domain.sectionId,
             payloadType = domain.payload.type,
-            payload = JsonUtils.toJson(domain.payload),
+            payload = serializePayload(domain.payload, encryptor),
             displayOrder = domain.displayOrder,
             visible = domain.visible,
         ).also { it.id = domain.id }
@@ -71,10 +72,11 @@ class ResumeSectionItemEntity(
         private fun parsePayload(
             payloadType: ResumeSectionType,
             payload: String,
+            encryptor: StringEncryptor,
         ): ResumeSectionItemPayload {
             return when (payloadType) {
                 ResumeSectionType.BASIC_INFO ->
-                    requireNotNull(JsonUtils.toObject(payload, ResumeBasicInfoPayload::class.java))
+                    requireNotNull(JsonUtils.toObject(payload, ResumeBasicInfoPayload::class.java)).decrypt(encryptor)
 
                 ResumeSectionType.CORE_SKILL ->
                     requireNotNull(JsonUtils.toObject(payload, ResumeCoreSkillPayload::class.java))
@@ -101,6 +103,23 @@ class ResumeSectionItemEntity(
                     requireNotNull(JsonUtils.toObject(payload, ResumeSkillPayload::class.java))
             }
         }
+
+        fun serializePayload(payload: ResumeSectionItemPayload, encryptor: StringEncryptor): String {
+            val persistencePayload = if (payload is ResumeBasicInfoPayload) payload.encrypt(encryptor) else payload
+            return JsonUtils.toJson(persistencePayload)
+        }
+
+        private fun ResumeBasicInfoPayload.encrypt(encryptor: StringEncryptor) = copy(
+            name = name?.let(encryptor::encrypt),
+            email = email?.let(encryptor::encrypt),
+            phone = phone?.let(encryptor::encrypt),
+        )
+
+        private fun ResumeBasicInfoPayload.decrypt(encryptor: StringEncryptor) = copy(
+            name = name?.let(encryptor::decrypt),
+            email = email?.let(encryptor::decrypt),
+            phone = phone?.let(encryptor::decrypt),
+        )
     }
 
 }

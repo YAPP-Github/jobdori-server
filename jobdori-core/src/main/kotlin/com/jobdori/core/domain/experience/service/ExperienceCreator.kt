@@ -22,6 +22,8 @@ class ExperienceCreator(
                 tags = command.tags,
                 title = command.title,
                 contents = command.contents,
+                period = command.period,
+                role = command.role,
             ),
         )
     }
@@ -38,6 +40,8 @@ class ExperienceCreator(
                 tags = command.tags,
                 title = command.title,
                 contents = command.contents,
+                period = command.period,
+                role = command.role,
             )
         }
 

@@ -89,4 +89,36 @@ class UserIdentityRepositoryTest(
         }
     }
 
+    "사용자 ID로 모든 식별 정보를 조회한다" {
+        val targetUserId = 1000L
+        userIdentityJpaRepository.saveAll(
+            listOf(
+                UserIdentityEntity.from(UserIdentityFixture.create(userId = targetUserId, providerUserId = "first")),
+                UserIdentityEntity.from(UserIdentityFixture.create(userId = targetUserId, providerUserId = "second")),
+                UserIdentityEntity.from(UserIdentityFixture.create(userId = 2000L, providerUserId = "other")),
+            ),
+        )
+
+        val identities = userIdentityRepository.findAllByUserId(targetUserId)
+
+        identities shouldHaveSize 2
+        identities.map { it.providerUserId }.toSet() shouldBe setOf("first", "second")
+    }
+
+    "사용자 ID에 해당하는 식별 정보만 모두 삭제한다" {
+        val targetUserId = 1000L
+        userIdentityJpaRepository.saveAll(
+            listOf(
+                UserIdentityEntity.from(UserIdentityFixture.create(userId = targetUserId, providerUserId = "first")),
+                UserIdentityEntity.from(UserIdentityFixture.create(userId = targetUserId, providerUserId = "second")),
+                UserIdentityEntity.from(UserIdentityFixture.create(userId = 2000L, providerUserId = "other")),
+            ),
+        )
+
+        userIdentityRepository.deleteAllByUserId(targetUserId)
+
+        userIdentityJpaRepository.findAllByUserId(targetUserId) shouldHaveSize 0
+        userIdentityJpaRepository.findAll().map { it.providerUserId } shouldBe listOf("other")
+    }
+
 })

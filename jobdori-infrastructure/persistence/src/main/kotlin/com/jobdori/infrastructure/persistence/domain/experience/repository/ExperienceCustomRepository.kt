@@ -6,6 +6,12 @@ import org.springframework.data.domain.Pageable
 
 interface ExperienceCustomRepository {
 
+    fun updateStatusByWorkspaceIdAndProjectId(
+        workspaceId: Long,
+        projectId: Long,
+        status: ExperienceStatus,
+    )
+
     fun searchAllByWorkspaceIdAndStatus(
         workspaceId: Long,
         status: ExperienceStatus,

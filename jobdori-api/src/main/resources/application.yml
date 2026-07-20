@@ -18,6 +18,9 @@ server:
       pattern: "%t %r %s %b %Dus"   # %D(처리시간)와 ai_call latencyMs의 간격으로 AI 외 병목을 본다. Tomcat 10+의 %D는 마이크로초
 
 spring:
+  web:
+    resources:
+      add-mappings: false
   servlet:
     multipart:
       max-file-size: 10MB
@@ -29,7 +32,7 @@ spring:
     http:
       path: /graphql
     graphiql:
-      enabled: true
+      enabled: false
       path: /graphiql
 
 # 스레드풀 고갈 등 런타임 상태 확인용. 외부에 노출되지 않도록 서비스 포트와 분리한다(LB에는 서비스 포트만 연결).
@@ -86,3 +89,17 @@ management:
 logging:
   level:
     com.jobdori: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+        - local
+        - dev
+  web:
+    resources:
+      add-mappings: true
+  graphql:
+    graphiql:
+      enabled: true

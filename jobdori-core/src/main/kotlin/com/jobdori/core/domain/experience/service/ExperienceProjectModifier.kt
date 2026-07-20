@@ -16,8 +16,8 @@ class ExperienceProjectModifier(
     fun modify(
         workspaceId: Long,
         projectId: Long,
-        name: String?,
-        summary: String?,
+        name: String,
+        summary: String,
         period: Period?,
         role: String?,
     ): ExperienceProject {
@@ -28,10 +28,10 @@ class ExperienceProjectModifier(
 
         return experienceProjectRepository.save(
             project.copy(
-                name = name ?: project.name,
-                summary = summary ?: project.summary,
-                period = period ?: project.period,
-                role = role ?: project.role,
+                name = name,
+                summary = summary,
+                period = period,
+                role = role,
             ),
         )
     }

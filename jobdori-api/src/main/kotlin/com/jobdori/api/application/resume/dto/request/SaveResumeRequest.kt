@@ -1,6 +1,7 @@
 package com.jobdori.api.application.resume.dto.request
 
 import com.jobdori.api.application.resume.dto.ResumeStatusType
+import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
 import com.jobdori.common.error.ErrorDetail
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.domain.resume.ResumeSectionType
@@ -9,6 +10,7 @@ import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionSaveCommand
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Positive
 
 data class SaveResumeRequest(
     val targetJdId: String?,
@@ -16,13 +18,14 @@ data class SaveResumeRequest(
     val status: ResumeStatusType,
     @field:Valid
     val sections: List<SaveResumeSectionRequest>,
+    val optimizationMode: ResumeOptimizationMode = ResumeOptimizationMode.NONE,
 ) {
 
-    fun toCommand(): ResumeSaveCommand {
+    fun toCommand(resolvedTargetJdId: Long? = null): ResumeSaveCommand {
         validateSectionDisplayOrders()
         validateSectionIds()
         return ResumeSaveCommand(
-            targetJdId = 0,
+            targetJdId = resolvedTargetJdId,
             template = template,
             status = status.toDomain(),
             sections = sections.map { it.toCommand() },
@@ -66,18 +69,85 @@ data class SaveResumeRequest(
 
 }
 
+data class CreateResumeRequest(
+    val targetJdId: String?,
+    val template: ResumeTemplate,
+    val status: ResumeStatusType,
+    @field:Valid
+    val sections: List<SaveResumeSectionRequest>,
+    val optimizationMode: ResumeOptimizationMode = ResumeOptimizationMode.JOB_SPECIFIC,
+) {
+
+    fun toCommand(resolvedTargetJdId: Long? = null): ResumeSaveCommand {
+        if (sections.map { it.displayOrder }.findDuplicateDisplayOrders().isNotEmpty()) {
+            throw InvalidArgumentsException(
+                message = "섹션 displayOrder는 중복될 수 없습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.displayOrder",
+                        reason = "같은 이력서 안에서 섹션 displayOrder는 중복될 수 없습니다.",
+                    ),
+                ),
+            )
+        }
+
+        return ResumeSaveCommand(
+            targetJdId = resolvedTargetJdId,
+            template = template,
+            status = status.toDomain(),
+            sections = sections.map { it.toCommand(allowDefaultItems = true) },
+        )
+    }
+}
+
 data class SaveResumeSectionRequest(
+    @field:Positive
     val sectionId: Long?,
     val type: ResumeSectionType,
     val displayOrder: Double,
     val visible: Boolean,
     @field:Valid
     val items: List<SaveResumeSectionItemRequest>,
+    val useDefaultItems: Boolean = false,
 ) {
 
-    fun toCommand(): ResumeSectionSaveCommand {
+    fun toCommand(allowDefaultItems: Boolean = false): ResumeSectionSaveCommand {
+        if (useDefaultItems && !allowDefaultItems) {
+            throw InvalidArgumentsException(
+                message = "기본 아이템 생성은 이력서 생성 시에만 사용할 수 있습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.useDefaultItems",
+                        reason = "이력서 수정 요청에서는 useDefaultItems를 사용할 수 없습니다.",
+                    ),
+                ),
+            )
+        }
+        if (useDefaultItems && items.isNotEmpty()) {
+            throw InvalidArgumentsException(
+                message = "기본 아이템을 생성할 때 items를 함께 지정할 수 없습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.items",
+                        reason = "useDefaultItems가 true이면 items는 비어 있어야 합니다.",
+                    ),
+                ),
+            )
+        }
+        if (useDefaultItems && type == ResumeSectionType.EXPERIENCE) {
+            throw InvalidArgumentsException(
+                message = "경험 섹션은 기본 아이템을 생성할 수 없습니다.",
+                details = listOf(
+                    ErrorDetail(
+                        field = "sections.useDefaultItems",
+                        reason = "EXPERIENCE 섹션에는 기본 아이템 생성 규칙이 없습니다.",
+                    ),
+                ),
+            )
+        }
+
         val itemCommands = items.map { it.toCommand() }
-        if (itemCommands.isEmpty()) {
+        if (itemCommands.isEmpty() && !useDefaultItems) {
             throw InvalidArgumentsException("섹션에는 최소 하나 이상의 item이 필요합니다.")
         }
         validateItemDisplayOrders(itemCommands)
@@ -150,6 +220,7 @@ data class SaveResumeSectionRequest(
 }
 
 data class SaveResumeSectionItemRequest(
+    @field:Positive
     val itemId: Long?,
     val displayOrder: Double,
     val visible: Boolean,

@@ -8,6 +8,10 @@ if [[ -z "${DD_API_KEY}" ]]; then
   exit 0
 fi
 
+# 관측성 구성 실패가 배포나 오토스케일링을 막아서는 안 된다.
+# 아래부터는 어떤 단계가 실패해도 경고만 남기고 정상 종료한다.
+trap 'echo "WARNING: Datadog agent setup failed at line ${LINENO}; continuing deployment without it" >&2; exit 0' ERR
+
 DD_SITE="$(/opt/elasticbeanstalk/bin/get-config environment -k DD_SITE 2>/dev/null || echo datadoghq.com)"
 DD_ENV="$(/opt/elasticbeanstalk/bin/get-config environment -k DD_ENV 2>/dev/null || echo dev)"
 
@@ -24,6 +28,8 @@ env: ${DD_ENV}
 logs_enabled: true
 apm_config:
   enabled: true
+  receiver_port: 8126
+dogstatsd_port: 8125
 EOF
 
 mkdir -p /etc/datadog-agent/conf.d/jobdori.d
@@ -43,8 +49,11 @@ logs:
     source: tomcat-access
 EOF
 
-# EB의 로그 파일을 dd-agent가 읽을 수 있어야 한다 (기본 0644라 보통 문제없지만 명시적으로 보장)
-setfacl -m u:dd-agent:rX /var/log 2>/dev/null || true
+# 앱 액세스 로그는 /var/app/current/logs에 webapp:webapp 소유로 쓰인다.
+# prebuild 시점엔 해당 디렉토리가 아직 없을 수 있으므로 경로가 아니라 그룹 멤버십으로 권한을 확보한다.
+# (/var/log/web.stdout.log은 0644 root:root라 별도 조치가 필요 없다.)
+usermod -a -G webapp dd-agent || echo "WARNING: could not add dd-agent to webapp group" >&2
 
 systemctl enable datadog-agent
+# 그룹 멤버십은 프로세스 시작 시점에만 적용되므로 restart가 필요하다
 systemctl restart datadog-agent

@@ -8,7 +8,7 @@ spring-mockk = "5.0.1"
 kotlin-jdsl = "3.9.0"
 asciidoctor = "4.0.5"
 sentry = "8.46.0"
-dd-trace = "1.64.0"
+dd-trace = "1.64.1"
 pdfbox = "3.0.5"
 jsoup = "1.18.1"
 

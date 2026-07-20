@@ -48,6 +48,11 @@ management:
         host: localhost
         port: 8125
 
+logging:
+  # 기존 콘솔 포맷은 유지하면서 Datadog MDC의 trace/span ID만 correlation 영역에 추가한다.
+  pattern:
+    correlation: "[dd.trace_id=%X{dd.trace_id:-0} dd.span_id=%X{dd.span_id:-0}] "
+
 sentry:
   enabled: true
   dsn: ${SENTRY_DSN:}

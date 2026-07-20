@@ -30,6 +30,18 @@ class OpenAiChatClientImpl(
             setOf(AiErrorCode.E429_AI_RATE_LIMITED, AiErrorCode.E503_AI_UNAVAILABLE)
         private const val MAX_RETRIES = 2
         private const val RETRY_BACKOFF_MS = 500L
+
+        // 프롬프트 본문을 LLM Obs로 보내되 명백한 식별자는 지운다.
+        // 이름/회사명 같은 문맥형 PII는 걸러지지 않으므로 Datadog 접근 권한 자체를 최소로 유지해야 한다.
+        // 주민번호를 먼저 치환한다. 전화번호 패턴과 겹치는 입력에서 더 민감한 쪽을 놓치지 않기 위함.
+        private val PII_PATTERNS = listOf(
+            Regex("""\b\d{6}[-\s]?[1-4]\d{6}\b""") to "[rrn]",
+            Regex("""[\w.+-]+@[\w-]+\.[\w.-]+""") to "[email]",
+            Regex("""\b01[016-9][-.\s]?\d{3,4}[-.\s]?\d{4}\b""") to "[phone]",
+        )
+
+        private fun String.maskPii(): String =
+            PII_PATTERNS.fold(this) { text, (pattern, replacement) -> text.replace(pattern, replacement) }
     }
 
     override fun generateText(request: AiGenerationRequest): String {
@@ -58,30 +70,34 @@ class OpenAiChatClientImpl(
         val started = System.nanoTime()
         var retries = 0
         val llmSpan = LLMObs.startLLMSpan(useCase, body.model, "openai", null, null)
-        return runCatching {
-            var result: OpenAiChatCompletionResponse? = null
-            while (result == null) {
-                result = try {
-                    http.post("/chat/completions", body, OpenAiChatCompletionResponse::class.java)
-                } catch (e: AiException) {
-                    if (retries >= MAX_RETRIES || e.errorCode !in RETRYABLE_ERRORS) throw e
-                    retries++
-                    Thread.sleep(RETRY_BACKOFF_MS * retries)
-                    null
+        try {
+            return runCatching {
+                var result: OpenAiChatCompletionResponse? = null
+                while (result == null) {
+                    result = try {
+                        http.post("/chat/completions", body, OpenAiChatCompletionResponse::class.java)
+                    } catch (e: AiException) {
+                        if (retries >= MAX_RETRIES || e.errorCode !in RETRYABLE_ERRORS) throw e
+                        retries++
+                        Thread.sleep(RETRY_BACKOFF_MS * retries)
+                        null
+                    }
                 }
+                result
             }
-            result
+                .onSuccess { res ->
+                    OpenAiCallMetrics.logSuccess(useCase, body.model, started, retries, res)
+                    // 계측 실패가 AI 호출을 깨뜨리면 안 된다
+                    runCatching { annotateLlmSpan(llmSpan, body, res) }
+                }
+                .onFailure { e ->
+                    OpenAiCallMetrics.logFailure(useCase, body.model, started, retries, e)
+                    llmSpan.addThrowable(e)
+                }
+                .getOrThrow()
+        } finally {
+            llmSpan.finish()
         }
-            .onSuccess { res ->
-                OpenAiCallMetrics.logSuccess(useCase, body.model, started, retries, res)
-                annotateLlmSpan(llmSpan, body, res)
-            }
-            .onFailure { e ->
-                OpenAiCallMetrics.logFailure(useCase, body.model, started, retries, e)
-                llmSpan.addThrowable(e)
-            }
-            .also { llmSpan.finish() }
-            .getOrThrow()
     }
 
     private fun annotateLlmSpan(
@@ -90,8 +106,8 @@ class OpenAiChatClientImpl(
         res: OpenAiChatCompletionResponse,
     ) {
         span.annotateIO(
-            body.messages.map { LLMObs.LLMMessage.from(it.role, it.content) },
-            res.choices.map { LLMObs.LLMMessage.from(it.message.role, it.message.content) },
+            body.messages.map { LLMObs.LLMMessage.from(it.role, it.content.maskPii()) },
+            res.choices.map { LLMObs.LLMMessage.from(it.message.role, it.message.content.maskPii()) },
         )
         res.usage?.let {
             span.setMetrics(

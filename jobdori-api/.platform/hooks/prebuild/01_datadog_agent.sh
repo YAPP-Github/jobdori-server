@@ -1,10 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
-# DD_API_KEY가 없는 환경(로컬 검증 등)에서는 설치를 건너뛴다. 배포를 막지 않기 위함.
 DD_API_KEY="$(/opt/elasticbeanstalk/bin/get-config environment -k DD_API_KEY 2>/dev/null || true)"
+
+# EB 환경 속성에는 Secrets Manager 참조를 넣을 수 없으므로 인스턴스에서 직접 조회한다.
+# 시크릿 이름은 비밀이 아니라 EB 환경 속성으로 주입하고, 키 값은 이 인스턴스 밖으로 나가지 않는다.
 if [[ -z "${DD_API_KEY}" ]]; then
-  echo "DD_API_KEY not set; skipping Datadog agent setup"
+  SECRET_ID="$(/opt/elasticbeanstalk/bin/get-config environment -k DD_API_KEY_SECRET_ID 2>/dev/null || true)"
+  if [[ -n "${SECRET_ID}" ]]; then
+    SECRET_REGION="$(/opt/elasticbeanstalk/bin/get-config environment -k AWS_REGION 2>/dev/null || echo ap-northeast-2)"
+    SECRET_STRING="$(aws secretsmanager get-secret-value --secret-id "${SECRET_ID}" \
+      --region "${SECRET_REGION}" --query SecretString --output text 2>/dev/null || true)"
+    # 평문 시크릿이면 그대로, JSON이면 DD_API_KEY 필드만 쓴다.
+    # JSON에 해당 필드가 없으면 빈 값으로 두어 잘못된 키로 Agent를 띄우지 않는다.
+    DD_API_KEY="$(printf '%s' "${SECRET_STRING}" | python3 -c '
+import json, sys
+raw = sys.stdin.read().strip()
+try:
+    parsed = json.loads(raw)
+except Exception:
+    print(raw)
+else:
+    print(parsed.get("DD_API_KEY", "") if isinstance(parsed, dict) else raw)
+' 2>/dev/null || true)"
+  fi
+fi
+
+# 키를 못 구한 환경(로컬 검증 등)에서는 설치를 건너뛴다. 배포를 막지 않기 위함.
+if [[ -z "${DD_API_KEY}" ]]; then
+  echo "DD_API_KEY not available from EB environment or Secrets Manager; skipping Datadog agent setup"
   exit 0
 fi
 

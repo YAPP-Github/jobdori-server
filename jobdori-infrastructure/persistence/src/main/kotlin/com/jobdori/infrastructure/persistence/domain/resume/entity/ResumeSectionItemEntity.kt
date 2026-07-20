@@ -110,13 +110,13 @@ class ResumeSectionItemEntity(
         }
 
         private fun ResumeBasicInfoPayload.encrypt(encryptor: StringEncryptor) = copy(
-            name = encryptor.encrypt(name),
+            name = name?.let(encryptor::encrypt),
             email = email?.let(encryptor::encrypt),
             phone = phone?.let(encryptor::encrypt),
         )
 
         private fun ResumeBasicInfoPayload.decrypt(encryptor: StringEncryptor) = copy(
-            name = encryptor.decrypt(name),
+            name = name?.let(encryptor::decrypt),
             email = email?.let(encryptor::decrypt),
             phone = phone?.let(encryptor::decrypt),
         )

@@ -10,6 +10,7 @@ import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionSaveCommand
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Positive
 
 data class SaveResumeRequest(
     val targetJdId: String?,
@@ -100,6 +101,7 @@ data class CreateResumeRequest(
 }
 
 data class SaveResumeSectionRequest(
+    @field:Positive
     val sectionId: Long?,
     val type: ResumeSectionType,
     val displayOrder: Double,
@@ -218,6 +220,7 @@ data class SaveResumeSectionRequest(
 }
 
 data class SaveResumeSectionItemRequest(
+    @field:Positive
     val itemId: Long?,
     val displayOrder: Double,
     val visible: Boolean,

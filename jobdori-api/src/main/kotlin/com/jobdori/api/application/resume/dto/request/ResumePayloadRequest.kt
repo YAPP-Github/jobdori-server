@@ -78,7 +78,7 @@ data class ResumeSectionItemPayloadRequest(
 }
 
 data class ResumeBasicInfoPayloadRequest(
-    val name: String,
+    val name: String?,
     @field:Email(message = "올바른 이메일 형식이 아닙니다.")
     val email: String?,
     @field:Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)")
@@ -92,16 +92,16 @@ data class ResumeBasicInfoPayloadRequest(
 }
 
 data class ResumeCoreSkillPayloadRequest(
-    val content: String,
+    val content: String?,
 ) : ResumePayloadRequest<ResumeCoreSkillPayload> {
     override fun toPayload() = ResumeCoreSkillPayload(content = content)
 }
 
 data class ResumeCareerPayloadRequest(
-    val companyName: String,
+    val companyName: String?,
     val role: String?,
     val period: PeriodRequest?,
-    val contents: String,
+    val contents: String?,
 ) : ResumePayloadRequest<ResumeCareerPayload> {
     override fun toPayload() = ResumeCareerPayload(
         companyName = companyName,
@@ -112,7 +112,7 @@ data class ResumeCareerPayloadRequest(
 }
 
 data class ResumeExperiencePayloadRequest(
-    val name: String,
+    val name: String?,
     val role: String?,
     val period: PeriodRequest?,
     val contents: String?,
@@ -126,7 +126,7 @@ data class ResumeExperiencePayloadRequest(
 }
 
 data class ResumeEducationPayloadRequest(
-    val schoolName: String,
+    val schoolName: String?,
     val major: String?,
     val degree: String?,
     val status: String?,
@@ -142,7 +142,7 @@ data class ResumeEducationPayloadRequest(
 }
 
 data class ResumeAwardPayloadRequest(
-    val name: String,
+    val name: String?,
     val organization: String?,
     val awardedAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeAwardPayload> {
@@ -154,7 +154,7 @@ data class ResumeAwardPayloadRequest(
 }
 
 data class ResumeCertificatePayloadRequest(
-    val name: String,
+    val name: String?,
     val organization: String?,
     val acquiredAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeCertificatePayload> {
@@ -166,15 +166,15 @@ data class ResumeCertificatePayloadRequest(
 }
 
 data class ResumeSkillPayloadRequest(
-    val name: String,
+    val name: String?,
     val level: String?,
 ) : ResumePayloadRequest<ResumeSkillPayload> {
     override fun toPayload() = ResumeSkillPayload(name = name, level = level)
 }
 
 data class ResumeLanguagePayloadRequest(
-    val examName: String,
-    val scoreOrGrade: String,
+    val examName: String?,
+    val scoreOrGrade: String?,
     val acquiredAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeLanguagePayload> {
     override fun toPayload() = ResumeLanguagePayload(

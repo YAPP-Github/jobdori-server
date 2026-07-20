@@ -46,7 +46,7 @@ data class ResumeSectionItemPayloadResponse(
 }
 
 data class ResumeBasicInfoPayloadResponse(
-    val name: String,
+    val name: String?,
     val email: String?,
     val phone: String?,
 ) : ResumePayloadResponse {
@@ -60,7 +60,7 @@ data class ResumeBasicInfoPayloadResponse(
 }
 
 data class ResumeCoreSkillPayloadResponse(
-    val content: String,
+    val content: String?,
 ) : ResumePayloadResponse {
     companion object {
         fun from(payload: ResumeCoreSkillPayload) = ResumeCoreSkillPayloadResponse(content = payload.content)
@@ -68,10 +68,10 @@ data class ResumeCoreSkillPayloadResponse(
 }
 
 data class ResumeCareerPayloadResponse(
-    val companyName: String,
+    val companyName: String?,
     val role: String?,
     val period: PeriodResponse?,
-    val contents: String,
+    val contents: String?,
 ) : ResumePayloadResponse {
     companion object {
         fun from(payload: ResumeCareerPayload) = ResumeCareerPayloadResponse(
@@ -84,7 +84,7 @@ data class ResumeCareerPayloadResponse(
 }
 
 data class ResumeExperiencePayloadResponse(
-    val name: String,
+    val name: String?,
     val role: String?,
     val period: PeriodResponse?,
     val contents: String?,
@@ -100,7 +100,7 @@ data class ResumeExperiencePayloadResponse(
 }
 
 data class ResumeEducationPayloadResponse(
-    val schoolName: String,
+    val schoolName: String?,
     val major: String?,
     val degree: String?,
     val status: String?,
@@ -118,7 +118,7 @@ data class ResumeEducationPayloadResponse(
 }
 
 data class ResumeAwardPayloadResponse(
-    val name: String,
+    val name: String?,
     val organization: String?,
     val awardedAt: LocalDate?,
 ) : ResumePayloadResponse {
@@ -132,7 +132,7 @@ data class ResumeAwardPayloadResponse(
 }
 
 data class ResumeCertificatePayloadResponse(
-    val name: String,
+    val name: String?,
     val organization: String?,
     val acquiredAt: LocalDate?,
 ) : ResumePayloadResponse {
@@ -146,7 +146,7 @@ data class ResumeCertificatePayloadResponse(
 }
 
 data class ResumeSkillPayloadResponse(
-    val name: String,
+    val name: String?,
     val level: String?,
 ) : ResumePayloadResponse {
     companion object {
@@ -155,8 +155,8 @@ data class ResumeSkillPayloadResponse(
 }
 
 data class ResumeLanguagePayloadResponse(
-    val examName: String,
-    val scoreOrGrade: String,
+    val examName: String?,
+    val scoreOrGrade: String?,
     val acquiredAt: LocalDate?,
 ) : ResumePayloadResponse {
     companion object {

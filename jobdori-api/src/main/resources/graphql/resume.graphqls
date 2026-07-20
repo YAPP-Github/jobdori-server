@@ -283,7 +283,7 @@ input ResumeBasicInfoPayloadInput {
     """
     이름입니다.
     """
-    name: String!
+    name: String
 
     """
     이메일 주소입니다.
@@ -303,7 +303,7 @@ input ResumeCoreSkillPayloadInput {
     """
     핵심 역량 내용입니다.
     """
-    content: String!
+    content: String
 }
 
 """
@@ -313,7 +313,7 @@ input ResumeCareerPayloadInput {
     """
     회사명입니다.
     """
-    companyName: String!
+    companyName: String
 
     """
     직무 또는 역할입니다.
@@ -328,7 +328,7 @@ input ResumeCareerPayloadInput {
     """
     경력 상세 내용입니다.
     """
-    contents: String!
+    contents: String
 }
 
 """
@@ -338,7 +338,7 @@ input ResumeExperiencePayloadInput {
     """
     경험 이름입니다.
     """
-    name: String!
+    name: String
 
     """
     경험에서 맡은 역할입니다.
@@ -363,7 +363,7 @@ input ResumeEducationPayloadInput {
     """
     학교명입니다.
     """
-    schoolName: String!
+    schoolName: String
 
     """
     전공명입니다.
@@ -393,7 +393,7 @@ input ResumeAwardPayloadInput {
     """
     수상명입니다.
     """
-    name: String!
+    name: String
 
     """
     수상 기관명입니다.
@@ -413,7 +413,7 @@ input ResumeCertificatePayloadInput {
     """
     자격증명입니다.
     """
-    name: String!
+    name: String
 
     """
     발급 기관입니다.
@@ -433,7 +433,7 @@ input ResumeSkillPayloadInput {
     """
     기술명입니다.
     """
-    name: String!
+    name: String
 
     """
     숙련도 또는 수준입니다.
@@ -448,12 +448,12 @@ input ResumeLanguagePayloadInput {
     """
     어학 시험명입니다.
     """
-    examName: String!
+    examName: String
 
     """
     어학 점수 또는 등급입니다.
     """
-    scoreOrGrade: String!
+    scoreOrGrade: String
 
     """
     어학 취득일입니다.
@@ -696,7 +696,7 @@ type ResumeBasicInfoPayload {
     """
     이름입니다.
     """
-    name: String!
+    name: String
 
     """
     이메일 주소입니다.
@@ -716,7 +716,7 @@ type ResumeCoreSkillPayload {
     """
     핵심 역량 내용입니다.
     """
-    content: String!
+    content: String
 }
 
 """
@@ -726,7 +726,7 @@ type ResumeCareerPayload {
     """
     회사명입니다.
     """
-    companyName: String!
+    companyName: String
 
     """
     직무 또는 역할입니다.
@@ -741,7 +741,7 @@ type ResumeCareerPayload {
     """
     경력 상세 내용입니다.
     """
-    contents: String!
+    contents: String
 }
 
 """
@@ -751,7 +751,7 @@ type ResumeExperiencePayload {
     """
     경험 이름입니다.
     """
-    name: String!
+    name: String
 
     """
     경험에서 맡은 역할입니다.
@@ -776,7 +776,7 @@ type ResumeEducationPayload {
     """
     학교명입니다.
     """
-    schoolName: String!
+    schoolName: String
 
     """
     전공명입니다.
@@ -806,7 +806,7 @@ type ResumeAwardPayload {
     """
     수상명입니다.
     """
-    name: String!
+    name: String
 
     """
     수상 기관명입니다.
@@ -826,7 +826,7 @@ type ResumeCertificatePayload {
     """
     자격증명입니다.
     """
-    name: String!
+    name: String
 
     """
     발급 기관입니다.
@@ -846,7 +846,7 @@ type ResumeSkillPayload {
     """
     기술명입니다.
     """
-    name: String!
+    name: String
 
     """
     숙련도 또는 수준입니다.
@@ -861,12 +861,12 @@ type ResumeLanguagePayload {
     """
     어학 시험명입니다.
     """
-    examName: String!
+    examName: String
 
     """
     어학 점수 또는 등급입니다.
     """
-    scoreOrGrade: String!
+    scoreOrGrade: String
 
     """
     어학 취득일입니다.

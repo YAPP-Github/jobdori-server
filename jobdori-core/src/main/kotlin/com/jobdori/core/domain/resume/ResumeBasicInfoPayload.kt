@@ -1,7 +1,7 @@
 package com.jobdori.core.domain.resume
 
 data class ResumeBasicInfoPayload(
-    val name: String,
+    val name: String?,
     val email: String?,
     val phone: String?,
 ) : ResumeSectionItemPayload {

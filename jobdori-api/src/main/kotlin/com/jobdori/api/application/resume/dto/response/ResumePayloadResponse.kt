@@ -49,12 +49,14 @@ data class ResumeBasicInfoPayloadResponse(
     val name: String?,
     val email: String?,
     val phone: String?,
+    val hideContact: Boolean,
 ) : ResumePayloadResponse {
     companion object {
         fun from(payload: ResumeBasicInfoPayload) = ResumeBasicInfoPayloadResponse(
             name = payload.name,
             email = payload.email,
             phone = payload.phone,
+            hideContact = payload.hideContact,
         )
     }
 }

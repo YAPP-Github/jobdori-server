@@ -650,6 +650,7 @@ query Resume {
                         name
                         email
                         phone
+                        hideContact
                     }
                     coreSkill {
                         content
@@ -839,6 +840,7 @@ mutation CreateResumeWithDefaultItems {
                         name
                         email
                         phone
+                        hideContact
                     }
                     coreSkill {
                         content
@@ -930,6 +932,7 @@ mutation UpdateResume {
                                     name: "잡도리"
                                     email: "jobdori.backend@example.com"
                                     phone: "010-1234-5678"
+                                    hideContact: false
                                 }
                             }
                         }
@@ -1125,7 +1128,7 @@ mutation UpdateResume {
                 displayOrder
                 visible
                 payload {
-                    basicInfo { name email phone }
+                    basicInfo { name email phone hideContact }
                     coreSkill { content }
                     experience {
                         name

@@ -205,7 +205,7 @@ mutation CreateResume {
                 displayOrder
                 visible
                 payload {
-                    basicInfo { name email phone }
+                    basicInfo { name email phone hideContact }
                     coreSkill { content }
                     experience {
                         name

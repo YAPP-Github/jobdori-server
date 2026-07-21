@@ -294,6 +294,11 @@ input ResumeBasicInfoPayloadInput {
     전화번호입니다.
     """
     phone: String
+
+    """
+    연락처 숨김 여부입니다.
+    """
+    hideContact: Boolean! = false
 }
 
 """
@@ -707,6 +712,11 @@ type ResumeBasicInfoPayload {
     전화번호입니다.
     """
     phone: String
+
+    """
+    연락처 숨김 여부입니다.
+    """
+    hideContact: Boolean!
 }
 
 """

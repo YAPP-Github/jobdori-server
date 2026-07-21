@@ -120,6 +120,7 @@ mutation CreateResumeWithDefaultItems {
                         name
                         email
                         phone
+                        hideContact
                     }
                     coreSkill {
                         content

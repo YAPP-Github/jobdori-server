@@ -45,6 +45,7 @@ query Resume {
                         name
                         email
                         phone
+                        hideContact
                     }
                     coreSkill {
                         content

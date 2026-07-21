@@ -102,14 +102,22 @@ class ApiExceptionAdvice {
 
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(exception: BaseException): ResponseEntity<ApiResponse<Nothing>> {
-        log.error(exception) { exception.message }
+        log.atError {
+            message = exception.message
+            cause = exception
+            payload = mapOf("errorCode" to exception.errorCode.code)
+        }
         return ResponseEntity.status(exception.errorCode.httpStatusCode)
             .body(ApiResponse.fail(error = exception.errorCode, details = exception.details))
     }
 
     @ExceptionHandler(Throwable::class)
     fun handleThrowable(throwable: Throwable): ResponseEntity<ApiResponse<Nothing>> {
-        log.error(throwable) { throwable.message }
+        log.atError {
+            message = throwable.message
+            cause = throwable
+            payload = mapOf("errorCode" to CommonErrorCode.E500_INTERNAL_ERROR.code)
+        }
         return ResponseEntity.internalServerError()
             .body(ApiResponse.fail(CommonErrorCode.E500_INTERNAL_ERROR))
     }

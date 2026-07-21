@@ -69,7 +69,8 @@ class OpenAiChatClientImpl(
     private fun call(useCase: String, body: OpenAiChatCompletionRequest): OpenAiChatCompletionResponse {
         val started = System.nanoTime()
         var retries = 0
-        val llmSpan = LLMObs.startLLMSpan(useCase, body.model, "openai", null, null)
+        // 계측 실패가 AI 호출을 깨뜨리면 안 된다. DD_TRACE_ENABLED=false면 startLLMSpan이 NPE를 던진다.
+        val llmSpan = runCatching { LLMObs.startLLMSpan(useCase, body.model, "openai", null, null) }.getOrNull()
         try {
             return runCatching {
                 var result: OpenAiChatCompletionResponse? = null
@@ -87,16 +88,15 @@ class OpenAiChatClientImpl(
             }
                 .onSuccess { res ->
                     OpenAiCallMetrics.logSuccess(useCase, body.model, started, retries, res)
-                    // 계측 실패가 AI 호출을 깨뜨리면 안 된다
-                    runCatching { annotateLlmSpan(llmSpan, body, res) }
+                    runCatching { llmSpan?.let { annotateLlmSpan(it, body, res) } }
                 }
                 .onFailure { e ->
                     OpenAiCallMetrics.logFailure(useCase, body.model, started, retries, e)
-                    llmSpan.addThrowable(e)
+                    runCatching { llmSpan?.addThrowable(e) }
                 }
                 .getOrThrow()
         } finally {
-            llmSpan.finish()
+            runCatching { llmSpan?.finish() }
         }
     }
 

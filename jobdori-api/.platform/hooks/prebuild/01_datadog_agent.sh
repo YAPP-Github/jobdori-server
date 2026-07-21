@@ -45,6 +45,8 @@ if ! command -v datadog-agent >/dev/null 2>&1; then
 fi
 
 # 재배포 때마다 최신 설정으로 덮어쓴다 (멱등)
+# t4g.micro(1GB)에서 JVM과 공존해야 하므로 수집기를 최소 구성으로 유지한다.
+# process/container 수집을 끄면 process-agent가 아예 뜨지 않아 100MB 안팎을 아낀다.
 cat > /etc/datadog-agent/datadog.yaml <<EOF
 api_key: ${DD_API_KEY}
 site: ${DD_SITE}
@@ -54,7 +56,29 @@ apm_config:
   enabled: true
   receiver_port: 8126
 dogstatsd_port: 8125
+process_config:
+  process_collection:
+    enabled: false
+  container_collection:
+    enabled: false
+inventories_configuration_enabled: false
 EOF
+
+# 메모리 상한을 건다. GOMEMLIMIT은 Go GC를 공격적으로 돌려 상한 근처에서 회수를 늘리고,
+# MemoryMax는 초과 시 cgroup이 해당 유닛만 종료시킨다.
+# 한계 상황에서 관측성 프로세스가 죽고 애플리케이션은 살아남게 하려는 의도다.
+write_memory_limit() {
+  mkdir -p "/etc/systemd/system/$1.service.d"
+  cat > "/etc/systemd/system/$1.service.d/memory.conf" <<EOF
+[Service]
+Environment="GOMEMLIMIT=$2"
+MemoryMax=$3
+MemorySwapMax=0
+EOF
+}
+write_memory_limit datadog-agent 120MiB 180M
+write_memory_limit datadog-agent-trace 60MiB 100M
+systemctl daemon-reload
 
 mkdir -p /etc/datadog-agent/conf.d/jobdori.d
 cat > /etc/datadog-agent/conf.d/jobdori.d/conf.yaml <<'EOF'

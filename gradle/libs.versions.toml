@@ -28,7 +28,6 @@ sentry-logback = { module = "io.sentry:sentry-logback", version.ref = "sentry" }
 # Datadog: dd-trace-api는 LLM Obs 수동 계측용(javaagent 없으면 no-op), dd-java-agent는 EB 번들에만 포함
 dd-trace-api = { module = "com.datadoghq:dd-trace-api", version.ref = "dd-trace" }
 dd-java-agent = { module = "com.datadoghq:dd-java-agent", version.ref = "dd-trace" }
-micrometer-registry-statsd = { module = "io.micrometer:micrometer-registry-statsd" }
 
 # Spring Boot
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }

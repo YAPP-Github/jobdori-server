@@ -29,8 +29,6 @@ dependencies {
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.sentry.logback)
     implementation(libs.sentry.spring.boot.starter)
-    // actuator 지표를 로컬 Datadog Agent(dogstatsd)로 전송
-    implementation(libs.micrometer.registry.statsd)
     ddJavaAgent(libs.dd.java.agent)
 
     // Spring Rest Docs
@@ -61,12 +59,12 @@ tasks.register<Zip>("elasticBeanstalkBundle") {
         rename { "dd-java-agent.jar" }
     }
     from(project.file("Procfile"))
+    // Zip 기본 권한이 0644라 실행 권한을 명시해야 EB가 기동 스크립트를 실행한다
+    from(project.file("run.sh")) {
+        filePermissions { unix("0755") }
+    }
     from(project.file(".platform")) {
         into(".platform")
-        // EB는 실행 권한 없는 훅 스크립트를 실행하지 않는다. Zip 기본 권한이 0644라 명시 필요
-        filesMatching("**/hooks/**") {
-            permissions { unix("0755") }
-        }
     }
 }
 

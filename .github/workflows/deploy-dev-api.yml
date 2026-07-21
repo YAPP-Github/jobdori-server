@@ -25,11 +25,14 @@ jobs:
       DD_SITE: us5.datadoghq.com
       DD_ENV: dev
       DD_SERVICE: jobdori-api
-      DD_TRACE_ENABLED: "true"
-      DD_RUNTIME_METRICS_ENABLED: "true"
-      DD_LOGS_INJECTION: "true"
       DD_LLMOBS_ENABLED: "true"
       DD_LLMOBS_ML_APP: scoop
+      # 호스트 Agent가 없다. LLM Obs만 앱이 직접 전송하고, Agent가 필요한 기능은 모두 끈다.
+      # 로그는 EB > CloudWatch Logs > Datadog Forwarder, 인프라 지표는 Datadog AWS Integration이 담당한다.
+      DD_LLMOBS_AGENTLESS_ENABLED: "true"
+      DD_TRACE_ENABLED: "false"
+      DD_RUNTIME_METRICS_ENABLED: "false"
+      DD_LOGS_INJECTION: "false"
 
     steps:
       - name: Checkout
@@ -109,7 +112,11 @@ jobs:
               "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_RUNTIME_METRICS_ENABLED,Value=${DD_RUNTIME_METRICS_ENABLED}" \
               "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_LOGS_INJECTION,Value=${DD_LOGS_INJECTION}" \
               "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_LLMOBS_ENABLED,Value=${DD_LLMOBS_ENABLED}" \
-              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_LLMOBS_ML_APP,Value=${DD_LLMOBS_ML_APP}"
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_LLMOBS_AGENTLESS_ENABLED,Value=${DD_LLMOBS_AGENTLESS_ENABLED}" \
+              "Namespace=aws:elasticbeanstalk:application:environment,OptionName=DD_LLMOBS_ML_APP,Value=${DD_LLMOBS_ML_APP}" \
+              "Namespace=aws:elasticbeanstalk:cloudwatch:logs,OptionName=StreamLogs,Value=true" \
+              "Namespace=aws:elasticbeanstalk:cloudwatch:logs,OptionName=DeleteOnTerminate,Value=false" \
+              "Namespace=aws:elasticbeanstalk:cloudwatch:logs,OptionName=RetentionInDays,Value=7"
 
           for attempt in {1..180}; do
             environment_status="$(aws elasticbeanstalk describe-environments \

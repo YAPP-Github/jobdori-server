@@ -43,18 +43,6 @@ management:
     web:
       exposure:
         include: health,metrics
-  # actuator 지표(tomcat.threads.* 등)를 같은 호스트의 Datadog Agent(dogstatsd)로 전송
-  statsd:
-    metrics:
-      export:
-        flavor: datadog
-        host: localhost
-        port: 8125
-
-logging:
-  # 기존 콘솔 포맷은 유지하면서 Datadog MDC의 trace/span ID만 correlation 영역에 추가한다.
-  pattern:
-    correlation: "[dd.trace_id=%X{dd.trace_id:-0} dd.span_id=%X{dd.span_id:-0}] "
 
 sentry:
   enabled: true
@@ -79,12 +67,6 @@ server:
   tomcat:
     accesslog:
       enabled: false   # 로컬/테스트에서 ./logs 디렉토리 생성 방지
-
-management:
-  statsd:
-    metrics:
-      export:
-        enabled: false
 
 logging:
   level:

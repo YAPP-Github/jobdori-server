@@ -57,14 +57,16 @@ object OpenAiCallMetrics {
 
     // payload는 JSON 로깅 시 최상위 필드(facet)로, message는 기존 전문 검색 쿼리 호환을 위해 둘 다 남긴다.
     private fun render(fields: Map<String, Any?>): String =
-        fields.entries.joinToString(separator = " ", prefix = "ai_call ") { "${it.key}=${it.value}" }
+        fields.entries.joinToString(separator = " ", prefix = "ai_call ") { (key, value) ->
+            "$key=${if (value is Double) "%.6f".format(value) else value}"
+        }
 
     private fun elapsedMs(startNanos: Long): Long = (System.nanoTime() - startNanos) / 1_000_000
 
-    private fun costUsd(model: String, usage: OpenAiChatCompletionResponse.Usage?): String? {
+    // 문자열로 내보내면 Datadog에서 합계/평균 집계가 불가능하다. 표시용 반올림은 render가 담당한다.
+    private fun costUsd(model: String, usage: OpenAiChatCompletionResponse.Usage?): Double? {
         val (inputPrice, outputPrice) = PRICE_PER_1M_TOKENS_USD[model] ?: return null
         if (usage == null) return null
-        val cost = (usage.promptTokens * inputPrice + usage.completionTokens * outputPrice) / 1_000_000
-        return "%.6f".format(cost)
+        return (usage.promptTokens * inputPrice + usage.completionTokens * outputPrice) / 1_000_000
     }
 }

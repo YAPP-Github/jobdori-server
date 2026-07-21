@@ -19,7 +19,6 @@ query Resumes {
             template
             status
             createdAt
-            updatedAt
         }
         cursor {
             nextCursor

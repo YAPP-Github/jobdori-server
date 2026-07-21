@@ -1,7 +1,7 @@
 package com.jobdori.api.application.resume.dto.response
 
-import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.jd.dto.response.JdResponse
+import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.common.time.toInstantAtSystemDefaultZone
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeTemplate
@@ -13,7 +13,6 @@ data class ResumeSummaryResponse(
     val template: ResumeTemplate,
     val status: ResumeStatusType,
     val createdAt: Instant,
-    val updatedAt: Instant,
 ) {
 
     companion object {
@@ -23,7 +22,6 @@ data class ResumeSummaryResponse(
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
             createdAt = resume.createdAt.toInstantAtSystemDefaultZone(),
-            updatedAt = resume.updatedAt.toInstantAtSystemDefaultZone(),
         )
     }
 

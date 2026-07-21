@@ -1,3 +1,0 @@
-=== User APIs
-
-include::./me.adoc[]

@@ -499,11 +499,6 @@ type Resume {
     생성 시각입니다.
     """
     createdAt: String!
-
-    """
-    마지막 수정 시각입니다.
-    """
-    updatedAt: String!
 }
 
 """
@@ -534,11 +529,6 @@ type ResumeSummary {
     생성 시각입니다.
     """
     createdAt: String!
-
-    """
-    마지막 수정 시각입니다.
-    """
-    updatedAt: String!
 }
 
 """
@@ -602,11 +592,6 @@ type ResumeSection {
     생성 시각입니다.
     """
     createdAt: String!
-
-    """
-    마지막 수정 시각입니다.
-    """
-    updatedAt: String!
 }
 
 """
@@ -637,11 +622,6 @@ type ResumeSectionItem {
     생성 시각입니다.
     """
     createdAt: String!
-
-    """
-    마지막 수정 시각입니다.
-    """
-    updatedAt: String!
 }
 
 """

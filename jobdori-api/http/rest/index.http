@@ -19,18 +19,9 @@ Content-Type: application/json
     "redirectUri": "http://localhost:3000/google-oauth-code-test-tool.html"
 }
 
-> {%
-    client.global.set("accessToken", response.body.result.accessToken);
-    client.global.set("refreshToken", response.body.result.refreshToken);
-%}
-
 ### Refresh access token
 POST {{host}}/v1/auth/refresh
 Cookie: refresh_token={{refreshToken}}
-
-> {%
-    client.global.set("accessToken", response.body.result.accessToken);
-%}
 
 
 ### Logout

@@ -1,6 +1,6 @@
 package com.jobdori.api.application.user.controller
 
-import com.jobdori.api.application.user.dto.response.UserGraphQlResponse
+import com.jobdori.api.application.user.dto.response.UserResponse
 import com.jobdori.api.application.user.service.UserService
 import com.jobdori.api.application.workspace.dto.response.WorkspaceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceService
@@ -18,10 +18,10 @@ class UserQueryResolver(
     @QueryMapping
     fun me(
         @UserId userId: Long,
-    ): UserGraphQlResponse = userService.getMe(userId)
+    ): UserResponse = userService.getMe(userId)
 
     @SchemaMapping(typeName = "User", field = "workspaces")
-    fun workspaces(user: UserGraphQlResponse): List<WorkspaceResponse> {
+    fun workspaces(user: UserResponse): List<WorkspaceResponse> {
         return workspaceService.getWorkspaces(userId = user.id)
     }
 

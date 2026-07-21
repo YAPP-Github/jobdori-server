@@ -1,7 +1,9 @@
 package com.jobdori.api.application.jd.dto.response
 
+import com.jobdori.common.time.toInstantAtSystemDefaultZone
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdStatus
+import java.time.Instant
 
 data class JdResponse(
     val jdId: String,
@@ -17,7 +19,7 @@ data class JdResponse(
     val coreCompetencies: List<String>,
     val insight: JdInsightResponse,
     val status: JdStatus,
-    val createdAt: String?,
+    val createdAt: Instant?,
 ) {
 
     companion object {
@@ -35,7 +37,7 @@ data class JdResponse(
             coreCompetencies = jd.coreCompetencies,
             insight = JdInsightResponse.from(jd),
             status = jd.status,
-            createdAt = jd.createdAt?.toString(),
+            createdAt = jd.createdAt?.toInstantAtSystemDefaultZone(),
         )
     }
 

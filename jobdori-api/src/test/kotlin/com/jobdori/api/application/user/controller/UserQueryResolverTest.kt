@@ -1,7 +1,7 @@
 package com.jobdori.api.application.user.controller
 
 import com.jobdori.api.GraphQLTest
-import com.jobdori.api.application.user.dto.response.UserGraphQlResponse
+import com.jobdori.api.application.user.dto.response.UserResponse
 import com.jobdori.api.application.user.service.UserService
 import com.jobdori.api.application.workspace.dto.response.WorkspaceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceService
@@ -33,7 +33,7 @@ internal class UserQueryResolverTest(
 
     "인증된 사용자 정보를 조회한다" {
         every { accessTokenService.getUserId("access-token") } returns 1L
-        every { userService.getMe(1L) } returns UserGraphQlResponse(
+        every { userService.getMe(1L) } returns UserResponse(
             id = 1L,
             userId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
             email = "hong@example.com",
@@ -61,7 +61,7 @@ internal class UserQueryResolverTest(
 
     "워크스페이스 필드를 요청하지 않으면 워크스페이스를 조회하지 않는다" {
         every { accessTokenService.getUserId("access-token") } returns 1L
-        every { userService.getMe(1L) } returns UserGraphQlResponse(
+        every { userService.getMe(1L) } returns UserResponse(
             id = 1L,
             userId = "3f5c9d79-2255-4b76-bd31-013cd01d49d6",
             email = "hong@example.com",

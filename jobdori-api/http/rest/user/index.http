@@ -1,7 +1,0 @@
-### Get my user
-GET {{host}}/v1/users/me
-Authorization: Bearer {{accessToken}}
-
-> {%
-    client.global.set("workspaceId", response.body.result.workspaces[0].workspaceId);
-%}

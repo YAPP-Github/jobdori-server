@@ -565,7 +565,6 @@ query Resumes {
             template
             status
             createdAt
-            updatedAt
         }
         cursor {
             nextCursor
@@ -630,7 +629,6 @@ query Resume {
         template
         status
         createdAt
-        updatedAt
         sections {
             sectionId
             type
@@ -638,13 +636,11 @@ query Resume {
             displayOrder
             visible
             createdAt
-            updatedAt
             items {
                 itemId
                 displayOrder
                 visible
                 createdAt
-                updatedAt
                 payload {
                     basicInfo {
                         name

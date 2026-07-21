@@ -18,6 +18,8 @@ server:
       pattern: "%t %r %s %b %Dus"   # %D(처리시간)와 ai_call latencyMs의 간격으로 AI 외 병목을 본다. Tomcat 10+의 %D는 마이크로초
 
 spring:
+  application:
+    name: jobdori-api
   web:
     resources:
       add-mappings: false
@@ -85,3 +87,14 @@ spring:
   graphql:
     graphiql:
       enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+logging:
+  structured:
+    format:
+      console: com.jobdori.api.support.logging.DatadogStructuredLogFormatter

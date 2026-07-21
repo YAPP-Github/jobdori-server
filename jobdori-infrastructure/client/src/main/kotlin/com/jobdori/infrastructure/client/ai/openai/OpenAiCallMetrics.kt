@@ -23,21 +23,41 @@ object OpenAiCallMetrics {
         retries: Int,
         response: OpenAiChatCompletionResponse,
     ) {
-        log.info {
-            "ai_call useCase=$useCase model=$model success=true latencyMs=${elapsedMs(startedNanos)}" +
-                " retries=$retries" +
-                " promptTokens=${response.usage?.promptTokens} completionTokens=${response.usage?.completionTokens}" +
-                " costUsd=${costUsd(model, response.usage)}" +
-                " finishReason=${response.choices.firstOrNull()?.finishReason}"
+        val fields = linkedMapOf<String, Any?>(
+            "useCase" to useCase,
+            "model" to model,
+            "success" to true,
+            "latencyMs" to elapsedMs(startedNanos),
+            "retries" to retries,
+            "promptTokens" to response.usage?.promptTokens,
+            "completionTokens" to response.usage?.completionTokens,
+            "costUsd" to costUsd(model, response.usage),
+            "finishReason" to response.choices.firstOrNull()?.finishReason,
+        )
+        log.atInfo {
+            message = render(fields)
+            payload = fields
         }
     }
 
     fun logFailure(useCase: String, model: String, startedNanos: Long, retries: Int, error: Throwable) {
-        log.warn {
-            "ai_call useCase=$useCase model=$model success=false latencyMs=${elapsedMs(startedNanos)}" +
-                " retries=$retries error=${error.javaClass.simpleName}"
+        val fields = linkedMapOf<String, Any?>(
+            "useCase" to useCase,
+            "model" to model,
+            "success" to false,
+            "latencyMs" to elapsedMs(startedNanos),
+            "retries" to retries,
+            "error.kind" to error.javaClass.simpleName,
+        )
+        log.atWarn {
+            message = render(fields)
+            payload = fields
         }
     }
+
+    // payload는 JSON 로깅 시 최상위 필드(facet)로, message는 기존 전문 검색 쿼리 호환을 위해 둘 다 남긴다.
+    private fun render(fields: Map<String, Any?>): String =
+        fields.entries.joinToString(separator = " ", prefix = "ai_call ") { "${it.key}=${it.value}" }
 
     private fun elapsedMs(startNanos: Long): Long = (System.nanoTime() - startNanos) / 1_000_000
 

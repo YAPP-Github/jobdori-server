@@ -59,10 +59,6 @@ tasks.register<Zip>("elasticBeanstalkBundle") {
         rename { "dd-java-agent.jar" }
     }
     from(project.file("Procfile"))
-    // Zip 기본 권한이 0644라 실행 권한을 명시해야 EB가 기동 스크립트를 실행한다
-    from(project.file("run.sh")) {
-        filePermissions { unix("0755") }
-    }
     from(project.file(".platform")) {
         into(".platform")
     }

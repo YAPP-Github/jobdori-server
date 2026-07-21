@@ -50,7 +50,7 @@ class RequestLoggingFilter : OncePerRequestFilter(), Ordered {
     }
 
     private fun logAccess(request: HttpServletRequest, response: HttpServletResponse, durationNanos: Long) {
-        if (request.requestURI.startsWith(ACTUATOR_PREFIX)) return
+        if (request.requestURI.startsWith(ACTUATOR_PREFIX) || request.requestURI == HEALTH_CHECK_PATH) return
         log.atInfo {
             message = "http_request ${request.method} ${request.requestURI} ${response.status}"
             // Datadog 표준 duration은 나노초 단위다
@@ -68,5 +68,6 @@ class RequestLoggingFilter : OncePerRequestFilter(), Ordered {
 
     private companion object {
         private const val ACTUATOR_PREFIX = "/actuator"
+        private const val HEALTH_CHECK_PATH = "/api/health"
     }
 }

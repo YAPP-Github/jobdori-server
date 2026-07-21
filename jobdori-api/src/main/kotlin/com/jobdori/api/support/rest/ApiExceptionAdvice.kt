@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.multipart.MaxUploadSizeExceededException
+import org.springframework.web.servlet.NoHandlerFoundException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import tools.jackson.databind.exc.MismatchedInputException
 
@@ -86,8 +87,8 @@ class ApiExceptionAdvice {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NoResourceFoundException::class)
-    fun handleNoResourceFoundException(exception: NoResourceFoundException): ResponseEntity<Nothing> {
+    @ExceptionHandler(NoResourceFoundException::class, NoHandlerFoundException::class)
+    fun handleNoResourceFoundException(exception: Exception): ResponseEntity<Nothing> {
         log.warn { exception.message }
         return ResponseEntity.notFound().build()
     }
@@ -101,14 +102,22 @@ class ApiExceptionAdvice {
 
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(exception: BaseException): ResponseEntity<ApiResponse<Nothing>> {
-        log.error(exception) { exception.message }
+        log.atError {
+            message = exception.message
+            cause = exception
+            payload = mapOf("errorCode" to exception.errorCode.code)
+        }
         return ResponseEntity.status(exception.errorCode.httpStatusCode)
             .body(ApiResponse.fail(error = exception.errorCode, details = exception.details))
     }
 
     @ExceptionHandler(Throwable::class)
     fun handleThrowable(throwable: Throwable): ResponseEntity<ApiResponse<Nothing>> {
-        log.error(throwable) { throwable.message }
+        log.atError {
+            message = throwable.message
+            cause = throwable
+            payload = mapOf("errorCode" to CommonErrorCode.E500_INTERNAL_ERROR.code)
+        }
         return ResponseEntity.internalServerError()
             .body(ApiResponse.fail(CommonErrorCode.E500_INTERNAL_ERROR))
     }

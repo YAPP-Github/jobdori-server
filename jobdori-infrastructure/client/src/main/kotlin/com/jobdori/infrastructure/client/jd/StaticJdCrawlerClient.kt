@@ -64,13 +64,35 @@ class StaticJdCrawlerClient(
             body
         }
             .onSuccess { body ->
-                log.info { "jd_crawl success=true latencyMs=${elapsedMs(started)} bodyLength=${body.length} url=$url" }
+                val fields = linkedMapOf<String, Any?>(
+                    "success" to true,
+                    "latencyMs" to elapsedMs(started),
+                    "bodyLength" to body.length,
+                    "url" to url,
+                )
+                log.atInfo {
+                    message = render(fields)
+                    payload = fields
+                }
             }
             .onFailure { e ->
-                log.warn { "jd_crawl success=false latencyMs=${elapsedMs(started)} error=${e.javaClass.simpleName} url=$url" }
+                val fields = linkedMapOf<String, Any?>(
+                    "success" to false,
+                    "latencyMs" to elapsedMs(started),
+                    "error.kind" to e.javaClass.simpleName,
+                    "url" to url,
+                )
+                log.atWarn {
+                    message = render(fields)
+                    payload = fields
+                }
             }
             .getOrThrow()
     }
+
+    // payload는 JSON 로깅 시 최상위 필드(facet)로, message는 기존 전문 검색 쿼리 호환을 위해 둘 다 남긴다.
+    private fun render(fields: Map<String, Any?>): String =
+        fields.entries.joinToString(separator = " ", prefix = "jd_crawl ") { "${it.key}=${it.value}" }
 
     private fun elapsedMs(startNanos: Long): Long = (System.nanoTime() - startNanos) / 1_000_000
 

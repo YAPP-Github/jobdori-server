@@ -2,10 +2,12 @@ package com.jobdori.api.support.auth.rest
 
 import com.jobdori.api.support.auth.Authenticated
 import com.jobdori.api.support.auth.BearerTokenExtractor
+import com.jobdori.api.support.logging.MdcKeys
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.domain.auth.error.InvalidAuthTokenException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.MDC
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
@@ -35,6 +37,8 @@ class AuthHandlerInterceptor(
         val userId = authUserReader.getUserId(accessToken)
 
         request.setAttribute(AuthRequestContext.USER_ID, userId)
+        // 제거는 RequestLoggingFilter가 요청 종료 시 일괄 수행한다
+        MDC.put(MdcKeys.USER_ID, userId.toString())
 
         return true
     }

@@ -2,6 +2,7 @@ package com.jobdori.api.application.profile.controller
 
 import com.jobdori.api.application.profile.dto.request.PolishProfileTextRequest
 import com.jobdori.api.application.profile.dto.request.UpdateProfileRequest
+import com.jobdori.api.application.profile.dto.response.GenerateCoreCompetencyResponse
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
 import com.jobdori.api.application.profile.service.ProfileService
 import com.jobdori.api.support.auth.UserId
@@ -32,9 +33,11 @@ class ProfileMutationResolver(
     fun generateCoreCompetency(
         @UserId userId: Long,
         @Argument workspaceId: String,
-    ): String = profileService.generateCoreCompetency(
+        @Argument jdId: String?,
+    ): GenerateCoreCompetencyResponse = profileService.generateCoreCompetency(
         userId = userId,
         workspaceId = workspaceId,
+        jdId = jdId,
     )
 
     @MutationMapping

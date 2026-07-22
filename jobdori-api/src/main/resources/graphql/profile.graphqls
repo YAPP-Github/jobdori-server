@@ -33,8 +33,12 @@ extend type Mutation {
         """
         워크스페이스 ID입니다.
         """
-        workspaceId: ID!
-    ): String!
+        workspaceId: ID!,
+        """
+        JD ID입니다. 주면 해당 JD의 지원 전략(strategy)을 기준으로 핵심역량을 생성하고 전략을 함께 반환합니다. (선택)
+        """
+        jdId: ID = null
+    ): GeneratedCoreCompetency!
 
     """
     프로필 텍스트(핵심역량/경력 세부/경험명/STAR 설명)를 AI로 다듬습니다. 결과만 반환하고 저장하지 않습니다.
@@ -45,6 +49,21 @@ extend type Mutation {
         """
         request: PolishProfileTextRequest!
     ): String!
+}
+
+"""
+AI로 생성한 핵심역량입니다.
+"""
+type GeneratedCoreCompetency {
+    """
+    생성된 핵심역량 문단입니다.
+    """
+    coreCompetency: String!
+
+    """
+    생성 기준으로 사용한 JD 지원 전략입니다. jdId를 준 경우에만 채워집니다.
+    """
+    strategy: String
 }
 
 """

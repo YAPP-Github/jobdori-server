@@ -1441,7 +1441,13 @@ mutation UpdateProfile {
 [source,graphql]
 ----
 mutation GenerateCoreCompetency {
-    generateCoreCompetency(workspaceId: "00000000-0000-0000-0000-000000000002")
+    generateCoreCompetency(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        jdId: "00000000-0000-0000-0000-000000000003"
+    ) {
+        coreCompetency
+        strategy
+    }
 }
 ----
 ====

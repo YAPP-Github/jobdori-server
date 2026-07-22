@@ -57,6 +57,11 @@ class GenerateExperienceRecommendationService(
         appendLine("## JD")
         appendLine(JdPromptText.of(jd))
         appendLine()
+        if (jd.strategy.isNotBlank()) {
+            appendLine("## 지원 전략")
+            appendLine(jd.strategy)
+            appendLine()
+        }
         appendLine("## 경험 목록")
         experiences.forEachIndexed { i, experience ->
             appendLine("[${i + 1}] ${experience.title}")

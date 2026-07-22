@@ -779,6 +779,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
     experiences(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         projectId: 1
+        jdId: "00000000-0000-0000-0000-000000000003"
         cursor: null
         size: 10
     ) {
@@ -786,6 +787,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
             experienceId
             tags
             title
+            matchRate
+            reason
             project {
                 projectId
                 name
@@ -803,6 +806,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
                 }
             }
         }
+        strategy
         cursor {
             nextCursor
             hasNext
@@ -3433,7 +3437,13 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation GenerateCoreCompetency {
-    generateCoreCompetency(workspaceId: "00000000-0000-0000-0000-000000000002")
+    generateCoreCompetency(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        jdId: "00000000-0000-0000-0000-000000000003"
+    ) {
+        coreCompetency
+        strategy
+    }
 }</code></pre>
 </div>
 </div>
@@ -3469,6 +3479,11 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
@@ -3540,7 +3555,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-07-21<br>
+Version 2026-07-22<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

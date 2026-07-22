@@ -12,9 +12,8 @@ data class ExperienceResponse(
     val contents: ExperienceContentsResponse,
     val period: PeriodResponse?,
     val role: String?,
-    // jdId를 준 피드 조회에서만 채워진다. reason은 매칭률 상위 5개만.
     val matchRate: Int? = null,
-    val reason: String? = null,
+    val recommendedReason: String? = null,
 ) {
 
     companion object {
@@ -32,7 +31,7 @@ data class ExperienceResponse(
             period = experience.period?.let(PeriodResponse::from),
             role = experience.role,
             matchRate = matchRate,
-            reason = reason,
+            recommendedReason = reason,
         )
     }
 

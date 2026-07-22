@@ -86,7 +86,7 @@ query Experiences {
             tags
             title
             matchRate
-            reason
+            recommendedReason
             project {
                 projectId
                 name

@@ -26,7 +26,7 @@ extend type Query {
         """
         projectId: ID = null,
         """
-        JD ID입니다. 주면 지원 전략(strategy)과 각 경험에 해당 JD 기준 matchRate와 reason(상위 5개)을 채웁니다. (선택)
+        JD ID입니다. 주면 지원 전략(strategy)과 각 경험에 해당 JD 기준 matchRate와 recommendedReason(상위 5개)을 채웁니다. (선택)
         """
         jdId: ID = null,
         """
@@ -433,7 +433,7 @@ type Experience {
     """
     선정 이유입니다. 매칭률 상위 5개 경험에만 채워집니다. (그 외 null)
     """
-    reason: String
+    recommendedReason: String
 }
 
 """

@@ -167,7 +167,7 @@ internal class ExperienceQueryResolverTest(
                     experiences {
                       experienceId
                       matchRate
-                      reason
+                      recommendedReason
                     }
                     strategy
                     cursor {
@@ -181,9 +181,9 @@ internal class ExperienceQueryResolverTest(
             .path("experiences.strategy").entity<String>().isEqualTo("협업 경험을 중심으로 강조해서 지원하는 게 좋겠어요.")
             .path("experiences.experiences[0].experienceId").entity<String>().isEqualTo("5")
             .path("experiences.experiences[0].matchRate").entity<Int>().isEqualTo(87)
-            .path("experiences.experiences[0].reason").entity<String>().isEqualTo("이 JD의 핵심 역량과 맞닿는 경험이에요.")
+            .path("experiences.experiences[0].recommendedReason").entity<String>().isEqualTo("이 JD의 핵심 역량과 맞닿는 경험이에요.")
             .path("experiences.experiences[1].matchRate").entity<Int>().isEqualTo(40)
-            .path("experiences.experiences[1].reason").valueIsNull()
+            .path("experiences.experiences[1].recommendedReason").valueIsNull()
 
         verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1") }
     }

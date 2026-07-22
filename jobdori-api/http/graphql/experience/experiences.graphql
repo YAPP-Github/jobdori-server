@@ -2,6 +2,7 @@ query Experiences {
     experiences(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         projectId: 1
+        jdId: "00000000-0000-0000-0000-000000000003"
         cursor: null
         size: 10
     ) {
@@ -9,6 +10,8 @@ query Experiences {
             experienceId
             tags
             title
+            matchRate
+            reason
             project {
                 projectId
                 name
@@ -26,6 +29,7 @@ query Experiences {
                 }
             }
         }
+        strategy
         cursor {
             nextCursor
             hasNext

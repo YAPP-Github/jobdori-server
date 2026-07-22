@@ -2,6 +2,7 @@ package com.jobdori.api.application.profile.controller
 
 import com.jobdori.api.GraphQLTest
 import com.jobdori.api.application.profile.dto.request.UpdateProfileRequest
+import com.jobdori.api.application.profile.dto.response.GenerateCoreCompetencyResponse
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
 import com.jobdori.api.application.profile.service.ProfileService
 import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
@@ -105,25 +106,33 @@ internal class ProfileMutationResolverTest(
         }
     }
 
-    "핵심역량을 AI로 생성한다" {
+    "핵심역량을 AI로 생성한다 (jdId를 주면 지원 전략 기준 생성과 전략 반환)" {
         every {
-            profileService.generateCoreCompetency(userId = 1L, workspaceId = "workspace-id")
-        } returns "콘텐츠 기획과 데이터 기반 개선에 강점이 있는 마케터입니다."
+            profileService.generateCoreCompetency(userId = 1L, workspaceId = "workspace-id", jdId = "jd-pub-1")
+        } returns GenerateCoreCompetencyResponse(
+            coreCompetency = "콘텐츠 기획과 데이터 기반 개선에 강점이 있는 마케터입니다.",
+            strategy = "데이터 기반 개선 경험을 강조해서 지원하는 게 좋겠어요.",
+        )
 
         authenticatedTester(graphQlTester)
             .document(
                 """
                 mutation {
-                  generateCoreCompetency(workspaceId: "workspace-id")
+                  generateCoreCompetency(workspaceId: "workspace-id", jdId: "jd-pub-1") {
+                    coreCompetency
+                    strategy
+                  }
                 }
                 """.trimIndent(),
             )
             .execute()
-            .path("generateCoreCompetency").entity<String>()
+            .path("generateCoreCompetency.coreCompetency").entity<String>()
             .isEqualTo("콘텐츠 기획과 데이터 기반 개선에 강점이 있는 마케터입니다.")
+            .path("generateCoreCompetency.strategy").entity<String>()
+            .isEqualTo("데이터 기반 개선 경험을 강조해서 지원하는 게 좋겠어요.")
 
         verify(exactly = 1) {
-            profileService.generateCoreCompetency(userId = 1L, workspaceId = "workspace-id")
+            profileService.generateCoreCompetency(userId = 1L, workspaceId = "workspace-id", jdId = "jd-pub-1")
         }
     }
 

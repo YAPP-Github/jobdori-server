@@ -3,22 +3,38 @@ package com.jobdori.core.application.profile
 import com.jobdori.core.application.ai.client.AiChatClient
 import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
+import com.jobdori.core.domain.jd.error.JdNotFoundException
+import com.jobdori.core.domain.jd.repository.JdRepository
 import com.jobdori.core.domain.prompt.PromptTemplate
 import com.jobdori.core.domain.prompt.PromptType
 import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
 import com.jobdori.core.domain.profile.ProfileDetail
 import org.springframework.stereotype.Service
 
+// 생성 결과 + 생성의 기준이 된 JD 지원 전략(jd.strategy, JD 등록 시 메타 추출로 생성)을 함께 노출한다.
+data class CoreCompetencyGeneration(
+    val strategy: String?,
+    val coreCompetency: String,
+)
+
 @Service
 class ProfileAiService(
     private val promptTemplateRepository: PromptTemplateRepository,
     private val aiChatClient: AiChatClient,
+    private val jdRepository: JdRepository,
 ) {
 
-    fun generateCoreCompetency(detail: ProfileDetail): String {
-        val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
+    fun generateCoreCompetency(detail: ProfileDetail, workspaceId: Long, jdPublicId: String?): CoreCompetencyGeneration {
+        val strategy = jdPublicId
+            ?.let {
+                jdRepository.findByPublicIdAndWorkspaceId(it, workspaceId)
+                    ?: throw JdNotFoundException("등록되지 않은 JD($it)입니다")
+            }
+            ?.strategy?.takeIf { it.isNotBlank() }
 
-        return aiChatClient.generateText(template.build(userPrompt = buildProfileSummaryPrompt(detail)))
+        val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
+        val text = aiChatClient.generateText(template.build(userPrompt = buildProfileSummaryPrompt(detail, strategy)))
+        return CoreCompetencyGeneration(strategy, text)
     }
 
     fun polish(text: String, kind: ProfilePolishKind): String {
@@ -33,7 +49,11 @@ class ProfileAiService(
             ?: throw AiException("이력서 AI 프롬프트를 찾을 수 없습니다. [type=$type]", AiErrorCode.E500_AI_GENERATION_FAILED)
     }
 
-    private fun buildProfileSummaryPrompt(detail: ProfileDetail): String = buildString {
+    private fun buildProfileSummaryPrompt(detail: ProfileDetail, strategy: String?): String = buildString {
+        if (strategy != null) {
+            appendLine("[지원 전략]")
+            appendLine(strategy)
+        }
         appendLine("[경력]")
         detail.sections.careers.forEach {
             appendLine(

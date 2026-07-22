@@ -136,7 +136,7 @@ internal class ExperienceQueryResolverTest(
         verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any(), any()) }
     }
 
-    "experiences에 jdId를 주면 각 경험에 매칭률과 이유를 함께 반환한다" {
+    "experiences에 jdId를 주면 지원 전략과 각 경험의 매칭률/이유를 함께 반환한다" {
         every { accessTokenService.getUserId("access-token") } returns 1L
         every {
             experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1")
@@ -155,6 +155,7 @@ internal class ExperienceQueryResolverTest(
                     reason = null,
                 ),
             ),
+            strategy = "협업 경험을 중심으로 강조해서 지원하는 게 좋겠어요.",
             cursor = CursorResponse(nextCursor = "4"),
         )
 
@@ -168,6 +169,7 @@ internal class ExperienceQueryResolverTest(
                       matchRate
                       reason
                     }
+                    strategy
                     cursor {
                       nextCursor
                     }
@@ -176,6 +178,7 @@ internal class ExperienceQueryResolverTest(
                 """.trimIndent(),
             )
             .execute()
+            .path("experiences.strategy").entity<String>().isEqualTo("협업 경험을 중심으로 강조해서 지원하는 게 좋겠어요.")
             .path("experiences.experiences[0].experienceId").entity<String>().isEqualTo("5")
             .path("experiences.experiences[0].matchRate").entity<Int>().isEqualTo(87)
             .path("experiences.experiences[0].reason").entity<String>().isEqualTo("이 JD의 핵심 역량과 맞닿는 경험이에요.")

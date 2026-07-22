@@ -1,6 +1,7 @@
 package com.jobdori.api.application.profile.service
 
 import com.jobdori.api.application.profile.dto.request.UpdateProfileRequest
+import com.jobdori.api.application.profile.dto.response.GenerateCoreCompetencyResponse
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.core.application.profile.ProfileAiService
@@ -39,16 +40,20 @@ class ProfileService(
         return ProfileResponse.from(detail)
     }
 
-    // 결과 문자열만 반환하고 저장하지 않는다. 저장은 FE가 updateProfile로 수행
-    fun generateCoreCompetency(userId: Long, workspaceId: String): String {
+    // 결과만 반환하고 저장하지 않는다. 저장은 FE가 updateProfile로 수행
+    fun generateCoreCompetency(userId: Long, workspaceId: String, jdId: String?): GenerateCoreCompetencyResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,
         )
 
         val profile = profileReader.getOrCreateProfile(workspace.id)
+        val generation = profileAiService.generateCoreCompetency(profileReader.getDetail(profile), workspace.id, jdId)
 
-        return profileAiService.generateCoreCompetency(profileReader.getDetail(profile))
+        return GenerateCoreCompetencyResponse(
+            coreCompetency = generation.coreCompetency,
+            strategy = generation.strategy,
+        )
     }
 
 }

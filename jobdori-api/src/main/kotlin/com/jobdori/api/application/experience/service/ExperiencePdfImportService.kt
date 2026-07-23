@@ -5,6 +5,8 @@ import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.pdf.PdfUtils
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
+import com.jobdori.core.domain.profile.service.ProfileModifier
+import com.jobdori.core.domain.profile.service.ProfileReader
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.concurrent.ExecutionException
@@ -16,6 +18,8 @@ class ExperiencePdfImportService(
     private val experienceAiExtractionService: ExperienceAiExtractionService,
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
     private val pdfValidationService: PdfValidationService,
+    private val profileReader: ProfileReader,
+    private val profileModifier: ProfileModifier,
 ) {
 
     fun importExperiences(file: MultipartFile, workspaceId: String, userId: Long) {
@@ -34,12 +38,15 @@ class ExperiencePdfImportService(
             )
         }
 
-        val commandGroups = experienceAiExtractionService.extract(text)
+        val result = experienceAiExtractionService.extract(text)
 
         experienceImportService.saveAll(
             workspaceId = workspace.id,
-            groups = commandGroups,
+            groups = result.toCommandGroups(),
         )
+
+        val profile = profileReader.getOrCreateProfile(workspace.id)
+        profileModifier.modify(profile, result.toProfileUpdateCommand(profileReader.getDetail(profile)))
     }
 
     private fun extractTextWithTimeout(pdfBytes: ByteArray): String {

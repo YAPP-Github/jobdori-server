@@ -78,7 +78,7 @@ class ExperienceAiExtractionServiceTest : StringSpec({
             aiChatClient.generateStructured(any<AiStructuredRequest<ExperienceStarExtractionResult>>())
         } returns extractionResult
 
-        val groups = service.extract("PDF 원문")
+        val groups = service.extract("PDF 원문").toCommandGroups()
 
         groups.size shouldBe 1
         val group = groups.single()

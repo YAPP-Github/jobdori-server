@@ -4,10 +4,17 @@ import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationSe
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
+import com.jobdori.core.application.experience.ExperienceStarExtractionResult
 import com.jobdori.core.application.experience.command.ImportedExperienceCommandGroup
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
 import com.jobdori.core.domain.experience.service.command.ExperienceProjectCreateCommand
+import com.jobdori.core.domain.profile.Profile
+import com.jobdori.core.domain.profile.ProfileDetail
+import com.jobdori.core.domain.profile.ProfileSections
+import com.jobdori.core.domain.profile.service.ProfileModifier
+import com.jobdori.core.domain.profile.service.ProfileReader
+import com.jobdori.core.domain.profile.service.command.ProfileUpdateCommand
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
@@ -31,11 +38,15 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
     val experienceAiExtractionService = mockk<ExperienceAiExtractionService>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
     val pdfValidationService = mockk<PdfValidationService>()
+    val profileReader = mockk<ProfileReader>()
+    val profileModifier = mockk<ProfileModifier>()
     val service = ExperiencePdfImportService(
         experienceImportService = experienceImportService,
         experienceAiExtractionService = experienceAiExtractionService,
         workspaceAccessValidationService = workspaceAccessValidationService,
         pdfValidationService = pdfValidationService,
+        profileReader = profileReader,
+        profileModifier = profileModifier,
     )
 
     beforeTest {
@@ -44,6 +55,8 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
             experienceAiExtractionService,
             workspaceAccessValidationService,
             pdfValidationService,
+            profileReader,
+            profileModifier,
         )
         every {
             workspaceAccessValidationService.validateAccessible(
@@ -80,14 +93,24 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
                 ),
             ),
         )
-        every { experienceAiExtractionService.extract(any()) } returns groups
+        val extractionResult = mockk<ExperienceStarExtractionResult> {
+            every { toCommandGroups() } returns groups
+            every { toProfileUpdateCommand(any()) } returns ProfileUpdateCommand()
+        }
+        every { experienceAiExtractionService.extract(any()) } returns extractionResult
         every { experienceImportService.saveAll(workspaceId = 1L, groups = groups) } returns Unit
+        val profile = Profile.newInstance(workspaceId = 1L)
+        val profileDetail = ProfileDetail(profile = profile, sections = emptyProfileSections())
+        every { profileReader.getOrCreateProfile(1L) } returns profile
+        every { profileReader.getDetail(profile) } returns profileDetail
+        every { profileModifier.modify(profile, any()) } returns profileDetail
 
         service.importExperiences(file = file, workspaceId = "workspace-id", userId = 1L)
 
         verify(exactly = 1) { pdfValidationService.validate(file = file, userId = 1L) }
         verify(exactly = 1) { experienceAiExtractionService.extract(match { text -> text.contains("Hello Jobdori") }) }
         verify(exactly = 1) { experienceImportService.saveAll(workspaceId = 1L, groups = groups) }
+        verify(exactly = 1) { profileModifier.modify(profile, any()) }
     }
 
     "PDF 검증에 실패하면 가져온 경험을 저장하지 않는다" {
@@ -113,6 +136,17 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
     }
 
 })
+
+private fun emptyProfileSections(): ProfileSections {
+    return ProfileSections(
+        educations = emptyList(),
+        careers = emptyList(),
+        languageTests = emptyList(),
+        awards = emptyList(),
+        certifications = emptyList(),
+        skills = emptyList(),
+    )
+}
 
 private fun samplePdfBytes(text: String): ByteArray {
     return PDDocument().use { document ->

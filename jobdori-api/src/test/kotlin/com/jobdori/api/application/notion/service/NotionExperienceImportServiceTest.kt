@@ -4,12 +4,19 @@ import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationSe
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
+import com.jobdori.core.application.experience.ExperienceStarExtractionResult
 import com.jobdori.core.application.experience.command.ImportedExperienceCommandGroup
 import com.jobdori.core.application.notion.NotionPageService
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
 import com.jobdori.core.domain.experience.service.command.ExperienceProjectCreateCommand
 import com.jobdori.core.domain.notion.NotionPageContent
+import com.jobdori.core.domain.profile.Profile
+import com.jobdori.core.domain.profile.ProfileDetail
+import com.jobdori.core.domain.profile.ProfileSections
+import com.jobdori.core.domain.profile.service.ProfileModifier
+import com.jobdori.core.domain.profile.service.ProfileReader
+import com.jobdori.core.domain.profile.service.command.ProfileUpdateCommand
 import com.jobdori.core.domain.notion.NotionPageSummary
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.assertions.throwables.shouldThrow
@@ -26,11 +33,15 @@ class NotionExperienceImportServiceTest : StringSpec({
     val experienceAiExtractionService = mockk<ExperienceAiExtractionService>()
     val experienceImportService = mockk<ExperienceImportService>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
+    val profileReader = mockk<ProfileReader>()
+    val profileModifier = mockk<ProfileModifier>()
     val service = NotionExperienceImportService(
         notionPageService = notionPageService,
         experienceAiExtractionService = experienceAiExtractionService,
         experienceImportService = experienceImportService,
         workspaceAccessValidationService = workspaceAccessValidationService,
+        profileReader = profileReader,
+        profileModifier = profileModifier,
     )
 
     beforeTest {
@@ -39,6 +50,8 @@ class NotionExperienceImportServiceTest : StringSpec({
             experienceAiExtractionService,
             experienceImportService,
             workspaceAccessValidationService,
+            profileReader,
+            profileModifier,
         )
         every {
             workspaceAccessValidationService.validateAccessible(
@@ -83,8 +96,17 @@ class NotionExperienceImportServiceTest : StringSpec({
                 pageId = "page-id",
             )
         } returns content
-        every { experienceAiExtractionService.extract("Notion resume text") } returns groups
+        val extractionResult = mockk<ExperienceStarExtractionResult> {
+            every { toCommandGroups() } returns groups
+            every { toProfileUpdateCommand(any()) } returns ProfileUpdateCommand()
+        }
+        every { experienceAiExtractionService.extract("Notion resume text") } returns extractionResult
         every { experienceImportService.saveAll(workspaceId = 10L, groups = groups) } returns Unit
+        val profile = Profile.newInstance(workspaceId = 10L)
+        val profileDetail = ProfileDetail(profile = profile, sections = emptyProfileSections())
+        every { profileReader.getOrCreateProfile(10L) } returns profile
+        every { profileReader.getDetail(profile) } returns profileDetail
+        every { profileModifier.modify(profile, any()) } returns profileDetail
 
         // when
         service.importExperiences(
@@ -103,6 +125,7 @@ class NotionExperienceImportServiceTest : StringSpec({
         }
         verify(exactly = 1) { experienceAiExtractionService.extract("Notion resume text") }
         verify(exactly = 1) { experienceImportService.saveAll(workspaceId = 10L, groups = groups) }
+        verify(exactly = 1) { profileModifier.modify(profile, any()) }
     }
 
     "Notion 페이지 본문이 비어 있으면 경험을 저장하지 않는다" {
@@ -136,3 +159,14 @@ class NotionExperienceImportServiceTest : StringSpec({
     }
 
 })
+
+private fun emptyProfileSections(): ProfileSections {
+    return ProfileSections(
+        educations = emptyList(),
+        careers = emptyList(),
+        languageTests = emptyList(),
+        awards = emptyList(),
+        certifications = emptyList(),
+        skills = emptyList(),
+    )
+}

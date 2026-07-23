@@ -3510,9 +3510,14 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation PolishProfileText {
     polishProfileText(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
         request: {
             text: "런칭 캠페인에서 메시지 A/B 테스트를 수행해서 전환율을 많이 개선했음"
-            kind: CAREER_DESCRIPTION
+            kind: EXPERIENCE_DESCRIPTION
+            structure: BULLET
+            instruction: "정중한 어투로, 전환율 수치를 강조"
+            title: "콘텐츠 마케팅 캠페인 운영"
+            jdId: "00000000-0000-0000-0000-000000000003"
         }
     )
 }</code></pre>
@@ -3541,6 +3546,21 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tr>
 </thead>
 <tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
+</tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>

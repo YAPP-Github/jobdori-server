@@ -26,9 +26,8 @@ dependencies {
     implementation(libs.spring.boot.starter.validation)
 
     // Monitoring
-    implementation(libs.spring.boot.starter.actuator)
-    implementation(libs.sentry.logback)
     implementation(libs.sentry.spring.boot.starter)
+    implementation(libs.sentry.logback)
     ddJavaAgent(libs.dd.java.agent)
 
     // Spring Rest Docs

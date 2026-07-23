@@ -194,7 +194,6 @@ class ExperienceService(
                     reason = match?.reason,
                 )
             },
-            strategy = recommendation?.strategy?.takeIf { it.isNotBlank() },
             cursor = CursorResponse(nextCursor = experiences.nextCursor),
         )
     }

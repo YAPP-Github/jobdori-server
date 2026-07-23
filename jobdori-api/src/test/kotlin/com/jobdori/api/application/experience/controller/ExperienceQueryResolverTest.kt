@@ -155,7 +155,7 @@ internal class ExperienceQueryResolverTest(
                     reason = null,
                 ),
             ),
-            strategy = "협업 경험을 중심으로 강조해서 지원하는 게 좋겠어요.",
+
             cursor = CursorResponse(nextCursor = "4"),
         )
 
@@ -169,7 +169,6 @@ internal class ExperienceQueryResolverTest(
                       matchRate
                       recommendedReason
                     }
-                    strategy
                     cursor {
                       nextCursor
                     }
@@ -178,7 +177,6 @@ internal class ExperienceQueryResolverTest(
                 """.trimIndent(),
             )
             .execute()
-            .path("experiences.strategy").entity<String>().isEqualTo("협업 경험을 중심으로 강조해서 지원하는 게 좋겠어요.")
             .path("experiences.experiences[0].experienceId").entity<String>().isEqualTo("5")
             .path("experiences.experiences[0].matchRate").entity<Int>().isEqualTo(87)
             .path("experiences.experiences[0].recommendedReason").entity<String>().isEqualTo("이 JD의 핵심 역량과 맞닿는 경험이에요.")

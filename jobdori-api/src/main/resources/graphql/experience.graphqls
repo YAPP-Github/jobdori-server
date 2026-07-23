@@ -365,11 +365,6 @@ type Experiences {
     experiences: [Experience!]!
 
     """
-    JD 기준 지원 전략입니다. experiences 조회에 jdId를 준 경우에만 채워집니다.
-    """
-    strategy: String
-
-    """
     다음 페이지 조회에 사용하는 커서 정보입니다.
     """
     cursor: Cursor!

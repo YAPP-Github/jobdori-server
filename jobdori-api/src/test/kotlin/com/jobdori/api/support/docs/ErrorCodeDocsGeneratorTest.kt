@@ -644,5 +644,5 @@ private infix fun ErrorCode.to(description: String): GraphQlOperationErrorCode {
 }
 
 private fun graphQlSample(path: String): File {
-    return File("http/graphql/$path")
+    return File("http/$path")
 }

@@ -104,7 +104,6 @@ query Experiences {
                 }
             }
         }
-        strategy
         cursor {
             nextCursor
             hasNext

@@ -8,11 +8,6 @@ spring.config:
 server:
   port: ${SERVER_PORT:20000}
   tomcat:
-    # tomcat.threads.* 메트릭은 MBean 레지스트리가 꺼져 있으면(기본값) 등록되지 않는다
-    mbeanregistry:
-      enabled: true
-    # basedir 미지정 시 액세스 로그가 임시 디렉토리에 쓰여 유실된다. ./logs/access_log.*.log로 남긴다.
-    basedir: .
     accesslog:
       enabled: true
       pattern: "%t %r %s %b %Dus"   # %D(처리시간)와 ai_call latencyMs의 간격으로 AI 외 병목을 본다. Tomcat 10+의 %D는 마이크로초
@@ -35,16 +30,6 @@ spring:
       path: /graphql
     graphiql:
       enabled: false
-      path: /graphiql
-
-# 스레드풀 고갈 등 런타임 상태 확인용. 외부에 노출되지 않도록 서비스 포트와 분리한다(LB에는 서비스 포트만 연결).
-management:
-  server:
-    port: ${MANAGEMENT_PORT:20001}
-  endpoints:
-    web:
-      exposure:
-        include: health,metrics
 
 sentry:
   enabled: true
@@ -60,15 +45,18 @@ spring:
       on-profile:
         - local
         - test
+  web:
+    resources:
+      add-mappings: true
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
 
 sentry:
   enabled: false
   logging:
     enabled: false
-server:
-  tomcat:
-    accesslog:
-      enabled: false   # 로컬/테스트에서 ./logs 디렉토리 생성 방지
 
 logging:
   level:
@@ -79,7 +67,6 @@ spring:
   config:
     activate:
       on-profile:
-        - local
         - dev
   web:
     resources:
@@ -87,12 +74,19 @@ spring:
   graphql:
     graphiql:
       enabled: true
+      path: /graphiql
+
+logging:
+  structured:
+    format:
+      console: com.jobdori.api.support.logging.DatadogStructuredLogFormatter
 
 ---
 spring:
   config:
     activate:
-      on-profile: dev
+      on-profile:
+        - prod
 
 logging:
   structured:

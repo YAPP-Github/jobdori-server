@@ -25,15 +25,15 @@ class ProfileAiService(
     private val jdRepository: JdRepository,
 ) {
 
-    // 프롬프트에는 JD 원문/전략 대신 coreCompetencies 키워드만 넣는다.
     fun generateCoreCompetency(detail: ProfileDetail, workspaceId: Long, jdPublicId: String?): CoreCompetencyGeneration {
         val jd = findJd(workspaceId, jdPublicId)
+        val strategy = jd?.strategy?.takeIf { it.isNotBlank() }
 
         val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
         val text = aiChatClient.generateText(
-            template.build(userPrompt = buildProfileSummaryPrompt(detail, jd?.coreCompetencies.orEmpty())),
+            template.build(userPrompt = buildProfileSummaryPrompt(detail, jd?.sourceBody, strategy)),
         )
-        return CoreCompetencyGeneration(jd?.strategy?.takeIf { it.isNotBlank() }, text)
+        return CoreCompetencyGeneration(strategy, text)
     }
 
     fun polish(
@@ -80,10 +80,15 @@ class ProfileAiService(
             ?: throw AiException("이력서 AI 프롬프트를 찾을 수 없습니다. [type=$type]", AiErrorCode.E500_AI_GENERATION_FAILED)
     }
 
-    private fun buildProfileSummaryPrompt(detail: ProfileDetail, emphasisKeywords: List<String>): String = buildString {
-        if (emphasisKeywords.isNotEmpty()) {
-            appendLine("[강조할 역량 키워드]")
-            appendLine(emphasisKeywords.joinToString(", "))
+    private fun buildProfileSummaryPrompt(detail: ProfileDetail, jdBody: String?, strategy: String?): String = buildString {
+        // sourceBody는 기능 이전 레거시 JD 행에서 null → 그 경우 [JD] 섹션 생략
+        if (!jdBody.isNullOrBlank()) {
+            appendLine("[JD]")
+            appendLine(jdBody)
+        }
+        if (strategy != null) {
+            appendLine("[지원 전략]")
+            appendLine(strategy)
         }
         appendLine("[경력]")
         detail.sections.careers.forEach {

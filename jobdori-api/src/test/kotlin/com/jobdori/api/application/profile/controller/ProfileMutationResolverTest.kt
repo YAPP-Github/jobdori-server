@@ -1,6 +1,7 @@
 package com.jobdori.api.application.profile.controller
 
 import com.jobdori.api.GraphQLTest
+import com.jobdori.api.application.profile.dto.request.PolishProfileTextRequest
 import com.jobdori.api.application.profile.dto.request.UpdateProfileRequest
 import com.jobdori.api.application.profile.dto.response.GenerateCoreCompetencyResponse
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
@@ -8,7 +9,7 @@ import com.jobdori.api.application.profile.service.ProfileService
 import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.core.application.auth.AccessTokenService
-import com.jobdori.core.application.profile.ProfileAiService
+import com.jobdori.core.application.profile.PolishStructure
 import com.jobdori.core.application.profile.ProfilePolishKind
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
@@ -27,8 +28,6 @@ internal class ProfileMutationResolverTest(
     private val accessTokenService: AccessTokenService,
     @MockkBean
     private val profileService: ProfileService,
-    @MockkBean
-    private val profileAiService: ProfileAiService,
 ) : StringSpec({
 
     beforeTest {
@@ -138,9 +137,13 @@ internal class ProfileMutationResolverTest(
 
     "프로필 텍스트를 AI로 다듬는다" {
         every {
-            profileAiService.polish(
-                text = "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
-                kind = ProfilePolishKind.CAREER_DESCRIPTION,
+            profileService.polishProfileText(
+                userId = 1L,
+                workspaceId = null,
+                request = PolishProfileTextRequest(
+                    text = "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
+                    kind = ProfilePolishKind.CAREER_DESCRIPTION,
+                ),
             )
         } returns "런칭 캠페인에서 메시지 A/B 테스트를 설계해 전환율을 개선했습니다."
 
@@ -162,10 +165,54 @@ internal class ProfileMutationResolverTest(
             .isEqualTo("런칭 캠페인에서 메시지 A/B 테스트를 설계해 전환율을 개선했습니다.")
 
         verify(exactly = 1) {
-            profileAiService.polish(
-                text = "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
-                kind = ProfilePolishKind.CAREER_DESCRIPTION,
+            profileService.polishProfileText(
+                userId = 1L,
+                workspaceId = null,
+                request = PolishProfileTextRequest(
+                    text = "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
+                    kind = ProfilePolishKind.CAREER_DESCRIPTION,
+                ),
             )
+        }
+    }
+
+    "작성 구조/직접 지침/경험명/JD를 주면 옵션을 반영해 다듬는다" {
+        val request = PolishProfileTextRequest(
+            text = "경험이 이미 채워져있는 상태입니다",
+            kind = ProfilePolishKind.EXPERIENCE_DESCRIPTION,
+            structure = PolishStructure.BULLET,
+            instruction = "정중한 어투로, 전환율 수치를 강조",
+            title = "콘텐츠 마케팅 캠페인 운영",
+            jdId = "jd-pub-1",
+        )
+        every {
+            profileService.polishProfileText(userId = 1L, workspaceId = "workspace-id", request = request)
+        } returns "- AI가 수정 지침에 따라 수정해준 완성본"
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  polishProfileText(
+                    workspaceId: "workspace-id",
+                    request: {
+                      text: "경험이 이미 채워져있는 상태입니다",
+                      kind: EXPERIENCE_DESCRIPTION,
+                      structure: BULLET,
+                      instruction: "정중한 어투로, 전환율 수치를 강조",
+                      title: "콘텐츠 마케팅 캠페인 운영",
+                      jdId: "jd-pub-1"
+                    }
+                  )
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("polishProfileText").entity<String>()
+            .isEqualTo("- AI가 수정 지침에 따라 수정해준 완성본")
+
+        verify(exactly = 1) {
+            profileService.polishProfileText(userId = 1L, workspaceId = "workspace-id", request = request)
         }
     }
 

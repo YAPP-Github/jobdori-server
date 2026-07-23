@@ -440,6 +440,9 @@ private val graphQlOperationErrors = listOf(
         type = GraphQlOperationType.MUTATION,
         sampleFile = graphQlSample("profile/polish-profile-text.graphql"),
         errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            JdErrorCode.E404_JD_NOT_FOUND,
             AiErrorCode.E500_AI_GENERATION_FAILED,
         ),
     ),

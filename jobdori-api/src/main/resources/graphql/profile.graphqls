@@ -45,6 +45,10 @@ extend type Mutation {
     """
     polishProfileText(
         """
+        워크스페이스 ID입니다. request.jdId로 지원 전략을 반영할 때 필수입니다.
+        """
+        workspaceId: ID = null,
+        """
         텍스트 다듬기 입력입니다.
         """
         request: PolishProfileTextRequest!
@@ -216,9 +220,29 @@ enum ProfilePolishKind {
     EXPERIENCE_TITLE
 
     """
-    경험 STAR 설명 (최대 600자)
+    경험 STAR 설명 (최대 500자)
     """
     EXPERIENCE_DESCRIPTION
+}
+
+"""
+첨삭 결과의 작성 구조입니다.
+"""
+enum PolishStructure {
+    """
+    불렛형
+    """
+    BULLET
+
+    """
+    문제-해결-성과
+    """
+    PROBLEM_SOLUTION_RESULT
+
+    """
+    산문형
+    """
+    PROSE
 }
 
 """
@@ -541,7 +565,7 @@ input ProfileSkillRequest {
 """
 input PolishProfileTextRequest {
     """
-    다듬을 원문입니다. (최대 600자)
+    다듬을 원문입니다. (최대 500자)
     """
     text: String!
 
@@ -549,4 +573,24 @@ input PolishProfileTextRequest {
     다듬기 대상 항목입니다. 항목별 글자수 제한에 맞춰 다듬습니다.
     """
     kind: ProfilePolishKind!
+
+    """
+    작성 구조입니다. (불렛형/문제-해결-성과/산문형, 미지정 시 원문 형식 유지)
+    """
+    structure: PolishStructure = null
+
+    """
+    직접 작성 지침입니다. 어투, 강조할 수치 등을 자유롭게 적습니다. (최대 200자)
+    """
+    instruction: String = null
+
+    """
+    경험명입니다. 경험 세부 내용을 다듬을 때 맥락으로 사용됩니다. (최대 100자)
+    """
+    title: String = null
+
+    """
+    JD ID입니다. 주면 해당 JD의 지원 전략을 반영해 다듬습니다. workspaceId와 함께 사용합니다.
+    """
+    jdId: ID = null
 }

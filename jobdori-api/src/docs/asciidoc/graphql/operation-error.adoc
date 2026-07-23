@@ -799,6 +799,18 @@
 |===
 | Code | Message | Description
 
+| workspace_access_denied
+| 워크스페이스에 접근할 권한이 없습니다.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾을 수 없습니다.
+| 워크스페이스를 찾을 수 없는 경우
+
+| jd_not_found
+| 등록되지 않은 JD입니다.
+| 존재하지 않거나 소유자가 아닌 JD 조회
+
 | ai_generation_failed
 | 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.
 | AI 응답 생성 실패

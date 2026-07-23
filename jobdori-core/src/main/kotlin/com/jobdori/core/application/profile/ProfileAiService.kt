@@ -25,23 +25,48 @@ class ProfileAiService(
 ) {
 
     fun generateCoreCompetency(detail: ProfileDetail, workspaceId: Long, jdPublicId: String?): CoreCompetencyGeneration {
-        val strategy = jdPublicId
-            ?.let {
-                jdRepository.findByPublicIdAndWorkspaceId(it, workspaceId)
-                    ?: throw JdNotFoundException("등록되지 않은 JD($it)입니다")
-            }
-            ?.strategy?.takeIf { it.isNotBlank() }
+        val strategy = resolveStrategy(workspaceId, jdPublicId)
 
         val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
         val text = aiChatClient.generateText(template.build(userPrompt = buildProfileSummaryPrompt(detail, strategy)))
         return CoreCompetencyGeneration(strategy, text)
     }
 
-    fun polish(text: String, kind: ProfilePolishKind): String {
+    fun polish(
+        text: String,
+        kind: ProfilePolishKind,
+        structure: PolishStructure? = null,
+        instruction: String? = null,
+        title: String? = null,
+        workspaceId: Long? = null,
+        jdPublicId: String? = null,
+    ): String {
+        val strategy = workspaceId?.let { resolveStrategy(it, jdPublicId) }
         val template = getTemplate(PromptType.PROFILE_TEXT_POLISH)
-        val userPrompt = "[항목] ${kind.label}\n[글자수 제한] ${kind.maxLength}자\n[원문]\n$text"
+        val userPrompt = buildString {
+            appendLine("[항목] ${kind.label}")
+            appendLine("[글자수 제한] ${kind.maxLength}자")
+            structure?.let { appendLine("[작성 구조] ${it.instruction}") }
+            instruction?.takeIf { it.isNotBlank() }?.let { appendLine("[추가 지침] $it") }
+            title?.takeIf { it.isNotBlank() }?.let { appendLine("[경험명] $it") }
+            strategy?.let {
+                appendLine("[지원 전략]")
+                appendLine(it)
+            }
+            appendLine("[원문]")
+            append(text)
+        }
 
         return aiChatClient.generateText(template.build(userPrompt = userPrompt))
+    }
+
+    private fun resolveStrategy(workspaceId: Long, jdPublicId: String?): String? {
+        return jdPublicId
+            ?.let {
+                jdRepository.findByPublicIdAndWorkspaceId(it, workspaceId)
+                    ?: throw JdNotFoundException("등록되지 않은 JD($it)입니다")
+            }
+            ?.strategy?.takeIf { it.isNotBlank() }
     }
 
     private fun getTemplate(type: PromptType): PromptTemplate {
@@ -71,5 +96,11 @@ enum class ProfilePolishKind(val label: String, val maxLength: Int) {
     CORE_COMPETENCY("핵심역량", 500),
     CAREER_DESCRIPTION("경력 세부 내용", 500),
     EXPERIENCE_TITLE("경험명", 48),
-    EXPERIENCE_DESCRIPTION("경험 STAR 설명", 600),
+    EXPERIENCE_DESCRIPTION("경험 STAR 설명", 500),
+}
+
+enum class PolishStructure(val instruction: String) {
+    BULLET("각 항목이 '- '로 시작하는 불렛 목록으로 작성한다."),
+    PROBLEM_SOLUTION_RESULT("문제-해결-성과 흐름이 드러나는 구조로 작성한다."),
+    PROSE("자연스러운 산문형 문단으로 작성한다."),
 }

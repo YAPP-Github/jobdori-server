@@ -56,7 +56,9 @@ internal data class ResumeExperiencePolishResult(
     val items: List<ResumeExperiencePolishItem>,
 )
 
+// title은 프롬프트 스키마가 반환을 강제하지만 저장에는 쓰지 않는다 (경험명은 사용자 입력 유지, 테스트 페이지 확인용)
 internal data class ResumeExperiencePolishItem(
     val index: Int,
+    val title: String = "",
     val content: String,
 )

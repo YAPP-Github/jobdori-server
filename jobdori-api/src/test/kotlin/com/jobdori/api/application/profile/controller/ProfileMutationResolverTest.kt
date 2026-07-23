@@ -105,7 +105,7 @@ internal class ProfileMutationResolverTest(
         }
     }
 
-    "핵심역량을 AI로 생성한다 (jdId를 주면 지원 전략 기준 생성과 전략 반환)" {
+    "핵심역량을 AI로 생성한다 (jdId를 주면 표시용 지원 전략 함께 반환)" {
         every {
             profileService.generateCoreCompetency(userId = 1L, workspaceId = "workspace-id", jdId = "jd-pub-1")
         } returns GenerateCoreCompetencyResponse(

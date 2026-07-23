@@ -65,7 +65,7 @@ type GeneratedCoreCompetency {
     coreCompetency: String!
 
     """
-    생성 기준으로 사용한 JD 지원 전략입니다. jdId를 준 경우에만 채워집니다.
+    화면 표시용 JD 지원 전략입니다. jdId를 준 경우에만 채워지며, 핵심역량 생성 입력에는 사용되지 않습니다.
     """
     strategy: String
 }

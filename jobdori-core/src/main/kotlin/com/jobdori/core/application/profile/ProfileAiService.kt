@@ -108,6 +108,6 @@ enum class ProfilePolishKind(val label: String, val maxLength: Int) {
 
 enum class PolishStructure(val instruction: String) {
     BULLET("각 항목이 '- '로 시작하는 불렛 목록으로 작성한다."),
-    PROBLEM_SOLUTION_RESULT("문제-해결-성과 흐름이 드러나는 구조로 작성한다."),
+    PROBLEM_SOLUTION_RESULT("'-(문제) ', '-(해결) ', '-(성과) '로 시작하는 세 줄로 작성한다."),
     PROSE("자연스러운 산문형 문단으로 작성한다."),
 }

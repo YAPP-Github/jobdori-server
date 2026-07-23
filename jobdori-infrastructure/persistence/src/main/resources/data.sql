@@ -40,11 +40,98 @@ VALUES (4, 4,'EXPERIENCE_STAR_EXTRACTION','당신은 채용 도메인 경력 분
 '{"type":"object","properties":{"personalInfo":{"type":"object","properties":{"name":{"type":"string"},"phone":{"type":"string"},"email":{"type":"string"}},"required":["name","phone","email"],"additionalProperties":false},"education":{"type":"array","items":{"type":"object","properties":{"school":{"type":"string"},"major":{"type":"string"},"degree":{"type":"string","enum":["BACHELOR","MASTER","DOCTOR",""]},"status":{"type":"string","enum":["ENROLLED","ON_LEAVE","GRADUATED","EXPECTED_GRADUATION","COMPLETED",""]},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"}},"required":["school","major","degree","status","period","periodText"],"additionalProperties":false}},"careers":{"type":"array","items":{"type":"object","properties":{"company":{"type":"string"},"position":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"description":{"type":"string"}},"required":["company","position","period","periodText","description"],"additionalProperties":false}},"languageTests":{"type":"array","items":{"type":"object","properties":{"testName":{"type":"string"},"score":{"type":"string"},"acquiredAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["testName","score","acquiredAt"],"additionalProperties":false}},"awards":{"type":"array","items":{"type":"object","properties":{"title":{"type":"string"},"organization":{"type":"string"},"awardedAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["title","organization","awardedAt"],"additionalProperties":false}},"certifications":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"issuer":{"type":"string"},"acquiredAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["name","issuer","acquiredAt"],"additionalProperties":false}},"skills":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"level":{"type":"string","enum":["HIGH","MEDIUM","LOW",""]}},"required":["name","level"],"additionalProperties":false}},"projects":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"summary":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"role":{"type":"string"},"company":{"type":"string"},"experiences":{"type":"array","items":{"type":"object","properties":{"title":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"role":{"type":"string"},"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"},"competencyTags":{"type":"array","items":{"type":"string"}}},"required":["title","period","periodText","role","situation","task","action","result","competencyTags"],"additionalProperties":false}}},"required":["name","summary","period","periodText","role","company","experiences"],"additionalProperties":false}}},"required":["personalInfo","education","careers","languageTests","awards","certifications","skills","projects"],"additionalProperties":false}',
 null, now(), now());
 
--- 5) 경험 문장 일괄 자동 작성 (동료 담당 — 로컬 테스트 편의) — structured 모드. {tone}은 호출 시 치환.
+-- 5) 경험 문장 일괄 자동 작성 (동료 담당 — 로컬 테스트 편의) — structured 모드. 서비스의 {tone} 치환은 이 content에 자리표시자가 없어 no-op.
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (5, 5, 'RESUME_EXPERIENCE_REWRITE',
-'당신은 IT/직무 이력서 작성 코치다. 입력으로 받은 원본 STAR(상황·과제·행동·결과)와 대상 JD의 핵심 역량을 바탕으로, 각 경험을 이력서에 들어갈 한 문단으로 재작성한다. 규칙: (1) STAR에 담긴 사실(수치·기술·역할·결과)은 절대 바꾸거나 지어내지 마라. (2) JD 핵심 역량과 맞닿는 부분을 앞쪽에 배치하고 관련 키워드를 자연스럽게 녹인다. (3) 성과는 가능한 한 정량적으로 표현하되, 원본에 없는 수치는 만들어내지 마라. (4) 1인칭 주어·군더더기를 빼고 행동 동사 중심의 간결한 문체로 쓴다. (5) 길이와 톤은 다음 지시를 따른다: {tone}. 입력된 모든 index를 정확히 한 번씩 포함하고 제공된 JSON 스키마를 준수한다.',
-'{"type":"object","additionalProperties":false,"required":["items"],"properties":{"items":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","content"],"properties":{"index":{"type":"integer"},"content":{"type":"string"}}}}}}', null, now(), now());
+'당신은 이력서 작성 코치다.
+
+입력으로 받은 STAR(상황·과제·행동·결과)와 대상 JD를 분석하여, 각 경험을 이력서용 title과 content로 재작성한다.
+
+[목표]
+
+좋은 IT 이력서의 Bullet 형식과 문제 해결 중심의 서술 방식을 따른다.
+자기소개서나 프로젝트 소개 문단을 작성하지 않는다.
+
+------------------------------------------------
+
+[Output Format]
+
+각 experience는 반드시 아래 형식을 따른다.
+
+{
+  "index": number,
+  "title": string,
+  "content": string
+}
+
+- title : 공백 포함 48자 이내
+- content : 공백 포함 600자 이내
+
+------------------------------------------------
+
+[Title 작성 규칙]
+
+title은 STAR의 원본 제목을 그대로 사용하지 않는다.
+
+STAR의 내용과 JD를 분석하여 아래 요소를 자연스럽게 조합한다.
+
+- 도메인
+- 산출물 또는 업무 유형
+- 서비스/기술 특성(필요한 경우)
+- JD와 관련성이 높은 직무 키워드
+
+짧고 직관적으로 작성하며, 핵심 경험이 한눈에 드러나야 한다.
+
+------------------------------------------------
+
+[Content 작성 규칙]
+
+content는 한 문단 형식을 사용하지 않고 Bullet 형식을 지원한다.
+
+입력된 experiences는 하나의 경험 세트로 간주한다. 모든 experience는 동일한 구조를 사용해야 하며, 서로 다른 구조를 혼합하지 않는다.
+
+experience 집합의 성격과 JD를 종합적으로 판단하여 아래 구조 중 하나를 선택해 모든 experience에 일관되게 적용한다.
+
+1. Action + Result 나열식
+- ㅇㅇ 분석 기반 ㅇㅇ 개선
+- ㅇㅇ 기능 기획 및 CTR 81.1% 달성
+- ㅇㅇ 도입으로 ㅇㅇ% 절감
+
+2. 문제 - 원인 - 해결 - 성과
+
+3. 담당 업무 - 주요 작업 나열식
+- ㅇㅇ를 분리하여 응답 시간 단축
+- ㅇㅇ 적용 및 ㅇㅇ 로직 설계
+
+나열형 content는 "-"를 사용한다.
+
+------------------------------------------------
+
+[작성 원칙]
+
+1. STAR의 사실만 사용하며 절대 지어내지 않는다.
+
+2. STAR를 단순 요약하지 않고, 이력서 관점에서 가치가 높은 행동·산출물·성과를 재구성한다.
+
+3. 행동 중심으로 작성한다.
+(예: 구조화, 설계, 정의, 개선, 도출, 구현, 최적화 등)
+
+4. 정량 성과가 존재하는 경우 반드시 포함한다.
+
+5. JD와 관련성이 높은 경험과 키워드를 우선적으로 강조한다.
+
+6. 아래 표현은 사용하지 않는다.
+- PM으로서
+- 프로젝트에서
+- 기여하였다
+- 수행하였다
+- 경험하였다
+- 자기소개서 문체(~하였다 반복)
+
+------------------------------------------------
+
+입력된 모든 experience의 index를 정확히 한 번씩 포함하여 JSON 배열로 반환한다.',
+'{"type":"object","additionalProperties":false,"required":["items"],"properties":{"items":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","title","content"],"properties":{"index":{"type":"integer"},"title":{"type":"string"},"content":{"type":"string"}}}}}}', null, now(), now());
 
 -- 6) Free Style 경험 내용 STAR 변환
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)

@@ -14,4 +14,6 @@ interface ExperienceProjectRepository {
 
     fun findAllByWorkspaceId(workspaceId: Long, cursorId: Long?, size: Int): List<ExperienceProject>
 
+    fun countByWorkspaceId(workspaceId: Long): Long
+
 }

@@ -32,4 +32,9 @@ interface ExperienceProjectJpaRepository : JpaRepository<ExperienceProjectEntity
         pageable: Pageable,
     ): List<ExperienceProjectEntity>
 
+    fun countByWorkspaceIdAndStatus(
+        workspaceId: Long,
+        status: ExperienceProjectStatus,
+    ): Long
+
 }

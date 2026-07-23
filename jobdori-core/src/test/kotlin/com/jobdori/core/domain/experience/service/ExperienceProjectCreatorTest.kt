@@ -2,11 +2,13 @@ package com.jobdori.core.domain.experience.service
 
 import com.jobdori.common.model.Period
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
+import com.jobdori.core.domain.experience.error.ExperienceProjectLimitExceededException
 import com.jobdori.core.domain.experience.repository.ExperienceProjectRepository
 import com.jobdori.core.domain.experience.service.command.ExperienceProjectCreateCommand
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
+import io.kotest.assertions.throwables.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -23,6 +25,7 @@ class ExperienceProjectCreatorTest : StringSpec({
             startAt = LocalDate.of(2024, 1, 1),
             endAt = LocalDate.of(2024, 12, 31),
         )
+        every { experienceProjectRepository.countByWorkspaceId(1L) } returns 19
         every { experienceProjectRepository.save(any()) } answers { firstArg() }
 
         // when
@@ -53,6 +56,7 @@ class ExperienceProjectCreatorTest : StringSpec({
             startAt = LocalDate.of(2024, 1, 1),
             endAt = LocalDate.of(2024, 12, 31),
         )
+        every { experienceProjectRepository.countByWorkspaceId(1L) } returns 18
         every { experienceProjectRepository.saveAll(any()) } answers { firstArg() }
 
         // when
@@ -87,6 +91,42 @@ class ExperienceProjectCreatorTest : StringSpec({
         )
         verify(exactly = 1) { experienceProjectRepository.saveAll(any()) }
         verify(exactly = 0) { experienceProjectRepository.save(any()) }
+    }
+
+    "프로젝트가 20개이면 단일 프로젝트를 더 생성할 수 없다" {
+        every { experienceProjectRepository.countByWorkspaceId(1L) } returns 20
+
+        shouldThrow<ExperienceProjectLimitExceededException> {
+            experienceProjectCreator.create(
+                workspaceId = 1L,
+                command = ExperienceProjectCreateCommand(
+                    name = "추가 프로젝트",
+                    summary = "추가 프로젝트 요약",
+                    period = null,
+                    role = null,
+                ),
+            )
+        }
+
+        verify(exactly = 0) { experienceProjectRepository.save(any()) }
+    }
+
+    "일괄 생성 후 프로젝트가 20개를 초과하면 생성할 수 없다" {
+        every { experienceProjectRepository.countByWorkspaceId(1L) } returns 19
+        val commands = List(2) { index ->
+            ExperienceProjectCreateCommand(
+                name = "가져온 프로젝트 $index",
+                summary = "가져온 프로젝트 요약",
+                period = null,
+                role = null,
+            )
+        }
+
+        shouldThrow<ExperienceProjectLimitExceededException> {
+            experienceProjectCreator.create(workspaceId = 1L, commands = commands)
+        }
+
+        verify(exactly = 0) { experienceProjectRepository.saveAll(any()) }
     }
 
 })

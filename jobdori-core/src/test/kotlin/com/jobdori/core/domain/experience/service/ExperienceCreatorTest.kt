@@ -2,9 +2,11 @@ package com.jobdori.core.domain.experience.service
 
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceStatus
+import com.jobdori.core.domain.experience.error.ExperienceLimitExceededException
 import com.jobdori.core.domain.experience.repository.ExperienceRepository
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -21,6 +23,9 @@ class ExperienceCreatorTest : StringSpec({
     "경험을 생성한다" {
         // given
         val contents = ExperienceContents.free("성과 중심 경험")
+        every {
+            experienceRepository.countByWorkspaceIdAndProjectIds(10L, listOf(1L))
+        } returns mapOf(1L to 9L)
         every { experienceRepository.save(any()) } answers { firstArg() }
 
         // when
@@ -47,6 +52,9 @@ class ExperienceCreatorTest : StringSpec({
 
     "경험 목록을 생성한다" {
         // given
+        every {
+            experienceRepository.countByWorkspaceIdAndProjectIds(10L, listOf(1L))
+        } returns mapOf(1L to 8L)
         every { experienceRepository.saveAll(any()) } answers { firstArg() }
 
         // when
@@ -75,6 +83,49 @@ class ExperienceCreatorTest : StringSpec({
         experiences.map { it.status } shouldContainExactly listOf(ExperienceStatus.ACTIVE, ExperienceStatus.ACTIVE)
         verify(exactly = 1) { experienceRepository.saveAll(any()) }
         verify(exactly = 0) { experienceRepository.save(any()) }
+    }
+
+    "프로젝트에 경험이 10개이면 경험을 더 생성할 수 없다" {
+        every {
+            experienceRepository.countByWorkspaceIdAndProjectIds(10L, listOf(1L))
+        } returns mapOf(1L to 10L)
+
+        shouldThrow<ExperienceLimitExceededException> {
+            experienceCreator.create(
+                workspaceId = 10L,
+                projectId = 1L,
+                command = ExperienceCreateCommand(
+                    tags = emptyList(),
+                    title = "추가 경험",
+                    contents = ExperienceContents.free("추가 경험 내용"),
+                ),
+            )
+        }
+
+        verify(exactly = 0) { experienceRepository.save(any()) }
+    }
+
+    "일괄 생성 후 프로젝트의 경험이 10개를 초과하면 생성할 수 없다" {
+        every {
+            experienceRepository.countByWorkspaceIdAndProjectIds(10L, listOf(1L))
+        } returns mapOf(1L to 9L)
+        val commands = List(2) { index ->
+            ExperienceCreateCommand(
+                tags = emptyList(),
+                title = "가져온 경험 $index",
+                contents = ExperienceContents.free("가져온 경험 내용"),
+            )
+        }
+
+        shouldThrow<ExperienceLimitExceededException> {
+            experienceCreator.create(
+                workspaceId = 10L,
+                projectId = 1L,
+                commands = commands,
+            )
+        }
+
+        verify(exactly = 0) { experienceRepository.saveAll(any()) }
     }
 
 })

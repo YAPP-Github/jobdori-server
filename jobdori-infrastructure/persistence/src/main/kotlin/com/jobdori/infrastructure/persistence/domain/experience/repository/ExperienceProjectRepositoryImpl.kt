@@ -78,4 +78,12 @@ class ExperienceProjectRepositoryImpl(
         return entities.map { it.toDomain() }
     }
 
+    @Transactional(readOnly = true)
+    override fun countByWorkspaceId(workspaceId: Long): Long {
+        return jpaRepository.countByWorkspaceIdAndStatus(
+            workspaceId = workspaceId,
+            status = ExperienceProjectStatus.ACTIVE,
+        )
+    }
+
 }

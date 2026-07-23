@@ -12,7 +12,7 @@ import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
 import com.jobdori.core.domain.profile.ProfileDetail
 import org.springframework.stereotype.Service
 
-// 생성 결과 + 생성의 기준이 된 JD 지원 전략(jd.strategy, JD 등록 시 메타 추출로 생성)을 함께 노출한다.
+// 생성 결과 + FE 표시용 JD 지원 전략(jd.strategy)을 함께 노출한다. 전략은 프롬프트 입력에는 쓰지 않는다.
 data class CoreCompetencyGeneration(
     val strategy: String?,
     val coreCompetency: String,
@@ -31,7 +31,7 @@ class ProfileAiService(
 
         val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
         val text = aiChatClient.generateText(
-            template.build(userPrompt = buildProfileSummaryPrompt(detail, jd?.sourceBody, strategy)),
+            template.build(userPrompt = buildProfileSummaryPrompt(detail, jd?.sourceBody)),
         )
         return CoreCompetencyGeneration(strategy, text)
     }
@@ -80,15 +80,11 @@ class ProfileAiService(
             ?: throw AiException("이력서 AI 프롬프트를 찾을 수 없습니다. [type=$type]", AiErrorCode.E500_AI_GENERATION_FAILED)
     }
 
-    private fun buildProfileSummaryPrompt(detail: ProfileDetail, jdBody: String?, strategy: String?): String = buildString {
+    private fun buildProfileSummaryPrompt(detail: ProfileDetail, jdBody: String?): String = buildString {
         // sourceBody는 기능 이전 레거시 JD 행에서 null → 그 경우 [JD] 섹션 생략
         if (!jdBody.isNullOrBlank()) {
             appendLine("[JD]")
             appendLine(jdBody)
-        }
-        if (strategy != null) {
-            appendLine("[지원 전략]")
-            appendLine(strategy)
         }
         appendLine("[경력]")
         detail.sections.careers.forEach {

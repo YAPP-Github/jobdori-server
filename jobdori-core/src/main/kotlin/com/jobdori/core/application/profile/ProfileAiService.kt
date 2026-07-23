@@ -3,6 +3,7 @@ package com.jobdori.core.application.profile
 import com.jobdori.core.application.ai.client.AiChatClient
 import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
+import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.error.JdNotFoundException
 import com.jobdori.core.domain.jd.repository.JdRepository
 import com.jobdori.core.domain.prompt.PromptTemplate
@@ -24,12 +25,15 @@ class ProfileAiService(
     private val jdRepository: JdRepository,
 ) {
 
+    // 프롬프트에는 JD 원문/전략 대신 coreCompetencies 키워드만 넣는다.
     fun generateCoreCompetency(detail: ProfileDetail, workspaceId: Long, jdPublicId: String?): CoreCompetencyGeneration {
-        val strategy = resolveStrategy(workspaceId, jdPublicId)
+        val jd = findJd(workspaceId, jdPublicId)
 
         val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
-        val text = aiChatClient.generateText(template.build(userPrompt = buildProfileSummaryPrompt(detail, strategy)))
-        return CoreCompetencyGeneration(strategy, text)
+        val text = aiChatClient.generateText(
+            template.build(userPrompt = buildProfileSummaryPrompt(detail, jd?.coreCompetencies.orEmpty())),
+        )
+        return CoreCompetencyGeneration(jd?.strategy?.takeIf { it.isNotBlank() }, text)
     }
 
     fun polish(
@@ -61,12 +65,14 @@ class ProfileAiService(
     }
 
     private fun resolveStrategy(workspaceId: Long, jdPublicId: String?): String? {
-        return jdPublicId
-            ?.let {
-                jdRepository.findByPublicIdAndWorkspaceId(it, workspaceId)
-                    ?: throw JdNotFoundException("등록되지 않은 JD($it)입니다")
-            }
-            ?.strategy?.takeIf { it.isNotBlank() }
+        return findJd(workspaceId, jdPublicId)?.strategy?.takeIf { it.isNotBlank() }
+    }
+
+    private fun findJd(workspaceId: Long, jdPublicId: String?): Jd? {
+        return jdPublicId?.let {
+            jdRepository.findByPublicIdAndWorkspaceId(it, workspaceId)
+                ?: throw JdNotFoundException("등록되지 않은 JD($it)입니다")
+        }
     }
 
     private fun getTemplate(type: PromptType): PromptTemplate {
@@ -74,10 +80,10 @@ class ProfileAiService(
             ?: throw AiException("이력서 AI 프롬프트를 찾을 수 없습니다. [type=$type]", AiErrorCode.E500_AI_GENERATION_FAILED)
     }
 
-    private fun buildProfileSummaryPrompt(detail: ProfileDetail, strategy: String?): String = buildString {
-        if (strategy != null) {
-            appendLine("[지원 전략]")
-            appendLine(strategy)
+    private fun buildProfileSummaryPrompt(detail: ProfileDetail, emphasisKeywords: List<String>): String = buildString {
+        if (emphasisKeywords.isNotEmpty()) {
+            appendLine("[강조할 역량 키워드]")
+            appendLine(emphasisKeywords.joinToString(", "))
         }
         appendLine("[경력]")
         detail.sections.careers.forEach {

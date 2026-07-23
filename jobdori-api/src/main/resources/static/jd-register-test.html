@@ -131,7 +131,7 @@
 
     const MUTATION = `mutation($workspaceId: ID!, $request: JdRegisterRequest!){
       registerJd(workspaceId: $workspaceId, request: $request){
-        jd { jdId companyName positionTitle companyIntro responsibilities requiredExperiences preferredExperiences hiringProcess createdAt }
+        jd { jdId companyName positionTitle companyIntro responsibilities requiredExperiences preferredExperiences hiringProcess coreCompetencies createdAt }
         candidates { title body }
       }
     }`;
@@ -166,6 +166,7 @@
           <dt>필요 경험</dt><dd>${li(j.requiredExperiences)}</dd>
           <dt>우대 경험</dt><dd>${li(j.preferredExperiences)}</dd>
           <dt>전형 절차</dt><dd>${li(j.hiringProcess)}</dd>
+          <dt>핵심 역량</dt><dd>${(j.coreCompetencies && j.coreCompetencies.length) ? esc(j.coreCompetencies.join(', ')) : '—'}</dd>
           <dt>JD ID</dt><dd><code>${esc(j.jdId)}</code></dd>`;
         $('reportBox').classList.remove('hidden');
       } else if (d.candidates && d.candidates.length) {

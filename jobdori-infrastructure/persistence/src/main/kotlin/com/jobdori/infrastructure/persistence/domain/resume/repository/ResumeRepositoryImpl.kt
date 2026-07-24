@@ -81,6 +81,18 @@ class ResumeRepositoryImpl(
         )?.toDomain()
     }
 
+    @Transactional
+    override fun markCoreCompetencyGenerated(id: Long, workspaceId: Long): Resume? {
+        val resumeEntity = resumeJpaRepository.findByIdAndWorkspaceIdAndStatusIn(
+            id = id,
+            workspaceId = workspaceId,
+            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+        ) ?: return null
+
+        resumeEntity.coreCompetencyGenerated = true
+        return resumeJpaRepository.save(resumeEntity).toDomain()
+    }
+
     @Transactional(readOnly = true)
     override fun findSectionsByIdAndWorkspaceId(id: Long, workspaceId: Long): ResumeDetail? {
         val resume = findByIdAndWorkspaceId(

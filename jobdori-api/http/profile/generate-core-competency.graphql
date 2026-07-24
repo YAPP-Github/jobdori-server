@@ -1,6 +1,7 @@
 mutation GenerateCoreCompetency {
     generateCoreCompetency(
         workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 94123123213123123
         jdId: "00000000-0000-0000-0000-000000000003"
     ) {
         coreCompetency

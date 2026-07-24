@@ -28,6 +28,9 @@ class ResumeEntity(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     var status: ResumeStatus,
+
+    @Column(nullable = false)
+    var coreCompetencyGenerated: Boolean = false,
 ) : AuditableEntity() {
 
     @Id
@@ -40,6 +43,7 @@ class ResumeEntity(
         targetJdId = targetJdId,
         template = template,
         status = status,
+        coreCompetencyGenerated = coreCompetencyGenerated,
         createdAt = createdAt,
         updatedAt = updatedAt,
     )
@@ -50,6 +54,7 @@ class ResumeEntity(
             targetJdId = domain.targetJdId,
             template = domain.template,
             status = domain.status,
+            coreCompetencyGenerated = domain.coreCompetencyGenerated,
         ).also { it.id = domain.id }
     }
 

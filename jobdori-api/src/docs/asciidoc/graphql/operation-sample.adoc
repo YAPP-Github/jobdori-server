@@ -566,6 +566,7 @@ query Resumes {
             }
             template
             status
+            coreCompetencyGenerated
             createdAt
         }
         cursor {
@@ -629,6 +630,7 @@ query Resume {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         sections {
             sectionId
@@ -820,6 +822,7 @@ mutation CreateResumeWithDefaultItems {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         updatedAt
         sections {
@@ -1111,6 +1114,7 @@ mutation UpdateResume {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         updatedAt
         sections {
@@ -1437,6 +1441,7 @@ mutation UpdateProfile {
 mutation GenerateCoreCompetency {
     generateCoreCompetency(
         workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 94123123213123123
         jdId: "00000000-0000-0000-0000-000000000003"
     ) {
         coreCompetency

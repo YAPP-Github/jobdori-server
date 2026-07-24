@@ -20,6 +20,8 @@ interface ResumeRepository {
 
     fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): Resume?
 
+    fun markCoreCompetencyGenerated(id: Long, workspaceId: Long): Resume?
+
     fun findSectionsByIdAndWorkspaceId(id: Long, workspaceId: Long): ResumeDetail?
 
     fun findDetailByIdAndWorkspaceId(id: Long, workspaceId: Long): ResumeDetail?

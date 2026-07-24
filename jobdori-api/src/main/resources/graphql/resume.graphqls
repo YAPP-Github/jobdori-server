@@ -491,6 +491,11 @@ type Resume {
     status: ResumeStatusType!
 
     """
+    PROFILE_CORE_COMPETENCY_GENERATION을 성공적으로 수행했는지 여부입니다.
+    """
+    coreCompetencyGenerated: Boolean!
+
+    """
     요청한 선택 필드에 따라 포함되는 섹션 목록입니다.
     """
     sections: [ResumeSection!]!
@@ -524,6 +529,11 @@ type ResumeSummary {
     이력서 상태입니다.
     """
     status: ResumeStatusType!
+
+    """
+    PROFILE_CORE_COMPETENCY_GENERATION을 성공적으로 수행했는지 여부입니다.
+    """
+    coreCompetencyGenerated: Boolean!
 
     """
     생성 시각입니다.

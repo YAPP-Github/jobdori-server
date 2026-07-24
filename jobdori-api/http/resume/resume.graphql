@@ -23,6 +23,7 @@ query Resume {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         sections {
             sectionId

@@ -76,6 +76,24 @@ class ResumeRepositoryTest(
         )
     }
 
+    "AI 핵심역량 생성 성공 여부를 저장한다" {
+        val created = resumeRepository.createDetail(
+            workspaceId = 10L,
+            command = saveCommand(),
+        )
+
+        created.resume.coreCompetencyGenerated shouldBe false
+
+        val marked = resumeRepository.markCoreCompetencyGenerated(
+            id = created.resume.id,
+            workspaceId = 10L,
+        )
+
+        requireNotNull(marked)
+        marked.coreCompetencyGenerated shouldBe true
+        resumeJpaRepository.findById(created.resume.id).orElseThrow().coreCompetencyGenerated shouldBe true
+    }
+
     "이력서 상세 수정 시 요청에 없는 섹션과 아이템을 삭제하고 요청 스냅샷을 저장한다" {
         // given
         val created = resumeRepository.createDetail(

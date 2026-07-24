@@ -8,6 +8,7 @@ data class Resume(
     val targetJdId: Long?,
     val template: ResumeTemplate,
     val status: ResumeStatus,
+    val coreCompetencyGenerated: Boolean,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
@@ -24,6 +25,7 @@ data class Resume(
             targetJdId = targetJdId,
             template = template,
             status = ResumeStatus.DRAFT,
+            coreCompetencyGenerated = false,
             createdAt = now,
             updatedAt = now,
         )

@@ -52,8 +52,10 @@ class GetExperienceRecommendationService(
     // 생성 실패 시 빈 값을 유지해 등록/추천은 계속 동작하고, 다음 접근 때 재시도한다.
     private fun ensureStrategy(jd: Jd): Jd {
         if (jd.strategy.isNotBlank()) return jd
-        val profile = profileReader.getDetail(profileReader.getOrCreateProfile(jd.workspaceId))
-        val strategy = runCatching { extractJdStrategyService.generate(jd, profile) }.getOrNull()
+        val strategy = runCatching {
+            val profile = profileReader.getDetail(profileReader.getOrCreateProfile(jd.workspaceId))
+            extractJdStrategyService.generate(jd, profile)
+        }.getOrNull()
         return if (strategy.isNullOrBlank()) jd else jdRepository.save(jd.copy(strategy = strategy))
     }
 

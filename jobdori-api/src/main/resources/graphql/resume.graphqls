@@ -312,7 +312,7 @@ input ResumeCoreSkillPayloadInput {
     """
     이력서 최초 생성 과정에서 만들어진 아이템인지 여부입니다.
     """
-    isInitialItem: Boolean! = false
+    isInitialItem: Boolean! = true
 }
 
 """

@@ -15,7 +15,7 @@ import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveComma
 import org.springframework.stereotype.Component
 
 @Component
-class ProfileResumeSectionInitializer {
+class ResumeSectionItemInitializer {
 
     fun initializeItems(
         detail: ProfileDetail,

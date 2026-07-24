@@ -1,22 +1,15 @@
-package com.jobdori.api.application.notion.service
+package com.jobdori.api.application.experience.service
 
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
-import com.jobdori.core.application.experience.ExperienceAiExtractionService
-import com.jobdori.core.application.experience.ExperienceImportService
 import com.jobdori.core.application.notion.NotionPageService
-import com.jobdori.core.domain.profile.service.ProfileModifier
-import com.jobdori.core.domain.profile.service.ProfileReader
 import org.springframework.stereotype.Service
 
 @Service
 class NotionExperienceImportService(
     private val notionPageService: NotionPageService,
-    private val experienceAiExtractionService: ExperienceAiExtractionService,
-    private val experienceImportService: ExperienceImportService,
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
-    private val profileReader: ProfileReader,
-    private val profileModifier: ProfileModifier,
+    private val experienceTextImportService: ExperienceTextImportService,
 ) {
 
     fun importExperiences(
@@ -41,14 +34,10 @@ class NotionExperienceImportService(
             )
         }
 
-        val result = experienceAiExtractionService.extract(text)
-        experienceImportService.saveAll(
+        experienceTextImportService.import(
             workspaceId = workspace.id,
-            groups = result.toCommandGroups(),
+            text = text,
         )
-
-        val profile = profileReader.getOrCreateProfile(workspace.id)
-        profileModifier.modify(profile, result.toProfileUpdateCommand(profileReader.getDetail(profile)))
     }
 
 }

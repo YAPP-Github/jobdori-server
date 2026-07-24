@@ -32,7 +32,7 @@ import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import java.io.ByteArrayOutputStream
 
-internal class ExperiencePdfImportServiceTest : StringSpec({
+internal class PdfExperienceImportServiceTest : StringSpec({
 
     val experienceImportService = mockk<ExperienceImportService>()
     val experienceAiExtractionService = mockk<ExperienceAiExtractionService>()
@@ -40,13 +40,16 @@ internal class ExperiencePdfImportServiceTest : StringSpec({
     val pdfValidationService = mockk<PdfValidationService>()
     val profileReader = mockk<ProfileReader>()
     val profileModifier = mockk<ProfileModifier>()
-    val service = ExperiencePdfImportService(
+    val experienceTextImportService = ExperienceTextImportService(
         experienceImportService = experienceImportService,
         experienceAiExtractionService = experienceAiExtractionService,
-        workspaceAccessValidationService = workspaceAccessValidationService,
-        pdfValidationService = pdfValidationService,
         profileReader = profileReader,
         profileModifier = profileModifier,
+    )
+    val service = PdfExperienceImportService(
+        workspaceAccessValidationService = workspaceAccessValidationService,
+        pdfValidationService = pdfValidationService,
+        experienceTextImportService = experienceTextImportService,
     )
 
     beforeTest {

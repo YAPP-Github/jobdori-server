@@ -34,7 +34,7 @@ import com.jobdori.core.domain.resume.service.ResumeCreator
 import com.jobdori.core.domain.resume.service.ResumeModifier
 import com.jobdori.core.domain.resume.service.ResumeReader
 import com.jobdori.core.domain.resume.service.ResumeRemover
-import com.jobdori.core.domain.resume.service.ProfileResumeSectionInitializer
+import com.jobdori.core.domain.resume.service.ResumeSectionItemInitializer
 import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.workspace.Workspace
@@ -55,7 +55,7 @@ class ResumeServiceTest : StringSpec({
     val resumeModifier = mockk<ResumeModifier>()
     val getJdService = mockk<GetJdService>()
     val profileReader = mockk<ProfileReader>()
-    val profileResumeSectionInitializer = mockk<ProfileResumeSectionInitializer>()
+    val resumeSectionItemInitializer = mockk<ResumeSectionItemInitializer>()
     val resumeExperiencePolishService = mockk<ResumeExperiencePolishService>()
     val resumeService = ResumeService(
         workspaceAccessValidationService = workspaceAccessValidationService,
@@ -65,7 +65,7 @@ class ResumeServiceTest : StringSpec({
         resumeModifier = resumeModifier,
         getJdService = getJdService,
         profileReader = profileReader,
-        profileResumeSectionInitializer = profileResumeSectionInitializer,
+        resumeSectionItemInitializer = resumeSectionItemInitializer,
         resumeExperiencePolishService = resumeExperiencePolishService,
     )
 
@@ -112,14 +112,14 @@ class ResumeServiceTest : StringSpec({
         every { profileReader.getOrCreateProfile(1L) } returns profile
         every { profileReader.getDetail(profile) } returns profileDetail
         every {
-            profileResumeSectionInitializer.initializeItems(profileDetail, ResumeSectionType.BASIC_INFO)
+            resumeSectionItemInitializer.initializeItems(profileDetail, ResumeSectionType.BASIC_INFO)
         } returns initializedItems
-        every { resumeCreator.createDetail(workspaceId = 1L, command = any()) } returns createdDetail
+        every { resumeCreator.create(workspaceId = 1L, command = any()) } returns createdDetail
 
         resumeService.createResume(10L, "workspace-id", request)
 
         verify(exactly = 1) {
-            resumeCreator.createDetail(
+            resumeCreator.create(
                 workspaceId = 1L,
                 command = withArg {
                     it.status shouldBe ResumeStatus.COMPLETED
@@ -144,12 +144,12 @@ class ResumeServiceTest : StringSpec({
             sections = emptyList(),
         )
         every { getJdService.getJd(workspaceId = 1L, publicId = "jd-public-id") } returns targetJd()
-        every { resumeCreator.createDetail(workspaceId = 1L, command = any()) } returns createdDetail
+        every { resumeCreator.create(workspaceId = 1L, command = any()) } returns createdDetail
 
         resumeService.createResume(10L, "workspace-id", request)
 
         verify(exactly = 1) {
-            resumeCreator.createDetail(
+            resumeCreator.create(
                 workspaceId = 1L,
                 command = withArg { it.targetJdId shouldBe 20L },
             )
@@ -168,7 +168,7 @@ class ResumeServiceTest : StringSpec({
         )
         every { getJdService.getJd(1L, jd.publicId) } returns jd
         every { resumeExperiencePolishService.polish(listOf("원본 내용"), jd) } returns listOf("생성 첨삭 내용")
-        every { resumeCreator.createDetail(1L, any()) } returns ResumeDetail(
+        every { resumeCreator.create(1L, any()) } returns ResumeDetail(
             resume = ResumeFixture.create(id = 100L, workspaceId = 1L, targetJdId = jd.id),
             sections = emptyList(),
         )
@@ -176,7 +176,7 @@ class ResumeServiceTest : StringSpec({
         resumeService.createResume(10L, "workspace-id", request)
 
         verify {
-            resumeCreator.createDetail(1L, withArg<ResumeSaveCommand> { command ->
+            resumeCreator.create(1L, withArg<ResumeSaveCommand> { command ->
                 val payload = command.sections.single().items.single().payload as ResumeExperiencePayload
                 payload.name shouldBe "프로젝트"
                 payload.role shouldBe "백엔드 개발"
@@ -228,14 +228,14 @@ class ResumeServiceTest : StringSpec({
         every { profileReader.getOrCreateProfile(1L) } returns profile
         every { profileReader.getDetail(profile) } returns profileDetail
         every {
-            profileResumeSectionInitializer.initializeItems(profileDetail, ResumeSectionType.SKILL)
+            resumeSectionItemInitializer.initializeItems(profileDetail, ResumeSectionType.SKILL)
         } returns emptyList()
-        every { resumeCreator.createDetail(workspaceId = 1L, command = any()) } returns createdDetail
+        every { resumeCreator.create(workspaceId = 1L, command = any()) } returns createdDetail
 
         resumeService.createResume(10L, "workspace-id", request)
 
         verify(exactly = 1) {
-            resumeCreator.createDetail(
+            resumeCreator.create(
                 workspaceId = 1L,
                 command = withArg { it.sections shouldBe emptyList() },
             )

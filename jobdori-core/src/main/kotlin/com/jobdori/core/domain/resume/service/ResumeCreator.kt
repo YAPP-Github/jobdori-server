@@ -10,14 +10,11 @@ class ResumeCreator(
     private val resumeRepository: ResumeRepository,
 ) {
 
-    fun createDetail(
+    fun create(
         workspaceId: Long,
         command: ResumeSaveCommand,
     ): ResumeDetail {
-        return resumeRepository.createDetail(
-            workspaceId = workspaceId,
-            command = command,
-        )
+        return resumeRepository.createDetail(workspaceId = workspaceId, command = command)
     }
 
 }

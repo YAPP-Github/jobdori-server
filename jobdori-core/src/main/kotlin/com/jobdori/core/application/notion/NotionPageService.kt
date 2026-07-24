@@ -65,7 +65,7 @@ class NotionPageService(
     ): T {
         return try {
             block(connection)
-        } catch (exception: NotionUnauthorizedException) {
+        } catch (_: NotionUnauthorizedException) {
             val refreshedConnection = refreshConnection(connection)
             try {
                 block(refreshedConnection)

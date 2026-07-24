@@ -13,12 +13,10 @@ class ResumeRemover(
 
     @Transactional
     fun remove(workspaceId: Long, resumeId: Long) {
-        val resume = resumeRepository.findDetailByIdAndWorkspaceId(
+        val resume = resumeRepository.findByIdAndWorkspaceId(
             id = resumeId,
             workspaceId = workspaceId,
-        )?.resume ?: throw ResumeNotFoundException(
-            "존재하지 않는 이력서입니다. [workspaceId=$workspaceId, resumeId=$resumeId]",
-        )
+        ) ?: throw ResumeNotFoundException("존재하지 않는 이력서입니다. [workspaceId=$workspaceId, resumeId=$resumeId]")
 
         resumeRepository.save(resume.copy(status = ResumeStatus.DELETED))
     }

@@ -18,9 +18,9 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
 
-class ProfileResumeSectionInitializerTest : StringSpec({
+class ResumeSectionItemInitializerTest : StringSpec({
 
-    val initializer = ProfileResumeSectionInitializer()
+    val initializer = ResumeSectionItemInitializer()
 
     "프로필의 기본 항목을 경험을 제외한 이력서 섹션으로 초기화한다" {
         val detail = ProfileDetail(

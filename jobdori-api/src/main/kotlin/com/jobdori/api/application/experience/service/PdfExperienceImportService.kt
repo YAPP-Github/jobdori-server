@@ -3,23 +3,16 @@ package com.jobdori.api.application.experience.service
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.pdf.PdfUtils
-import com.jobdori.core.application.experience.ExperienceAiExtractionService
-import com.jobdori.core.application.experience.ExperienceImportService
-import com.jobdori.core.domain.profile.service.ProfileModifier
-import com.jobdori.core.domain.profile.service.ProfileReader
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeoutException
 
 @Service
-class ExperiencePdfImportService(
-    private val experienceImportService: ExperienceImportService,
-    private val experienceAiExtractionService: ExperienceAiExtractionService,
+class PdfExperienceImportService(
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
     private val pdfValidationService: PdfValidationService,
-    private val profileReader: ProfileReader,
-    private val profileModifier: ProfileModifier,
+    private val experienceTextImportService: ExperienceTextImportService,
 ) {
 
     fun importExperiences(file: MultipartFile, workspaceId: String, userId: Long) {
@@ -38,15 +31,16 @@ class ExperiencePdfImportService(
             )
         }
 
-        val result = experienceAiExtractionService.extract(text)
+        if (text.isBlank()) {
+            throw InvalidArgumentsException(
+                message = "PDF에서 가져올 텍스트가 없습니다 [userId=$userId]",
+            )
+        }
 
-        experienceImportService.saveAll(
+        experienceTextImportService.import(
             workspaceId = workspace.id,
-            groups = result.toCommandGroups(),
+            text = text,
         )
-
-        val profile = profileReader.getOrCreateProfile(workspace.id)
-        profileModifier.modify(profile, result.toProfileUpdateCommand(profileReader.getDetail(profile)))
     }
 
     private fun extractTextWithTimeout(pdfBytes: ByteArray): String {

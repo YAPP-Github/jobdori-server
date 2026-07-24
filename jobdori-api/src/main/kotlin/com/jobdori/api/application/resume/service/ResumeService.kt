@@ -19,7 +19,7 @@ import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeExperiencePayload
-import com.jobdori.core.domain.resume.service.ProfileResumeSectionInitializer
+import com.jobdori.core.domain.resume.service.ResumeSectionItemInitializer
 import com.jobdori.core.domain.resume.service.ResumeCreator
 import com.jobdori.core.domain.resume.service.ResumeModifier
 import com.jobdori.core.domain.resume.service.ResumeReader
@@ -36,7 +36,7 @@ class ResumeService(
     private val resumeModifier: ResumeModifier,
     private val getJdService: GetJdService,
     private val profileReader: ProfileReader,
-    private val profileResumeSectionInitializer: ProfileResumeSectionInitializer,
+    private val resumeSectionItemInitializer: ResumeSectionItemInitializer,
     private val resumeExperiencePolishService: ResumeExperiencePolishService,
 ) {
 
@@ -155,7 +155,7 @@ class ResumeService(
                     sections = command.sections.mapIndexedNotNull { index, section ->
                         if (!request.sections[index].useDefaultItems) return@mapIndexedNotNull section
 
-                        val defaultItems = profileResumeSectionInitializer.initializeItems(profileDetail, section.type)
+                        val defaultItems = resumeSectionItemInitializer.initializeItems(profileDetail, section.type)
                         section.copy(items = defaultItems).takeIf { defaultItems.isNotEmpty() }
                     },
                 )
@@ -164,7 +164,7 @@ class ResumeService(
 
         return toResponse(
             workspaceId = workspace.id,
-            detail = resumeCreator.createDetail(
+            detail = resumeCreator.create(
                 workspaceId = workspace.id,
                 command = command,
             ),

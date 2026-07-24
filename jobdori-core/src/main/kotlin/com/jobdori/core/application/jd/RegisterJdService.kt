@@ -7,6 +7,8 @@ import com.jobdori.core.application.ai.jd.result.JdMetaResult
 import com.jobdori.core.application.jd.client.JdCrawlerClient
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdPolicy
+import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
+import com.jobdori.core.domain.jd.error.JdCrawlException
 import com.jobdori.core.domain.jd.repository.JdRepository
 import org.springframework.stereotype.Service
 
@@ -35,6 +37,13 @@ class RegisterJdService(
 
         val singleBody = postings.first().body
         val meta = extractJdMetaService.extractFromBody(singleBody)
+        // JD가 아닌 URL/본문(예: 검색 페이지)이면 저장하지 않아 이후 추천까지 차단한다.
+        if (!meta.isJobPosting || meta.hasNoJdSubstance()) {
+            throw JdCrawlException(
+                "채용 공고로 인식되지 않는 내용입니다.",
+                JdCrawlErrorCode.E422_JD_NOT_A_POSTING,
+            )
+        }
         return JdRegisterResult.Registered(jdRepository.save(buildJd(workspaceId, sourceUrl, singleBody, meta)))
     }
 

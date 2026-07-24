@@ -380,6 +380,7 @@ private val graphQlOperationErrors = listOf(
             JdCrawlErrorCode.E400_JD_INVALID_URL,
             JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
             JdCrawlErrorCode.E422_JD_FETCH_FAILED,
+            JdCrawlErrorCode.E422_JD_NOT_A_POSTING,
             AiErrorCode.E429_AI_RATE_LIMITED,
             AiErrorCode.E500_AI_GENERATION_FAILED,
             AiErrorCode.E503_AI_UNAVAILABLE,

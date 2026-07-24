@@ -1986,13 +1986,13 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
                 companyName
                 positionTitle
                 insight {
-                    keyPoints
                     strategy
                 }
                 status
             }
             template
             status
+            coreCompetencyGenerated
             createdAt
         }
         cursor {
@@ -2133,7 +2133,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -2141,6 +2140,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         sections {
             sectionId
@@ -2379,6 +2379,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         updatedAt
         sections {
@@ -2705,7 +2706,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -2713,6 +2713,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         updatedAt
         sections {
@@ -2897,7 +2898,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
         hiringProcess
         coreCompetencies
         insight {
-            keyPoints
             strategy
         }
         status
@@ -3038,7 +3038,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
             companyName
             positionTitle
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -3098,6 +3097,11 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_fetch_failed</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">공고 내용을 가져오지 못했습니다. 내용을 직접 붙여넣어 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">JD 본문 수집 실패(모든 크롤 단 실패)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_a_posting</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">채용 공고가 아닌 것 같아요. 공고 URL이나 내용을 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI가 채용 공고로 인식하지 못한 본문/URL</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_rate_limited</p></td>
@@ -3438,6 +3442,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation GenerateCoreCompetency {
     generateCoreCompetency(
         workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 94123123213123123
         jdId: "00000000-0000-0000-0000-000000000003"
     ) {
         coreCompetency
@@ -3470,6 +3475,11 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">invalid_arguments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">입력한 내용을 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
@@ -3478,6 +3488,11 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">resume_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 이력서입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>

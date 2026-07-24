@@ -50,7 +50,10 @@ class ProfileAiService(
         val userPrompt = buildString {
             appendLine("[항목] ${kind.label}")
             appendLine("[글자수 제한] ${kind.maxLength}자")
-            structure?.let { appendLine("[작성 구조] ${it.instruction}") }
+            // 경험명은 한 줄 제목이라 작성 구조가 성립하지 않는다. FE가 구조를 넘겨도 무시해 구조/길이 초과 출력을 막는다.
+            structure
+                ?.takeUnless { kind == ProfilePolishKind.EXPERIENCE_TITLE }
+                ?.let { appendLine("[작성 구조] ${it.instruction}") }
             instruction?.takeIf { it.isNotBlank() }?.let { appendLine("[추가 지침] $it") }
             title?.takeIf { it.isNotBlank() }?.let { appendLine("[경험명] $it") }
             strategy?.let {
@@ -102,7 +105,7 @@ class ProfileAiService(
 enum class ProfilePolishKind(val label: String, val maxLength: Int) {
     CORE_COMPETENCY("핵심역량", 500),
     CAREER_DESCRIPTION("경력 세부 내용", 500),
-    EXPERIENCE_TITLE("경험명", 48),
+    EXPERIENCE_TITLE("경험명", 100),
     EXPERIENCE_DESCRIPTION("경험 STAR 설명", 500),
 }
 

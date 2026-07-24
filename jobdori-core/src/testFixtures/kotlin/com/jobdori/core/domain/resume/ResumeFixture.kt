@@ -10,7 +10,8 @@ object ResumeFixture {
         targetJdId: Long? = null,
         template: ResumeTemplate = ResumeTemplate.DEFAULT,
         status: ResumeStatus = ResumeStatus.DRAFT,
-        coreCompetencyGenerated: Boolean = false,
+        coreCompetencyGenerationStatus: CoreCompetencyGenerationStatus =
+            CoreCompetencyGenerationStatus.NOT_GENERATED,
         createdAt: LocalDateTime = LocalDateTime.of(2026, 1, 1, 0, 0),
         updatedAt: LocalDateTime = createdAt,
     ) = Resume(
@@ -19,7 +20,7 @@ object ResumeFixture {
         targetJdId = targetJdId,
         template = template,
         status = status,
-        coreCompetencyGenerated = coreCompetencyGenerated,
+        coreCompetencyGenerationStatus = coreCompetencyGenerationStatus,
         createdAt = createdAt,
         updatedAt = updatedAt,
     )

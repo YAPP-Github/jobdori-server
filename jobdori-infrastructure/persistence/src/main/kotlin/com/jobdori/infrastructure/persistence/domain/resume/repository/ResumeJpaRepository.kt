@@ -1,5 +1,6 @@
 package com.jobdori.infrastructure.persistence.domain.resume.repository
 
+import com.jobdori.core.domain.resume.CoreCompetencyGenerationStatus
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeEntity
 import org.springframework.data.domain.Pageable
@@ -14,32 +15,19 @@ interface ResumeJpaRepository : JpaRepository<ResumeEntity, Long>, ResumeCustomR
     @Query(
         """
         update ResumeEntity resume
-        set resume.coreCompetencyGenerated = true
+        set resume.coreCompetencyGenerationStatus = :nextStatus
         where resume.id = :id
           and resume.workspaceId = :workspaceId
           and resume.status in :statuses
-          and resume.coreCompetencyGenerated = false
+          and resume.coreCompetencyGenerationStatus = :currentStatus
         """,
     )
-    fun markCoreCompetencyGenerated(
+    fun updateCoreCompetencyGenerationStatus(
         @Param("id") id: Long,
         @Param("workspaceId") workspaceId: Long,
         @Param("statuses") statuses: Collection<ResumeStatus>,
-    ): Int
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(
-        """
-        update ResumeEntity resume
-        set resume.coreCompetencyGenerated = false
-        where resume.id = :id
-          and resume.workspaceId = :workspaceId
-          and resume.coreCompetencyGenerated = true
-        """,
-    )
-    fun resetCoreCompetencyGenerated(
-        @Param("id") id: Long,
-        @Param("workspaceId") workspaceId: Long,
+        @Param("currentStatus") currentStatus: CoreCompetencyGenerationStatus,
+        @Param("nextStatus") nextStatus: CoreCompetencyGenerationStatus,
     ): Int
 
     fun findByIdAndWorkspaceIdAndStatusIn(

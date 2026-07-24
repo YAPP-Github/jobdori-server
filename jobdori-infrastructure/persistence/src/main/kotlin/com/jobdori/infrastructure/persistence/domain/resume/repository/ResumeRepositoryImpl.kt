@@ -1,6 +1,7 @@
 package com.jobdori.infrastructure.persistence.domain.resume.repository
 
 import com.jobdori.common.error.InvalidArgumentsException
+import com.jobdori.core.domain.resume.CoreCompetencyGenerationStatus
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
 import com.jobdori.core.domain.resume.Resume
@@ -83,15 +84,17 @@ class ResumeRepositoryImpl(
     }
 
     @Transactional
-    override fun markCoreCompetencyGenerated(
+    override fun claimCoreCompetencyGeneration(
         id: Long,
         workspaceId: Long,
     ): CoreCompetencyGenerationClaimResult {
         val statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT)
-        val claimed = resumeJpaRepository.markCoreCompetencyGenerated(
+        val claimed = resumeJpaRepository.updateCoreCompetencyGenerationStatus(
             id = id,
             workspaceId = workspaceId,
             statuses = statuses,
+            currentStatus = CoreCompetencyGenerationStatus.NOT_GENERATED,
+            nextStatus = CoreCompetencyGenerationStatus.GENERATING,
         ) == 1
         if (claimed) return CoreCompetencyGenerationClaimResult.CLAIMED
 
@@ -108,10 +111,24 @@ class ResumeRepositoryImpl(
     }
 
     @Transactional
-    override fun resetCoreCompetencyGenerated(id: Long, workspaceId: Long) {
-        resumeJpaRepository.resetCoreCompetencyGenerated(
+    override fun completeCoreCompetencyGeneration(id: Long, workspaceId: Long) {
+        resumeJpaRepository.updateCoreCompetencyGenerationStatus(
             id = id,
             workspaceId = workspaceId,
+            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+            currentStatus = CoreCompetencyGenerationStatus.GENERATING,
+            nextStatus = CoreCompetencyGenerationStatus.GENERATED,
+        )
+    }
+
+    @Transactional
+    override fun resetCoreCompetencyGeneration(id: Long, workspaceId: Long) {
+        resumeJpaRepository.updateCoreCompetencyGenerationStatus(
+            id = id,
+            workspaceId = workspaceId,
+            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+            currentStatus = CoreCompetencyGenerationStatus.GENERATING,
+            nextStatus = CoreCompetencyGenerationStatus.NOT_GENERATED,
         )
     }
 

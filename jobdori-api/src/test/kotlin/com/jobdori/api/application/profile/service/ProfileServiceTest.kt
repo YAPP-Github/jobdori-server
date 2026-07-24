@@ -53,8 +53,11 @@ class ProfileServiceTest : StringSpec({
             sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
         )
         every {
-            resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+            resumeModifier.claimCoreCompetencyGeneration(workspaceId = 1L, resumeId = 100L)
         } returns true
+        every {
+            resumeModifier.completeCoreCompetencyGeneration(workspaceId = 1L, resumeId = 100L)
+        } returns Unit
         every { profileReader.getOrCreateProfile(1L) } returns profile
         every { profileReader.getDetail(profile) } returns profileDetail
         every {
@@ -74,13 +77,16 @@ class ProfileServiceTest : StringSpec({
         response.coreCompetency shouldBe "AI 생성 핵심역량"
         response.strategy shouldBe "지원 전략"
         verify(exactly = 1) {
-            resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+            resumeModifier.claimCoreCompetencyGeneration(workspaceId = 1L, resumeId = 100L)
+        }
+        verify(exactly = 1) {
+            resumeModifier.completeCoreCompetencyGeneration(workspaceId = 1L, resumeId = 100L)
         }
     }
 
     "이미 핵심역량을 생성한 이력서는 다시 생성하지 않는다" {
         every {
-            resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+            resumeModifier.claimCoreCompetencyGeneration(workspaceId = 1L, resumeId = 100L)
         } returns false
 
         shouldThrow<InvalidArgumentsException> {
@@ -104,7 +110,7 @@ class ProfileServiceTest : StringSpec({
             sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
         )
         every {
-            resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+            resumeModifier.claimCoreCompetencyGeneration(workspaceId = 1L, resumeId = 100L)
         } returns true
         every { profileReader.getOrCreateProfile(1L) } returns profile
         every { profileReader.getDetail(profile) } returns profileDetail
@@ -112,7 +118,7 @@ class ProfileServiceTest : StringSpec({
             profileAiService.generateCoreCompetency(profileDetail, workspaceId = 1L, jdPublicId = "jd-public-id")
         } throws IllegalStateException("AI 생성 실패")
         every {
-            resumeModifier.resetCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+            resumeModifier.resetCoreCompetencyGeneration(workspaceId = 1L, resumeId = 100L)
         } returns Unit
 
         shouldThrow<IllegalStateException> {
@@ -125,7 +131,10 @@ class ProfileServiceTest : StringSpec({
         }
 
         verify(exactly = 1) {
-            resumeModifier.resetCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+            resumeModifier.resetCoreCompetencyGeneration(workspaceId = 1L, resumeId = 100L)
+        }
+        verify(exactly = 0) {
+            resumeModifier.completeCoreCompetencyGeneration(any(), any())
         }
     }
 

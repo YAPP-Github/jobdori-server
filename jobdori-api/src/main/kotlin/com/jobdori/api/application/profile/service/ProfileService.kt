@@ -44,7 +44,7 @@ class ProfileService(
         return ProfileResponse.from(detail)
     }
 
-    // 생성 결과는 저장하지 않고 응답으로만 반환하며, 이력서에는 생성 성공 여부만 기록한다.
+    // 생성 결과는 저장하지 않고 응답으로만 반환하며, 이력서에는 생성 상태만 기록한다.
     fun generateCoreCompetency(
         userId: Long,
         workspaceId: String,
@@ -55,15 +55,17 @@ class ProfileService(
             workspaceId = workspaceId,
             userId = userId,
         )
-        if (!resumeModifier.markCoreCompetencyGenerated(workspaceId = workspace.id, resumeId = resumeId)) {
+        if (!resumeModifier.claimCoreCompetencyGeneration(workspaceId = workspace.id, resumeId = resumeId)) {
             throw InvalidArgumentsException("핵심역량을 이미 생성했거나 생성 중인 이력서입니다. [resumeId=$resumeId]")
         }
 
         val generation = try {
             val profile = profileReader.getOrCreateProfile(workspace.id)
-            profileAiService.generateCoreCompetency(profileReader.getDetail(profile), workspace.id, jdId)
+            profileAiService.generateCoreCompetency(profileReader.getDetail(profile), workspace.id, jdId).also {
+                resumeModifier.completeCoreCompetencyGeneration(workspaceId = workspace.id, resumeId = resumeId)
+            }
         } catch (exception: Exception) {
-            resumeModifier.resetCoreCompetencyGenerated(workspaceId = workspace.id, resumeId = resumeId)
+            resumeModifier.resetCoreCompetencyGeneration(workspaceId = workspace.id, resumeId = resumeId)
             throw exception
         }
 

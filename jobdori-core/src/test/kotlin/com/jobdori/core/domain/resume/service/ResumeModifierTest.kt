@@ -79,23 +79,23 @@ class ResumeModifierTest : StringSpec({
 
     "핵심역량 생성 시작을 선점한 요청만 성공한다" {
         every {
-            resumeRepository.markCoreCompetencyGenerated(id = 1L, workspaceId = 10L)
+            resumeRepository.claimCoreCompetencyGeneration(id = 1L, workspaceId = 10L)
         } returnsMany listOf(
             CoreCompetencyGenerationClaimResult.CLAIMED,
             CoreCompetencyGenerationClaimResult.ALREADY_CLAIMED,
         )
 
-        resumeModifier.markCoreCompetencyGenerated(workspaceId = 10L, resumeId = 1L) shouldBe true
-        resumeModifier.markCoreCompetencyGenerated(workspaceId = 10L, resumeId = 1L) shouldBe false
+        resumeModifier.claimCoreCompetencyGeneration(workspaceId = 10L, resumeId = 1L) shouldBe true
+        resumeModifier.claimCoreCompetencyGeneration(workspaceId = 10L, resumeId = 1L) shouldBe false
     }
 
     "핵심역량을 생성할 이력서가 없으면 예외를 던진다" {
         every {
-            resumeRepository.markCoreCompetencyGenerated(id = 1L, workspaceId = 10L)
+            resumeRepository.claimCoreCompetencyGeneration(id = 1L, workspaceId = 10L)
         } returns CoreCompetencyGenerationClaimResult.NOT_FOUND
 
         shouldThrow<ResumeNotFoundException> {
-            resumeModifier.markCoreCompetencyGenerated(workspaceId = 10L, resumeId = 1L)
+            resumeModifier.claimCoreCompetencyGeneration(workspaceId = 10L, resumeId = 1L)
         }
     }
 

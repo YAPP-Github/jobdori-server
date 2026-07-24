@@ -26,8 +26,8 @@ class ResumeModifier(
         )
     }
 
-    fun markCoreCompetencyGenerated(workspaceId: Long, resumeId: Long): Boolean {
-        return when (resumeRepository.markCoreCompetencyGenerated(
+    fun claimCoreCompetencyGeneration(workspaceId: Long, resumeId: Long): Boolean {
+        return when (resumeRepository.claimCoreCompetencyGeneration(
             id = resumeId,
             workspaceId = workspaceId,
         )) {
@@ -39,8 +39,15 @@ class ResumeModifier(
         }
     }
 
-    fun resetCoreCompetencyGenerated(workspaceId: Long, resumeId: Long) {
-        resumeRepository.resetCoreCompetencyGenerated(
+    fun completeCoreCompetencyGeneration(workspaceId: Long, resumeId: Long) {
+        resumeRepository.completeCoreCompetencyGeneration(
+            id = resumeId,
+            workspaceId = workspaceId,
+        )
+    }
+
+    fun resetCoreCompetencyGeneration(workspaceId: Long, resumeId: Long) {
+        resumeRepository.resetCoreCompetencyGeneration(
             id = resumeId,
             workspaceId = workspaceId,
         )

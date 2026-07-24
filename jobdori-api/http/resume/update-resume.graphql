@@ -197,7 +197,6 @@ mutation UpdateResume {
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -205,6 +204,7 @@ mutation UpdateResume {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         updatedAt
         sections {

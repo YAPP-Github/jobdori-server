@@ -192,6 +192,7 @@ mutation CreateResume {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         updatedAt
         sections {

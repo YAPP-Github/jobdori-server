@@ -13,6 +13,7 @@ data class ResumeResponse(
     val targetJd: JdResponse?,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
+    val coreCompetencyGenerated: Boolean,
     val sections: List<ResumeSectionResponse>,
     val createdAt: Instant,
 ) {
@@ -26,6 +27,7 @@ data class ResumeResponse(
             targetJd = targetJd,
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
+            coreCompetencyGenerated = resume.coreCompetencyGenerated,
             sections = emptyList(),
             createdAt = resume.createdAt.toInstantAtSystemDefaultZone(),
         )
@@ -38,6 +40,7 @@ data class ResumeResponse(
             targetJd = targetJd,
             template = detail.resume.template,
             status = ResumeStatusType.from(detail.resume.status),
+            coreCompetencyGenerated = detail.resume.coreCompetencyGenerated,
             sections = detail.sections
                 .sortedBy { it.section.displayOrder }
                 .map { ResumeSectionResponse.from(it.section, it.items) },

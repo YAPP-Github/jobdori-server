@@ -1,5 +1,6 @@
 package com.jobdori.infrastructure.persistence.domain.resume.entity
 
+import com.jobdori.core.domain.resume.CoreCompetencyGenerationStatus
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
@@ -28,6 +29,11 @@ class ResumeEntity(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     var status: ResumeStatus,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    var coreCompetencyGenerationStatus: CoreCompetencyGenerationStatus =
+        CoreCompetencyGenerationStatus.NOT_GENERATED,
 ) : AuditableEntity() {
 
     @Id
@@ -40,6 +46,7 @@ class ResumeEntity(
         targetJdId = targetJdId,
         template = template,
         status = status,
+        coreCompetencyGenerationStatus = coreCompetencyGenerationStatus,
         createdAt = createdAt,
         updatedAt = updatedAt,
     )
@@ -50,6 +57,7 @@ class ResumeEntity(
             targetJdId = domain.targetJdId,
             template = domain.template,
             status = domain.status,
+            coreCompetencyGenerationStatus = domain.coreCompetencyGenerationStatus,
         ).also { it.id = domain.id }
     }
 

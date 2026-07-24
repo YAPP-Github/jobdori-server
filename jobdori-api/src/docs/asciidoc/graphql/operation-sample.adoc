@@ -560,13 +560,13 @@ query Resumes {
                 companyName
                 positionTitle
                 insight {
-                    keyPoints
                     strategy
                 }
                 status
             }
             template
             status
+            coreCompetencyGenerated
             createdAt
         }
         cursor {
@@ -623,7 +623,6 @@ query Resume {
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -631,6 +630,7 @@ query Resume {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         sections {
             sectionId
@@ -822,6 +822,7 @@ mutation CreateResumeWithDefaultItems {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         updatedAt
         sections {
@@ -1106,7 +1107,6 @@ mutation UpdateResume {
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -1114,6 +1114,7 @@ mutation UpdateResume {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         updatedAt
         sections {
@@ -1201,7 +1202,6 @@ query Jd {
         hiringProcess
         coreCompetencies
         insight {
-            keyPoints
             strategy
         }
         status
@@ -1253,7 +1253,6 @@ mutation RegisterJd {
             companyName
             positionTitle
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -1442,6 +1441,7 @@ mutation UpdateProfile {
 mutation GenerateCoreCompetency {
     generateCoreCompetency(
         workspaceId: "00000000-0000-0000-0000-000000000002"
+        resumeId: 94123123213123123
         jdId: "00000000-0000-0000-0000-000000000003"
     ) {
         coreCompetency

@@ -9,6 +9,7 @@ import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.profile.ProfileAiService
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
+import com.jobdori.core.domain.resume.service.ResumeModifier
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,6 +18,7 @@ class ProfileService(
     private val profileReader: ProfileReader,
     private val profileModifier: ProfileModifier,
     private val profileAiService: ProfileAiService,
+    private val resumeModifier: ResumeModifier,
 ) {
 
     fun getProfile(userId: Long, workspaceId: String): ProfileResponse {
@@ -42,15 +44,30 @@ class ProfileService(
         return ProfileResponse.from(detail)
     }
 
-    // 결과만 반환하고 저장하지 않는다. 저장은 FE가 updateProfile로 수행
-    fun generateCoreCompetency(userId: Long, workspaceId: String, jdId: String?): GenerateCoreCompetencyResponse {
+    // 생성 결과는 저장하지 않고 응답으로만 반환하며, 이력서에는 생성 상태만 기록한다.
+    fun generateCoreCompetency(
+        userId: Long,
+        workspaceId: String,
+        resumeId: Long,
+        jdId: String?,
+    ): GenerateCoreCompetencyResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,
         )
+        if (!resumeModifier.claimCoreCompetencyGeneration(workspaceId = workspace.id, resumeId = resumeId)) {
+            throw InvalidArgumentsException("핵심역량을 이미 생성했거나 생성 중인 이력서입니다. [resumeId=$resumeId]")
+        }
 
-        val profile = profileReader.getOrCreateProfile(workspace.id)
-        val generation = profileAiService.generateCoreCompetency(profileReader.getDetail(profile), workspace.id, jdId)
+        val generation = try {
+            val profile = profileReader.getOrCreateProfile(workspace.id)
+            profileAiService.generateCoreCompetency(profileReader.getDetail(profile), workspace.id, jdId).also {
+                resumeModifier.completeCoreCompetencyGeneration(workspaceId = workspace.id, resumeId = resumeId)
+            }
+        } catch (exception: Exception) {
+            resumeModifier.resetCoreCompetencyGeneration(workspaceId = workspace.id, resumeId = resumeId)
+            throw exception
+        }
 
         return GenerateCoreCompetencyResponse(
             coreCompetency = generation.coreCompetency,

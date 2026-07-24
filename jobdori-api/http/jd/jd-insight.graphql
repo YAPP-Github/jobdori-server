@@ -3,7 +3,6 @@ query JdInsight {
         workspaceId: "00000000-0000-0000-0000-000000000002"
         jdId: "00000000-0000-0000-0000-00000000000a"
     ) {
-        keyPoints
         strategy
     }
 }

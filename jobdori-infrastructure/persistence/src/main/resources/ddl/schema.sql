@@ -256,6 +256,7 @@ create table resume_v1 (
     target_jd_id bigint,
     template varchar(30) not null,
     status varchar(30) not null,
+    core_competency_generation_status varchar(30) default 'NOT_GENERATED' not null,
     created_at timestamp(6),
     updated_at timestamp(6),
     primary key (id)

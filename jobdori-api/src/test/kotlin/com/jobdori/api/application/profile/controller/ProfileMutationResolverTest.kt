@@ -107,7 +107,12 @@ internal class ProfileMutationResolverTest(
 
     "핵심역량을 AI로 생성한다 (jdId를 주면 표시용 지원 전략 함께 반환)" {
         every {
-            profileService.generateCoreCompetency(userId = 1L, workspaceId = "workspace-id", jdId = "jd-pub-1")
+            profileService.generateCoreCompetency(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                resumeId = 100L,
+                jdId = "jd-pub-1",
+            )
         } returns GenerateCoreCompetencyResponse(
             coreCompetency = "콘텐츠 기획과 데이터 기반 개선에 강점이 있는 마케터입니다.",
             strategy = "데이터 기반 개선 경험을 강조해서 지원하는 게 좋겠어요.",
@@ -117,7 +122,7 @@ internal class ProfileMutationResolverTest(
             .document(
                 """
                 mutation {
-                  generateCoreCompetency(workspaceId: "workspace-id", jdId: "jd-pub-1") {
+                  generateCoreCompetency(workspaceId: "workspace-id", resumeId: 100, jdId: "jd-pub-1") {
                     coreCompetency
                     strategy
                   }
@@ -131,7 +136,12 @@ internal class ProfileMutationResolverTest(
             .isEqualTo("데이터 기반 개선 경험을 강조해서 지원하는 게 좋겠어요.")
 
         verify(exactly = 1) {
-            profileService.generateCoreCompetency(userId = 1L, workspaceId = "workspace-id", jdId = "jd-pub-1")
+            profileService.generateCoreCompetency(
+                userId = 1L,
+                workspaceId = "workspace-id",
+                resumeId = 100L,
+                jdId = "jd-pub-1",
+            )
         }
     }
 

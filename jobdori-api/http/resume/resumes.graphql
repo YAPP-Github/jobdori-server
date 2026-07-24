@@ -11,13 +11,13 @@ query Resumes {
                 companyName
                 positionTitle
                 insight {
-                    keyPoints
                     strategy
                 }
                 status
             }
             template
             status
+            coreCompetencyGenerated
             createdAt
         }
         cursor {

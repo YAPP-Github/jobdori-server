@@ -27,6 +27,12 @@ enum class JdCrawlErrorCode(
         message = "공고 내용을 가져오지 못했습니다. 내용을 직접 붙여넣어 주세요.",
         description = "JD 본문 수집 실패(모든 크롤 단 실패)",
     ),
+    E422_JD_NOT_A_POSTING(
+        httpStatusCode = 422,
+        code = "jd_not_a_posting",
+        message = "채용 공고가 아닌 것 같아요. 공고 URL이나 내용을 확인해 주세요.",
+        description = "AI가 채용 공고로 인식하지 못한 본문/URL",
+    ),
     ;
 
 }

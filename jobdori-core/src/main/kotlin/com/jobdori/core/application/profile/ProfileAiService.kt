@@ -10,6 +10,7 @@ import com.jobdori.core.domain.prompt.PromptTemplate
 import com.jobdori.core.domain.prompt.PromptType
 import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
 import com.jobdori.core.domain.profile.ProfileDetail
+import com.jobdori.core.domain.profile.ProfileSummaryText
 import org.springframework.stereotype.Service
 
 // 생성 결과 + FE 표시용 JD 지원 전략(jd.strategy)을 함께 노출한다. 전략은 프롬프트 입력에는 쓰지 않는다.
@@ -50,7 +51,10 @@ class ProfileAiService(
         val userPrompt = buildString {
             appendLine("[항목] ${kind.label}")
             appendLine("[글자수 제한] ${kind.maxLength}자")
-            structure?.let { appendLine("[작성 구조] ${it.instruction}") }
+            // 경험명은 한 줄 제목이라 작성 구조가 성립하지 않는다. FE가 구조를 넘겨도 무시해 구조/길이 초과 출력을 막는다.
+            structure
+                ?.takeUnless { kind == ProfilePolishKind.EXPERIENCE_TITLE }
+                ?.let { appendLine("[작성 구조] ${it.instruction}") }
             instruction?.takeIf { it.isNotBlank() }?.let { appendLine("[추가 지침] $it") }
             title?.takeIf { it.isNotBlank() }?.let { appendLine("[경험명] $it") }
             strategy?.let {
@@ -86,15 +90,7 @@ class ProfileAiService(
             appendLine("[JD]")
             appendLine(jdBody)
         }
-        appendLine("[경력]")
-        detail.sections.careers.forEach {
-            appendLine(
-                "- ${it.company.orEmpty()} / ${it.position.orEmpty()} " +
-                    "(${it.period?.startAt ?: ""} - ${it.period?.endAt ?: ""}): ${it.description.orEmpty()}",
-            )
-        }
-        appendLine("[스킬]")
-        append(detail.sections.skills.joinToString(", ") { it.name.orEmpty() })
+        append(ProfileSummaryText.of(detail))
     }
 
 }
@@ -102,7 +98,7 @@ class ProfileAiService(
 enum class ProfilePolishKind(val label: String, val maxLength: Int) {
     CORE_COMPETENCY("핵심역량", 500),
     CAREER_DESCRIPTION("경력 세부 내용", 500),
-    EXPERIENCE_TITLE("경험명", 48),
+    EXPERIENCE_TITLE("경험명", 100),
     EXPERIENCE_DESCRIPTION("경험 STAR 설명", 500),
 }
 

@@ -9,7 +9,7 @@ import com.jobdori.core.domain.jd.repository.JdRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-// 매칭 결과 + 매칭의 기준이 된 JD 지원 전략(jd.strategy, JD 등록 시 메타 추출로 생성)을 함께 노출한다.
+// 매칭 결과 + 매칭의 기준이 된 JD 지원 전략(jd.strategy, JD 등록 시 생성)을 함께 노출한다.
 data class ExperienceRecommendationView(
     val strategy: String,
     val items: List<RecommendedExperience>,

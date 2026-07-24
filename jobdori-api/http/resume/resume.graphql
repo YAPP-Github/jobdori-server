@@ -16,7 +16,6 @@ query Resume {
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -24,6 +23,7 @@ query Resume {
         }
         template
         status
+        coreCompetencyGenerated
         createdAt
         sections {
             sectionId

@@ -380,6 +380,7 @@ private val graphQlOperationErrors = listOf(
             JdCrawlErrorCode.E400_JD_INVALID_URL,
             JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
             JdCrawlErrorCode.E422_JD_FETCH_FAILED,
+            JdCrawlErrorCode.E422_JD_NOT_A_POSTING,
             AiErrorCode.E429_AI_RATE_LIMITED,
             AiErrorCode.E500_AI_GENERATION_FAILED,
             AiErrorCode.E503_AI_UNAVAILABLE,
@@ -427,8 +428,10 @@ private val graphQlOperationErrors = listOf(
         type = GraphQlOperationType.MUTATION,
         sampleFile = graphQlSample("profile/generate-core-competency.graphql"),
         errorCodes = operationErrorCodes(
+            CommonErrorCode.E400_INVALID_ARGUMENTS,
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            ResumeErrorCode.E404_RESUME_NOT_FOUND,
             JdErrorCode.E404_JD_NOT_FOUND,
             AiErrorCode.E500_AI_GENERATION_FAILED,
         ),

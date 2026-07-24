@@ -9,6 +9,7 @@ import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.profile.ProfileAiService
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
+import com.jobdori.core.domain.resume.service.ResumeReader
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,6 +18,7 @@ class ProfileService(
     private val profileReader: ProfileReader,
     private val profileModifier: ProfileModifier,
     private val profileAiService: ProfileAiService,
+    private val resumeReader: ResumeReader,
 ) {
 
     fun getProfile(userId: Long, workspaceId: String): ProfileResponse {
@@ -42,10 +44,11 @@ class ProfileService(
         return ProfileResponse.from(detail)
     }
 
-    // 생성 결과는 저장하지 않고 응답으로만 반환하며, 이력서에는 생성 상태만 기록한다.
+    // 생성 결과는 저장하지 않고 응답으로만 반환하며, 이력서에 선택된 경험은 생성 근거로만 사용한다.
     fun generateCoreCompetency(
         userId: Long,
         workspaceId: String,
+        resumeId: Long,
         jdId: String?,
     ): GenerateCoreCompetencyResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
@@ -53,12 +56,14 @@ class ProfileService(
             userId = userId,
         )
 
-        val generation = try {
-            val profile = profileReader.getOrCreateProfile(workspace.id)
-            profileAiService.generateCoreCompetency(profileReader.getDetail(profile), workspace.id, jdId)
-        } catch (exception: Exception) {
-            throw exception
-        }
+        val profile = profileReader.getOrCreateProfile(workspace.id)
+        val resumeDetail = resumeReader.getDetail(workspaceId = workspace.id, resumeId = resumeId)
+        val generation = profileAiService.generateCoreCompetency(
+            detail = profileReader.getDetail(profile),
+            resumeDetail = resumeDetail,
+            workspaceId = workspace.id,
+            jdPublicId = jdId,
+        )
 
         return GenerateCoreCompetencyResponse(
             coreCompetency = generation.coreCompetency,

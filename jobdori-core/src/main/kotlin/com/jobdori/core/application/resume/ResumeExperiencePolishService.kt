@@ -28,12 +28,12 @@ class ResumeExperiencePolishService(
         ).buildStructured(buildUserPrompt(contents, jd), ResumeExperiencePolishResult::class))
 
         val polishedByIndex = result.items.associate { it.index to it.content.trim() }
-        return contents.indices.map { index ->
-            polishedByIndex[index + 1] ?: throw AiException(
-                "이력서 경험 첨삭 결과가 누락되었습니다: index=${index + 1}",
-                AiErrorCode.E500_AI_GENERATION_FAILED,
-            )
-        }
+        // LLM이 유사 경험을 병합/생략하거나 index를 재번호하면 결과가 입력과 어긋난다.
+        // 이때 index로 매핑하면 다른 경험에 엉뚱한 내용이 들어가므로, 1:1이 완전할 때만 첨삭을 적용하고 아니면 원문을 유지한다.
+        val hasExactMatch = polishedByIndex.keys == (1..contents.size).toSet() &&
+            polishedByIndex.values.none { it.isBlank() }
+        if (!hasExactMatch) return contents
+        return contents.indices.map { index -> polishedByIndex.getValue(index + 1) }
     }
 
     private fun buildUserPrompt(contents: List<String>, jd: Jd): String = """

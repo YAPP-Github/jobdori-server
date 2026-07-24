@@ -17,7 +17,6 @@ query Resumes {
             }
             template
             status
-            coreCompetencyGenerated
             createdAt
         }
         cursor {

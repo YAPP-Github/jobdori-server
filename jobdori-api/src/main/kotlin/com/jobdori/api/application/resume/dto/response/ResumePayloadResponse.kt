@@ -32,9 +32,13 @@ data class ResumeBasicInfoPayloadResponse(
 
 data class ResumeCoreSkillPayloadResponse(
     val content: String?,
+    val isInitialItem: Boolean,
 ) : ResumePayloadResponse {
     companion object {
-        fun from(payload: ResumeCoreSkillPayload) = ResumeCoreSkillPayloadResponse(content = payload.content)
+        fun from(payload: ResumeCoreSkillPayload) = ResumeCoreSkillPayloadResponse(
+            content = payload.content,
+            isInitialItem = payload.isInitialItem,
+        )
     }
 }
 

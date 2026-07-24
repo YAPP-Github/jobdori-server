@@ -1,20 +1,18 @@
 package com.jobdori.infrastructure.persistence.domain.resume.repository
 
 import com.jobdori.common.error.InvalidArgumentsException
-import com.jobdori.core.domain.resume.CoreCompetencyGenerationStatus
+import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
-import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeStatus
-import com.jobdori.core.domain.resume.repository.CoreCompetencyGenerationClaimResult
 import com.jobdori.core.domain.resume.repository.ResumeRepository
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.support.crypto.StringEncryptor
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeEntity
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeSectionEntity
 import com.jobdori.infrastructure.persistence.domain.resume.entity.ResumeSectionItemEntity
-import org.springframework.stereotype.Repository
 import org.springframework.data.domain.PageRequest
+import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
@@ -81,55 +79,6 @@ class ResumeRepositoryImpl(
             workspaceId = workspaceId,
             statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
         )?.toDomain()
-    }
-
-    @Transactional
-    override fun claimCoreCompetencyGeneration(
-        id: Long,
-        workspaceId: Long,
-    ): CoreCompetencyGenerationClaimResult {
-        val statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT)
-        val claimed = resumeJpaRepository.updateCoreCompetencyGenerationStatus(
-            id = id,
-            workspaceId = workspaceId,
-            statuses = statuses,
-            currentStatus = CoreCompetencyGenerationStatus.NOT_GENERATED,
-            nextStatus = CoreCompetencyGenerationStatus.GENERATING,
-        ) == 1
-        if (claimed) return CoreCompetencyGenerationClaimResult.CLAIMED
-
-        val exists = resumeJpaRepository.existsByIdAndWorkspaceIdAndStatusIn(
-            id = id,
-            workspaceId = workspaceId,
-            statuses = statuses,
-        )
-        return if (exists) {
-            CoreCompetencyGenerationClaimResult.ALREADY_CLAIMED
-        } else {
-            CoreCompetencyGenerationClaimResult.NOT_FOUND
-        }
-    }
-
-    @Transactional
-    override fun completeCoreCompetencyGeneration(id: Long, workspaceId: Long) {
-        resumeJpaRepository.updateCoreCompetencyGenerationStatus(
-            id = id,
-            workspaceId = workspaceId,
-            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
-            currentStatus = CoreCompetencyGenerationStatus.GENERATING,
-            nextStatus = CoreCompetencyGenerationStatus.GENERATED,
-        )
-    }
-
-    @Transactional
-    override fun resetCoreCompetencyGeneration(id: Long, workspaceId: Long) {
-        resumeJpaRepository.updateCoreCompetencyGenerationStatus(
-            id = id,
-            workspaceId = workspaceId,
-            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
-            currentStatus = CoreCompetencyGenerationStatus.GENERATING,
-            nextStatus = CoreCompetencyGenerationStatus.NOT_GENERATED,
-        )
     }
 
     @Transactional(readOnly = true)

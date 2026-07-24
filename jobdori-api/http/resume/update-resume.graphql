@@ -204,9 +204,7 @@ mutation UpdateResume {
         }
         template
         status
-        coreCompetencyGenerated
         createdAt
-        updatedAt
         sections {
             sectionId
             type

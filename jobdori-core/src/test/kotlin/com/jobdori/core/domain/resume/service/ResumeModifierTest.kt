@@ -10,7 +10,6 @@ import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
 import com.jobdori.core.domain.resume.error.ResumeNotFoundException
-import com.jobdori.core.domain.resume.repository.CoreCompetencyGenerationClaimResult
 import com.jobdori.core.domain.resume.repository.ResumeRepository
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
@@ -74,28 +73,6 @@ class ResumeModifierTest : StringSpec({
                 resumeId = 1L,
                 command = command,
             )
-        }
-    }
-
-    "핵심역량 생성 시작을 선점한 요청만 성공한다" {
-        every {
-            resumeRepository.claimCoreCompetencyGeneration(id = 1L, workspaceId = 10L)
-        } returnsMany listOf(
-            CoreCompetencyGenerationClaimResult.CLAIMED,
-            CoreCompetencyGenerationClaimResult.ALREADY_CLAIMED,
-        )
-
-        resumeModifier.claimCoreCompetencyGeneration(workspaceId = 10L, resumeId = 1L) shouldBe true
-        resumeModifier.claimCoreCompetencyGeneration(workspaceId = 10L, resumeId = 1L) shouldBe false
-    }
-
-    "핵심역량을 생성할 이력서가 없으면 예외를 던진다" {
-        every {
-            resumeRepository.claimCoreCompetencyGeneration(id = 1L, workspaceId = 10L)
-        } returns CoreCompetencyGenerationClaimResult.NOT_FOUND
-
-        shouldThrow<ResumeNotFoundException> {
-            resumeModifier.claimCoreCompetencyGeneration(workspaceId = 10L, resumeId = 1L)
         }
     }
 

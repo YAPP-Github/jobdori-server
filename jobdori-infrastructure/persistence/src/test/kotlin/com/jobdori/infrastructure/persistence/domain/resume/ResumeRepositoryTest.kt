@@ -1,12 +1,10 @@
 package com.jobdori.infrastructure.persistence.domain.resume
 
-import com.jobdori.core.domain.resume.CoreCompetencyGenerationStatus
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeCareerPayload
 import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
-import com.jobdori.core.domain.resume.repository.CoreCompetencyGenerationClaimResult
 import com.jobdori.core.domain.resume.repository.ResumeRepository
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
@@ -76,53 +74,6 @@ class ResumeRepositoryTest(
             email = "hong@example.com",
             phone = "010-0000-0000",
         )
-    }
-
-    "AI 핵심역량 생성 상태를 원자적으로 전이한다" {
-        val created = resumeRepository.createDetail(
-            workspaceId = 10L,
-            command = saveCommand(),
-        )
-
-        created.resume.coreCompetencyGenerated shouldBe false
-        created.resume.coreCompetencyGenerationStatus shouldBe CoreCompetencyGenerationStatus.NOT_GENERATED
-
-        val claimed = resumeRepository.claimCoreCompetencyGeneration(
-            id = created.resume.id,
-            workspaceId = 10L,
-        )
-
-        claimed shouldBe CoreCompetencyGenerationClaimResult.CLAIMED
-        resumeRepository.claimCoreCompetencyGeneration(
-            id = created.resume.id,
-            workspaceId = 10L,
-        ) shouldBe CoreCompetencyGenerationClaimResult.ALREADY_CLAIMED
-        resumeRepository.claimCoreCompetencyGeneration(
-            id = Long.MAX_VALUE,
-            workspaceId = 10L,
-        ) shouldBe CoreCompetencyGenerationClaimResult.NOT_FOUND
-        resumeJpaRepository.findById(created.resume.id).orElseThrow()
-            .coreCompetencyGenerationStatus shouldBe CoreCompetencyGenerationStatus.GENERATING
-
-        resumeRepository.resetCoreCompetencyGeneration(
-            id = created.resume.id,
-            workspaceId = 10L,
-        )
-        resumeJpaRepository.findById(created.resume.id).orElseThrow()
-            .coreCompetencyGenerationStatus shouldBe CoreCompetencyGenerationStatus.NOT_GENERATED
-
-        resumeRepository.claimCoreCompetencyGeneration(
-            id = created.resume.id,
-            workspaceId = 10L,
-        ) shouldBe CoreCompetencyGenerationClaimResult.CLAIMED
-        resumeRepository.completeCoreCompetencyGeneration(
-            id = created.resume.id,
-            workspaceId = 10L,
-        )
-
-        val completed = resumeRepository.findByIdAndWorkspaceId(created.resume.id, 10L)
-        completed?.coreCompetencyGenerationStatus shouldBe CoreCompetencyGenerationStatus.GENERATED
-        completed?.coreCompetencyGenerated shouldBe true
     }
 
     "이력서 상세 수정 시 요청에 없는 섹션과 아이템을 삭제하고 요청 스냅샷을 저장한다" {

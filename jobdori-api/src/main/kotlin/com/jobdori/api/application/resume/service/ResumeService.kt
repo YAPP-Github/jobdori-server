@@ -150,6 +150,7 @@ class ResumeService(
             else {
                 val profile = profileReader.getOrCreateProfile(workspace.id)
                 val profileDetail = profileReader.getDetail(profile)
+
                 command.copy(
                     sections = command.sections.mapIndexedNotNull { index, section ->
                         if (!request.sections[index].useDefaultItems) return@mapIndexedNotNull section

@@ -110,7 +110,6 @@ internal class ProfileMutationResolverTest(
             profileService.generateCoreCompetency(
                 userId = 1L,
                 workspaceId = "workspace-id",
-                resumeId = 100L,
                 jdId = "jd-pub-1",
             )
         } returns GenerateCoreCompetencyResponse(
@@ -122,7 +121,7 @@ internal class ProfileMutationResolverTest(
             .document(
                 """
                 mutation {
-                  generateCoreCompetency(workspaceId: "workspace-id", resumeId: 100, jdId: "jd-pub-1") {
+                  generateCoreCompetency(workspaceId: "workspace-id", jdId: "jd-pub-1") {
                     coreCompetency
                     strategy
                   }
@@ -139,7 +138,6 @@ internal class ProfileMutationResolverTest(
             profileService.generateCoreCompetency(
                 userId = 1L,
                 workspaceId = "workspace-id",
-                resumeId = 100L,
                 jdId = "jd-pub-1",
             )
         }

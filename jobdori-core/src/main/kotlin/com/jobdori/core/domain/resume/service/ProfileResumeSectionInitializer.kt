@@ -36,7 +36,9 @@ class ProfileResumeSectionInitializer {
             },
         )
         ResumeSectionType.CORE_SKILL -> listOfNotNull(
-            detail.profile.coreCompetency.nonBlank()?.let(::ResumeCoreSkillPayload),
+            detail.profile.coreCompetency.nonBlank()?.let {
+                ResumeCoreSkillPayload(content = it, isInitialItem = true)
+            },
         )
         ResumeSectionType.CAREER -> detail.sections.careers.mapNotNull { career ->
                 career.company.nonBlank()?.let { company ->

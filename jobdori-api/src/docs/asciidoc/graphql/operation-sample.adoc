@@ -566,7 +566,6 @@ query Resumes {
             }
             template
             status
-            coreCompetencyGenerated
             createdAt
         }
         cursor {
@@ -630,7 +629,6 @@ query Resume {
         }
         template
         status
-        coreCompetencyGenerated
         createdAt
         sections {
             sectionId
@@ -822,9 +820,7 @@ mutation CreateResumeWithDefaultItems {
         }
         template
         status
-        coreCompetencyGenerated
         createdAt
-        updatedAt
         sections {
             sectionId
             type
@@ -1114,9 +1110,7 @@ mutation UpdateResume {
         }
         template
         status
-        coreCompetencyGenerated
         createdAt
-        updatedAt
         sections {
             sectionId
             type

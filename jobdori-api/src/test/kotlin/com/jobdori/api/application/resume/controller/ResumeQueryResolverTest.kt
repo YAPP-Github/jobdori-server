@@ -73,7 +73,6 @@ internal class ResumeQueryResolverTest(
             targetJd = null,
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,
-            coreCompetencyGenerated = true,
             sections = emptyList(),
             createdAt = Instant.parse("2026-07-24T00:00:00Z"),
         )
@@ -84,14 +83,12 @@ internal class ResumeQueryResolverTest(
                 {
                   resume(workspaceId: "workspace-id", resumeId: 100) {
                     resumeId
-                    coreCompetencyGenerated
                   }
                 }
                 """.trimIndent(),
             )
             .execute()
             .path("resume.resumeId").entity<String>().isEqualTo("100")
-            .path("resume.coreCompetencyGenerated").entity<Boolean>().isEqualTo(true)
 
         verify(exactly = 1) {
             resumeService.getResume(

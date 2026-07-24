@@ -12,6 +12,7 @@ import com.jobdori.core.domain.profile.section.EducationStatus
 import com.jobdori.core.domain.profile.section.LanguageTest
 import com.jobdori.core.domain.profile.section.ProfileSkill
 import com.jobdori.core.domain.profile.section.SkillLevel
+import com.jobdori.core.domain.resume.ResumeCoreSkillPayload
 import com.jobdori.core.domain.resume.ResumeSectionType
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
@@ -64,6 +65,11 @@ class ProfileResumeSectionInitializerTest : StringSpec({
         )
         initializedTypes.flatMap { initializer.initializeItems(detail, it) }
             .all { it.visible && it.itemId == null } shouldBe true
+        initializer.initializeItems(detail, ResumeSectionType.CORE_SKILL)
+            .single().payload shouldBe ResumeCoreSkillPayload(
+            content = "문제 해결 역량",
+            isInitialItem = true,
+        )
     }
 
     "필수값이 비어 있는 프로필 항목은 섹션으로 만들지 않는다" {

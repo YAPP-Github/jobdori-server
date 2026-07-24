@@ -36,11 +36,7 @@ extend type Mutation {
         """
         workspaceId: ID!,
         """
-        생성 여부를 기록할 이력서 ID입니다.
-        """
-        resumeId: ID!,
-        """
-        JD ID입니다. 주면 해당 JD의 지원 전략(strategy)을 기준으로 핵심역량을 생성하고 전략을 함께 반환합니다. (선택)
+        JD ID입니다. 주면 해당 JD 내용을 반영해 핵심역량을 생성하고 화면 표시용 지원 전략(strategy)을 함께 반환합니다. (선택)
         """
         jdId: ID = null
     ): GeneratedCoreCompetency!

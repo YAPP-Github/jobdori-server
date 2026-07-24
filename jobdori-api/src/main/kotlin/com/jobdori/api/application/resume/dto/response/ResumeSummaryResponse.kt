@@ -12,7 +12,6 @@ data class ResumeSummaryResponse(
     val targetJd: JdResponse?,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
-    val coreCompetencyGenerated: Boolean,
     val createdAt: Instant,
 ) {
 
@@ -22,7 +21,6 @@ data class ResumeSummaryResponse(
             targetJd = targetJd,
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
-            coreCompetencyGenerated = resume.coreCompetencyGenerated,
             createdAt = resume.createdAt.toInstantAtSystemDefaultZone(),
         )
     }

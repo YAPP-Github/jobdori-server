@@ -44,8 +44,12 @@ data class ResumeBasicInfoPayloadRequest(
 data class ResumeCoreSkillPayloadRequest(
     @field:Size(max = 500)
     val content: String?,
+    val isInitialItem: Boolean = false,
 ) : ResumePayloadRequest<ResumeCoreSkillPayload> {
-    override fun toPayload() = ResumeCoreSkillPayload(content = content)
+    override fun toPayload() = ResumeCoreSkillPayload(
+        content = content,
+        isInitialItem = isInitialItem,
+    )
 }
 
 data class ResumeCareerPayloadRequest(

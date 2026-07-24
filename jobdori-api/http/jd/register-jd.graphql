@@ -8,7 +8,6 @@ mutation RegisterJd {
             companyName
             positionTitle
             insight {
-                keyPoints
                 strategy
             }
             status

@@ -129,7 +129,7 @@ internal class JdResolverTest(
                     jdId
                     companyName
                     coreCompetencies
-                    insight { keyPoints strategy }
+                    insight { strategy }
                   }
                 }
                 """.trimIndent(),
@@ -138,7 +138,6 @@ internal class JdResolverTest(
             .path("jd.jdId").entity<String>().isEqualTo("jd-pub-1")
             .path("jd.companyName").entity<String>().isEqualTo("잡도리")
             .path("jd.coreCompetencies").entityList(String::class.java).containsExactly("데이터 기반 개선", "협업")
-            .path("jd.insight.keyPoints").entity<String>().isEqualTo("주도적으로 문제를 정의할 사람을 원해요.")
             .path("jd.insight.strategy").entity<String>().isEqualTo("문제 해결 경험을 강조하세요.")
 
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }
@@ -156,14 +155,12 @@ internal class JdResolverTest(
                 """
                 query {
                   jdInsight(workspaceId: "ws-1", jdId: "jd-pub-1") {
-                    keyPoints
                     strategy
                   }
                 }
                 """.trimIndent(),
             )
             .execute()
-            .path("jdInsight.keyPoints").entity<String>().isEqualTo("주도적으로 문제를 정의할 사람을 원해요.")
             .path("jdInsight.strategy").entity<String>().isEqualTo("문제 해결 경험을 강조하세요.")
 
         verify(exactly = 1) { getJdService.getJd(10L, "jd-pub-1") }

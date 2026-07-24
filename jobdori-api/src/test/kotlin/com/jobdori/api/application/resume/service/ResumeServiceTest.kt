@@ -619,7 +619,6 @@ class ResumeServiceTest : StringSpec({
         )
 
         // then
-        response.targetJd?.insight?.keyPoints shouldBe "핵심 포인트"
         response.targetJd?.insight?.strategy shouldBe "지원 전략"
     }
 

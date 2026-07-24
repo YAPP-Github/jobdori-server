@@ -11,7 +11,6 @@ query Resumes {
                 companyName
                 positionTitle
                 insight {
-                    keyPoints
                     strategy
                 }
                 status

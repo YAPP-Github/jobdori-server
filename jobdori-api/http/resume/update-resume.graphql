@@ -197,7 +197,6 @@ mutation UpdateResume {
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status

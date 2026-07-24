@@ -10,6 +10,7 @@ import com.jobdori.core.domain.prompt.PromptTemplate
 import com.jobdori.core.domain.prompt.PromptType
 import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
 import com.jobdori.core.domain.profile.ProfileDetail
+import com.jobdori.core.domain.profile.ProfileSummaryText
 import org.springframework.stereotype.Service
 
 // 생성 결과 + FE 표시용 JD 지원 전략(jd.strategy)을 함께 노출한다. 전략은 프롬프트 입력에는 쓰지 않는다.
@@ -89,15 +90,7 @@ class ProfileAiService(
             appendLine("[JD]")
             appendLine(jdBody)
         }
-        appendLine("[경력]")
-        detail.sections.careers.forEach {
-            appendLine(
-                "- ${it.company.orEmpty()} / ${it.position.orEmpty()} " +
-                    "(${it.period?.startAt ?: ""} - ${it.period?.endAt ?: ""}): ${it.description.orEmpty()}",
-            )
-        }
-        appendLine("[스킬]")
-        append(detail.sections.skills.joinToString(", ") { it.name.orEmpty() })
+        append(ProfileSummaryText.of(detail))
     }
 
 }

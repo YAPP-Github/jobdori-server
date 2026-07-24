@@ -44,6 +44,7 @@ class RegisterJdService(
                 JdCrawlErrorCode.E422_JD_NOT_A_POSTING,
             )
         }
+        // 지원 전략(strategy)은 등록 임계경로에서 만들지 않는다. 경험 선택 시점에 지연 생성한다(GetExperienceRecommendationService).
         return JdRegisterResult.Registered(jdRepository.save(buildJd(workspaceId, sourceUrl, singleBody, meta)))
     }
 
@@ -60,6 +61,6 @@ class RegisterJdService(
         hiringProcess = meta.hiringProcess,
         coreCompetencies = meta.coreCompetencies,
         keyPoints = meta.keyPoints,
-        strategy = meta.strategy,
+        strategy = "",
     )
 }

@@ -16,7 +16,6 @@ query Resume {
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status

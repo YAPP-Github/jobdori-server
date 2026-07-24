@@ -560,7 +560,6 @@ query Resumes {
                 companyName
                 positionTitle
                 insight {
-                    keyPoints
                     strategy
                 }
                 status
@@ -623,7 +622,6 @@ query Resume {
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -1106,7 +1104,6 @@ mutation UpdateResume {
             hiringProcess
             coreCompetencies
             insight {
-                keyPoints
                 strategy
             }
             status
@@ -1201,7 +1198,6 @@ query Jd {
         hiringProcess
         coreCompetencies
         insight {
-            keyPoints
             strategy
         }
         status
@@ -1253,7 +1249,6 @@ mutation RegisterJd {
             companyName
             positionTitle
             insight {
-                keyPoints
                 strategy
             }
             status

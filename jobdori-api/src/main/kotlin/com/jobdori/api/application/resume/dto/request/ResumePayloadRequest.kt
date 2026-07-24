@@ -42,7 +42,7 @@ data class ResumeBasicInfoPayloadRequest(
 }
 
 data class ResumeCoreSkillPayloadRequest(
-    @field:Size(max = 500)
+    @field:Size(max = 2000)
     val content: String?,
     val isInitialItem: Boolean = false,
 ) : ResumePayloadRequest<ResumeCoreSkillPayload> {
@@ -59,7 +59,7 @@ data class ResumeCareerPayloadRequest(
     val role: String?,
     @field:Valid
     val period: PeriodRequest?,
-    @field:Size(max = 500)
+    @field:Size(max = 2000)
     val contents: String?,
 ) : ResumePayloadRequest<ResumeCareerPayload> {
     override fun toPayload() = ResumeCareerPayload(
@@ -77,7 +77,7 @@ data class ResumeExperiencePayloadRequest(
     val role: String?,
     @field:Valid
     val period: PeriodRequest?,
-    @field:Size(max = 500)
+    @field:Size(max = 2000)
     val contents: String?,
 ) : ResumePayloadRequest<ResumeExperiencePayload> {
     override fun toPayload() = ResumeExperiencePayload(

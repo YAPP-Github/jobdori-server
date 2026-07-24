@@ -57,14 +57,18 @@ class ProfileService(
             workspaceId = workspaceId,
             userId = userId,
         )
-        val resume = resumeReader.getResume(workspaceId = workspace.id, resumeId = resumeId)
-        if (resume.coreCompetencyGenerated) {
+        resumeReader.getResume(workspaceId = workspace.id, resumeId = resumeId)
+        if (!resumeModifier.markCoreCompetencyGenerated(workspaceId = workspace.id, resumeId = resumeId)) {
             throw InvalidArgumentsException("핵심역량을 이미 생성한 이력서입니다. [resumeId=$resumeId]")
         }
 
-        val profile = profileReader.getOrCreateProfile(workspace.id)
-        val generation = profileAiService.generateCoreCompetency(profileReader.getDetail(profile), workspace.id, jdId)
-        resumeModifier.markCoreCompetencyGenerated(workspaceId = workspace.id, resumeId = resumeId)
+        val generation = try {
+            val profile = profileReader.getOrCreateProfile(workspace.id)
+            profileAiService.generateCoreCompetency(profileReader.getDetail(profile), workspace.id, jdId)
+        } catch (exception: Exception) {
+            resumeModifier.resetCoreCompetencyGenerated(workspaceId = workspace.id, resumeId = resumeId)
+            throw exception
+        }
 
         return GenerateCoreCompetencyResponse(
             coreCompetency = generation.coreCompetency,

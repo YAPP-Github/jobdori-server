@@ -89,9 +89,18 @@ class ResumeRepositoryTest(
             workspaceId = 10L,
         )
 
-        requireNotNull(marked)
-        marked.coreCompetencyGenerated shouldBe true
+        marked shouldBe true
+        resumeRepository.markCoreCompetencyGenerated(
+            id = created.resume.id,
+            workspaceId = 10L,
+        ) shouldBe false
         resumeJpaRepository.findById(created.resume.id).orElseThrow().coreCompetencyGenerated shouldBe true
+
+        resumeRepository.resetCoreCompetencyGenerated(
+            id = created.resume.id,
+            workspaceId = 10L,
+        )
+        resumeJpaRepository.findById(created.resume.id).orElseThrow().coreCompetencyGenerated shouldBe false
     }
 
     "이력서 상세 수정 시 요청에 없는 섹션과 아이템을 삭제하고 요청 스냅샷을 저장한다" {

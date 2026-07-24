@@ -57,8 +57,10 @@ class ProfileServiceTest : StringSpec({
             sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
         )
         val resume = ResumeFixture.create(id = 100L, workspaceId = 1L)
-        val markedResume = resume.copy(coreCompetencyGenerated = true)
         every { resumeReader.getResume(workspaceId = 1L, resumeId = 100L) } returns resume
+        every {
+            resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+        } returns true
         every { profileReader.getOrCreateProfile(1L) } returns profile
         every { profileReader.getDetail(profile) } returns profileDetail
         every {
@@ -67,9 +69,6 @@ class ProfileServiceTest : StringSpec({
             strategy = "지원 전략",
             coreCompetency = "AI 생성 핵심역량",
         )
-        every {
-            resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
-        } returns markedResume
 
         val response = profileService.generateCoreCompetency(
             userId = 10L,
@@ -88,11 +87,10 @@ class ProfileServiceTest : StringSpec({
     "이미 핵심역량을 생성한 이력서는 다시 생성하지 않는다" {
         every {
             resumeReader.getResume(workspaceId = 1L, resumeId = 100L)
-        } returns ResumeFixture.create(
-            id = 100L,
-            workspaceId = 1L,
-            coreCompetencyGenerated = true,
-        )
+        } returns ResumeFixture.create(id = 100L, workspaceId = 1L)
+        every {
+            resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+        } returns false
 
         shouldThrow<InvalidArgumentsException> {
             profileService.generateCoreCompetency(
@@ -106,8 +104,40 @@ class ProfileServiceTest : StringSpec({
         verify(exactly = 0) {
             profileAiService.generateCoreCompetency(any(), any(), any())
         }
-        verify(exactly = 0) {
-            resumeModifier.markCoreCompetencyGenerated(any(), any())
+    }
+
+    "핵심역량 생성에 실패하면 생성 여부 기록을 되돌린다" {
+        val profile = Profile(1L, 1L, "홍길동", null, null, null)
+        val profileDetail = ProfileDetail(
+            profile = profile,
+            sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
+        )
+        every {
+            resumeReader.getResume(workspaceId = 1L, resumeId = 100L)
+        } returns ResumeFixture.create(id = 100L, workspaceId = 1L)
+        every {
+            resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+        } returns true
+        every { profileReader.getOrCreateProfile(1L) } returns profile
+        every { profileReader.getDetail(profile) } returns profileDetail
+        every {
+            profileAiService.generateCoreCompetency(profileDetail, workspaceId = 1L, jdPublicId = "jd-public-id")
+        } throws IllegalStateException("AI 생성 실패")
+        every {
+            resumeModifier.resetCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
+        } returns Unit
+
+        shouldThrow<IllegalStateException> {
+            profileService.generateCoreCompetency(
+                userId = 10L,
+                workspaceId = "workspace-id",
+                resumeId = 100L,
+                jdId = "jd-public-id",
+            )
+        }
+
+        verify(exactly = 1) {
+            resumeModifier.resetCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
         }
     }
 

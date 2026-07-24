@@ -82,15 +82,20 @@ class ResumeRepositoryImpl(
     }
 
     @Transactional
-    override fun markCoreCompetencyGenerated(id: Long, workspaceId: Long): Resume? {
-        val resumeEntity = resumeJpaRepository.findByIdAndWorkspaceIdAndStatusIn(
+    override fun markCoreCompetencyGenerated(id: Long, workspaceId: Long): Boolean {
+        return resumeJpaRepository.markCoreCompetencyGenerated(
             id = id,
             workspaceId = workspaceId,
             statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
-        ) ?: return null
+        ) == 1
+    }
 
-        resumeEntity.coreCompetencyGenerated = true
-        return resumeJpaRepository.save(resumeEntity).toDomain()
+    @Transactional
+    override fun resetCoreCompetencyGenerated(id: Long, workspaceId: Long) {
+        resumeJpaRepository.resetCoreCompetencyGenerated(
+            id = id,
+            workspaceId = workspaceId,
+        )
     }
 
     @Transactional(readOnly = true)

@@ -9,9 +9,7 @@ import com.jobdori.core.domain.profile.ProfileDetail
 import com.jobdori.core.domain.profile.ProfileSections
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
-import com.jobdori.core.domain.resume.ResumeFixture
 import com.jobdori.core.domain.resume.service.ResumeModifier
-import com.jobdori.core.domain.resume.service.ResumeReader
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
@@ -26,14 +24,12 @@ class ProfileServiceTest : StringSpec({
     val profileReader = mockk<ProfileReader>()
     val profileModifier = mockk<ProfileModifier>()
     val profileAiService = mockk<ProfileAiService>()
-    val resumeReader = mockk<ResumeReader>()
     val resumeModifier = mockk<ResumeModifier>()
     val profileService = ProfileService(
         workspaceAccessValidationService = workspaceAccessValidationService,
         profileReader = profileReader,
         profileModifier = profileModifier,
         profileAiService = profileAiService,
-        resumeReader = resumeReader,
         resumeModifier = resumeModifier,
     )
 
@@ -56,8 +52,6 @@ class ProfileServiceTest : StringSpec({
             profile = profile,
             sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
         )
-        val resume = ResumeFixture.create(id = 100L, workspaceId = 1L)
-        every { resumeReader.getResume(workspaceId = 1L, resumeId = 100L) } returns resume
         every {
             resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
         } returns true
@@ -86,9 +80,6 @@ class ProfileServiceTest : StringSpec({
 
     "이미 핵심역량을 생성한 이력서는 다시 생성하지 않는다" {
         every {
-            resumeReader.getResume(workspaceId = 1L, resumeId = 100L)
-        } returns ResumeFixture.create(id = 100L, workspaceId = 1L)
-        every {
             resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
         } returns false
 
@@ -112,9 +103,6 @@ class ProfileServiceTest : StringSpec({
             profile = profile,
             sections = ProfileSections(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList()),
         )
-        every {
-            resumeReader.getResume(workspaceId = 1L, resumeId = 100L)
-        } returns ResumeFixture.create(id = 100L, workspaceId = 1L)
         every {
             resumeModifier.markCoreCompetencyGenerated(workspaceId = 1L, resumeId = 100L)
         } returns true

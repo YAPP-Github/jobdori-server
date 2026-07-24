@@ -5,6 +5,7 @@ import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
 import com.jobdori.core.domain.resume.Resume
 import com.jobdori.core.domain.resume.ResumeStatus
+import com.jobdori.core.domain.resume.repository.CoreCompetencyGenerationClaimResult
 import com.jobdori.core.domain.resume.repository.ResumeRepository
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.support.crypto.StringEncryptor
@@ -82,12 +83,28 @@ class ResumeRepositoryImpl(
     }
 
     @Transactional
-    override fun markCoreCompetencyGenerated(id: Long, workspaceId: Long): Boolean {
-        return resumeJpaRepository.markCoreCompetencyGenerated(
+    override fun markCoreCompetencyGenerated(
+        id: Long,
+        workspaceId: Long,
+    ): CoreCompetencyGenerationClaimResult {
+        val statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT)
+        val claimed = resumeJpaRepository.markCoreCompetencyGenerated(
             id = id,
             workspaceId = workspaceId,
-            statuses = listOf(ResumeStatus.COMPLETED, ResumeStatus.DRAFT),
+            statuses = statuses,
         ) == 1
+        if (claimed) return CoreCompetencyGenerationClaimResult.CLAIMED
+
+        val exists = resumeJpaRepository.existsByIdAndWorkspaceIdAndStatusIn(
+            id = id,
+            workspaceId = workspaceId,
+            statuses = statuses,
+        )
+        return if (exists) {
+            CoreCompetencyGenerationClaimResult.ALREADY_CLAIMED
+        } else {
+            CoreCompetencyGenerationClaimResult.NOT_FOUND
+        }
     }
 
     @Transactional

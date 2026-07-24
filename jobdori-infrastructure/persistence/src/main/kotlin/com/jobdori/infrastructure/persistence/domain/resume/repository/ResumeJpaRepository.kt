@@ -48,6 +48,12 @@ interface ResumeJpaRepository : JpaRepository<ResumeEntity, Long>, ResumeCustomR
         statuses: Collection<ResumeStatus>,
     ): ResumeEntity?
 
+    fun existsByIdAndWorkspaceIdAndStatusIn(
+        id: Long,
+        workspaceId: Long,
+        statuses: Collection<ResumeStatus>,
+    ): Boolean
+
     fun findAllByWorkspaceIdAndStatusInOrderByIdDesc(
         workspaceId: Long,
         statuses: Collection<ResumeStatus>,

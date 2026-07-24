@@ -10,7 +10,6 @@ import com.jobdori.core.application.profile.ProfileAiService
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.service.ResumeModifier
-import com.jobdori.core.domain.resume.service.ResumeReader
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,7 +18,6 @@ class ProfileService(
     private val profileReader: ProfileReader,
     private val profileModifier: ProfileModifier,
     private val profileAiService: ProfileAiService,
-    private val resumeReader: ResumeReader,
     private val resumeModifier: ResumeModifier,
 ) {
 
@@ -57,9 +55,8 @@ class ProfileService(
             workspaceId = workspaceId,
             userId = userId,
         )
-        resumeReader.getResume(workspaceId = workspace.id, resumeId = resumeId)
         if (!resumeModifier.markCoreCompetencyGenerated(workspaceId = workspace.id, resumeId = resumeId)) {
-            throw InvalidArgumentsException("핵심역량을 이미 생성한 이력서입니다. [resumeId=$resumeId]")
+            throw InvalidArgumentsException("핵심역량을 이미 생성했거나 생성 중인 이력서입니다. [resumeId=$resumeId]")
         }
 
         val generation = try {

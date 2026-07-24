@@ -5,6 +5,7 @@ import com.jobdori.core.domain.resume.ResumeCareerPayload
 import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
+import com.jobdori.core.domain.resume.repository.CoreCompetencyGenerationClaimResult
 import com.jobdori.core.domain.resume.repository.ResumeRepository
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
@@ -89,11 +90,15 @@ class ResumeRepositoryTest(
             workspaceId = 10L,
         )
 
-        marked shouldBe true
+        marked shouldBe CoreCompetencyGenerationClaimResult.CLAIMED
         resumeRepository.markCoreCompetencyGenerated(
             id = created.resume.id,
             workspaceId = 10L,
-        ) shouldBe false
+        ) shouldBe CoreCompetencyGenerationClaimResult.ALREADY_CLAIMED
+        resumeRepository.markCoreCompetencyGenerated(
+            id = Long.MAX_VALUE,
+            workspaceId = 10L,
+        ) shouldBe CoreCompetencyGenerationClaimResult.NOT_FOUND
         resumeJpaRepository.findById(created.resume.id).orElseThrow().coreCompetencyGenerated shouldBe true
 
         resumeRepository.resetCoreCompetencyGenerated(

@@ -2,6 +2,7 @@ package com.jobdori.core.domain.resume.service
 
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.error.ResumeNotFoundException
+import com.jobdori.core.domain.resume.repository.CoreCompetencyGenerationClaimResult
 import com.jobdori.core.domain.resume.repository.ResumeRepository
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import org.springframework.stereotype.Service
@@ -26,10 +27,16 @@ class ResumeModifier(
     }
 
     fun markCoreCompetencyGenerated(workspaceId: Long, resumeId: Long): Boolean {
-        return resumeRepository.markCoreCompetencyGenerated(
+        return when (resumeRepository.markCoreCompetencyGenerated(
             id = resumeId,
             workspaceId = workspaceId,
-        )
+        )) {
+            CoreCompetencyGenerationClaimResult.CLAIMED -> true
+            CoreCompetencyGenerationClaimResult.ALREADY_CLAIMED -> false
+            CoreCompetencyGenerationClaimResult.NOT_FOUND -> throw ResumeNotFoundException(
+                "존재하지 않는 이력서입니다. [workspaceId=$workspaceId, resumeId=$resumeId]",
+            )
+        }
     }
 
     fun resetCoreCompetencyGenerated(workspaceId: Long, resumeId: Long) {

@@ -20,7 +20,7 @@ interface ResumeRepository {
 
     fun findByIdAndWorkspaceId(id: Long, workspaceId: Long): Resume?
 
-    fun markCoreCompetencyGenerated(id: Long, workspaceId: Long): Boolean
+    fun markCoreCompetencyGenerated(id: Long, workspaceId: Long): CoreCompetencyGenerationClaimResult
 
     fun resetCoreCompetencyGenerated(id: Long, workspaceId: Long)
 
@@ -32,4 +32,10 @@ interface ResumeRepository {
 
     fun modifyDetail(id: Long, workspaceId: Long, command: ResumeSaveCommand): ResumeDetail?
 
+}
+
+enum class CoreCompetencyGenerationClaimResult {
+    CLAIMED,
+    ALREADY_CLAIMED,
+    NOT_FOUND,
 }

@@ -189,7 +189,7 @@ type Jd {
     coreCompetencies: [String!]!
 
     """
-    경험 추천 시점에 워크스페이스 프로필을 기반으로 지연 생성해 저장한 지원 전략입니다.
+    JD 등록 시 워크스페이스 프로필을 기반으로 생성해 저장한 지원 전략입니다.
     """
     insight: JdInsight!
 

@@ -2,6 +2,7 @@ package com.jobdori.core.application.jd
 
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.ai.jd.ExtractJdMetaService
+import com.jobdori.core.application.ai.jd.ExtractJdStrategyService
 import com.jobdori.core.application.ai.jd.SplitJdPostingsService
 import com.jobdori.core.application.ai.jd.result.JdMetaResult
 import com.jobdori.core.application.jd.client.JdCrawlerClient
@@ -10,6 +11,7 @@ import com.jobdori.core.domain.jd.JdPolicy
 import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
 import com.jobdori.core.domain.jd.error.JdCrawlException
 import com.jobdori.core.domain.jd.repository.JdRepository
+import com.jobdori.core.domain.profile.service.ProfileReader
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,6 +19,8 @@ class RegisterJdService(
     private val crawler: JdCrawlerClient,
     private val splitter: SplitJdPostingsService,
     private val extractJdMetaService: ExtractJdMetaService,
+    private val extractJdStrategyService: ExtractJdStrategyService,
+    private val profileReader: ProfileReader,
     private val jdRepository: JdRepository,
 ) {
     // 크롤 실패 시 JdCrawlException 전파 -> API가 422로 붙여넣기 유도
@@ -44,8 +48,10 @@ class RegisterJdService(
                 JdCrawlErrorCode.E422_JD_NOT_A_POSTING,
             )
         }
-        // 지원 전략(strategy)은 등록 임계경로에서 만들지 않는다. 경험 선택 시점에 지연 생성한다(GetExperienceRecommendationService).
-        return JdRegisterResult.Registered(jdRepository.save(buildJd(workspaceId, sourceUrl, singleBody, meta)))
+        val jd = buildJd(workspaceId, sourceUrl, singleBody, meta)
+        val profile = profileReader.getDetail(profileReader.getOrCreateProfile(workspaceId))
+        val strategy = extractJdStrategyService.generate(jd, profile)
+        return JdRegisterResult.Registered(jdRepository.save(jd.copy(strategy = strategy)))
     }
 
     private fun buildJd(workspaceId: Long, sourceUrl: String?, sourceBody: String, meta: JdMetaResult): Jd = Jd.newInstance(

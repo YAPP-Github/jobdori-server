@@ -377,6 +377,7 @@ private val graphQlOperationErrors = listOf(
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            ExperienceErrorCode.E422_EXPERIENCE_REQUIRED,
             JdCrawlErrorCode.E400_JD_INVALID_URL,
             JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
             JdCrawlErrorCode.E422_JD_FETCH_FAILED,

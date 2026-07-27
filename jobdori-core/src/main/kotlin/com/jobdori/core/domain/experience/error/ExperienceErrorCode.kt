@@ -21,6 +21,12 @@ enum class ExperienceErrorCode(
         message = "존재하지 않는 경험입니다",
         description = "경험을 찾을 수 없는 경우",
     ),
+    E422_EXPERIENCE_REQUIRED(
+        httpStatusCode = 422,
+        code = "experience_required",
+        message = "경험 정리가 필요합니다. 경험을 추가해주세요.",
+        description = "워크스페이스에 활성 상태의 경험이 없어 JD를 등록할 수 없는 경우",
+    ),
     ;
 
 }

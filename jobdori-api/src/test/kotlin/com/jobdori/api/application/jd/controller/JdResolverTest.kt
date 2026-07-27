@@ -10,15 +10,21 @@ import com.jobdori.core.application.jd.CompleteJdService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.jd.JdRegisterResult
 import com.jobdori.core.application.jd.RegisterJdService
+import com.jobdori.core.domain.experience.error.ExperienceErrorCode
+import com.jobdori.core.domain.experience.error.ExperienceRequiredException
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdSortType
 import com.jobdori.core.domain.jd.JdStatus
 import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.maps.shouldContain
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.verify
 import org.springframework.context.annotation.Import
+import org.springframework.graphql.execution.ErrorType
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester
 import org.springframework.graphql.test.tester.GraphQlTester
 import org.springframework.graphql.test.tester.entity
@@ -74,6 +80,38 @@ internal class JdResolverTest(
             .path("registerJd.jd.companyName").entity<String>().isEqualTo("잡도리")
             .path("registerJd.jd.positionTitle").entity<String>().isEqualTo("백엔드 개발자")
             .path("registerJd.candidates").valueIsNull()
+
+        verify(exactly = 1) { registerJdService.registerByUrl(10L, "https://example.com/jd") }
+    }
+
+    "경험이 없으면 JD 등록의 422 에러를 BAD_REQUEST로 매핑한다" {
+        every {
+            registerJdService.registerByUrl(10L, "https://example.com/jd")
+        } throws ExperienceRequiredException()
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  registerJd(workspaceId: "ws-1", request: { sourceUrl: "https://example.com/jd" }) {
+                    jd {
+                      jdId
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .errors()
+            .satisfy { errors ->
+                errors shouldHaveSize 1
+                val error = errors.first()
+                error.errorType shouldBe ErrorType.BAD_REQUEST
+                error.message shouldBe ExperienceErrorCode.E422_EXPERIENCE_REQUIRED.message
+                error.extensions shouldContain (
+                    "code" to ExperienceErrorCode.E422_EXPERIENCE_REQUIRED.code
+                )
+            }
 
         verify(exactly = 1) { registerJdService.registerByUrl(10L, "https://example.com/jd") }
     }

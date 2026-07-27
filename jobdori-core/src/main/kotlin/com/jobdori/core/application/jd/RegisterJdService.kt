@@ -6,6 +6,8 @@ import com.jobdori.core.application.ai.jd.ExtractJdStrategyService
 import com.jobdori.core.application.ai.jd.SplitJdPostingsService
 import com.jobdori.core.application.ai.jd.result.JdMetaResult
 import com.jobdori.core.application.jd.client.JdCrawlerClient
+import com.jobdori.core.domain.experience.error.ExperienceRequiredException
+import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdPolicy
 import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
@@ -21,14 +23,25 @@ class RegisterJdService(
     private val extractJdMetaService: ExtractJdMetaService,
     private val extractJdStrategyService: ExtractJdStrategyService,
     private val profileReader: ProfileReader,
+    private val experienceReader: ExperienceReader,
     private val jdRepository: JdRepository,
 ) {
     // 크롤 실패 시 JdCrawlException 전파 -> API가 422로 붙여넣기 유도
-    fun registerByUrl(workspaceId: Long, url: String): JdRegisterResult =
-        register(workspaceId, sourceUrl = url, body = crawler.fetchBody(url))
+    fun registerByUrl(workspaceId: Long, url: String): JdRegisterResult {
+        validateActiveExperienceExists(workspaceId)
+        return register(workspaceId, sourceUrl = url, body = crawler.fetchBody(url))
+    }
 
-    fun registerByText(workspaceId: Long, body: String, sourceUrl: String? = null): JdRegisterResult =
-        register(workspaceId, sourceUrl = sourceUrl, body = body)
+    fun registerByText(workspaceId: Long, body: String, sourceUrl: String? = null): JdRegisterResult {
+        validateActiveExperienceExists(workspaceId)
+        return register(workspaceId, sourceUrl = sourceUrl, body = body)
+    }
+
+    private fun validateActiveExperienceExists(workspaceId: Long) {
+        if (experienceReader.findAllActive(workspaceId).isEmpty()) {
+            throw ExperienceRequiredException()
+        }
+    }
 
     private fun register(workspaceId: Long, sourceUrl: String?, body: String): JdRegisterResult {
         if (body.length !in JdPolicy.MIN_JD_BODY_LENGTH..JdPolicy.MAX_JD_LENGTH) {

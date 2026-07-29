@@ -324,4 +324,14 @@ include::./operation-sample.adoc[tag=polishProfileText]
 
 include::./operation-error.adoc[tag=polishProfileText]
 
+==== 경험명/경험 내용 AI 다듬기
+
+Type: `Mutation`
+
+Operation: `polishExperience`
+
+include::./operation-sample.adoc[tag=polishExperience]
+
+include::./operation-error.adoc[tag=polishExperience]
+
 

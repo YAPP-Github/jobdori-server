@@ -1,5 +1,6 @@
 package com.jobdori.api.application.profile.dto.request
 
+import com.jobdori.core.domain.profile.ProfilePolicy
 import com.jobdori.core.domain.profile.service.command.ProfileUpdateCommand
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Pattern
@@ -17,7 +18,7 @@ data class UpdateProfileRequest(
     @field:Size(max = 100)
     val email: String? = null,
 
-    @field:Size(max = 500)
+    @field:Size(max = ProfilePolicy.MAX_CORE_COMPETENCY_LENGTH)
     val coreCompetency: String? = null,
 
     @field:Valid

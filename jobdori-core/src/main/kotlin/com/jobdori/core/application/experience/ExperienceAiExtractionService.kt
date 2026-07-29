@@ -49,8 +49,8 @@ class ExperienceAiExtractionService(
     private fun buildUserPrompt(pdfText: String): String {
         return """
             다음 PDF 추출 텍스트에서 프로필 정보(인적사항/학력/경력/어학/수상/자격증/기술)와 프로젝트/경험을 추출해라.
-            저장 가능한 프로젝트/경험만 반환하고, 원문에 없는 사실은 만들지 마라.
-            프로젝트명 또는 경험 내용이 불명확하면 해당 항목은 제외해라.
+            원문에 등장하는 모든 프로젝트와 경험을 빠짐없이 반환하고, 원문에 없는 사실은 만들지 마라.
+            성과 수치나 기간이 없다는 이유로 항목을 빼지 말고, 프로젝트명을 특정할 수 없는 항목만 제외해라.
 
             [PDF_TEXT]
             $pdfText

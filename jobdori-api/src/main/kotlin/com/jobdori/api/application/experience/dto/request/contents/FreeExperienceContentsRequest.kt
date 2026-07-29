@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size
 
 data class FreeExperienceContentsRequest(
     @field:NotBlank
-    @field:Size(max = 500)
+    @field:Size(max = 2000)
     val content: String = "",
 ) {
 

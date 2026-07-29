@@ -1,17 +1,18 @@
 package com.jobdori.api.application.profile.dto.request
 
 import com.jobdori.core.application.profile.PolishStructure
-import com.jobdori.core.application.profile.ProfilePolishKind
+import com.jobdori.core.domain.profile.ProfilePolicy
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-data class PolishProfileTextRequest(
+data class PolishExperienceRequest(
     @field:NotBlank
-    // 핵심역량과 경력 세부의 가장 큰 목적지까지 수용하는 첨삭 입력 상한이다.
-    @field:Size(max = 2000)
-    val text: String = "",
+    @field:Size(max = ProfilePolicy.MAX_TITLE_LENGTH)
+    val title: String = "",
 
-    val kind: ProfilePolishKind = ProfilePolishKind.CORE_COMPETENCY,
+    @field:NotBlank
+    @field:Size(max = ProfilePolicy.MAX_CONTENTS_LENGTH)
+    val description: String = "",
 
     val structure: PolishStructure? = null,
 

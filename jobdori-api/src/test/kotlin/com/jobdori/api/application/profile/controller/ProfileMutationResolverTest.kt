@@ -1,9 +1,11 @@
 package com.jobdori.api.application.profile.controller
 
 import com.jobdori.api.GraphQLTest
+import com.jobdori.api.application.profile.dto.request.PolishExperienceRequest
 import com.jobdori.api.application.profile.dto.request.PolishProfileTextRequest
 import com.jobdori.api.application.profile.dto.request.UpdateProfileRequest
 import com.jobdori.api.application.profile.dto.response.GenerateCoreCompetencyResponse
+import com.jobdori.api.application.profile.dto.response.PolishedExperienceResponse
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
 import com.jobdori.api.application.profile.service.ProfileService
 import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
@@ -186,13 +188,12 @@ internal class ProfileMutationResolverTest(
         }
     }
 
-    "작성 구조/직접 지침/경험명/JD를 주면 옵션을 반영해 다듬는다" {
+    "작성 구조/직접 지침/JD를 주면 옵션을 반영해 다듬는다" {
         val request = PolishProfileTextRequest(
             text = "경험이 이미 채워져있는 상태입니다",
-            kind = ProfilePolishKind.EXPERIENCE_DESCRIPTION,
+            kind = ProfilePolishKind.CAREER_DESCRIPTION,
             structure = PolishStructure.BULLET,
             instruction = "정중한 어투로, 전환율 수치를 강조",
-            title = "콘텐츠 마케팅 캠페인 운영",
             jdId = "jd-pub-1",
         )
         every {
@@ -207,10 +208,9 @@ internal class ProfileMutationResolverTest(
                     workspaceId: "workspace-id",
                     request: {
                       text: "경험이 이미 채워져있는 상태입니다",
-                      kind: EXPERIENCE_DESCRIPTION,
+                      kind: CAREER_DESCRIPTION,
                       structure: BULLET,
                       instruction: "정중한 어투로, 전환율 수치를 강조",
-                      title: "콘텐츠 마케팅 캠페인 운영",
                       jdId: "jd-pub-1"
                     }
                   )
@@ -223,6 +223,52 @@ internal class ProfileMutationResolverTest(
 
         verify(exactly = 1) {
             profileService.polishProfileText(userId = 1L, workspaceId = "workspace-id", request = request)
+        }
+    }
+
+    "경험명과 경험 내용을 한 번에 AI로 다듬는다" {
+        val request = PolishExperienceRequest(
+            title = "콘텐츠 마케팅 캠페인 운영",
+            description = "경험이 이미 채워져있는 상태입니다",
+            structure = PolishStructure.BULLET,
+            instruction = "경험명과 경험 내용에서 전환율 개선 성과를 강조",
+            jdId = "jd-pub-1",
+        )
+        every {
+            profileService.polishExperience(userId = 1L, workspaceId = "workspace-id", request = request)
+        } returns PolishedExperienceResponse(
+            title = "전환율을 개선한 콘텐츠 마케팅 캠페인",
+            description = "- 메시지 A/B 테스트를 수행해 전환율을 개선했습니다.",
+        )
+
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  polishExperience(
+                    workspaceId: "workspace-id",
+                    request: {
+                      title: "콘텐츠 마케팅 캠페인 운영",
+                      description: "경험이 이미 채워져있는 상태입니다",
+                      structure: BULLET,
+                      instruction: "경험명과 경험 내용에서 전환율 개선 성과를 강조",
+                      jdId: "jd-pub-1"
+                    }
+                  ) {
+                    title
+                    description
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .path("polishExperience.title").entity<String>()
+            .isEqualTo("전환율을 개선한 콘텐츠 마케팅 캠페인")
+            .path("polishExperience.description").entity<String>()
+            .isEqualTo("- 메시지 A/B 테스트를 수행해 전환율을 개선했습니다.")
+
+        verify(exactly = 1) {
+            profileService.polishExperience(userId = 1L, workspaceId = "workspace-id", request = request)
         }
     }
 

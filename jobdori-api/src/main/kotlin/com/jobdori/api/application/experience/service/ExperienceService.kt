@@ -52,8 +52,8 @@ class ExperienceService(
                 title = request.title,
                 contents = resolveContents(request.contents),
                 tags = request.tags,
-                period = request.period?.toPeriod(),
-                role = request.role,
+                period = request.period?.toPeriod() ?: project.period,
+                role = request.role ?: project.role,
             ),
         )
 

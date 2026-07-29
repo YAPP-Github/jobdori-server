@@ -5,6 +5,7 @@ import com.jobdori.api.application.experience.dto.request.UpdateExperienceReques
 import com.jobdori.api.application.experience.dto.request.contents.ExperienceContentsRequest
 import com.jobdori.api.application.experience.dto.request.contents.FreeExperienceContentsRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
+import com.jobdori.common.model.Period
 import com.jobdori.common.model.SliceResult
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
@@ -29,6 +30,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.time.LocalDate
 
 class ExperienceServiceTest : StringSpec({
 
@@ -66,7 +68,11 @@ class ExperienceServiceTest : StringSpec({
 
     "프로젝트를 확인한 뒤 경험을 생성하고 응답을 반환한다" {
         // given
-        val project = project(id = 3L)
+        val projectPeriod = Period(
+            startAt = LocalDate.of(2025, 1, 1),
+            endAt = LocalDate.of(2025, 6, 30),
+        )
+        val project = project(id = 3L, period = projectPeriod, role = "백엔드 개발")
         val contents = StarExperienceContents("상황", "과제", "행동", "결과")
         val request = CreateExperienceRequest(
             projectId = 3L,
@@ -85,6 +91,8 @@ class ExperienceServiceTest : StringSpec({
                     tags = listOf("Kotlin"),
                     title = "경험",
                     contents = contents,
+                    period = projectPeriod,
+                    role = "백엔드 개발",
                 ),
             )
         } returns experience
@@ -309,13 +317,17 @@ private fun freeContentsRequest(content: String) = ExperienceContentsRequest(
     free = FreeExperienceContentsRequest(content = content),
 )
 
-private fun project(id: Long) = ExperienceProject(
+private fun project(
+    id: Long,
+    period: Period? = null,
+    role: String? = "백엔드 개발자",
+) = ExperienceProject(
     id = id,
     workspaceId = 1L,
     name = "프로젝트 $id",
     summary = "프로젝트 요약",
-    period = null,
-    role = "백엔드 개발자",
+    period = period,
+    role = role,
     displayOrder = 0.0,
     status = ExperienceProjectStatus.ACTIVE,
 )

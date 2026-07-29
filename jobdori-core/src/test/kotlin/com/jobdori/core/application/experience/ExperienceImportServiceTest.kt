@@ -1,6 +1,7 @@
 package com.jobdori.core.application.experience
 
 import com.jobdori.core.application.experience.command.ImportedExperienceCommandGroup
+import com.jobdori.common.model.Period
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceProjectFixture
 import com.jobdori.core.domain.experience.service.ExperienceCreator
@@ -11,6 +12,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.time.LocalDate
 
 class ExperienceImportServiceTest : StringSpec({
 
@@ -26,7 +28,10 @@ class ExperienceImportServiceTest : StringSpec({
         val firstProjectCommand = ExperienceProjectCreateCommand(
             name = "채용 플랫폼 지원 자동화",
             summary = "공고 탐색부터 지원 현황 관리까지 개선",
-            period = null,
+            period = Period(
+                startAt = LocalDate.of(2025, 1, 1),
+                endAt = LocalDate.of(2025, 6, 30),
+            ),
             role = "백엔드 개발",
         )
         val secondProjectCommand = ExperienceProjectCreateCommand(
@@ -71,14 +76,28 @@ class ExperienceImportServiceTest : StringSpec({
                 commands = listOf(firstProjectCommand, secondProjectCommand),
             )
         } returns listOf(
-            ExperienceProjectFixture.create(id = 10L),
-            ExperienceProjectFixture.create(id = 20L),
+            ExperienceProjectFixture.create(
+                id = 10L,
+                period = firstProjectCommand.period,
+                role = firstProjectCommand.role,
+            ),
+            ExperienceProjectFixture.create(
+                id = 20L,
+                period = secondProjectCommand.period,
+                role = secondProjectCommand.role,
+            ),
         )
+        val inheritedFirstExperiences = firstExperiences.map {
+            it.copy(period = firstProjectCommand.period, role = firstProjectCommand.role)
+        }
+        val inheritedSecondExperiences = secondExperiences.map {
+            it.copy(period = secondProjectCommand.period, role = secondProjectCommand.role)
+        }
         every {
-            experienceCreator.create(workspaceId = 1L, projectId = 10L, commands = firstExperiences)
+            experienceCreator.create(workspaceId = 1L, projectId = 10L, commands = inheritedFirstExperiences)
         } returns emptyList()
         every {
-            experienceCreator.create(workspaceId = 1L, projectId = 20L, commands = secondExperiences)
+            experienceCreator.create(workspaceId = 1L, projectId = 20L, commands = inheritedSecondExperiences)
         } returns emptyList()
 
         // when
@@ -95,10 +114,10 @@ class ExperienceImportServiceTest : StringSpec({
             )
         }
         verify(exactly = 1) {
-            experienceCreator.create(workspaceId = 1L, projectId = 10L, commands = firstExperiences)
+            experienceCreator.create(workspaceId = 1L, projectId = 10L, commands = inheritedFirstExperiences)
         }
         verify(exactly = 1) {
-            experienceCreator.create(workspaceId = 1L, projectId = 20L, commands = secondExperiences)
+            experienceCreator.create(workspaceId = 1L, projectId = 20L, commands = inheritedSecondExperiences)
         }
     }
 

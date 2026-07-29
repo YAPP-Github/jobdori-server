@@ -1,0 +1,70 @@
+name: Notify Discord on Release
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    name: Notify Discord
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Send release notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+          RELEASED_BY: ${{ github.actor }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${DISCORD_WEBHOOK_URL}" ]]; then
+            echo "DISCORD_WEBHOOK_URL secret is not configured." >&2
+            exit 1
+          fi
+
+          title="새로운 버전이 릴리즈되었어요! (${RELEASE_TAG})"
+          description="${RELEASE_BODY:-릴리스 노트가 없습니다.}"
+
+          if [[ "${IS_PRERELEASE}" == "true" ]]; then
+            color=16753920
+          else
+            color=5763719
+          fi
+
+          payload="$(jq -n \
+            --arg title "${title}" \
+            --arg url "${RELEASE_URL}" \
+            --arg description "${description:0:4000}" \
+            --arg tag "${RELEASE_TAG}" \
+            --arg released_by "${RELEASED_BY}" \
+            --argjson color "${color}" \
+            '{
+              username: "Server Release",
+              embeds: [{
+                title: $title,
+                url: $url,
+                description: $description,
+                color: $color,
+                fields: [
+                  {name: "tag", value: $tag, inline: true},
+                  {name: "actor", value: $released_by, inline: true}
+                ]
+              }]
+            }')"
+
+          curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --header "Content-Type: application/json" \
+            --data "${payload}" \
+            "${DISCORD_WEBHOOK_URL}"

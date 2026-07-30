@@ -499,22 +499,22 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">invalid_auth_token</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">인증이 필요합니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">로그인이 필요해요. 로그인 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 없거나 유효하지 않은 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">token_expired</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">인증이 만료되었습니다. 다시 로그인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">로그인이 만료됐어요. 다시 로그인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">인증 토큰이 만료된 경우 (액세스 토큰 갱신 필요)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">internal_error</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 생겼어요. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">서버 내부적으로 문제 발생 시</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">service_unavailable</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">현재 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">지금은 서비스를 이용할 수 없어요. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">현재 서비스를 이용할 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -655,7 +655,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">user_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">사용자를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">가입된 계정을 찾지 못했어요. 회원가입 후 이용해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유저를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -739,22 +739,22 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 경험입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>project</code> 필드를 함께 요청했으나 연결된 경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -839,17 +839,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">`projectId`로 특정 프로젝트의 경험 목록을 조회했으나 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -931,12 +931,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1023,17 +1023,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1121,22 +1121,22 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 경험입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1190,17 +1190,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 경험입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1267,17 +1267,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1348,12 +1348,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1422,12 +1422,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1497,17 +1497,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1561,17 +1561,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 프로젝트입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">경험 프로젝트를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1635,17 +1635,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_api_request_failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 요청에 실패했습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion에서 내용을 가져오지 못했어요. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notion OAuth 토큰 교환 요청이 실패한 경우</p></td>
 </tr>
 </tbody>
@@ -1699,12 +1699,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1769,12 +1769,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -1842,32 +1842,32 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_connection_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 연결을 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 연결을 찾지 못했어요. Notion을 다시 연결해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">요청한 Notion 연결이 없거나 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_connection_need_reconnect</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion을 다시 연결해야 합니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 인증이 만료되었어요. Notion을 다시 연결해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notion 토큰 갱신에 실패했거나 연결 권한이 해제된 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_page_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 페이지에 접근할 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 페이지에 접근할 수 없어요. Notion에서 페이지 공유 설정을 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">해당 페이지가 연결에 공유되지 않았거나 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_api_request_failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 요청에 실패했습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion에서 내용을 가져오지 못했어요. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 호출이 실패한 경우</p></td>
 </tr>
 </tbody>
@@ -1924,32 +1924,32 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_connection_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 연결을 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 연결을 찾지 못했어요. Notion을 다시 연결해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">요청한 Notion 연결이 없거나 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_connection_need_reconnect</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion을 다시 연결해야 합니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 인증이 만료되었어요. Notion을 다시 연결해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notion 토큰 갱신에 실패했거나 연결 권한이 해제된 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_page_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 페이지에 접근할 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion 페이지에 접근할 수 없어요. Notion에서 페이지 공유 설정을 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">해당 페이지가 연결에 공유되지 않았거나 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">notion_api_request_failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 요청에 실패했습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notion에서 내용을 가져오지 못했어요. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notion API 호출이 실패한 경우</p></td>
 </tr>
 </tbody>
@@ -2027,12 +2027,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2088,12 +2088,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2241,17 +2241,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">resume_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 이력서입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2477,12 +2477,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2778,17 +2778,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">resume_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 이력서입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2842,17 +2842,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">resume_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 이력서입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -2925,17 +2925,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 채용공고예요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
 </tr>
 </tbody>
@@ -2996,12 +2996,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -3069,57 +3069,57 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_required</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">경험 정리가 필요합니다. 경험을 추가해주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이력서 생성을 위한 경험이 필요해요. 내 경험 탭에서 경험을 추가해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 활성 상태의 경험이 없어 JD를 등록할 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_invalid_url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">요청할 수 없는 URL입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">링크 형식이 올바르지 않아요. 확인 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">허용되지 않은 스킴이거나 내부 네트워크 주소(SSRF 차단)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">해당 페이지에 접근할 수 없습니다. 내용을 직접 붙여넣어 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 페이지에 접근할 수 없어요. 원문을 직접 복사해 붙여 넣어 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">JD URL 접근 거부(4xx)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_fetch_failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">공고 내용을 가져오지 못했습니다. 내용을 직접 붙여넣어 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">내용을 불러올 수 없어요. 원문을 직접 복사해 붙여 넣어 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">JD 본문 수집 실패(모든 크롤 단 실패)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_a_posting</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">채용 공고가 아닌 것 같아요. 공고 URL이나 내용을 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">채용공고가 아닌 것 같아요. 채용공고 주소나 내용을 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AI가 채용 공고로 인식하지 못한 본문/URL</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_rate_limited</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청이 많아 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">요청이 많아 잠시 기다려야 해요. 입력한 내용은 그대로 있으니 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청 한도 초과</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성이 중간에 멈췄어요. 입력한 내용은 그대로 있으니 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 생성 실패</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_unavailable</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">현재 AI 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">지금은 AI 기능을 이용할 수 없어요. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AI 서비스 접근 불가</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_timeout</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 지연/시간 초과</p></td>
 </tr>
 </tbody>
@@ -3176,17 +3176,17 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 채용공고예요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
 </tr>
 </tbody>
@@ -3284,12 +3284,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -3412,12 +3412,12 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
@@ -3480,27 +3480,27 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">resume_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 이력서입니다</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 채용공고예요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성이 중간에 멈췄어요. 입력한 내용은 그대로 있으니 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 생성 실패</p></td>
 </tr>
 </tbody>
@@ -3569,22 +3569,22 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 접근할 권한이 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없습니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 JD입니다.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 채용공고예요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성이 중간에 멈췄어요. 입력한 내용은 그대로 있으니 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 생성 실패</p></td>
 </tr>
 </tbody>

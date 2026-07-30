@@ -16,25 +16,25 @@ enum class CommonErrorCode(
     E401_INVALID_AUTH_TOKEN(
         httpStatusCode = 401,
         code = "invalid_auth_token",
-        message = "인증이 필요합니다.",
+        message = "로그인이 필요해요. 로그인 후 다시 시도해 주세요.",
         description = "인증 토큰이 없거나 유효하지 않은 경우",
     ),
     E401_TOKEN_EXPIRED(
         httpStatusCode = 401,
         code = "token_expired",
-        message = "인증이 만료되었습니다. 다시 로그인해 주세요.",
+        message = "로그인이 만료됐어요. 다시 로그인해 주세요.",
         description = "인증 토큰이 만료된 경우 (액세스 토큰 갱신 필요)",
     ),
     E500_INTERNAL_ERROR(
         httpStatusCode = 500,
         code = "internal_error",
-        message = "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+        message = "일시적인 오류가 생겼어요. 잠시 후 다시 시도해 주세요.",
         description = "서버 내부적으로 문제 발생 시",
     ),
     E503_SERVICE_UNAVAILABLE(
         httpStatusCode = 503,
         code = "service_unavailable",
-        message = "현재 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        message = "지금은 서비스를 이용할 수 없어요. 잠시 후 다시 시도해 주세요.",
         description = "현재 서비스를 이용할 수 없는 경우",
     ),
     ;

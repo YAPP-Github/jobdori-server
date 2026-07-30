@@ -12,7 +12,7 @@ enum class AuthErrorCode(
     INVALID_OAUTH_AUTHORIZATION_CODE(
         httpStatusCode = 400,
         code = "invalid_authorization_code",
-        message = "인증 코드가 올바르지 않습니다.",
+        message = "로그인에 실패했어요. 처음부터 다시 로그인해 주세요.",
         description = "유효하지 않은 OAuth 인증 코드인 경우"
     ),
     ;

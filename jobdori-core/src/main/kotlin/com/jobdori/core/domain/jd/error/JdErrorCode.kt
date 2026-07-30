@@ -12,7 +12,7 @@ enum class JdErrorCode(
     E404_JD_NOT_FOUND(
         httpStatusCode = 404,
         code = "jd_not_found",
-        message = "등록되지 않은 JD입니다.",
+        message = "등록되지 않은 채용공고예요. 목록에서 다시 확인해 주세요.",
         description = "존재하지 않거나 소유자가 아닌 JD 조회",
     ),
     ;

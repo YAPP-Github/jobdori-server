@@ -1,10 +1,9 @@
 package com.jobdori.api.application.profile.controller
 
-import com.jobdori.api.application.profile.dto.request.PolishExperienceRequest
 import com.jobdori.api.application.profile.dto.request.PolishProfileTextRequest
 import com.jobdori.api.application.profile.dto.request.UpdateProfileRequest
 import com.jobdori.api.application.profile.dto.response.GenerateCoreCompetencyResponse
-import com.jobdori.api.application.profile.dto.response.PolishedExperienceResponse
+import com.jobdori.api.application.profile.dto.response.PolishedProfileTextResponse
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
 import com.jobdori.api.application.profile.service.ProfileService
 import com.jobdori.api.support.auth.UserId
@@ -47,18 +46,7 @@ class ProfileMutationResolver(
         @UserId userId: Long,
         @Argument workspaceId: String?,
         @Valid @Argument request: PolishProfileTextRequest,
-    ): String = profileService.polishProfileText(
-        userId = userId,
-        workspaceId = workspaceId,
-        request = request,
-    )
-
-    @MutationMapping
-    fun polishExperience(
-        @UserId userId: Long,
-        @Argument workspaceId: String?,
-        @Valid @Argument request: PolishExperienceRequest,
-    ): PolishedExperienceResponse = profileService.polishExperience(
+    ): PolishedProfileTextResponse = profileService.polishProfileText(
         userId = userId,
         workspaceId = workspaceId,
         request = request,

@@ -46,7 +46,9 @@ extend type Mutation {
     ): GeneratedCoreCompetency!
 
     """
-    프로필 텍스트(핵심역량/경력 세부)를 AI로 다듬습니다.
+    프로필 텍스트와 경험을 AI로 다듬습니다.
+    kind가 EXPERIENCE이면 title이 필수이며 응답 title에 다듬은 경험명이 채워집니다.
+    나머지 kind에서는 입력 title을 무시하고 응답 title은 null입니다.
     입력은 최대 2000자이며 결과는 항목별 500자 제한에 맞춰 압축됩니다. 결과만 반환하고 저장하지 않습니다.
     """
     polishProfileText(
@@ -58,23 +60,7 @@ extend type Mutation {
         텍스트 다듬기 입력입니다.
         """
         request: PolishProfileTextRequest!
-    ): String!
-
-    """
-    경험명과 경험 내용을 한 번에 AI로 다듬습니다. 결과만 반환하고 저장하지 않습니다.
-    추가 지침(instruction)이 비어 있으면 경험명은 원문 그대로 반환됩니다.
-    추가 지침이 있지만 경험명과 무관하면 AI가 원문 유지를 시도하지만 이를 보장하지 않습니다.
-    """
-    polishExperience(
-        """
-        워크스페이스 ID입니다. request.jdId를 주면 필수입니다.
-        """
-        workspaceId: ID = null,
-        """
-        경험명과 경험 내용 다듬기 입력입니다.
-        """
-        request: PolishExperienceRequest!
-    ): PolishedExperience!
+    ): PolishedProfileText!
 }
 
 """
@@ -93,17 +79,19 @@ type GeneratedCoreCompetency {
 }
 
 """
-AI로 다듬은 경험명과 경험 내용입니다. 결과만 반환하고 저장하지 않습니다.
+AI로 다듬은 프로필 텍스트입니다.
 """
-type PolishedExperience {
+type PolishedProfileText {
     """
-    다듬은 경험명입니다. 추가 지침이 비어 있으면 원문 그대로 반환됩니다.
+    kind가 EXPERIENCE일 때만 다듬은 경험명이 채워집니다. 추가 지침이 비어 있으면 원문 그대로 반환됩니다.
     추가 지침이 있지만 경험명과 무관하면 AI가 원문 유지를 시도하지만 이를 보장하지 않습니다. (최대 150자)
+    결과만 반환하고 저장하지 않습니다.
     """
-    title: String!
+    title: String
 
     """
-    다듬은 경험 내용입니다. 입력이 결과 제한보다 길면 핵심을 남겨 압축합니다. (최대 500자)
+    다듬은 프로필 텍스트 또는 경험 내용입니다. 입력이 결과 제한보다 길면 핵심을 남겨 압축합니다. (최대 500자)
+    결과만 반환하고 저장하지 않습니다.
     """
     description: String!
 }
@@ -251,6 +239,11 @@ enum ProfilePolishKind {
     경력 세부 내용 첨삭 결과 (최대 500자)
     """
     CAREER_DESCRIPTION
+
+    """
+    경험명과 경험 내용 첨삭입니다. title이 필수이며 경험 내용 결과는 최대 500자입니다.
+    """
+    EXPERIENCE
 }
 
 """
@@ -595,7 +588,12 @@ input PolishProfileTextRequest {
     """
     다듬을 원문입니다. (최대 2000자) 결과는 항목별 제한 이내로 압축됩니다.
     """
-    text: String!
+    description: String!
+
+    """
+    경험명입니다. kind가 EXPERIENCE이면 필수이며 최대 150자입니다. 나머지 kind에서는 무시합니다.
+    """
+    title: String = null
 
     """
     다듬기 대상 항목입니다. 항목별 결과 글자수 제한에 맞춰 다듬습니다.
@@ -614,39 +612,6 @@ input PolishProfileTextRequest {
 
     """
     JD ID입니다. 주면 해당 JD의 지원 전략을 반영해 다듬습니다. workspaceId와 함께 사용합니다.
-    """
-    jdId: ID = null
-}
-
-"""
-경험명과 경험 내용 AI 다듬기 입력입니다. 결과만 반환하고 저장하지 않습니다.
-추가 지침(instruction)이 비어 있으면 입력한 경험명을 그대로 반환합니다.
-추가 지침이 있지만 경험명과 무관하면 AI가 원문 유지를 시도하지만 이를 보장하지 않습니다.
-jdId를 주면 workspaceId가 필수입니다.
-"""
-input PolishExperienceRequest {
-    """
-    다듬을 경험명입니다. (최대 150자)
-    """
-    title: String!
-
-    """
-    다듬을 경험 내용입니다. (최대 2000자)
-    """
-    description: String!
-
-    """
-    경험 내용의 작성 구조입니다. (불렛형/문제-해결-성과/산문형, 미지정 시 원문 형식 유지)
-    """
-    structure: PolishStructure = null
-
-    """
-    직접 작성 지침입니다. 경험명을 바꾸려면 경험명 관련 내용을 포함합니다. (최대 200자)
-    """
-    instruction: String = null
-
-    """
-    JD ID입니다. 주면 해당 JD의 지원 전략을 반영해 다듬습니다. workspaceId가 필수입니다.
     """
     jdId: ID = null
 }

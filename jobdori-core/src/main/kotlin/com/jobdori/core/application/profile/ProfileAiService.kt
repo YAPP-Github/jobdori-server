@@ -204,6 +204,7 @@ const val EXPERIENCE_DESCRIPTION_RESULT_MAX_LENGTH = 500
 enum class ProfilePolishKind(val label: String, val maxLength: Int) {
     CORE_COMPETENCY("핵심역량", ProfilePolicy.MAX_CORE_COMPETENCY_LENGTH),
     CAREER_DESCRIPTION("경력 세부 내용", ProfilePolicy.MAX_CAREER_DESCRIPTION_LENGTH),
+    EXPERIENCE("경험 내용", EXPERIENCE_DESCRIPTION_RESULT_MAX_LENGTH),
 }
 
 enum class PolishStructure(val instruction: String) {

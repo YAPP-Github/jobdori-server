@@ -1,6 +1,6 @@
 package com.jobdori.api.application.profile.dto.response
 
-data class PolishedExperienceResponse(
-    val title: String,
+data class PolishedProfileTextResponse(
+    val title: String?,
     val description: String,
 )

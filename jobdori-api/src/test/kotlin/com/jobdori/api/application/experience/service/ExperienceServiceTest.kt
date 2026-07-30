@@ -10,7 +10,6 @@ import com.jobdori.common.model.SliceResult
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.application.experience.PolishedExperience
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
-import com.jobdori.core.application.profile.FirstExperienceCoreCompetencyService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
@@ -44,7 +43,6 @@ class ExperienceServiceTest : StringSpec({
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
     val getExperienceRecommendationService = mockk<GetExperienceRecommendationService>()
     val experienceContentsPolishService = mockk<ExperienceContentsPolishService>()
-    val firstExperienceCoreCompetencyService = mockk<FirstExperienceCoreCompetencyService>()
     val experienceService = ExperienceService(
         workspaceAccessValidationService = workspaceAccessValidationService,
         experienceCreator = experienceCreator,
@@ -54,7 +52,6 @@ class ExperienceServiceTest : StringSpec({
         experienceProjectReader = experienceProjectReader,
         getExperienceRecommendationService = getExperienceRecommendationService,
         experienceContentsPolishService = experienceContentsPolishService,
-        firstExperienceCoreCompetencyService = firstExperienceCoreCompetencyService,
     )
 
     beforeTest {
@@ -85,7 +82,6 @@ class ExperienceServiceTest : StringSpec({
             contents = freeContentsRequest("경험 내용"),
         )
         val experience = experience(id = 100L, projectId = 3L, contents = contents)
-        every { experienceReader.findAllActive(1L) } returns listOf(experience(id = 99L, projectId = 3L))
         every { experienceProjectReader.getProject(workspaceId = 1L, projectId = 3L) } returns project
         every {
             experienceContentsPolishService.polishFreeStyleToStar("경험 내용")
@@ -134,7 +130,6 @@ class ExperienceServiceTest : StringSpec({
             contents = freeContentsRequest("2024년 3월부터 8월까지 백엔드 리드로 성능을 개선했다"),
         )
         val created = experience(id = 100L, projectId = 3L, title = "성능 개선", contents = contents)
-        every { experienceReader.findAllActive(1L) } returns listOf(created)
         every { experienceProjectReader.getProject(1L, 3L) } returns project
         every {
             experienceContentsPolishService.polishFreeStyleToStar(any())

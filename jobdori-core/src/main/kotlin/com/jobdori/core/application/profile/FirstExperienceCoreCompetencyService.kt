@@ -13,13 +13,15 @@ class FirstExperienceCoreCompetencyService(
     private val profileAiService: ProfileAiService,
 ) {
 
-    fun generateIfAbsent(workspaceId: Long, experience: Experience) {
+    fun generateIfAbsent(workspaceId: Long, experiences: List<Experience>) {
+        if (experiences.isEmpty()) return
+
         val profile = profileReader.getOrCreateProfile(workspaceId)
         if (!profile.coreCompetency.isNullOrBlank()) return
 
         val coreCompetency = profileAiService.generateCoreCompetencyFromExperiences(
             detail = profileReader.getDetail(profile),
-            experiences = listOf(experience),
+            experiences = experiences,
         ).trim()
         if (coreCompetency.isBlank()) return
 

@@ -13,7 +13,6 @@ import com.jobdori.common.model.Period
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.application.experience.PolishedExperience
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
-import com.jobdori.core.application.profile.FirstExperienceCoreCompetencyService
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.service.ExperienceCreator
@@ -34,7 +33,6 @@ class ExperienceService(
     private val experienceProjectReader: ExperienceProjectReader,
     private val getExperienceRecommendationService: GetExperienceRecommendationService,
     private val experienceContentsPolishService: ExperienceContentsPolishService,
-    private val firstExperienceCoreCompetencyService: FirstExperienceCoreCompetencyService,
 ) {
 
     fun createExperience(
@@ -49,8 +47,6 @@ class ExperienceService(
         )
 
         val project = experienceProjectReader.getProject(workspaceId = workspace.id, projectId = projectId)
-        // 경험 생성 전에 판정해야 한다. 생성 후에는 방금 만든 경험이 포함돼 항상 non-empty가 되어 절대 트리거되지 않는다.
-        val isFirstExperience = experienceReader.findAllActive(workspace.id).isEmpty()
         val resolvedContents = resolveContents(request.contents)
         val experience = experienceCreator.create(
             workspaceId = workspace.id,
@@ -63,15 +59,6 @@ class ExperienceService(
                 role = request.role?.ifBlank { resolvedContents.role ?: project.role }
             ),
         )
-
-        // TODO: 제거 필요
-        if (isFirstExperience) {
-            runCatching {
-                firstExperienceCoreCompetencyService.generateIfAbsent(workspace.id, experience)
-            }.onFailure { e ->
-                log.warn(e) { "첫 경험 핵심역량 생성 실패, 경험 등록은 유지: workspaceId=${workspace.id}" }
-            }
-        }
 
         return ExperienceResponse.from(
             experience = experience,

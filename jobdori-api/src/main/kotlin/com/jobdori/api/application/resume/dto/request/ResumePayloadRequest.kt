@@ -1,6 +1,7 @@
 package com.jobdori.api.application.resume.dto.request
 
 import com.jobdori.api.application.common.dto.request.PeriodRequest
+import com.jobdori.core.domain.profile.ProfilePolicy
 import com.jobdori.core.domain.resume.ResumeAwardPayload
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeCareerPayload
@@ -71,13 +72,13 @@ data class ResumeCareerPayloadRequest(
 }
 
 data class ResumeExperiencePayloadRequest(
-    @field:Size(max = 150)
+    @field:Size(max = ProfilePolicy.MAX_TITLE_LENGTH)
     val name: String?,
     @field:Size(max = 100)
     val role: String?,
     @field:Valid
     val period: PeriodRequest?,
-    @field:Size(max = 2000)
+    @field:Size(max = ProfilePolicy.MAX_CONTENTS_LENGTH)
     val contents: String?,
 ) : ResumePayloadRequest<ResumeExperiencePayload> {
     override fun toPayload() = ResumeExperiencePayload(

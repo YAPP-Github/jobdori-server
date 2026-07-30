@@ -1,6 +1,7 @@
 package com.jobdori.api.application.profile.dto.request
 
 import com.jobdori.api.application.common.dto.request.PeriodRequest
+import com.jobdori.core.domain.profile.ProfilePolicy
 import com.jobdori.core.domain.profile.section.Award
 import com.jobdori.core.domain.profile.section.Career
 import com.jobdori.core.domain.profile.section.Certification
@@ -47,7 +48,7 @@ data class ProfileCareerRequest(
     @field:Valid
     val period: PeriodRequest? = null,
 
-    @field:Size(max = 500)
+    @field:Size(max = ProfilePolicy.MAX_CAREER_DESCRIPTION_LENGTH)
     val description: String? = null,
 ) {
     fun toDomain() = Career(

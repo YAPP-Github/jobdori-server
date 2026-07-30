@@ -12,7 +12,7 @@ enum class NotionErrorCode(
     CONNECTION_NOT_FOUND(
         httpStatusCode = 404,
         code = "notion_connection_not_found",
-        message = "Notion 연결을 찾지 못했어요. Notion을 다시 연결해 주세요.",
+        message = "Notion 연결에 실패했어요. Notion을 다시 연결해 주세요.",
         description = "요청한 Notion 연결이 없거나 접근 권한이 없는 경우",
     ),
     CONNECTION_NEED_RECONNECT(

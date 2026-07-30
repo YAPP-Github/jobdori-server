@@ -9,7 +9,9 @@ import com.jobdori.api.application.experience.dto.response.ExperienceProjectResp
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.logger.LoggerExtension.log
+import com.jobdori.common.model.Period
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
+import com.jobdori.core.application.experience.PolishedExperience
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.application.profile.FirstExperienceCoreCompetencyService
 import com.jobdori.core.domain.experience.ExperienceContents
@@ -49,18 +51,20 @@ class ExperienceService(
         val project = experienceProjectReader.getProject(workspaceId = workspace.id, projectId = projectId)
         // 경험 생성 전에 판정해야 한다. 생성 후에는 방금 만든 경험이 포함돼 항상 non-empty가 되어 절대 트리거되지 않는다.
         val isFirstExperience = experienceReader.findAllActive(workspace.id).isEmpty()
+        val resolvedContents = resolveContents(request.contents)
         val experience = experienceCreator.create(
             workspaceId = workspace.id,
             projectId = projectId,
             command = ExperienceCreateCommand(
-                title = request.title,
-                contents = resolveContents(request.contents),
-                tags = request.tags,
-                period = request.period?.toPeriod() ?: project.period,
-                role = request.role ?: project.role,
+                title = request.title.ifBlank { resolvedContents.title.orEmpty() },
+                contents = resolvedContents.contents,
+                tags = request.tags.ifEmpty { resolvedContents.tags },
+                period = request.period?.toPeriod() ?: resolvedContents.period ?: project.period,
+                role = request.role?.ifBlank { resolvedContents.role ?: project.role }
             ),
         )
 
+        // TODO: 제거 필요
         if (isFirstExperience) {
             runCatching {
                 firstExperienceCoreCompetencyService.generateIfAbsent(workspace.id, experience)
@@ -91,15 +95,16 @@ class ExperienceService(
             projectId = request.projectId,
         )
 
+        val resolvedContents = resolveContents(request.contents)
         val modified = experienceModifier.modify(
             workspaceId = workspace.id,
             experienceId = experienceId,
             projectId = request.projectId,
             tags = request.tags,
-            title = request.title,
-            contents = resolveContents(request.contents),
-            period = request.period?.toPeriod(),
-            role = request.role,
+            title = request.title.ifBlank { resolvedContents.title.orEmpty() },
+            contents = resolvedContents.contents,
+            period = request.period?.toPeriod() ?: resolvedContents.period,
+            role = request.role ?: resolvedContents.role,
         )
         val project = experienceProjectReader.getProject(
             workspaceId = workspace.id,
@@ -250,13 +255,29 @@ class ExperienceService(
         )
     }
 
-    private fun resolveContents(request: ExperienceContentsRequest): ExperienceContents {
+    private fun resolveContents(request: ExperienceContentsRequest): ResolvedExperienceContents {
         return when (request.type) {
-            ExperienceContentsType.STAR -> request.toDomain()
+            ExperienceContentsType.STAR -> ResolvedExperienceContents(contents = request.toDomain())
             ExperienceContentsType.FREE -> experienceContentsPolishService.polishFreeStyleToStar(
                 requireNotNull(request.free) { "FREE contents require free payload" }.content,
-            )
+            ).toResolvedContents()
         }
     }
 
 }
+
+private data class ResolvedExperienceContents(
+    val title: String? = null,
+    val period: Period? = null,
+    val role: String? = null,
+    val tags: List<String> = emptyList(),
+    val contents: ExperienceContents,
+)
+
+private fun PolishedExperience.toResolvedContents() = ResolvedExperienceContents(
+    title = title,
+    period = period,
+    role = role,
+    tags = tags,
+    contents = contents,
+)

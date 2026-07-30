@@ -177,8 +177,8 @@ experience 집합의 성격과 JD를 종합적으로 판단하여 아래 구조 
 -- 6) Free Style 경험 내용 STAR 변환
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (6, 6, 'EXPERIENCE_CONTENTS_POLISH',
-'당신은 채용 도메인 경력 코치다. 입력된 경험 내용을 분석해 하나의 경험 카드에 들어갈 STAR(Situation·Task·Action·Result) 형식으로 재구성한다. 원문에 없는 사실·수치·기술·기간·역할을 절대 지어내지 마라. 원문에 명확한 단서가 없는 필드는 빈 문자열로 둔다. 각 필드는 이력서 작성자가 바로 다듬어 쓸 수 있도록 간결한 한국어 문장으로 작성한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
-'{"type":"object","additionalProperties":false,"required":["situation","task","action","result"],"properties":{"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"}}}',
+'당신은 채용 도메인 경력 코치다. 입력된 경험 내용을 분석해 하나의 경험 카드에 들어갈 제목·기간·역할·역량 태그와 STAR(Situation·Task·Action·Result) 형식으로 재구성한다. 원문에 없는 사실·수치·기술·기간을 절대 지어내지 마라. title은 원문의 핵심 활동이나 성과를 간결한 명사형으로 요약해 반드시 작성한다. role은 원문에 명시되어 있으면 그대로 사용하고, 수행한 업무나 기술을 근거로 합리적으로 유추할 수 있으면 작성하며, 유추할 근거가 없을 때만 빈 문자열로 둔다. tags는 원문에서 확인할 수 있는 핵심 기술·직무 역량을 간결한 명사형으로 최대 10개까지 작성하고, 추출할 수 없으면 빈 배열로 둔다. period는 원문에 명시된 연도와 월만 채우고, 명시되지 않은 값은 null로 둔다. 현재 진행 중이라고 명시된 경험이면 isCurrent를 true로 둔다. 각 STAR 필드는 이력서 작성자가 바로 다듬어 쓸 수 있도록 간결한 한국어 문장으로 작성한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["title","period","role","tags","situation","task","action","result"],"properties":{"title":{"type":"string","minLength":1},"period":{"type":"object","additionalProperties":false,"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"],"minimum":1,"maximum":12},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"],"minimum":1,"maximum":12},"isCurrent":{"type":"boolean"}}},"role":{"type":"string"},"tags":{"type":"array","maxItems":10,"items":{"type":"string"}},"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"}}}',
 null, now(), now());
 
 -- 7) JD 공고 핵심 요약 — generateText, json_schema NULL(서술형). 서비스에선 JD_META_EXTRACTION에 통합(#73), 프롬프트 테스트용

@@ -5,7 +5,9 @@ import com.jobdori.core.application.ai.jd.ExtractJdStrategyService
 import com.jobdori.core.application.ai.jd.SplitJdPostingsService
 import com.jobdori.core.application.ai.jd.result.JdMetaResult
 import com.jobdori.core.application.ai.jd.result.JdPosting
+import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.jd.client.JdCrawlerClient
+import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdPolicy
@@ -26,6 +28,7 @@ class RegisterJdServiceTest : StringSpec({
 
     val crawler = mockk<JdCrawlerClient>()
     val splitter = mockk<SplitJdPostingsService>()
+    val creditService = mockk<CreditService>(relaxed = true)
     val extractJdMetaService = mockk<ExtractJdMetaService>()
     val extractJdStrategyService = mockk<ExtractJdStrategyService>()
     val profileReader = mockk<ProfileReader>()
@@ -34,6 +37,7 @@ class RegisterJdServiceTest : StringSpec({
     val service = RegisterJdService(
         crawler = crawler,
         splitter = splitter,
+        creditService = creditService,
         extractJdMetaService = extractJdMetaService,
         extractJdStrategyService = extractJdStrategyService,
         profileReader = profileReader,
@@ -51,6 +55,7 @@ class RegisterJdServiceTest : StringSpec({
         clearMocks(
             crawler,
             splitter,
+            creditService,
             extractJdMetaService,
             extractJdStrategyService,
             profileReader,
@@ -73,7 +78,7 @@ class RegisterJdServiceTest : StringSpec({
         every { extractJdStrategyService.generate(any(), profileDetail) } returns "지원 전략"
         every { jdRepository.save(any()) } answers { firstArg<Jd>().copy(id = 1L) }
 
-        val result = service.registerByText(workspaceId = 10L, body = body)
+        val result = service.registerByText(workspaceId = 10L, userId = 1L, body = body)
 
         (result as JdRegisterResult.Registered).jd.strategy shouldBe "지원 전략"
         verify(exactly = 1) { jdRepository.save(match { it.strategy == "지원 전략" }) }
@@ -85,10 +90,22 @@ class RegisterJdServiceTest : StringSpec({
         } throws IllegalStateException("지원 전략 생성 실패")
 
         shouldThrow<IllegalStateException> {
-            service.registerByText(workspaceId = 10L, body = body)
+            service.registerByText(workspaceId = 10L, userId = 1L, body = body)
         }
 
         verify(exactly = 0) { jdRepository.save(any()) }
+        verify(exactly = 1) { creditService.consume(1L, CreditFeature.JD_ANALYSIS) }
+    }
+
+    "다중 공고 후보만 반환하면 차감하지 않는다" {
+        every { splitter.split(body) } returns listOf(
+            JdPosting(title = "백엔드 개발자", body = "본문 A"),
+            JdPosting(title = "프론트 개발자", body = "본문 B"),
+        )
+
+        service.registerByText(workspaceId = 10L, userId = 1L, body = body)
+
+        verify(exactly = 0) { creditService.consume(any(), any()) }
     }
 
 })

@@ -13,8 +13,10 @@ import com.jobdori.api.application.resume.dto.request.SaveResumeSectionRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.model.SliceResult
+import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.resume.ResumeExperiencePolishService
+import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeDetail
@@ -49,6 +51,7 @@ import java.time.LocalDate
 class ResumeServiceTest : StringSpec({
 
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
+    val creditService = mockk<CreditService>(relaxed = true)
     val resumeCreator = mockk<ResumeCreator>()
     val resumeReader = mockk<ResumeReader>()
     val resumeRemover = mockk<ResumeRemover>()
@@ -59,6 +62,7 @@ class ResumeServiceTest : StringSpec({
     val resumeExperiencePolishService = mockk<ResumeExperiencePolishService>()
     val resumeService = ResumeService(
         workspaceAccessValidationService = workspaceAccessValidationService,
+        creditService = creditService,
         resumeCreator = resumeCreator,
         resumeReader = resumeReader,
         resumeRemover = resumeRemover,
@@ -130,6 +134,7 @@ class ResumeServiceTest : StringSpec({
         verify(exactly = 0) {
             getJdService.getJd(workspaceId = 1L, publicId = any())
         }
+        verify(exactly = 0) { creditService.consume(any(), any()) }
     }
 
     "targetJdId가 있으면 JD public ID를 내부 ID로 변환해 생성한다" {
@@ -183,6 +188,7 @@ class ResumeServiceTest : StringSpec({
                 payload.contents shouldBe "생성 첨삭 내용"
             })
         }
+        verify(exactly = 1) { creditService.consume(10L, CreditFeature.RESUME_DRAFT) }
     }
 
     "기본 아이템 생성과 직접 입력한 items를 함께 지정하면 예외가 발생한다" {

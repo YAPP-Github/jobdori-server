@@ -10,7 +10,7 @@
 | 해당 페이지가 연결에 공유되지 않았거나 권한이 없는 경우
 
 | notion_connection_not_found
-| Notion 연결을 찾지 못했어요. Notion을 다시 연결해 주세요.
+| Notion 연결에 실패했어요. Notion을 다시 연결해 주세요.
 | 요청한 Notion 연결이 없거나 접근 권한이 없는 경우
 
 | notion_connection_need_reconnect

@@ -7,11 +7,13 @@ import com.jobdori.api.application.experience.dto.request.contents.FreeExperienc
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.model.Period
 import com.jobdori.common.model.SliceResult
+import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.application.experience.PolishedExperience
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
+import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.ExperienceProject
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
@@ -41,10 +43,12 @@ class ExperienceServiceTest : StringSpec({
     val experienceRemover = mockk<ExperienceRemover>()
     val experienceProjectReader = mockk<ExperienceProjectReader>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
+    val creditService = mockk<CreditService>(relaxed = true)
     val getExperienceRecommendationService = mockk<GetExperienceRecommendationService>()
     val experienceContentsPolishService = mockk<ExperienceContentsPolishService>()
     val experienceService = ExperienceService(
         workspaceAccessValidationService = workspaceAccessValidationService,
+        creditService = creditService,
         experienceCreator = experienceCreator,
         experienceReader = experienceReader,
         experienceModifier = experienceModifier,
@@ -169,6 +173,8 @@ class ExperienceServiceTest : StringSpec({
                 ),
             )
         }
+
+        verify(exactly = 1) { creditService.consume(10L, CreditFeature.EXPERIENCE_EXTRACT) }
     }
 
     "경험 목록에서 project를 요청하면 프로젝트를 한 번에 조회해 응답에 연결한다" {
@@ -339,6 +345,7 @@ class ExperienceServiceTest : StringSpec({
         response.title shouldBe "수정 경험"
         response.contents.type shouldBe ExperienceContentsType.STAR
         verify(exactly = 1) { experienceContentsPolishService.polishFreeStyleToStar("수정 내용") }
+        verify(exactly = 1) { creditService.consume(10L, CreditFeature.EXPERIENCE_REWRITE) }
         verify(exactly = 2) { experienceProjectReader.getProject(workspaceId = 1L, projectId = 5L) }
     }
 

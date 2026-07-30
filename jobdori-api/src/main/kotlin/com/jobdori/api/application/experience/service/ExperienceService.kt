@@ -10,9 +10,11 @@ import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.logger.LoggerExtension.log
 import com.jobdori.common.model.Period
+import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.application.experience.PolishedExperience
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
+import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.service.ExperienceCreator
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service
 @Service
 class ExperienceService(
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
+    private val creditService: CreditService,
     private val experienceCreator: ExperienceCreator,
     private val experienceReader: ExperienceReader,
     private val experienceModifier: ExperienceModifier,
@@ -47,7 +50,7 @@ class ExperienceService(
         )
 
         val project = experienceProjectReader.getProject(workspaceId = workspace.id, projectId = projectId)
-        val resolvedContents = resolveContents(request.contents)
+        val resolvedContents = resolveContents(userId, request.contents, CreditFeature.EXPERIENCE_EXTRACT)
         val experience = experienceCreator.create(
             workspaceId = workspace.id,
             projectId = projectId,
@@ -82,7 +85,7 @@ class ExperienceService(
             projectId = request.projectId,
         )
 
-        val resolvedContents = resolveContents(request.contents)
+        val resolvedContents = resolveContents(userId, request.contents, CreditFeature.EXPERIENCE_REWRITE)
         val modified = experienceModifier.modify(
             workspaceId = workspace.id,
             experienceId = experienceId,
@@ -242,12 +245,19 @@ class ExperienceService(
         )
     }
 
-    private fun resolveContents(request: ExperienceContentsRequest): ResolvedExperienceContents {
+    private fun resolveContents(
+        userId: Long,
+        request: ExperienceContentsRequest,
+        feature: CreditFeature,
+    ): ResolvedExperienceContents {
         return when (request.type) {
             ExperienceContentsType.STAR -> ResolvedExperienceContents(contents = request.toDomain())
-            ExperienceContentsType.FREE -> experienceContentsPolishService.polishFreeStyleToStar(
-                requireNotNull(request.free) { "FREE contents require free payload" }.content,
-            ).toResolvedContents()
+            ExperienceContentsType.FREE -> {
+                creditService.consume(userId, feature)
+                experienceContentsPolishService.polishFreeStyleToStar(
+                    requireNotNull(request.free) { "FREE contents require free payload" }.content,
+                ).toResolvedContents()
+            }
         }
     }
 

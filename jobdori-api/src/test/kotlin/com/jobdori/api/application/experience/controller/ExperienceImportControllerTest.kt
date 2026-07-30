@@ -9,6 +9,7 @@ import com.jobdori.api.support.docs.PageHeaderSnippet
 import com.jobdori.api.support.docs.RestDocsUtils
 import com.jobdori.common.error.FileErrorCode
 import com.jobdori.core.application.auth.AccessTokenService
+import com.jobdori.core.domain.credit.error.CreditErrorCode
 import com.jobdori.core.domain.workspace.error.WorkspaceErrorCode
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
@@ -81,6 +82,7 @@ internal class ExperienceImportControllerTest(
                     ),
                     ErrorCodeSnippet.errorCodeSnippet(
                         FileErrorCode.E400_FILE_SIZE_EXCEEDED to "업로드한 파일 크기가 서버에서 허용한 최대 크기를 초과한 경우",
+                        CreditErrorCode.E402_INSUFFICIENT_CREDIT to "PDF 경험 추출을 요청했으나 잔여 크레딧이 0인 경우",
                         WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED to "요청 사용자가 해당 워크스페이스에 접근할 권한이 없는 경우",
                         WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND to "요청한 워크스페이스를 찾을 수 없는 경우",
                     ),

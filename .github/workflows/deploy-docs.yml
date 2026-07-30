@@ -3,6 +3,9 @@ name: "Deploy Docs to Github Pages"
 on:
   workflow_dispatch:
 
+env:
+  API_DOCS_DOMAIN: ${{ vars.API_DOCS_DOMAIN }}
+
 jobs:
   asciidoctor:
     runs-on: ubuntu-latest
@@ -25,3 +28,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./jobdori-api/build/docs/asciidoc
+          cname: ${{ env.API_DOCS_DOMAIN }}

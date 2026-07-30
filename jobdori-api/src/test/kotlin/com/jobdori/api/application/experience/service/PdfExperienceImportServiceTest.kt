@@ -6,7 +6,9 @@ import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
 import com.jobdori.core.application.experience.ExperienceStarExtractionResult
 import com.jobdori.core.application.experience.command.ImportedExperienceCommandGroup
+import com.jobdori.core.application.profile.FirstExperienceCoreCompetencyService
 import com.jobdori.core.domain.experience.ExperienceContents
+import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
 import com.jobdori.core.domain.experience.service.command.ExperienceProjectCreateCommand
 import com.jobdori.core.domain.profile.Profile
@@ -40,11 +42,15 @@ internal class PdfExperienceImportServiceTest : StringSpec({
     val pdfValidationService = mockk<PdfValidationService>()
     val profileReader = mockk<ProfileReader>()
     val profileModifier = mockk<ProfileModifier>()
+    val experienceReader = mockk<ExperienceReader>()
+    val firstExperienceCoreCompetencyService = mockk<FirstExperienceCoreCompetencyService>()
     val experienceTextImportService = ExperienceTextImportService(
         experienceImportService = experienceImportService,
         experienceAiExtractionService = experienceAiExtractionService,
         profileReader = profileReader,
         profileModifier = profileModifier,
+        experienceReader = experienceReader,
+        firstExperienceCoreCompetencyService = firstExperienceCoreCompetencyService,
     )
     val service = PdfExperienceImportService(
         workspaceAccessValidationService = workspaceAccessValidationService,
@@ -60,6 +66,8 @@ internal class PdfExperienceImportServiceTest : StringSpec({
             pdfValidationService,
             profileReader,
             profileModifier,
+            experienceReader,
+            firstExperienceCoreCompetencyService,
         )
         every {
             workspaceAccessValidationService.validateAccessible(
@@ -107,6 +115,10 @@ internal class PdfExperienceImportServiceTest : StringSpec({
         every { profileReader.getOrCreateProfile(1L) } returns profile
         every { profileReader.getDetail(profile) } returns profileDetail
         every { profileModifier.modify(profile, any()) } returns profileDetail
+        every { experienceReader.findAllActive(1L) } returns emptyList()
+        every {
+            firstExperienceCoreCompetencyService.generateIfAbsent(1L, emptyList())
+        } returns Unit
 
         service.importExperiences(file = file, workspaceId = "workspace-id", userId = 1L)
 

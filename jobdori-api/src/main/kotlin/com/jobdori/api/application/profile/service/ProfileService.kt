@@ -7,8 +7,10 @@ import com.jobdori.api.application.profile.dto.response.PolishedProfileTextRespo
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
+import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.profile.ProfileAiService
 import com.jobdori.core.application.profile.ProfilePolishKind
+import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.service.ResumeReader
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service
 @Service
 class ProfileService(
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
+    private val creditService: CreditService,
     private val profileReader: ProfileReader,
     private val profileModifier: ProfileModifier,
     private val profileAiService: ProfileAiService,
@@ -82,9 +85,11 @@ class ProfileService(
         val validatedWorkspaceId = validateWorkspaceForJd(userId, workspaceId, request.jdId)
 
         if (request.kind == ProfilePolishKind.EXPERIENCE) {
+            val title = request.title?.takeIf { it.isNotBlank() }
+                ?: throw InvalidArgumentsException("경험 첨삭에는 title이 필요합니다.")
+            creditService.consume(userId, CreditFeature.AI_POLISH)
             val polished = profileAiService.polishExperience(
-                title = request.title?.takeIf { it.isNotBlank() }
-                    ?: throw InvalidArgumentsException("경험 첨삭에는 title이 필요합니다."),
+                title = title,
                 description = request.description,
                 structure = request.structure,
                 instruction = request.instruction,
@@ -98,6 +103,7 @@ class ProfileService(
             )
         }
 
+        creditService.consume(userId, CreditFeature.AI_POLISH)
         val polished = profileAiService.polish(
             text = request.description,
             kind = request.kind,

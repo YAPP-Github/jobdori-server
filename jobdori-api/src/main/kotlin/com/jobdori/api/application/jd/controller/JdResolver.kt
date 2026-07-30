@@ -35,9 +35,9 @@ class JdResolver(
         val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
         // body 우선: 다중 공고 후보를 body로 재등록할 때 sourceUrl은 출처 메타로만 저장
         val result = if (!request.body.isNullOrBlank()) {
-            registerJdService.registerByText(workspace.id, request.body, request.sourceUrl)
+            registerJdService.registerByText(workspace.id, userId, request.body, request.sourceUrl)
         } else {
-            registerJdService.registerByUrl(workspace.id, request.sourceUrl!!)
+            registerJdService.registerByUrl(workspace.id, userId, request.sourceUrl!!)
         }
         return JdRegisterResponse.from(result)
     }

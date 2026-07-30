@@ -1,23 +1,27 @@
 package com.jobdori.api.application.profile.controller
 
 import com.jobdori.api.GraphQLTest
-import com.jobdori.api.application.profile.dto.request.PolishExperienceRequest
 import com.jobdori.api.application.profile.dto.request.PolishProfileTextRequest
 import com.jobdori.api.application.profile.dto.request.UpdateProfileRequest
 import com.jobdori.api.application.profile.dto.response.GenerateCoreCompetencyResponse
-import com.jobdori.api.application.profile.dto.response.PolishedExperienceResponse
+import com.jobdori.api.application.profile.dto.response.PolishedProfileTextResponse
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
 import com.jobdori.api.application.profile.service.ProfileService
 import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
+import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.application.profile.PolishStructure
 import com.jobdori.core.application.profile.ProfilePolishKind
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.maps.shouldContain
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.verify
 import org.springframework.context.annotation.Import
+import org.springframework.graphql.execution.ErrorType
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester
 import org.springframework.graphql.test.tester.GraphQlTester
 import org.springframework.graphql.test.tester.entity
@@ -153,11 +157,14 @@ internal class ProfileMutationResolverTest(
                 userId = 1L,
                 workspaceId = null,
                 request = PolishProfileTextRequest(
-                    text = "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
+                    description = "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
                     kind = ProfilePolishKind.CAREER_DESCRIPTION,
                 ),
             )
-        } returns "런칭 캠페인에서 메시지 A/B 테스트를 설계해 전환율을 개선했습니다."
+        } returns PolishedProfileTextResponse(
+            title = null,
+            description = "런칭 캠페인에서 메시지 A/B 테스트를 설계해 전환율을 개선했습니다.",
+        )
 
         authenticatedTester(graphQlTester)
             .document(
@@ -165,15 +172,19 @@ internal class ProfileMutationResolverTest(
                 mutation {
                   polishProfileText(
                     request: {
-                      text: "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
+                      description: "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
                       kind: CAREER_DESCRIPTION
                     }
-                  )
+                  ) {
+                    title
+                    description
+                  }
                 }
                 """.trimIndent(),
             )
             .execute()
-            .path("polishProfileText").entity<String>()
+            .path("polishProfileText.title").valueIsNull()
+            .path("polishProfileText.description").entity<String>()
             .isEqualTo("런칭 캠페인에서 메시지 A/B 테스트를 설계해 전환율을 개선했습니다.")
 
         verify(exactly = 1) {
@@ -181,7 +192,7 @@ internal class ProfileMutationResolverTest(
                 userId = 1L,
                 workspaceId = null,
                 request = PolishProfileTextRequest(
-                    text = "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
+                    description = "런칭 캠페인에서 A/B 테스트를 수행해서 전환율을 많이 개선했음",
                     kind = ProfilePolishKind.CAREER_DESCRIPTION,
                 ),
             )
@@ -190,7 +201,7 @@ internal class ProfileMutationResolverTest(
 
     "작성 구조/직접 지침/JD를 주면 옵션을 반영해 다듬는다" {
         val request = PolishProfileTextRequest(
-            text = "경험이 이미 채워져있는 상태입니다",
+            description = "경험이 이미 채워져있는 상태입니다",
             kind = ProfilePolishKind.CAREER_DESCRIPTION,
             structure = PolishStructure.BULLET,
             instruction = "정중한 어투로, 전환율 수치를 강조",
@@ -198,7 +209,10 @@ internal class ProfileMutationResolverTest(
         )
         every {
             profileService.polishProfileText(userId = 1L, workspaceId = "workspace-id", request = request)
-        } returns "- AI가 수정 지침에 따라 수정해준 완성본"
+        } returns PolishedProfileTextResponse(
+            title = null,
+            description = "- AI가 수정 지침에 따라 수정해준 완성본",
+        )
 
         authenticatedTester(graphQlTester)
             .document(
@@ -207,18 +221,22 @@ internal class ProfileMutationResolverTest(
                   polishProfileText(
                     workspaceId: "workspace-id",
                     request: {
-                      text: "경험이 이미 채워져있는 상태입니다",
+                      description: "경험이 이미 채워져있는 상태입니다",
                       kind: CAREER_DESCRIPTION,
                       structure: BULLET,
                       instruction: "정중한 어투로, 전환율 수치를 강조",
                       jdId: "jd-pub-1"
                     }
-                  )
+                  ) {
+                    title
+                    description
+                  }
                 }
                 """.trimIndent(),
             )
             .execute()
-            .path("polishProfileText").entity<String>()
+            .path("polishProfileText.title").valueIsNull()
+            .path("polishProfileText.description").entity<String>()
             .isEqualTo("- AI가 수정 지침에 따라 수정해준 완성본")
 
         verify(exactly = 1) {
@@ -226,17 +244,56 @@ internal class ProfileMutationResolverTest(
         }
     }
 
+    "경험 첨삭에서 경험명이 없으면 잘못된 요청으로 응답한다" {
+        authenticatedTester(graphQlTester)
+            .document(
+                """
+                mutation {
+                  polishProfileText(
+                    request: {
+                      description: "경험이 이미 채워져있는 상태입니다",
+                      kind: EXPERIENCE
+                    }
+                  ) {
+                    title
+                    description
+                  }
+                }
+                """.trimIndent(),
+            )
+            .execute()
+            .errors()
+            .satisfy { errors ->
+                errors shouldHaveSize 1
+                val error = errors.first()
+                error.errorType shouldBe ErrorType.BAD_REQUEST
+                error.message shouldBe CommonErrorCode.E400_INVALID_ARGUMENTS.message
+                error.extensions shouldContain (
+                    "code" to CommonErrorCode.E400_INVALID_ARGUMENTS.code
+                )
+            }
+
+        verify(exactly = 0) {
+            profileService.polishProfileText(
+                userId = any(),
+                workspaceId = any(),
+                request = any(),
+            )
+        }
+    }
+
     "경험명과 경험 내용을 한 번에 AI로 다듬는다" {
-        val request = PolishExperienceRequest(
+        val request = PolishProfileTextRequest(
             title = "콘텐츠 마케팅 캠페인 운영",
             description = "경험이 이미 채워져있는 상태입니다",
+            kind = ProfilePolishKind.EXPERIENCE,
             structure = PolishStructure.BULLET,
             instruction = "경험명과 경험 내용에서 전환율 개선 성과를 강조",
             jdId = "jd-pub-1",
         )
         every {
-            profileService.polishExperience(userId = 1L, workspaceId = "workspace-id", request = request)
-        } returns PolishedExperienceResponse(
+            profileService.polishProfileText(userId = 1L, workspaceId = "workspace-id", request = request)
+        } returns PolishedProfileTextResponse(
             title = "전환율을 개선한 콘텐츠 마케팅 캠페인",
             description = "- 메시지 A/B 테스트를 수행해 전환율을 개선했습니다.",
         )
@@ -245,11 +302,12 @@ internal class ProfileMutationResolverTest(
             .document(
                 """
                 mutation {
-                  polishExperience(
+                  polishProfileText(
                     workspaceId: "workspace-id",
                     request: {
                       title: "콘텐츠 마케팅 캠페인 운영",
                       description: "경험이 이미 채워져있는 상태입니다",
+                      kind: EXPERIENCE,
                       structure: BULLET,
                       instruction: "경험명과 경험 내용에서 전환율 개선 성과를 강조",
                       jdId: "jd-pub-1"
@@ -262,13 +320,13 @@ internal class ProfileMutationResolverTest(
                 """.trimIndent(),
             )
             .execute()
-            .path("polishExperience.title").entity<String>()
+            .path("polishProfileText.title").entity<String>()
             .isEqualTo("전환율을 개선한 콘텐츠 마케팅 캠페인")
-            .path("polishExperience.description").entity<String>()
+            .path("polishProfileText.description").entity<String>()
             .isEqualTo("- 메시지 A/B 테스트를 수행해 전환율을 개선했습니다.")
 
         verify(exactly = 1) {
-            profileService.polishExperience(userId = 1L, workspaceId = "workspace-id", request = request)
+            profileService.polishProfileText(userId = 1L, workspaceId = "workspace-id", request = request)
         }
     }
 

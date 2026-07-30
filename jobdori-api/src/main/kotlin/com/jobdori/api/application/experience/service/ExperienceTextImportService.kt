@@ -21,6 +21,7 @@ class ExperienceTextImportService(
 
     fun import(workspaceId: Long, text: String) {
         val result = experienceAiExtractionService.extract(text)
+        val isFirstImport = experienceReader.findAllActive(workspaceId).isEmpty()
 
         experienceImportService.saveAll(
             workspaceId = workspaceId,
@@ -30,13 +31,15 @@ class ExperienceTextImportService(
         val profile = profileReader.getOrCreateProfile(workspaceId)
         profileModifier.modify(profile, result.toProfileUpdateCommand(profileReader.getDetail(profile)))
 
-        runCatching {
-            firstExperienceCoreCompetencyService.generateIfAbsent(
-                workspaceId = workspaceId,
-                experiences = experienceReader.findAllActive(workspaceId),
-            )
-        }.onFailure { e ->
-            log.warn(e) { "이력서 임포트 핵심역량 생성 실패, 임포트는 유지: workspaceId=$workspaceId" }
+        if (isFirstImport) {
+            runCatching {
+                firstExperienceCoreCompetencyService.generateIfAbsent(
+                    workspaceId = workspaceId,
+                    experiences = experienceReader.findAllActive(workspaceId),
+                )
+            }.onFailure { e ->
+                log.warn(e) { "이력서 임포트 핵심역량 생성 실패, 임포트는 유지: workspaceId=$workspaceId" }
+            }
         }
     }
 

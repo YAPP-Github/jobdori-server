@@ -3,7 +3,7 @@ package com.jobdori.api.application.experience.service
 import com.jobdori.common.logger.LoggerExtension.log
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
-import com.jobdori.core.application.profile.FirstExperienceCoreCompetencyService
+import com.jobdori.core.application.profile.ExperienceCoreCompetencyService
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
@@ -16,7 +16,7 @@ class ExperienceTextImportService(
     private val profileReader: ProfileReader,
     private val profileModifier: ProfileModifier,
     private val experienceReader: ExperienceReader,
-    private val firstExperienceCoreCompetencyService: FirstExperienceCoreCompetencyService,
+    private val experienceCoreCompetencyService: ExperienceCoreCompetencyService,
 ) {
 
     fun import(workspaceId: Long, text: String) {
@@ -31,7 +31,7 @@ class ExperienceTextImportService(
         profileModifier.modify(profile, result.toProfileUpdateCommand(profileReader.getDetail(profile)))
 
         runCatching {
-            firstExperienceCoreCompetencyService.generateIfAbsent(
+            experienceCoreCompetencyService.generate(
                 workspaceId = workspaceId,
                 experiences = experienceReader.findAllActive(workspaceId),
             )

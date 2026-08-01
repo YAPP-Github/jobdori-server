@@ -9,7 +9,7 @@ import com.jobdori.core.application.experience.ExperienceImportService
 import com.jobdori.core.application.experience.ExperienceStarExtractionResult
 import com.jobdori.core.application.experience.command.ImportedExperienceCommandGroup
 import com.jobdori.core.application.notion.NotionPageService
-import com.jobdori.core.application.profile.FirstExperienceCoreCompetencyService
+import com.jobdori.core.application.profile.ExperienceCoreCompetencyService
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
@@ -40,14 +40,14 @@ class NotionExperienceImportServiceTest : StringSpec({
     val profileReader = mockk<ProfileReader>()
     val profileModifier = mockk<ProfileModifier>()
     val experienceReader = mockk<ExperienceReader>()
-    val firstExperienceCoreCompetencyService = mockk<FirstExperienceCoreCompetencyService>()
+    val experienceCoreCompetencyService = mockk<ExperienceCoreCompetencyService>()
     val experienceTextImportService = ExperienceTextImportService(
         experienceImportService = experienceImportService,
         experienceAiExtractionService = experienceAiExtractionService,
         profileReader = profileReader,
         profileModifier = profileModifier,
         experienceReader = experienceReader,
-        firstExperienceCoreCompetencyService = firstExperienceCoreCompetencyService,
+        experienceCoreCompetencyService = experienceCoreCompetencyService,
     )
     val service = NotionExperienceImportService(
         notionPageService = notionPageService,
@@ -64,7 +64,7 @@ class NotionExperienceImportServiceTest : StringSpec({
             profileReader,
             profileModifier,
             experienceReader,
-            firstExperienceCoreCompetencyService,
+            experienceCoreCompetencyService,
         )
         every {
             workspaceAccessValidationService.validateAccessible(
@@ -122,7 +122,7 @@ class NotionExperienceImportServiceTest : StringSpec({
         every { profileModifier.modify(profile, any()) } returns profileDetail
         every { experienceReader.findAllActive(10L) } returns emptyList()
         every {
-            firstExperienceCoreCompetencyService.generateIfAbsent(10L, emptyList())
+            experienceCoreCompetencyService.generate(10L, emptyList())
         } returns Unit
 
         // when

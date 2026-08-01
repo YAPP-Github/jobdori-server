@@ -8,15 +8,14 @@ import com.jobdori.core.domain.profile.service.command.ProfileUpdateCommand
 import org.springframework.stereotype.Service
 
 @Service
-class FirstExperienceCoreCompetencyService(
+class ExperienceCoreCompetencyService(
     private val profileReader: ProfileReader,
     private val profileModifier: ProfileModifier,
     private val profileAiService: ProfileAiService,
 ) {
 
-    fun generateIfAbsent(workspaceId: Long, experiences: List<Experience>) {
+    fun generate(workspaceId: Long, experiences: List<Experience>) {
         val profile = profileReader.getOrCreateProfile(workspaceId)
-        if (!profile.coreCompetency.isNullOrBlank()) return
 
         val coreCompetency = profileAiService.generateCoreCompetencyFromExperiences(
             detail = profileReader.getDetail(profile),

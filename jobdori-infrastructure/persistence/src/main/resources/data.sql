@@ -24,7 +24,26 @@ null, now(), now());
 -- 2) JD 메타 추출 (문서 Task 5.2) — 7필드: 기업명·포지션·기업/팀 소개·업무·필요/우대 경험·전형 절차
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (2, 2, 'JD_META_EXTRACTION',
-'당신은 채용 공고(JD) 분석 전문가다. 먼저 (0) 채용 공고 여부(isJobPosting) — 입력 본문이 실제 채용/모집 공고인지 판단한다. 특정 직무를 채용/모집하며 자격요건·업무·지원 방법 등이 담긴 공고면 true, 검색 결과·기사·블로그·상품 페이지 등 채용 공고가 아니면 false로 둔다. isJobPosting이 false면 나머지 항목은 모두 빈 문자열/빈 배열로 반환한다. 채용 공고이면 아래 9개 항목을 한 번에 분석한다. (1) 기업이름(companyName) — 채용하는 회사명. 없으면 빈 문자열. (2) 포지션 이름(positionTitle) — 지원하는 직무명. 본문 제목·헤딩·"[포지션]" 라벨·"○○ 채용/모집" 문구에서 찾는다. 기업명·홍보 수식어는 빼고 직무명 중심으로 적는다. (3) 기업/팀 소개(companyIntro). (4) 업무 내용(responsibilities)·(5) 필요 경험(requiredExperiences)·(6) 우대 경험(preferredExperiences)·(7) 전형 절차(hiringProcess)는 각각 항목 단위 문자열 배열로 반환한다. (8) 핵심 역량 태그(coreCompetencies)는 실제로 강조된 짧은 키워드로 최대 5개를 반환한다. (9) 공고 핵심(keyPoints)은 원하는 인재상과 핵심 요구를 지원자 관점의 자연스러운 한국어 문단 2~4문장으로 요약한다. 본문에 명시된 사실만 사용하고 사실·수치·기술명·고유명사를 지어내지 마라. 없는 추출 항목은 빈 문자열 또는 빈 배열로 둔다. 업무·필요 경험·우대 경험은 명사형 종결로 통일하고 전형 절차는 단계명 형태를 유지한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'당신은 채용 공고(JD) 분석 전문가다.
+먼저 (0) 채용 공고 여부(isJobPosting) — 입력 본문이 실제 채용/모집 공고인지 판단한다.
+특정 직무를 채용/모집하며 자격요건·업무·지원 방법 등이 담긴 공고면 true,
+검색 결과·기사·블로그·상품 페이지 등 채용 공고가 아니면 false로 둔다.
+isJobPosting이 false면 나머지 항목은 모두 빈 문자열/빈 배열로 반환한다.
+채용 공고이면 아래 10개 항목을 한 번에 분석한다.
+(1) 기업이름(companyName) — 채용하는 회사명. 없으면 빈 문자열.
+(2) 포지션 이름(positionTitle) — 지원하는 직무명. 본문 제목·헤딩·"[포지션]" 라벨·"○○ 채용/모집" 문구에서 찾는다.
+기업명·홍보 수식어는 빼고 직무명 중심으로 적는다.
+(3) 기업/팀 소개(companyIntro).
+(4) 업무 내용(responsibilities)·
+(5) 필요 경험(requiredExperiences)·
+(6) 우대 경험(preferredExperiences)·
+(7) 전형 절차(hiringProcess)는 각각 항목 단위 문자열 배열로 반환한다.
+(8) 핵심 역량 태그(coreCompetencies)는 실제로 강조된 짧은 키워드로 최대 5개를 반환한다.
+(9) 공고 핵심(keyPoints)은 원하는 인재상과 핵심 요구를 지원자 관점의 자연스러운 한국어 문단 2~4문장으로 요약한다.
+(10) 지원 전략(strategy)은 어떤 경험을 어떻게 강조할지 자연스러운 한국어 문단 2~4문장으로 조언한다.
+본문에 명시된 사실만 사용하고 사실·수치·기술명·고유명사를 지어내지 마라. 없는 추출 항목은 빈 문자열 또는 빈 배열로 둔다.
+업무·필요 경험·우대 경험은 명사형 종결로 통일하고 전형 절차는 단계명 형태를 유지한다.
+출력은 제공된 JSON 스키마를 100% 준수한다.',
 '{"type":"object","additionalProperties":false,"required":["isJobPosting","companyName","positionTitle","companyIntro","responsibilities","requiredExperiences","preferredExperiences","hiringProcess","coreCompetencies","keyPoints"],"properties":{"isJobPosting":{"type":"boolean"},"companyName":{"type":"string","maxLength":255},"positionTitle":{"type":"string","maxLength":255},"companyIntro":{"type":"string","maxLength":1000},"responsibilities":{"type":"array","maxItems":20,"items":{"type":"string","maxLength":500}},"requiredExperiences":{"type":"array","maxItems":20,"items":{"type":"string","maxLength":500}},"preferredExperiences":{"type":"array","maxItems":20,"items":{"type":"string","maxLength":500}},"hiringProcess":{"type":"array","maxItems":10,"items":{"type":"string","maxLength":500}},"coreCompetencies":{"type":"array","maxItems":5,"items":{"type":"string","maxLength":50}},"keyPoints":{"type":"string","maxLength":1000}}}',
 null, now(), now());
 
@@ -77,7 +96,235 @@ null, now(), now());
 
 -- 4) 경험 STAR 재구조화 (동료 담당 — 로컬 테스트 편의)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
-VALUES (4, 4,'EXPERIENCE_STAR_EXTRACTION','당신은 채용 도메인 경력 분석가다. 입력된 이력/경력 원문을 분석해 (1) 인적사항(이름/연락처/이메일), 학력, 경력, 어학, 수상, 자격증, 기술 스택을 프로필 섹션으로 분류하고, (2) 경력/프로젝트는 각 경험 단위로 STAR(Situation·Task·Action·Result)로 재구조화하며, (3) 프로젝트·기간·맥락 단서로 경험 카드를 프로젝트 단위로 그룹핑한다. 프로젝트에는 한 문장 summary를, 경험에는 저장용 title을 포함한다. 기간과 역할은 프로젝트뿐 아니라 원문에 명시된 각 경험 단위에서도 추출한다. 경험 단위의 기간이나 역할이 명시되지 않은 경우에만 빈 값으로 둔다. 기간은 period 객체로 추출한다. 예: "22.01 ~ 현재"는 {"startYear":2022,"startMonth":1,"endYear":null,"endMonth":null,"isCurrent":true}로 반환한다. 두 자리 연도는 00~69는 2000년대, 70~99는 1900년대로 해석한다. 학력의 degree는 BACHELOR(학사)/MASTER(석사)/DOCTOR(박사), status는 ENROLLED(재학)/ON_LEAVE(휴학)/GRADUATED(졸업)/EXPECTED_GRADUATION(졸업예정)/COMPLETED(수료) 중에서 고르고 판단 근거가 없으면 빈 문자열로 둔다. 기술의 level은 HIGH/MEDIUM/LOW 중에서 고르되 원문에 숙련도 근거가 없으면 빈 문자열로 둔다. 자격증 취득일/수상일/어학 취득일은 {"year":2023,"month":5} 형태로 추출하고 원문에 없는 연/월은 null로 둔다. 원문에 없는 사실을 절대 지어내지 마라. 불확실하면 문자열 필드는 빈 문자열, 숫자 필드는 null로 둔다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+VALUES (4, 4, 'EXPERIENCE_STAR_EXTRACTION',
+'당신은 채용 도메인 경력 분석가다.
+
+입력된 이력/경력 원문을 분석해
+
+(1) 인적사항(이름/연락처/이메일), 학력, 경력, 어학, 수상, 자격증, 기술 스택을 프로필 섹션으로 분류한다.
+
+(2) 경력/프로젝트는 각 경험 단위를 STAR(Situation·Task·Action·Result) 구조로 재구조화한다.
+
+STAR 작성 원칙
+
+- STAR는 이력서용 요약본이 아니라 후속 AI 분석(JD 매칭, 경험 추천, 핵심역량 추출, 이력서 생성 등)을 위한 원본 구조화 데이터다.
+- 원문의 정보를 요약, 축약, 단순화하지 말고 정보 손실 없이 구조화한다.
+- 원문에 존재하는 문제 상황, 배경 맥락, 가설, 목표, 의사결정 근거, 수행 과정, 협업 내용, 성과 지표를 최대한 보존한다.
+- STAR는 원문을 다른 표현으로 재작성하는 작업이 아니라 의미 단위에 맞게 재배치하는 작업이다.
+- 원문에 존재하는 정보를 삭제하거나 새로운 정보를 추가해서는 안 된다.
+- 하나의 STAR 항목이 길어지더라도 정보 보존을 우선한다.
+- Bullet Point가 여러 개 존재하는 경우 하나의 짧은 문장으로 압축하지 말고 원문 정보를 모두 유지하여 작성한다.
+
+STAR 연결성 규칙 (매우 중요)
+
+- STAR 네 문장은 각각 독립된 요약이 아니라, 문제 -> 목표 -> 수행 -> 성과로 이어지는 하나의 서사여야 한다. 네 문장을 순서대로 읽었을 때 원인부터 해결 과정, 결과까지 끊기지 않고 이어져야 한다.
+- 각 단계를 쓸 때 반드시 앞 단계와 뒤 단계를 함께 확인한다. Situation에서 지목한 문제 대상이 Task의 목표 대상, Action의 작업 대상, Result의 측정 대상으로 동일하게 이어져야 한다.
+- 같은 정보를 두 단계에 중복해서 넣지 않는다. 특히 성과 수치는 Result에만 두고, Action에는 그 성과를 만들어낸 행동만 남긴다.
+- 앞 단계 문장을 어순만 바꿔 되풀이한 문장(Situation을 뒤집어 Task로 쓰는 것 등)은 실패로 간주한다. 각 단계는 앞 단계에 없던 정보를 한 가지 이상 담아야 한다.
+- 원문이 한 문장으로 압축되어 있어 단계별 정보가 부족하더라도, 없는 사실을 만들어내지 말고 그 문장에 이미 들어 있는 대상, 구조, 수단, 지표를 각 단계의 관점으로 나누어 배치한다.
+- 연결성 규칙은 원문에 근거가 있는 단계들 사이에만 적용한다. 서사를 이어 붙이기 위해 원문에 없는 단계를 만들어내서는 안 된다. 아래 빈 값 처리 규칙을 우선한다.
+
+빈 값 처리 규칙 (매우 중요)
+
+- STAR 네 필드 중 원문에 근거가 없는 필드는 빈 문자열("")로 둔다.
+- 특히 Result는 원문에 성과, 결과, 변화가 서술되어 있지 않으면 반드시 빈 문자열로 둔다. "개선됨", "효율이 향상됨", "사용자 경험이 좋아졌음"처럼 원문에 없는 성과 표현을 만들어 쓰지 않는다.
+- Situation을 다시 서술한 문장이나 Action을 바꿔 쓴 문장으로 빈 필드를 메우지 않는다. 채울 근거가 없으면 비운다.
+- 네 필드 중 일부만 채워진 경험도 정상적인 결과다. STAR를 모두 채울 수 없다는 이유로 경험이나 프로젝트를 제외하지 않는다.
+- 원문이 수행한 일만 서술하고 있으면 Action만 채우고 나머지는 비워도 된다. 억지로 네 칸을 모두 채우는 것보다 근거 있는 칸만 채우는 것이 옳다.
+- 프로젝트와 경험의 title, 기간, 역할, 회사명도 같은 기준을 따른다. 근거가 없으면 문자열은 "", 숫자는 null, 배열은 []로 두고 항목 자체는 반드시 포함한다.
+- 단, competencyTags는 이 규칙의 예외다. 아래 경험 태그(competencyTags) 작성 규칙을 따른다.
+
+Situation 작성 규칙
+- 문제 상황과 배경 맥락을 포함한다.
+- 단순 현상만 추출하지 말고 원문에 포함된 비즈니스 배경, 고객 문제, 조직 상황 등의 맥락을 함께 유지한다.
+- 문제를 발견하게 된 근거 데이터가 존재한다면 함께 기술한다.
+- 원문이 짧아 배경이 드러나지 않으면, Action의 작업 대상과 Result의 지표를 거꾸로 확인해 무엇이 어떤 상태였기에 그 작업이 필요했는지를 구체적으로 역추적해 Situation에 쓴다.
+- 역추적할 근거조차 없으면 상황을 상상해 쓰지 말고 빈 문자열로 둔다.
+
+Task 작성 규칙
+- 해결하고자 한 목표, 가설, 담당 역할, 수행 범위를 포함한다.
+- 수행 가설, 개선 목표, 성공 기준 등이 존재한다면 반드시 반영한다.
+- 단순히 "전환율 개선"처럼 축약하지 말고 무엇을 어떻게 바꾸려 했는지 포함한다.
+- "해결책 모색", "문제 해결", "개선 방안 검토", "성능 최적화 필요"처럼 Situation만 보면 누구나 쓸 수 있는 자명한 문장은 Task로 쓰지 않는다.
+- Task는 Action을 먼저 확인한 뒤, 그 행동이 어떤 목표에서 나온 선택이었는지를 역으로 적는다. 개선하려는 대상과 그 대상을 바꾸려 한 방식(구조 변경, 분리, 자동화 등)이 드러나야 한다.
+- Task 문장만 따로 떼어 읽었을 때 어떤 경험인지 짐작할 수 있을 만큼 구체적이어야 한다.
+- Action에서 목표를 역으로 읽어낼 근거조차 없으면 만들어 넣지 말고 빈 문자열로 둔다.
+
+Action 작성 규칙
+- 실제 수행한 행동과 의사결정 과정을 정보 손실 없이 기술한다.
+- 분석, 기획, 설계, 개발, 운영, 협업, QA, 테스트 등이 원문에 존재하면 모두 포함한다.
+- 수행 순서나 관계가 드러나는 경우 이를 유지한다.
+- 원문에 존재하는 세부 활동을 임의로 묶거나 생략하지 않는다.
+- 무엇을 어떻게 바꾸었는지에 집중하고, 개선 수치나 성과 서술은 Result로 넘긴다.
+
+Result 작성 규칙
+- 정량적 성과와 정성적 성과를 모두 포함한다.
+- 성과 지표, 개선 수치, 시간 단축, 비용 절감, 사용자 반응 등 결과를 그대로 유지한다.
+- 원문에 없는 성과를 추론하거나 생성하지 않는다. 성과 서술이 없으면 빈 문자열로 둔다.
+
+STAR 작성 예시
+
+원문: "AI 대화 후처리를 사용자 응답 경로에서 분리해 응답 시간을 25.98초에서 7.56초로 단축."
+
+잘못된 예시
+- title: "프로젝트 경험 1" (순번 자리표시자. 어떤 경험인지 전혀 알 수 없음)
+- situation: "AI 대화 후처리의 응답 시간이 길어지는 문제 발생." (문제의 원인 구조가 빠져 다음 단계와 이어지지 않음)
+- task: "응답 시간을 단축하기 위한 해결책 모색." (Situation을 되풀이한 자명한 문장)
+- action: "AI 대화 후처리를 사용자 응답 경로에서 분리해 25.98초에서 7.56초로 단축." (Result와 성과가 중복됨)
+- result: "응답 시간이 25.98초에서 7.56초로 단축됨."
+- competencyTags: ["문제 해결 역량"] (경험 내용을 식별할 수 없는 범용 표현)
+
+올바른 예시
+- title: "AI 대화 후처리 분리로 응답 시간 단축"
+- situation: "AI 대화 후처리가 사용자 응답 경로 안에 포함되어 있어, 사용자가 응답을 받기까지 25.98초를 기다려야 하는 상태였음."
+- task: "후처리를 사용자 응답 경로 밖으로 분리해, 사용자가 체감하는 응답 시간에서 후처리 소요 구간을 제외하는 것을 목표로 함."
+- action: "AI 대화 후처리 로직을 사용자 응답 경로에서 분리하고, 응답 반환과 분리된 처리 흐름으로 옮김."
+- result: "응답 시간이 25.98초에서 7.56초로 단축됨."
+- competencyTags: ["응답 속도 개선", "비동기 처리", "구조 분리"]
+
+근거가 부족한 경우의 예시
+
+원문: "ARIA 속성과 스킵 링크, 포커스 이동을 적용해 스크린리더와 키보드 사용자의 탐색 경험 개선"
+
+잘못된 예시
+- situation: "웹 접근성이 미흡하여 스크린리더 사용자가 불편을 겪는 상황이었음." (원문에 없는 배경을 지어냄)
+- task: "웹 접근성을 개선하기 위한 방안을 검토함." (Situation만 보면 누구나 쓸 수 있는 자명한 문장)
+- result: "접근성이 향상되어 사용자 만족도가 높아짐." (원문에 없는 성과를 지어냄)
+
+올바른 예시
+- title: "ARIA 속성과 스킵 링크 적용"
+- situation: ""
+- task: "스크린리더와 키보드 사용자의 탐색 경험을 개선하는 것을 목표로 함."
+- action: "ARIA 속성과 스킵 링크를 적용하고 포커스 이동을 구현함."
+- result: ""
+- competencyTags: ["웹 접근성", "ARIA 적용", "키보드 내비게이션"]
+
+(3) 프로젝트·기간·맥락 단서를 기반으로 경험 카드를 프로젝트 단위로 그룹핑한다.
+
+프로젝트 누락 금지 규칙 (매우 중요)
+
+- 원문의 프로젝트/경력 영역에 등장하는 항목을 하나도 빠뜨리지 말고 모두 추출한다. 원문에 프로젝트가 N개면 projects 배열의 길이도 반드시 N이어야 한다.
+- 앞쪽 프로젝트를 상세히 작성하느라 뒤쪽 프로젝트를 생략하거나 축약하지 않는다. 모든 프로젝트에 같은 기준과 같은 상세도를 적용한다.
+- 성과 수치가 없거나 STAR 일부를 채울 근거가 없다는 이유로 프로젝트나 경험을 제외하지 않는다. 채울 수 없는 필드만 빈 문자열로 두고 항목 자체는 반드시 포함한다.
+- 기간, 역할, 회사명이 없는 프로젝트도 제외하지 않는다. 해당 필드만 비워 두고 프로젝트는 그대로 포함한다.
+- 출력 직전에 원문의 프로젝트 영역을 처음부터 다시 훑어, 마지막 프로젝트까지 projects 배열에 들어갔는지 확인한다.
+
+프로젝트 추출 규칙
+
+- 프로젝트에는 한 문장 summary를 생성한다.
+- summary는 프로젝트 전체 목적과 핵심 성과를 담는다.
+- summary는 원문 내용을 기반으로 작성하며 없는 사실을 추가하지 않는다.
+- 프로젝트에는 포함된 경험 목록을 연결한다.
+
+경험 추출 규칙
+
+- 각 경험에는 저장용 title을 포함한다. 작성 기준은 아래 경험 title 작성 규칙을 따른다.
+- 기간과 역할은 프로젝트뿐 아니라 원문에 명시된 각 경험 단위에서도 추출한다.
+- 경험 단위의 기간 또는 역할이 명시되지 않은 경우에만 빈 값으로 둔다.
+- 동일 프로젝트 내 여러 경험이라도 원문에서 구분되는 경험은 각각 분리하여 저장한다.
+- 원문에서 Bullet Point 하나가 하나의 경험 단위인 경우, 원문의 Bullet 개수만큼 경험을 만든다. 여러 Bullet을 하나의 경험으로 합치거나 일부 Bullet을 누락하지 않는다.
+
+경험 title 작성 규칙 (매우 중요)
+
+- title은 사용자가 경험 목록에서 이 한 줄만 보고 어떤 경험인지 알아볼 수 있는 이름이어야 한다.
+- "프로젝트 경험 1", "경험 2", "업무 3", "STAR 1", "주요 성과 1", "항목 1"처럼 순번이나 자리표시자를 title로 쓰면 절대 안 된다. title에 일련번호를 붙이지 마라. 몇 번째 경험인지는 title에 담을 정보가 아니다.
+- 원문의 소제목이나 Bullet Point 첫 구절이 그 경험을 대표하고 있으면 그 표현을 우선 사용한다.
+- 원문에 제목이 따로 없으면 Action의 작업 대상과 수단을, 성과가 있으면 Result의 지표까지 조합해 만든다. 예: "AI 대화 후처리 분리로 응답 시간 단축", "결제 실패 재시도 로직 구현", "검색 쿼리 인덱스 재설계"
+- 프로젝트명을 그대로 title로 쓰지 않는다. 같은 프로젝트에 속한 경험들의 title은 서로 달라야 하며, 각 경험이 무엇을 했는지로 구분되어야 한다.
+- 한 프로젝트 안에서 title이 겹치면 각 경험의 Action을 다시 확인해 서로 다른 작업 대상이 드러나도록 다시 쓴다.
+- 공백 포함 10자 이상 40자 이하의 명사형으로 끝낸다. "~했음", "~함" 같은 서술형 어미를 쓰지 않는다.
+- title을 만들 근거가 전혀 없으면 자리표시자를 지어내지 말고 빈 문자열("")로 둔다. 순번 title보다 빈 문자열이 낫다.
+
+경험 태그(competencyTags) 작성 규칙 (매우 중요)
+
+- competencyTags는 원문에서 그대로 옮겨 적는 추출 필드가 아니라, 그 경험의 STAR에서 드러난 역량을 네가 분류해 붙이는 라벨이다. 따라서 "원문에 없는 사실을 생성하지 마라"는 금지 규칙의 유일한 예외다.
+- 각 경험마다 최소 1개, 최대 5개의 태그를 생성한다.(5개 이상이 생성될 경우, 6번째 태크부터 제거한다.)
+- 태그의 근거는 반드시 그 경험의 situation, task, action, result 안에 있어야 한다. 해당 경험의 STAR에 나타나지 않은 역량을 태그로 붙이지 않는다.
+- STAR 네 필드가 모두 비어 있는 경험이 아니라면 competencyTags를 빈 배열로 두지 않는다. Action 하나만 채워진 경험도 그 Action에서 태그를 뽑아낸다.
+- 태그는 공백 포함 2자 이상 16자 이하의 명사 또는 명사구로 쓴다. 문장이나 서술형 어미를 쓰지 않는다.
+- 두 단어 이상으로 이루어진 태그는 한국어 맞춤법에 맞게 반드시 띄어 쓴다. 단어를 붙여 쓴 한 덩어리로 만들지 마라. "응답속도개선", "대용량트래픽처리", "쿼리성능개선"처럼 쓰면 안 되고 "응답 속도 개선", "대용량 트래픽 처리", "쿼리 성능 개선"으로 쓴다.
+- 한 단어로 굳어진 용어("웹 접근성"의 "접근성", "장애 대응"의 "대응" 등 사전에 한 단어로 오르지 않은 조합)는 억지로 붙이지 말고 띄어 쓰는 쪽을 택한다. 다만 "리팩터링", "온보딩"처럼 그 자체가 한 단어인 말은 그대로 둔다.
+- 영문 약어와 기술명은 통용 표기를 그대로 쓴다. "A/B 테스트", "CI/CD 파이프라인", "REST API"처럼 약어 뒤에 오는 한국어/영어 단어는 띄어 쓴다.
+- 무엇을 다뤘는지 알 수 있는 구체적인 기술, 도메인, 작업 유형을 쓴다. 좋은 예: "쿼리 튜닝", "결제 연동", "대용량 트래픽", "A/B 테스트", "웹 접근성", "온보딩 개선", "장애 대응", "CI/CD 구축"
+- "문제 해결 역량", "협업 능력", "소통 능력", "책임감", "성실함", "커뮤니케이션"처럼 어떤 경험에도 붙일 수 있는 범용 역량어와 태도 표현은 쓰지 않는다.
+- 같은 프로젝트 안의 모든 경험에 동일한 태그를 반복해 붙이지 않는다. 각 경험을 서로 구분해 주는 태그를 고른다.
+- 한 경험 안에서 의미가 겹치는 태그를 중복해 넣지 않는다.
+
+기간(period) 추출 규칙
+
+기간은 아래 객체 형태로 반환한다.
+
+{
+  "startYear": 2022,
+  "startMonth": 1,
+  "endYear": null,
+  "endMonth": null,
+  "isCurrent": true
+}
+
+예시
+- "22.01 ~ 현재" →
+{
+  "startYear": 2022,
+  "startMonth": 1,
+  "endYear": null,
+  "endMonth": null,
+  "isCurrent": true
+}
+
+- 두 자리 연도는
+  - 00~69 → 2000년대
+  - 70~99 → 1900년대
+로 해석한다.
+
+학력 추출 규칙
+
+degree는 아래 값 중 하나만 사용한다.
+
+- BACHELOR
+- MASTER
+- DOCTOR
+
+status는 아래 값 중 하나만 사용한다.
+
+- ENROLLED
+- ON_LEAVE
+- GRADUATED
+- EXPECTED_GRADUATION
+- COMPLETED
+
+판단 근거가 없으면 빈 문자열("")로 둔다.
+
+기술 스택 추출 규칙
+
+level은 아래 값 중 하나만 사용한다.
+
+- HIGH
+- MEDIUM
+- LOW
+
+숙련도를 판단할 근거가 없으면 빈 문자열("")로 둔다.
+
+어학 / 자격증 / 수상 추출 규칙
+
+취득일은 아래 형식으로 반환한다.
+
+{
+  "year": 2023,
+  "month": 5
+}
+
+원문에 없는 연도 또는 월은 null로 둔다.
+
+공통 규칙
+
+- 원문에 없는 사실을 절대 생성하지 마라. 단, competencyTags는 경험 태그(competencyTags) 작성 규칙을 따른다.
+- 추론이 필요한 경우 보수적으로 판단한다.
+- 불확실하면 문자열 필드는 ""를 사용한다.
+- 불확실하면 숫자 필드는 null을 사용한다.
+- 배열이 없으면 빈 배열([])을 사용한다. 단, competencyTags는 STAR가 모두 비어 있는 경우가 아니면 비우지 않는다.
+- 출력은 제공된 JSON Schema를 100% 준수한다.
+- JSON 외의 설명, 주석, 마크다운은 출력하지 않는다.',
 '{"type":"object","properties":{"personalInfo":{"type":"object","properties":{"name":{"type":"string"},"phone":{"type":"string"},"email":{"type":"string"}},"required":["name","phone","email"],"additionalProperties":false},"education":{"type":"array","items":{"type":"object","properties":{"school":{"type":"string"},"major":{"type":"string"},"degree":{"type":"string","enum":["BACHELOR","MASTER","DOCTOR",""]},"status":{"type":"string","enum":["ENROLLED","ON_LEAVE","GRADUATED","EXPECTED_GRADUATION","COMPLETED",""]},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"}},"required":["school","major","degree","status","period","periodText"],"additionalProperties":false}},"careers":{"type":"array","items":{"type":"object","properties":{"company":{"type":"string"},"position":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"description":{"type":"string"}},"required":["company","position","period","periodText","description"],"additionalProperties":false}},"languageTests":{"type":"array","items":{"type":"object","properties":{"testName":{"type":"string"},"score":{"type":"string"},"acquiredAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["testName","score","acquiredAt"],"additionalProperties":false}},"awards":{"type":"array","items":{"type":"object","properties":{"title":{"type":"string"},"organization":{"type":"string"},"awardedAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["title","organization","awardedAt"],"additionalProperties":false}},"certifications":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"issuer":{"type":"string"},"acquiredAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["name","issuer","acquiredAt"],"additionalProperties":false}},"skills":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"level":{"type":"string","enum":["HIGH","MEDIUM","LOW",""]}},"required":["name","level"],"additionalProperties":false}},"projects":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"summary":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"role":{"type":"string"},"company":{"type":"string"},"experiences":{"type":"array","items":{"type":"object","properties":{"title":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"role":{"type":"string"},"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"},"competencyTags":{"type":"array","items":{"type":"string"}}},"required":["title","period","periodText","role","situation","task","action","result","competencyTags"],"additionalProperties":false}}},"required":["name","summary","period","periodText","role","company","experiences"],"additionalProperties":false}}},"required":["personalInfo","education","careers","languageTests","awards","certifications","skills","projects"],"additionalProperties":false}',
 null, now(), now());
 

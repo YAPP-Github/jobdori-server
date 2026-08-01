@@ -14,8 +14,6 @@ class FirstExperienceCoreCompetencyService(
 ) {
 
     fun generateIfAbsent(workspaceId: Long, experiences: List<Experience>) {
-        if (experiences.isEmpty()) return
-
         val profile = profileReader.getOrCreateProfile(workspaceId)
         if (!profile.coreCompetency.isNullOrBlank()) return
 

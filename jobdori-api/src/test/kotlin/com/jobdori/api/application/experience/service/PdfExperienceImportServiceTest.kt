@@ -2,12 +2,11 @@ package com.jobdori.api.application.experience.service
 
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
-import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
 import com.jobdori.core.application.experience.ExperienceStarExtractionResult
 import com.jobdori.core.application.experience.command.ImportedExperienceCommandGroup
-import com.jobdori.core.application.profile.FirstExperienceCoreCompetencyService
+import com.jobdori.core.application.profile.ExperienceCoreCompetencyService
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.experience.service.command.ExperienceCreateCommand
@@ -40,23 +39,21 @@ internal class PdfExperienceImportServiceTest : StringSpec({
     val experienceImportService = mockk<ExperienceImportService>()
     val experienceAiExtractionService = mockk<ExperienceAiExtractionService>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
-    val creditService = mockk<CreditService>(relaxed = true)
     val pdfValidationService = mockk<PdfValidationService>()
     val profileReader = mockk<ProfileReader>()
     val profileModifier = mockk<ProfileModifier>()
     val experienceReader = mockk<ExperienceReader>()
-    val firstExperienceCoreCompetencyService = mockk<FirstExperienceCoreCompetencyService>()
+    val experienceCoreCompetencyService = mockk<ExperienceCoreCompetencyService>()
     val experienceTextImportService = ExperienceTextImportService(
         experienceImportService = experienceImportService,
         experienceAiExtractionService = experienceAiExtractionService,
         profileReader = profileReader,
         profileModifier = profileModifier,
         experienceReader = experienceReader,
-        firstExperienceCoreCompetencyService = firstExperienceCoreCompetencyService,
+        experienceCoreCompetencyService = experienceCoreCompetencyService,
     )
     val service = PdfExperienceImportService(
         workspaceAccessValidationService = workspaceAccessValidationService,
-        creditService = creditService,
         pdfValidationService = pdfValidationService,
         experienceTextImportService = experienceTextImportService,
     )
@@ -70,7 +67,7 @@ internal class PdfExperienceImportServiceTest : StringSpec({
             profileReader,
             profileModifier,
             experienceReader,
-            firstExperienceCoreCompetencyService,
+            experienceCoreCompetencyService,
         )
         every {
             workspaceAccessValidationService.validateAccessible(
@@ -118,9 +115,9 @@ internal class PdfExperienceImportServiceTest : StringSpec({
         every { profileReader.getOrCreateProfile(1L) } returns profile
         every { profileReader.getDetail(profile) } returns profileDetail
         every { profileModifier.modify(profile, any()) } returns profileDetail
-        every { experienceReader.findAllActive(1L) } returnsMany listOf(emptyList(), emptyList())
+        every { experienceReader.findAllActive(1L) } returns emptyList()
         every {
-            firstExperienceCoreCompetencyService.generateIfAbsent(1L, emptyList())
+            experienceCoreCompetencyService.generate(1L, emptyList())
         } returns Unit
 
         service.importExperiences(file = file, workspaceId = "workspace-id", userId = 1L)

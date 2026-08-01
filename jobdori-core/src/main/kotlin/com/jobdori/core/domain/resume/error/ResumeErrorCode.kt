@@ -9,6 +9,12 @@ enum class ResumeErrorCode(
     override val description: String,
 ) : ErrorCode {
 
+    E400_RESUME_SECTION_ITEM_REQUIRED(
+        httpStatusCode = 400,
+        code = "resume_section_item_required",
+        message = "섹션에는 최소 하나 이상의 item이 필요합니다.",
+        description = "기본 아이템을 사용하지 않는 이력서 섹션에 아이템이 없는 경우",
+    ),
     E404_RESUME_NOT_FOUND(
         httpStatusCode = 404,
         code = "resume_not_found",

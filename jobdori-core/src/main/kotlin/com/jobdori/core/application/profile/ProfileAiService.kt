@@ -59,35 +59,40 @@ class ProfileAiService(
         detail: ProfileDetail,
         experiences: List<Experience>,
     ): String {
-        val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
         val blocks = mutableListOf<String>()
         ProfileSummaryText.of(detail).takeIf { it.isNotBlank() }?.let { blocks += it }
-        blocks += buildString {
-            appendLine("[등록한 경험]")
-            experiences.forEachIndexed { index, experience ->
-                if (index > 0) appendLine()
-                appendLine("[${index + 1}]")
-                appendLine("경험명: ${experience.title}")
-                experience.role?.takeIf { it.isNotBlank() }?.let { appendLine("역할: $it") }
-                experience.period?.let { period ->
-                    if (period.startAt != null || period.endAt != null) {
-                        appendLine("기간: ${period.startAt ?: ""} - ${period.endAt ?: ""}")
+        if (experiences.isNotEmpty()) {
+            blocks += buildString {
+                appendLine("[등록한 경험]")
+                experiences.forEachIndexed { index, experience ->
+                    if (index > 0) appendLine()
+                    appendLine("[${index + 1}]")
+                    appendLine("경험명: ${experience.title}")
+                    experience.role?.takeIf { it.isNotBlank() }?.let { appendLine("역할: $it") }
+                    experience.period?.let { period ->
+                        if (period.startAt != null || period.endAt != null) {
+                            appendLine("기간: ${period.startAt ?: ""} - ${period.endAt ?: ""}")
+                        }
+                    }
+                    when (val contents = experience.contents) {
+                        is StarExperienceContents -> {
+                            appendLine("상황: ${contents.situation}")
+                            appendLine("과제: ${contents.task}")
+                            appendLine("행동: ${contents.action}")
+                            appendLine("결과: ${contents.result}")
+                        }
+                        is FreeExperienceContents -> appendLine("내용: ${contents.content}")
                     }
                 }
-                when (val contents = experience.contents) {
-                    is StarExperienceContents -> {
-                        appendLine("상황: ${contents.situation}")
-                        appendLine("과제: ${contents.task}")
-                        appendLine("행동: ${contents.action}")
-                        appendLine("결과: ${contents.result}")
-                    }
-                    is FreeExperienceContents -> appendLine("내용: ${contents.content}")
-                }
-            }
-        }.trim()
+            }.trim()
+        }
 
+        val userPrompt = blocks.joinToString("\n\n")
+        if (userPrompt.isBlank()) return ""
+
+        val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
         return aiChatClient.generateText(
-            template.build(userPrompt = blocks.joinToString("\n\n")),
+            template.build(userPrompt = userPrompt),
         ).trim().take(ProfilePolicy.MAX_CORE_COMPETENCY_LENGTH)
     }
 

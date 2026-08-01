@@ -1,6 +1,0 @@
-query Credit {
-    credit {
-        remaining
-        total
-    }
-}

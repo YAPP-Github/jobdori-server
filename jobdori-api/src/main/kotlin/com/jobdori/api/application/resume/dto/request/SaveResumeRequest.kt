@@ -1,11 +1,13 @@
 package com.jobdori.api.application.resume.dto.request
 
-import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
+import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.common.error.ErrorDetail
 import com.jobdori.common.error.InvalidArgumentsException
+import com.jobdori.common.json.JsonUtils
 import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeTemplate
+import com.jobdori.core.domain.resume.error.ResumeSectionItemRequiredException
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionItemSaveCommand
 import com.jobdori.core.domain.resume.service.command.ResumeSectionSaveCommand
@@ -148,7 +150,7 @@ data class SaveResumeSectionRequest(
 
         val itemCommands = items.map { it.toCommand() }
         if (itemCommands.isEmpty() && !useDefaultItems) {
-            throw InvalidArgumentsException("섹션에는 최소 하나 이상의 item이 필요합니다.")
+            throw ResumeSectionItemRequiredException("이력서 섹션 내의 아이템이 비어있습니다 [${JsonUtils.toJson(this)}}}")
         }
         validateItemDisplayOrders(itemCommands)
         validateItemIds()

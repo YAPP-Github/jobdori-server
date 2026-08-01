@@ -5,7 +5,9 @@ import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorDetail
 import com.jobdori.common.error.FileErrorCode
 import com.jobdori.common.logger.LoggerExtension.log
+import com.jobdori.api.support.notification.AsyncErrorNotifier
 import org.springframework.beans.TypeMismatchException
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -22,7 +24,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException
 import tools.jackson.databind.exc.MismatchedInputException
 
 @RestControllerAdvice
-class ApiExceptionAdvice {
+class ApiExceptionAdvice(
+    private val errorNotifierProvider: ObjectProvider<AsyncErrorNotifier>,
+) {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException::class)
@@ -102,10 +106,15 @@ class ApiExceptionAdvice {
 
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(exception: BaseException): ResponseEntity<ApiResponse<Nothing>> {
-        log.atError {
-            message = exception.message
-            cause = exception
-            payload = mapOf("errorCode" to exception.errorCode.code)
+        if (exception.errorCode.httpStatusCode >= 500) {
+            log.atError {
+                message = exception.message
+                cause = exception
+                payload = mapOf("errorCode" to exception.errorCode.code)
+            }
+            errorNotifierProvider.ifAvailable?.notify(exception.errorCode.code, exception)
+        } else {
+            log.warn { "${exception.errorCode.code}: ${exception.message}" }
         }
         return ResponseEntity.status(exception.errorCode.httpStatusCode)
             .body(ApiResponse.fail(error = exception.errorCode, details = exception.details))
@@ -118,6 +127,7 @@ class ApiExceptionAdvice {
             cause = throwable
             payload = mapOf("errorCode" to CommonErrorCode.E500_INTERNAL_ERROR.code)
         }
+        errorNotifierProvider.ifAvailable?.notify(CommonErrorCode.E500_INTERNAL_ERROR.code, throwable)
         return ResponseEntity.internalServerError()
             .body(ApiResponse.fail(CommonErrorCode.E500_INTERNAL_ERROR))
     }

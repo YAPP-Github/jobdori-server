@@ -1,11 +1,11 @@
 package com.jobdori.api.application.resume.service
 
-import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.resume.dto.ResumeOptimizationMode
-import com.jobdori.api.application.resume.dto.request.ResumeBasicInfoPayloadRequest
+import com.jobdori.api.application.resume.dto.ResumeStatusType
 import com.jobdori.api.application.resume.dto.request.CreateResumeRequest
-import com.jobdori.api.application.resume.dto.request.ResumeLanguagePayloadRequest
+import com.jobdori.api.application.resume.dto.request.ResumeBasicInfoPayloadRequest
 import com.jobdori.api.application.resume.dto.request.ResumeExperiencePayloadRequest
+import com.jobdori.api.application.resume.dto.request.ResumeLanguagePayloadRequest
 import com.jobdori.api.application.resume.dto.request.ResumeSectionItemPayloadRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeRequest
 import com.jobdori.api.application.resume.dto.request.SaveResumeSectionItemRequest
@@ -13,31 +13,31 @@ import com.jobdori.api.application.resume.dto.request.SaveResumeSectionRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.common.model.SliceResult
-import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.resume.ResumeExperiencePolishService
-import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.profile.Profile
+import com.jobdori.core.domain.profile.ProfileDetail
+import com.jobdori.core.domain.profile.ProfileSections
+import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeDetailSection
+import com.jobdori.core.domain.resume.ResumeExperiencePayload
 import com.jobdori.core.domain.resume.ResumeFixture
 import com.jobdori.core.domain.resume.ResumeLanguagePayload
-import com.jobdori.core.domain.resume.ResumeExperiencePayload
 import com.jobdori.core.domain.resume.ResumeSectionFixture
 import com.jobdori.core.domain.resume.ResumeSectionItemFixture
 import com.jobdori.core.domain.resume.ResumeSectionType
 import com.jobdori.core.domain.resume.ResumeStatus
 import com.jobdori.core.domain.resume.ResumeTemplate
-import com.jobdori.core.domain.profile.Profile
-import com.jobdori.core.domain.profile.ProfileDetail
-import com.jobdori.core.domain.profile.ProfileSections
+import com.jobdori.core.domain.resume.error.ResumeErrorCode
+import com.jobdori.core.domain.resume.error.ResumeSectionItemRequiredException
 import com.jobdori.core.domain.resume.service.ResumeCreator
 import com.jobdori.core.domain.resume.service.ResumeModifier
 import com.jobdori.core.domain.resume.service.ResumeReader
 import com.jobdori.core.domain.resume.service.ResumeRemover
 import com.jobdori.core.domain.resume.service.ResumeSectionItemInitializer
-import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.service.command.ResumeSaveCommand
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.assertions.throwables.shouldThrow
@@ -51,7 +51,6 @@ import java.time.LocalDate
 class ResumeServiceTest : StringSpec({
 
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
-    val creditService = mockk<CreditService>(relaxed = true)
     val resumeCreator = mockk<ResumeCreator>()
     val resumeReader = mockk<ResumeReader>()
     val resumeRemover = mockk<ResumeRemover>()
@@ -62,7 +61,6 @@ class ResumeServiceTest : StringSpec({
     val resumeExperiencePolishService = mockk<ResumeExperiencePolishService>()
     val resumeService = ResumeService(
         workspaceAccessValidationService = workspaceAccessValidationService,
-        creditService = creditService,
         resumeCreator = resumeCreator,
         resumeReader = resumeReader,
         resumeRemover = resumeRemover,
@@ -134,7 +132,6 @@ class ResumeServiceTest : StringSpec({
         verify(exactly = 0) {
             getJdService.getJd(workspaceId = 1L, publicId = any())
         }
-        verify(exactly = 0) { creditService.consume(any(), any()) }
     }
 
     "targetJdId가 있으면 JD public ID를 내부 ID로 변환해 생성한다" {
@@ -188,7 +185,6 @@ class ResumeServiceTest : StringSpec({
                 payload.contents shouldBe "생성 첨삭 내용"
             })
         }
-        verify(exactly = 1) { creditService.consume(10L, CreditFeature.RESUME_DRAFT) }
     }
 
     "기본 아이템 생성과 직접 입력한 items를 함께 지정하면 예외가 발생한다" {
@@ -647,6 +643,25 @@ class ResumeServiceTest : StringSpec({
 
         // then
         exception.details.single().field shouldBe "sections.displayOrder"
+    }
+
+    "기본 아이템을 사용하지 않는 빈 섹션이면 전용 에러가 발생한다" {
+        // given
+        val section = SaveResumeSectionRequest(
+            sectionId = 200L,
+            type = ResumeSectionType.BASIC_INFO,
+            displayOrder = 1.0,
+            visible = true,
+            items = emptyList(),
+        )
+
+        // when
+        val exception = shouldThrow<ResumeSectionItemRequiredException> {
+            section.toCommand()
+        }
+
+        // then
+        exception.errorCode shouldBe ResumeErrorCode.E400_RESUME_SECTION_ITEM_REQUIRED
     }
 
     "이력서 저장 요청의 같은 섹션 안 아이템 displayOrder가 중복되면 예외가 발생한다" {

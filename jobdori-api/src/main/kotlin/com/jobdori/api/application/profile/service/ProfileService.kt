@@ -3,10 +3,14 @@ package com.jobdori.api.application.profile.service
 import com.jobdori.api.application.profile.dto.request.PolishProfileTextRequest
 import com.jobdori.api.application.profile.dto.request.UpdateProfileRequest
 import com.jobdori.api.application.profile.dto.response.GenerateCoreCompetencyResponse
+import com.jobdori.api.application.profile.dto.response.PolishedProfileTextResponse
 import com.jobdori.api.application.profile.dto.response.ProfileResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
+import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.profile.ProfileAiService
+import com.jobdori.core.application.profile.ProfilePolishKind
+import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.service.ResumeReader
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service
 @Service
 class ProfileService(
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
+    private val creditService: CreditService,
     private val profileReader: ProfileReader,
     private val profileModifier: ProfileModifier,
     private val profileAiService: ProfileAiService,
@@ -72,22 +77,54 @@ class ProfileService(
     }
 
     // 결과만 반환하고 저장하지 않는다. jdId가 있으면 워크스페이스 검증 후 해당 JD의 지원 전략을 첨삭 기준으로 반영
-    fun polishProfileText(userId: Long, workspaceId: String?, request: PolishProfileTextRequest): String {
-        val workspace = request.jdId?.let {
-            val id = workspaceId
-                ?: throw InvalidArgumentsException("jdId로 지원 전략을 반영하려면 workspaceId가 필요합니다.")
-            workspaceAccessValidationService.validateAccessible(workspaceId = id, userId = userId)
+    fun polishProfileText(
+        userId: Long,
+        workspaceId: String?,
+        request: PolishProfileTextRequest,
+    ): PolishedProfileTextResponse {
+        val validatedWorkspaceId = validateWorkspaceForJd(userId, workspaceId, request.jdId)
+
+        if (request.kind == ProfilePolishKind.EXPERIENCE) {
+            val title = request.title?.takeIf { it.isNotBlank() }
+                ?: throw InvalidArgumentsException("경험 첨삭에는 title이 필요합니다.")
+            creditService.consume(userId, CreditFeature.AI_POLISH)
+            val polished = profileAiService.polishExperience(
+                title = title,
+                description = request.description,
+                structure = request.structure,
+                instruction = request.instruction,
+                workspaceId = validatedWorkspaceId,
+                jdPublicId = request.jdId,
+            )
+
+            return PolishedProfileTextResponse(
+                title = polished.title,
+                description = polished.description,
+            )
         }
 
-        return profileAiService.polish(
-            text = request.text,
+        creditService.consume(userId, CreditFeature.AI_POLISH)
+        val polished = profileAiService.polish(
+            text = request.description,
             kind = request.kind,
             structure = request.structure,
             instruction = request.instruction,
-            title = request.title,
-            workspaceId = workspace?.id,
+            workspaceId = validatedWorkspaceId,
             jdPublicId = request.jdId,
         )
+
+        return PolishedProfileTextResponse(
+            title = null,
+            description = polished,
+        )
+    }
+
+    private fun validateWorkspaceForJd(userId: Long, workspaceId: String?, jdId: String?): Long? {
+        return jdId?.let {
+            val id = workspaceId
+                ?: throw InvalidArgumentsException("jdId로 지원 전략을 반영하려면 workspaceId가 필요합니다.")
+            workspaceAccessValidationService.validateAccessible(workspaceId = id, userId = userId).id
+        }
     }
 
 }

@@ -3,6 +3,9 @@ package com.jobdori.core.application.profile
 import com.jobdori.core.application.ai.client.AiChatClient
 import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
+import com.jobdori.core.domain.experience.Experience
+import com.jobdori.core.domain.experience.FreeExperienceContents
+import com.jobdori.core.domain.experience.StarExperienceContents
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.error.JdNotFoundException
 import com.jobdori.core.domain.jd.repository.JdRepository
@@ -10,6 +13,7 @@ import com.jobdori.core.domain.prompt.PromptTemplate
 import com.jobdori.core.domain.prompt.PromptType
 import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
 import com.jobdori.core.domain.profile.ProfileDetail
+import com.jobdori.core.domain.profile.ProfilePolicy
 import com.jobdori.core.domain.profile.ProfileSummaryText
 import com.jobdori.core.domain.resume.ResumeDetail
 import com.jobdori.core.domain.resume.ResumeExperiencePayload
@@ -20,6 +24,12 @@ import org.springframework.stereotype.Service
 data class CoreCompetencyGeneration(
     val strategy: String?,
     val coreCompetency: String,
+)
+
+/** 필드가 data.sql PROFILE_TEXT_POLISH jsonSchema와 1:1 대응한다. */
+data class ExperiencePolish(
+    val title: String,
+    val description: String,
 )
 
 @Service
@@ -45,12 +55,47 @@ class ProfileAiService(
         return CoreCompetencyGeneration(strategy, text)
     }
 
+    fun generateCoreCompetencyFromExperiences(
+        detail: ProfileDetail,
+        experiences: List<Experience>,
+    ): String {
+        val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
+        val blocks = mutableListOf<String>()
+        ProfileSummaryText.of(detail).takeIf { it.isNotBlank() }?.let { blocks += it }
+        blocks += buildString {
+            appendLine("[등록한 경험]")
+            experiences.forEachIndexed { index, experience ->
+                if (index > 0) appendLine()
+                appendLine("[${index + 1}]")
+                appendLine("경험명: ${experience.title}")
+                experience.role?.takeIf { it.isNotBlank() }?.let { appendLine("역할: $it") }
+                experience.period?.let { period ->
+                    if (period.startAt != null || period.endAt != null) {
+                        appendLine("기간: ${period.startAt ?: ""} - ${period.endAt ?: ""}")
+                    }
+                }
+                when (val contents = experience.contents) {
+                    is StarExperienceContents -> {
+                        appendLine("상황: ${contents.situation}")
+                        appendLine("과제: ${contents.task}")
+                        appendLine("행동: ${contents.action}")
+                        appendLine("결과: ${contents.result}")
+                    }
+                    is FreeExperienceContents -> appendLine("내용: ${contents.content}")
+                }
+            }
+        }.trim()
+
+        return aiChatClient.generateText(
+            template.build(userPrompt = blocks.joinToString("\n\n")),
+        ).trim().take(ProfilePolicy.MAX_CORE_COMPETENCY_LENGTH)
+    }
+
     fun polish(
         text: String,
         kind: ProfilePolishKind,
         structure: PolishStructure? = null,
         instruction: String? = null,
-        title: String? = null,
         workspaceId: Long? = null,
         jdPublicId: String? = null,
     ): String {
@@ -58,13 +103,9 @@ class ProfileAiService(
         val template = getTemplate(PromptType.PROFILE_TEXT_POLISH)
         val userPrompt = buildString {
             appendLine("[항목] ${kind.label}")
-            appendLine("[글자수 제한] ${kind.maxLength}자")
-            // 경험명은 한 줄 제목이라 작성 구조가 성립하지 않는다. FE가 구조를 넘겨도 무시해 구조/길이 초과 출력을 막는다.
-            structure
-                ?.takeUnless { kind == ProfilePolishKind.EXPERIENCE_TITLE }
-                ?.let { appendLine("[작성 구조] ${it.instruction}") }
+            appendLine("[결과 글자수 제한] ${kind.maxLength}자")
+            structure?.let { appendLine("[작성 구조] ${it.instruction}") }
             instruction?.takeIf { it.isNotBlank() }?.let { appendLine("[추가 지침] $it") }
-            title?.takeIf { it.isNotBlank() }?.let { appendLine("[경험명] $it") }
             strategy?.let {
                 appendLine("[지원 전략]")
                 appendLine(it)
@@ -73,7 +114,53 @@ class ProfileAiService(
             append(text)
         }
 
-        return aiChatClient.generateText(template.build(userPrompt = userPrompt))
+        val result = aiChatClient.generateText(template.build(userPrompt = userPrompt)).trim()
+        // LLM 응답이 프로필 저장 한도를 넘지 않도록 첨삭 결과 제한에 맞춘다.
+        return result.takeIf { it.isNotBlank() }
+            ?.take(kind.maxLength)
+            ?: text
+    }
+
+    fun polishExperience(
+        title: String,
+        description: String,
+        structure: PolishStructure? = null,
+        instruction: String? = null,
+        workspaceId: Long? = null,
+        jdPublicId: String? = null,
+    ): ExperiencePolish {
+        val strategy = workspaceId?.let { resolveStrategy(it, jdPublicId) }
+        val template = getTemplate(PromptType.PROFILE_TEXT_POLISH)
+        val userPrompt = buildString {
+            appendLine("[경험명] $title")
+            appendLine("[경험명 글자수 제한] ${ProfilePolicy.MAX_TITLE_LENGTH}자")
+            appendLine("[경험 내용 결과 글자수 제한] ${EXPERIENCE_DESCRIPTION_RESULT_MAX_LENGTH}자")
+            structure?.let { appendLine("[경험 내용 작성 구조] ${it.instruction}") }
+            instruction?.takeIf { it.isNotBlank() }?.let { appendLine("[추가 지침] $it") }
+            strategy?.let {
+                appendLine("[지원 전략]")
+                appendLine(it)
+            }
+            appendLine("[경험 내용]")
+            append(description)
+        }
+        val result = aiChatClient.generateStructured(
+            template.buildStructured(userPrompt, ExperiencePolish::class),
+        )
+
+        // 경험명 수정 지침이 없을 때 원문 유지 계약을 LLM 응답과 무관하게 보장한다.
+        val polishedTitle = if (instruction.isNullOrBlank()) {
+            title
+        } else {
+            result.title.trim().ifBlank { title }.take(ProfilePolicy.MAX_TITLE_LENGTH)
+        }
+        // LLM 응답은 긴 원문과 별개로 간결한 이력서용 결과 제한을 지켜야 한다.
+        return ExperiencePolish(
+            title = polishedTitle,
+            description = result.description.trim().takeIf { it.isNotBlank() }
+                ?.take(EXPERIENCE_DESCRIPTION_RESULT_MAX_LENGTH)
+                ?: description,
+        )
     }
 
     private fun resolveStrategy(workspaceId: Long, jdPublicId: String?): String? {
@@ -150,11 +237,13 @@ class ProfileAiService(
 
 }
 
+// 저장 한도와 별개로 간결한 AI 첨삭 결과를 만드는 출력 정책이다.
+const val EXPERIENCE_DESCRIPTION_RESULT_MAX_LENGTH = 500
+
 enum class ProfilePolishKind(val label: String, val maxLength: Int) {
-    CORE_COMPETENCY("핵심역량", 500),
-    CAREER_DESCRIPTION("경력 세부 내용", 500),
-    EXPERIENCE_TITLE("경험명", 100),
-    EXPERIENCE_DESCRIPTION("경험 STAR 설명", 500),
+    CORE_COMPETENCY("핵심역량", ProfilePolicy.MAX_CORE_COMPETENCY_LENGTH),
+    CAREER_DESCRIPTION("경력 세부 내용", ProfilePolicy.MAX_CAREER_DESCRIPTION_LENGTH),
+    EXPERIENCE("경험 내용", EXPERIENCE_DESCRIPTION_RESULT_MAX_LENGTH),
 }
 
 enum class PolishStructure(val instruction: String) {

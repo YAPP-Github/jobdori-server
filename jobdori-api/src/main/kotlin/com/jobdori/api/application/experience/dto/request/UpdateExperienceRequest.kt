@@ -4,7 +4,6 @@ import com.jobdori.api.application.common.dto.request.PeriodRequest
 import com.jobdori.api.application.experience.dto.request.contents.ExperienceContentsRequest
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
 
@@ -25,7 +24,6 @@ data class UpdateExperienceRequest(
     @field:Valid
     val period: PeriodRequest?,
 
-    @field:Pattern(regexp = "(?s).*\\S.*", message = "must not be blank")
     @field:Size(max = 100)
     val role: String?,
 )

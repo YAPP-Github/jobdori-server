@@ -5,11 +5,15 @@ import com.jobdori.api.application.experience.dto.request.UpdateExperienceReques
 import com.jobdori.api.application.experience.dto.request.contents.ExperienceContentsRequest
 import com.jobdori.api.application.experience.dto.request.contents.FreeExperienceContentsRequest
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
+import com.jobdori.common.model.Period
 import com.jobdori.common.model.SliceResult
+import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
+import com.jobdori.core.application.experience.PolishedExperience
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
+import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.ExperienceProject
 import com.jobdori.core.domain.experience.ExperienceProjectStatus
@@ -29,6 +33,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.time.LocalDate
 
 class ExperienceServiceTest : StringSpec({
 
@@ -38,10 +43,12 @@ class ExperienceServiceTest : StringSpec({
     val experienceRemover = mockk<ExperienceRemover>()
     val experienceProjectReader = mockk<ExperienceProjectReader>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
+    val creditService = mockk<CreditService>(relaxed = true)
     val getExperienceRecommendationService = mockk<GetExperienceRecommendationService>()
     val experienceContentsPolishService = mockk<ExperienceContentsPolishService>()
     val experienceService = ExperienceService(
         workspaceAccessValidationService = workspaceAccessValidationService,
+        creditService = creditService,
         experienceCreator = experienceCreator,
         experienceReader = experienceReader,
         experienceModifier = experienceModifier,
@@ -66,7 +73,11 @@ class ExperienceServiceTest : StringSpec({
 
     "프로젝트를 확인한 뒤 경험을 생성하고 응답을 반환한다" {
         // given
-        val project = project(id = 3L)
+        val projectPeriod = Period(
+            startAt = LocalDate.of(2025, 1, 1),
+            endAt = LocalDate.of(2025, 6, 30),
+        )
+        val project = project(id = 3L, period = projectPeriod, role = "백엔드 개발")
         val contents = StarExperienceContents("상황", "과제", "행동", "결과")
         val request = CreateExperienceRequest(
             projectId = 3L,
@@ -76,7 +87,9 @@ class ExperienceServiceTest : StringSpec({
         )
         val experience = experience(id = 100L, projectId = 3L, contents = contents)
         every { experienceProjectReader.getProject(workspaceId = 1L, projectId = 3L) } returns project
-        every { experienceContentsPolishService.polishFreeStyleToStar("경험 내용") } returns contents
+        every {
+            experienceContentsPolishService.polishFreeStyleToStar("경험 내용")
+        } returns PolishedExperience(null, null, null, emptyList(), contents)
         every {
             experienceCreator.create(
                 workspaceId = 1L,
@@ -85,6 +98,8 @@ class ExperienceServiceTest : StringSpec({
                     tags = listOf("Kotlin"),
                     title = "경험",
                     contents = contents,
+                    period = projectPeriod,
+                    role = null,
                 ),
             )
         } returns experience
@@ -104,6 +119,62 @@ class ExperienceServiceTest : StringSpec({
         response.contents.type shouldBe ExperienceContentsType.STAR
         verify(exactly = 1) { experienceContentsPolishService.polishFreeStyleToStar("경험 내용") }
         verify(exactly = 1) { experienceProjectReader.getProject(workspaceId = 1L, projectId = 3L) }
+    }
+
+    "FREE 내용에서 추출한 제목과 기간, 태그를 비어 있는 생성 필드에 사용한다" {
+        val extractedPeriod = Period(
+            startAt = LocalDate.of(2024, 3, 1),
+            endAt = LocalDate.of(2024, 8, 31),
+        )
+        val project = project(id = 3L, role = "프로젝트 역할")
+        val contents = StarExperienceContents("상황", "과제", "행동", "결과")
+        val request = CreateExperienceRequest(
+            projectId = 3L,
+            title = "",
+            contents = freeContentsRequest("2024년 3월부터 8월까지 백엔드 리드로 성능을 개선했다"),
+        )
+        val created = experience(id = 100L, projectId = 3L, title = "성능 개선", contents = contents)
+        every { experienceProjectReader.getProject(1L, 3L) } returns project
+        every {
+            experienceContentsPolishService.polishFreeStyleToStar(any())
+        } returns PolishedExperience(
+            title = "성능 개선",
+            period = extractedPeriod,
+            role = "백엔드 리드",
+            tags = listOf("성능 개선", "리더십"),
+            contents = contents,
+        )
+        every {
+            experienceCreator.create(
+                workspaceId = 1L,
+                projectId = 3L,
+                command = ExperienceCreateCommand(
+                    tags = listOf("성능 개선", "리더십"),
+                    title = "성능 개선",
+                    contents = contents,
+                    period = extractedPeriod,
+                    role = null,
+                ),
+            )
+        } returns created
+
+        experienceService.createExperience(10L, "workspace-id", 3L, request)
+
+        verify(exactly = 1) {
+            experienceCreator.create(
+                workspaceId = 1L,
+                projectId = 3L,
+                command = ExperienceCreateCommand(
+                    tags = listOf("성능 개선", "리더십"),
+                    title = "성능 개선",
+                    contents = contents,
+                    period = extractedPeriod,
+                    role = null,
+                ),
+            )
+        }
+
+        verify(exactly = 1) { creditService.consume(10L, CreditFeature.EXPERIENCE_EXTRACT) }
     }
 
     "경험 목록에서 project를 요청하면 프로젝트를 한 번에 조회해 응답에 연결한다" {
@@ -245,7 +316,9 @@ class ExperienceServiceTest : StringSpec({
         )
         val modified = experience(id = 1L, projectId = 5L, title = "수정 경험", contents = contents)
         every { experienceProjectReader.getProject(workspaceId = 1L, projectId = 5L) } returns project(id = 5L)
-        every { experienceContentsPolishService.polishFreeStyleToStar("수정 내용") } returns contents
+        every {
+            experienceContentsPolishService.polishFreeStyleToStar("수정 내용")
+        } returns PolishedExperience(null, null, null, emptyList(), contents)
         every {
             experienceModifier.modify(
                 workspaceId = 1L,
@@ -272,6 +345,7 @@ class ExperienceServiceTest : StringSpec({
         response.title shouldBe "수정 경험"
         response.contents.type shouldBe ExperienceContentsType.STAR
         verify(exactly = 1) { experienceContentsPolishService.polishFreeStyleToStar("수정 내용") }
+        verify(exactly = 1) { creditService.consume(10L, CreditFeature.EXPERIENCE_REWRITE) }
         verify(exactly = 2) { experienceProjectReader.getProject(workspaceId = 1L, projectId = 5L) }
     }
 
@@ -309,13 +383,17 @@ private fun freeContentsRequest(content: String) = ExperienceContentsRequest(
     free = FreeExperienceContentsRequest(content = content),
 )
 
-private fun project(id: Long) = ExperienceProject(
+private fun project(
+    id: Long,
+    period: Period? = null,
+    role: String? = "백엔드 개발자",
+) = ExperienceProject(
     id = id,
     workspaceId = 1L,
     name = "프로젝트 $id",
     summary = "프로젝트 요약",
-    period = null,
-    role = "백엔드 개발자",
+    period = period,
+    role = role,
     displayOrder = 0.0,
     status = ExperienceProjectStatus.ACTIVE,
 )

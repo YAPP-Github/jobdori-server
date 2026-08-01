@@ -4,6 +4,7 @@ import com.jobdori.api.DocsTest
 import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorCode
 import com.jobdori.core.domain.ai.error.AiErrorCode
+import com.jobdori.core.domain.credit.error.CreditErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
 import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
@@ -29,6 +30,10 @@ internal class ErrorCodeDocsGeneratorTest : FunSpec({
         generateGraphQlErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/common/error.adoc"),
             errorCodes = CommonErrorCode.entries,
+        )
+        generateGraphQlErrorCodeDocs(
+            file = File("src/docs/asciidoc/graphql/credit/credit-error.adoc"),
+            errorCodes = CreditErrorCode.entries,
         )
         generateGraphQlErrorCodeDocs(
             file = File("src/docs/asciidoc/graphql/user/user-error.adoc"),
@@ -71,6 +76,14 @@ internal class ErrorCodeDocsGeneratorTest : FunSpec({
 })
 
 private val graphQlOperationErrors = listOf(
+    GraphQlOperationError(
+        category = "Credit",
+        operation = "credit",
+        title = "잔여 크레딧 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("credit/credit.graphql"),
+        errorCodes = operationErrorCodes(),
+    ),
     GraphQlOperationError(
         category = "User",
         operation = "me",
@@ -150,6 +163,7 @@ private val graphQlOperationErrors = listOf(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
             ExperienceProjectErrorCode.E404_EXPERIENCE_PROJECT_NOT_FOUND,
+            CreditErrorCode.E402_INSUFFICIENT_CREDIT to "경험 내용을 FREE로 입력해 AI 추출/재작성을 요청했으나 잔여 크레딧이 0인 경우",
         ),
     ),
     GraphQlOperationError(
@@ -163,6 +177,7 @@ private val graphQlOperationErrors = listOf(
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
             ExperienceErrorCode.E404_EXPERIENCE_NOT_FOUND,
             ExperienceProjectErrorCode.E404_EXPERIENCE_PROJECT_NOT_FOUND,
+            CreditErrorCode.E402_INSUFFICIENT_CREDIT to "경험 내용을 FREE로 입력해 AI 추출/재작성을 요청했으나 잔여 크레딧이 0인 경우",
         ),
     ),
     GraphQlOperationError(
@@ -274,6 +289,7 @@ private val graphQlOperationErrors = listOf(
             NotionErrorCode.CONNECTION_NEED_RECONNECT,
             NotionErrorCode.PAGE_ACCESS_DENIED,
             NotionErrorCode.API_REQUEST_FAILED,
+            CreditErrorCode.E402_INSUFFICIENT_CREDIT,
         ),
     ),
     GraphQlOperationError(
@@ -319,6 +335,7 @@ private val graphQlOperationErrors = listOf(
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            CreditErrorCode.E402_INSUFFICIENT_CREDIT to "`optimizationMode`가 `JOB_SPECIFIC`이라 경험 AI 첨삭을 수행하는데 잔여 크레딧이 0인 경우",
         ),
     ),
     GraphQlOperationError(
@@ -330,6 +347,7 @@ private val graphQlOperationErrors = listOf(
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            CreditErrorCode.E402_INSUFFICIENT_CREDIT to "`optimizationMode`가 `JOB_SPECIFIC`이라 경험 AI 첨삭을 수행하는데 잔여 크레딧이 0인 경우",
             ResumeErrorCode.E404_RESUME_NOT_FOUND,
         ),
     ),
@@ -377,6 +395,7 @@ private val graphQlOperationErrors = listOf(
         errorCodes = operationErrorCodes(
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            CreditErrorCode.E402_INSUFFICIENT_CREDIT,
             ExperienceErrorCode.E422_EXPERIENCE_REQUIRED,
             JdCrawlErrorCode.E400_JD_INVALID_URL,
             JdCrawlErrorCode.E422_JD_ACCESS_DENIED,
@@ -440,12 +459,14 @@ private val graphQlOperationErrors = listOf(
     GraphQlOperationError(
         category = "Profile",
         operation = "polishProfileText",
-        title = "프로필 텍스트 AI 다듬기",
+        title = "프로필 텍스트/경험 AI 다듬기",
         type = GraphQlOperationType.MUTATION,
         sampleFile = graphQlSample("profile/polish-profile-text.graphql"),
         errorCodes = operationErrorCodes(
+            CommonErrorCode.E400_INVALID_ARGUMENTS,
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            CreditErrorCode.E402_INSUFFICIENT_CREDIT,
             JdErrorCode.E404_JD_NOT_FOUND,
             AiErrorCode.E500_AI_GENERATION_FAILED,
         ),

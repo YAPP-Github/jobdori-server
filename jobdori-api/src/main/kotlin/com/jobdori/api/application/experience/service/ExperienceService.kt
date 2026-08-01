@@ -9,8 +9,12 @@ import com.jobdori.api.application.experience.dto.response.ExperienceProjectResp
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.logger.LoggerExtension.log
+import com.jobdori.common.model.Period
+import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
+import com.jobdori.core.application.experience.PolishedExperience
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
+import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.service.ExperienceCreator
@@ -24,6 +28,7 @@ import org.springframework.stereotype.Service
 @Service
 class ExperienceService(
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
+    private val creditService: CreditService,
     private val experienceCreator: ExperienceCreator,
     private val experienceReader: ExperienceReader,
     private val experienceModifier: ExperienceModifier,
@@ -45,15 +50,16 @@ class ExperienceService(
         )
 
         val project = experienceProjectReader.getProject(workspaceId = workspace.id, projectId = projectId)
+        val resolvedContents = resolveContents(userId, request.contents, CreditFeature.EXPERIENCE_EXTRACT)
         val experience = experienceCreator.create(
             workspaceId = workspace.id,
             projectId = projectId,
             command = ExperienceCreateCommand(
-                title = request.title,
-                contents = resolveContents(request.contents),
-                tags = request.tags,
-                period = request.period?.toPeriod(),
-                role = request.role,
+                title = request.title.ifBlank { resolvedContents.title.orEmpty() },
+                contents = resolvedContents.contents,
+                tags = request.tags.ifEmpty { resolvedContents.tags },
+                period = request.period?.toPeriod() ?: resolvedContents.period ?: project.period,
+                role = request.role?.ifBlank { resolvedContents.role ?: project.role }
             ),
         )
 
@@ -79,15 +85,16 @@ class ExperienceService(
             projectId = request.projectId,
         )
 
+        val resolvedContents = resolveContents(userId, request.contents, CreditFeature.EXPERIENCE_REWRITE)
         val modified = experienceModifier.modify(
             workspaceId = workspace.id,
             experienceId = experienceId,
             projectId = request.projectId,
             tags = request.tags,
-            title = request.title,
-            contents = resolveContents(request.contents),
-            period = request.period?.toPeriod(),
-            role = request.role,
+            title = request.title.ifBlank { resolvedContents.title.orEmpty() },
+            contents = resolvedContents.contents,
+            period = request.period?.toPeriod() ?: resolvedContents.period,
+            role = request.role ?: resolvedContents.role,
         )
         val project = experienceProjectReader.getProject(
             workspaceId = workspace.id,
@@ -238,13 +245,36 @@ class ExperienceService(
         )
     }
 
-    private fun resolveContents(request: ExperienceContentsRequest): ExperienceContents {
+    private fun resolveContents(
+        userId: Long,
+        request: ExperienceContentsRequest,
+        feature: CreditFeature,
+    ): ResolvedExperienceContents {
         return when (request.type) {
-            ExperienceContentsType.STAR -> request.toDomain()
-            ExperienceContentsType.FREE -> experienceContentsPolishService.polishFreeStyleToStar(
-                requireNotNull(request.free) { "FREE contents require free payload" }.content,
-            )
+            ExperienceContentsType.STAR -> ResolvedExperienceContents(contents = request.toDomain())
+            ExperienceContentsType.FREE -> {
+                creditService.consume(userId, feature)
+                experienceContentsPolishService.polishFreeStyleToStar(
+                    requireNotNull(request.free) { "FREE contents require free payload" }.content,
+                ).toResolvedContents()
+            }
         }
     }
 
 }
+
+private data class ResolvedExperienceContents(
+    val title: String? = null,
+    val period: Period? = null,
+    val role: String? = null,
+    val tags: List<String> = emptyList(),
+    val contents: ExperienceContents,
+)
+
+private fun PolishedExperience.toResolvedContents() = ResolvedExperienceContents(
+    title = title,
+    period = period,
+    role = role,
+    tags = tags,
+    contents = contents,
+)

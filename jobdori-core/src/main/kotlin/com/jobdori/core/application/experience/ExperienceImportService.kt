@@ -23,10 +23,16 @@ class ExperienceImportService(
             commands = groups.map { group -> group.project },
         )
         groups.zip(projects).forEach { (group, project) ->
+            val commands = group.experiences.map { experience ->
+                experience.copy(
+                    period = experience.period ?: project.period,
+                    role = experience.role ?: project.role,
+                )
+            }
             experienceCreator.create(
                 workspaceId = workspaceId,
                 projectId = project.id,
-                commands = group.experiences,
+                commands = commands,
             )
         }
     }

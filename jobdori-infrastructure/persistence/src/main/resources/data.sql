@@ -18,14 +18,14 @@ VALUES
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (1, 1, 'JD_MULTI_POSTING_SPLIT',
 '당신은 채용 공고 텍스트 파서다. 입력은 각 줄 앞에 "줄번호| "가 붙은 채용 공고 텍스트다. 입력에 서로 다른 채용 공고가 여러 개 들어 있으면 각 공고가 차지하는 줄 범위를 배열로 반환한다. 각 항목은 그 공고의 제목(title, 없으면 빈 문자열), 시작 줄 번호(startLine), 끝 줄 번호(endLine)로 구성한다(1부터 시작, 양 끝 포함). 본문 텍스트는 절대 출력하지 마라. 공고가 하나뿐이면 전체 범위를 담은 항목 1개만 반환한다. 목차·네비·푸터 등 공고가 아닌 줄은 범위에서 제외하되, 공고에 속한 줄을 빠뜨리지 마라. 출력은 제공된 JSON 스키마를 100% 준수한다.',
-'{"type":"object","additionalProperties":false,"required":["postings"],"properties":{"postings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["title","startLine","endLine"],"properties":{"title":{"type":"string"},"startLine":{"type":"integer"},"endLine":{"type":"integer"}}}}}}',
+'{"type":"object","additionalProperties":false,"required":["postings"],"properties":{"postings":{"type":"array","maxItems":6,"items":{"type":"object","additionalProperties":false,"required":["title","startLine","endLine"],"properties":{"title":{"type":"string","maxLength":255},"startLine":{"type":"integer","minimum":1},"endLine":{"type":"integer","minimum":1}}}}}}',
 null, now(), now());
 
 -- 2) JD 메타 추출 (문서 Task 5.2) — 7필드: 기업명·포지션·기업/팀 소개·업무·필요/우대 경험·전형 절차
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (2, 2, 'JD_META_EXTRACTION',
 '당신은 채용 공고(JD) 분석 전문가다. 먼저 (0) 채용 공고 여부(isJobPosting) — 입력 본문이 실제 채용/모집 공고인지 판단한다. 특정 직무를 채용/모집하며 자격요건·업무·지원 방법 등이 담긴 공고면 true, 검색 결과·기사·블로그·상품 페이지 등 채용 공고가 아니면 false로 둔다. isJobPosting이 false면 나머지 항목은 모두 빈 문자열/빈 배열로 반환한다. 채용 공고이면 아래 9개 항목을 한 번에 분석한다. (1) 기업이름(companyName) — 채용하는 회사명. 없으면 빈 문자열. (2) 포지션 이름(positionTitle) — 지원하는 직무명. 본문 제목·헤딩·"[포지션]" 라벨·"○○ 채용/모집" 문구에서 찾는다. 기업명·홍보 수식어는 빼고 직무명 중심으로 적는다. (3) 기업/팀 소개(companyIntro). (4) 업무 내용(responsibilities)·(5) 필요 경험(requiredExperiences)·(6) 우대 경험(preferredExperiences)·(7) 전형 절차(hiringProcess)는 각각 항목 단위 문자열 배열로 반환한다. (8) 핵심 역량 태그(coreCompetencies)는 실제로 강조된 짧은 키워드로 최대 5개를 반환한다. (9) 공고 핵심(keyPoints)은 원하는 인재상과 핵심 요구를 지원자 관점의 자연스러운 한국어 문단 2~4문장으로 요약한다. 본문에 명시된 사실만 사용하고 사실·수치·기술명·고유명사를 지어내지 마라. 없는 추출 항목은 빈 문자열 또는 빈 배열로 둔다. 업무·필요 경험·우대 경험은 명사형 종결로 통일하고 전형 절차는 단계명 형태를 유지한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
-'{"type":"object","additionalProperties":false,"required":["isJobPosting","companyName","positionTitle","companyIntro","responsibilities","requiredExperiences","preferredExperiences","hiringProcess","coreCompetencies","keyPoints"],"properties":{"isJobPosting":{"type":"boolean"},"companyName":{"type":"string"},"positionTitle":{"type":"string"},"companyIntro":{"type":"string"},"responsibilities":{"type":"array","items":{"type":"string"}},"requiredExperiences":{"type":"array","items":{"type":"string"}},"preferredExperiences":{"type":"array","items":{"type":"string"}},"hiringProcess":{"type":"array","items":{"type":"string"}},"coreCompetencies":{"type":"array","items":{"type":"string"},"maxItems":5},"keyPoints":{"type":"string"}}}',
+'{"type":"object","additionalProperties":false,"required":["isJobPosting","companyName","positionTitle","companyIntro","responsibilities","requiredExperiences","preferredExperiences","hiringProcess","coreCompetencies","keyPoints"],"properties":{"isJobPosting":{"type":"boolean"},"companyName":{"type":"string","maxLength":255},"positionTitle":{"type":"string","maxLength":255},"companyIntro":{"type":"string","maxLength":1000},"responsibilities":{"type":"array","maxItems":20,"items":{"type":"string","maxLength":500}},"requiredExperiences":{"type":"array","maxItems":20,"items":{"type":"string","maxLength":500}},"preferredExperiences":{"type":"array","maxItems":20,"items":{"type":"string","maxLength":500}},"hiringProcess":{"type":"array","maxItems":10,"items":{"type":"string","maxLength":500}},"coreCompetencies":{"type":"array","maxItems":5,"items":{"type":"string","maxLength":50}},"keyPoints":{"type":"string","maxLength":1000}}}',
 null, now(), now());
 
 -- 3) JD 지원 전략 생성 — generateText, json_schema NULL. 서비스에선 JD_META_EXTRACTION에 통합(#73), 프롬프트 테스트용
@@ -172,13 +172,13 @@ experience 집합의 성격과 JD를 종합적으로 판단하여 아래 구조 
 ------------------------------------------------
 
 입력된 모든 experience의 index를 정확히 한 번씩 포함하여 JSON 배열로 반환한다.',
-'{"type":"object","additionalProperties":false,"required":["items"],"properties":{"items":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","title","content"],"properties":{"index":{"type":"integer"},"title":{"type":"string"},"content":{"type":"string"}}}}}}', null, now(), now());
+'{"type":"object","additionalProperties":false,"required":["items"],"properties":{"items":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","title","content"],"properties":{"index":{"type":"integer","minimum":1},"title":{"type":"string","maxLength":48},"content":{"type":"string","maxLength":600}}}}}}', null, now(), now());
 
 -- 6) Free Style 경험 내용 STAR 변환
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (6, 6, 'EXPERIENCE_CONTENTS_POLISH',
-'당신은 채용 도메인 경력 코치다. 입력된 경험 내용을 분석해 하나의 경험 카드에 들어갈 STAR(Situation·Task·Action·Result) 형식으로 재구성한다. 원문에 없는 사실·수치·기술·기간·역할을 절대 지어내지 마라. 원문에 명확한 단서가 없는 필드는 빈 문자열로 둔다. 각 필드는 이력서 작성자가 바로 다듬어 쓸 수 있도록 간결한 한국어 문장으로 작성한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
-'{"type":"object","additionalProperties":false,"required":["situation","task","action","result"],"properties":{"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"}}}',
+'당신은 채용 도메인 경력 코치다. 입력된 경험 내용을 분석해 하나의 경험 카드에 들어갈 제목·기간·역할·역량 태그와 STAR(Situation·Task·Action·Result) 형식으로 재구성한다. 원문에 없는 사실·수치·기술·기간을 절대 지어내지 마라. title은 원문의 핵심 활동이나 성과를 간결한 명사형으로 요약해 반드시 작성한다. role은 원문에 명시되어 있으면 그대로 사용하고, 수행한 업무나 기술을 근거로 합리적으로 유추할 수 있으면 작성하며, 유추할 근거가 없을 때만 빈 문자열로 둔다. tags는 원문에서 확인할 수 있는 핵심 기술·직무 역량을 간결한 명사형으로 최대 10개까지 작성하고, 추출할 수 없으면 빈 배열로 둔다. period는 원문에 명시된 연도와 월만 채우고, 명시되지 않은 값은 null로 둔다. 현재 진행 중이라고 명시된 경험이면 isCurrent를 true로 둔다. 각 STAR 필드는 이력서 작성자가 바로 다듬어 쓸 수 있도록 간결한 한국어 문장으로 작성한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["title","period","role","tags","situation","task","action","result"],"properties":{"title":{"type":"string","minLength":1},"period":{"type":"object","additionalProperties":false,"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"],"minimum":1,"maximum":12},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"],"minimum":1,"maximum":12},"isCurrent":{"type":"boolean"}}},"role":{"type":"string"},"tags":{"type":"array","maxItems":10,"items":{"type":"string"}},"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"}}}',
 null, now(), now());
 
 -- 7) JD 공고 핵심 요약 — generateText, json_schema NULL(서술형). 서비스에선 JD_META_EXTRACTION에 통합(#73), 프롬프트 테스트용
@@ -223,7 +223,7 @@ reason 작성 규칙
 - 경험명과 JD 키워드의 단순 나열, 같은 단어를 반복하는 동어반복 문장을 금지한다.
 
 출력은 반드시 제공된 JSON 스키마를 100% 준수한다.',
-'{"type":"object","additionalProperties":false,"required":["scores","reasons"],"properties":{"scores":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","matchRate","title","summary"],"properties":{"index":{"type":"integer"},"matchRate":{"type":"integer"},"title":{"type":"string"},"summary":{"type":"string"}}}},"reasons":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","reason"],"properties":{"index":{"type":"integer"},"reason":{"type":"string"}}}}}}',
+'{"type":"object","additionalProperties":false,"required":["scores","reasons"],"properties":{"scores":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","matchRate"],"properties":{"index":{"type":"integer","minimum":1},"matchRate":{"type":"integer","minimum":0,"maximum":100}}}},"reasons":{"type":"array","maxItems":5,"items":{"type":"object","additionalProperties":false,"required":["index","reason"],"properties":{"index":{"type":"integer","minimum":1},"reason":{"type":"string","maxLength":110}}}}}}',
 null, now(), now());
 -- 9) 프로필 핵심역량 생성 - generateText, json_schema NULL(서술형)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
@@ -290,9 +290,9 @@ VALUES (9, 9, 'PROFILE_CORE_COMPETENCY_GENERATION',
 null,
 null, now(), now());
 
--- 10) 프로필 텍스트 다듬기 - generateText, json_schema NULL. [항목]/[글자수 제한]/[원문] 필수, [작성 구조]/[추가 지침]/[경험명]/[지원 전략]은 선택으로 userPrompt에 포함된다.
+-- 10) 프로필 텍스트 다듬기 - 일반 텍스트는 generateText, 경험명/경험 내용은 structured로 같은 프롬프트를 사용한다.
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (10, 10, 'PROFILE_TEXT_POLISH',
-'당신은 채용 도메인 경력 코치다. 입력의 [원문]을 이력서의 [항목]에 어울리는 표현으로 다듬는다. 원문의 사실·수치·기술·기간을 절대 바꾸거나 지어내지 말고, 문장을 간결하고 전문적인 한국어로 정리한다. [작성 구조]가 주어지면 결과를 그 구조로 작성하고, 없으면 원문의 형식을 유지한다. [추가 지침]이 주어지면 어투·강조 등 지침을 우선 반영한다. [경험명]이 주어지면 그 경험의 세부 내용이라는 맥락에 맞게 다듬는다. [지원 전략]이 주어지면 전략과 맞닿는 표현을 앞쪽에 배치하고 관련 키워드를 자연스럽게 녹인다. 결과는 [글자수 제한] 이내로 작성한다. 반드시 다듬은 텍스트만 반환하고 설명·머리말·따옴표를 붙이지 마라.',
-null,
+'당신은 채용 도메인 경력 코치다. 입력의 [원문]을 이력서의 [항목]에 어울리는 표현으로 다듬는다. 원문의 사실·수치·기술·기간을 절대 바꾸거나 지어내지 말고, 문장을 간결하고 전문적인 한국어로 정리한다. [작성 구조]가 주어지면 결과를 그 구조로 작성하고, 없으면 원문의 형식을 유지한다. [추가 지침]이 주어지면 어투·강조 등 지침을 우선 반영한다. [지원 전략]이 주어지면 전략과 맞닿는 표현을 앞쪽에 배치하고 관련 키워드를 자연스럽게 녹인다. 결과는 각 항목에 주어진 결과 글자수 제한 이내로 작성한다. [경험명]과 [경험 내용]이 주어지지 않은 경우 [원문]이 [결과 글자수 제한]보다 길면 핵심을 남기고 제한 이내로 압축한다. 이 경우 반드시 다듬은 텍스트만 반환하고 설명·머리말·따옴표를 붙이지 마라. [경험명]과 [경험 내용]이 함께 주어진 경우 경험 내용을 그 경험명의 세부 내용이라는 맥락에 맞게 다듬고, 다듬은 경험명을 title에, 다듬은 경험 내용을 description에 담아 제공된 JSON 스키마를 100% 준수해 반환한다. [경험 내용 작성 구조]가 주어지면 경험 내용만 그 구조로 작성하고 경험명에는 적용하지 않는다. [경험 내용]이 [경험 내용 결과 글자수 제한]보다 길면 핵심을 남기고 제한 이내로 압축한다. 이때 [추가 지침]에 경험명을 바꾸라는 내용이 없으면 [경험명]을 한 글자도 고치지 말고 원문 그대로 title에 담는다.',
+'{"type":"object","additionalProperties":false,"required":["title","description"],"properties":{"title":{"type":"string","maxLength":150},"description":{"type":"string","maxLength":500}}}',
 null, now(), now());

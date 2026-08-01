@@ -1,5 +1,22 @@
 // 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
 
+// tag::credit[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query Credit {
+    credit {
+        remaining
+        total
+    }
+}
+----
+====
+// end::credit[]
+
 // tag::me[]
 [.graphql-sample]
 ====
@@ -1457,14 +1474,17 @@ mutation PolishProfileText {
     polishProfileText(
         workspaceId: "00000000-0000-0000-0000-000000000002"
         request: {
-            text: "런칭 캠페인에서 메시지 A/B 테스트를 수행해서 전환율을 많이 개선했음"
-            kind: EXPERIENCE_DESCRIPTION
-            structure: BULLET
-            instruction: "정중한 어투로, 전환율 수치를 강조"
             title: "콘텐츠 마케팅 캠페인 운영"
+            description: "런칭 캠페인에서 메시지 A/B 테스트를 수행해서 전환율을 많이 개선했음"
+            kind: EXPERIENCE
+            structure: BULLET
+            instruction: "경험명과 경험 내용에서 전환율 개선 성과를 강조"
             jdId: "00000000-0000-0000-0000-000000000003"
         }
-    )
+    ) {
+        title
+        description
+    }
 }
 ----
 ====

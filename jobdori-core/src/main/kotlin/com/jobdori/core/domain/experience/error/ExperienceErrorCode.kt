@@ -15,6 +15,12 @@ enum class ExperienceErrorCode(
         message = "경험은 프로젝트마다 10개까지 저장할 수 있어요. 기존 경험을 지운 뒤 다시 저장해 주세요.",
         description = "프로젝트의 경험 저장 개수가 최대 허용 개수를 초과한 경우",
     ),
+    E400_EMPTY_EXPERIENCES_IMPORTED(
+        httpStatusCode = 400,
+        code = "empty_experience_imported",
+        message = "내용이 적어서 추출할 경험이 없어요",
+        description = "경험이 부실할때 나옴",
+    ),
     E404_EXPERIENCE_NOT_FOUND(
         httpStatusCode = 404,
         code = "experience_not_found",

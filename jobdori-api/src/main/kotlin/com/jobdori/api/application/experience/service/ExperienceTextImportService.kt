@@ -4,6 +4,7 @@ import com.jobdori.common.logger.LoggerExtension.log
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
 import com.jobdori.core.application.profile.ExperienceCoreCompetencyService
+import com.jobdori.core.domain.experience.error.ExperieneceEmptyImportedException
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
@@ -22,9 +23,17 @@ class ExperienceTextImportService(
     fun import(workspaceId: Long, text: String) {
         val result = experienceAiExtractionService.extract(text)
 
+        val commands = result.toCommandGroups()
+
+        if (commands.isEmpty()) {
+            throw ExperieneceEmptyImportedException(
+                message = "불러온 곳에 경험이 비어있습니다 [workspaceId=$workspaceId,text=$text",
+            )
+        }
+
         experienceImportService.saveAll(
             workspaceId = workspaceId,
-            groups = result.toCommandGroups(),
+            groups = commands,
         )
 
         val profile = profileReader.getOrCreateProfile(workspaceId)

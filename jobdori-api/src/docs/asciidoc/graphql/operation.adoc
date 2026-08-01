@@ -1,17 +1,5 @@
 // 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
 
-=== Credit
-
-==== 잔여 크레딧 조회
-
-Type: `Query`
-
-Operation: `credit`
-
-include::./operation-sample.adoc[tag=credit]
-
-include::./operation-error.adoc[tag=credit]
-
 === User
 
 ==== 내 정보 조회

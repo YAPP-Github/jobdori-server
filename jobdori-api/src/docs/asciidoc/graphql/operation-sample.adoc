@@ -1,22 +1,5 @@
 // 이 파일은 ErrorCodeDocsGeneratorTest에서 생성됩니다. 직접 수정하지 마세요.
 
-// tag::credit[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-query Credit {
-    credit {
-        remaining
-        total
-    }
-}
-----
-====
-// end::credit[]
-
 // tag::me[]
 [.graphql-sample]
 ====

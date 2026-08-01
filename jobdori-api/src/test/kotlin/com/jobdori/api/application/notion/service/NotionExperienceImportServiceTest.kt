@@ -4,7 +4,6 @@ import com.jobdori.api.application.experience.service.NotionExperienceImportServ
 import com.jobdori.api.application.experience.service.ExperienceTextImportService
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
-import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceImportService
 import com.jobdori.core.application.experience.ExperienceStarExtractionResult
@@ -38,7 +37,6 @@ class NotionExperienceImportServiceTest : StringSpec({
     val experienceAiExtractionService = mockk<ExperienceAiExtractionService>()
     val experienceImportService = mockk<ExperienceImportService>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
-    val creditService = mockk<CreditService>(relaxed = true)
     val profileReader = mockk<ProfileReader>()
     val profileModifier = mockk<ProfileModifier>()
     val experienceReader = mockk<ExperienceReader>()
@@ -54,7 +52,6 @@ class NotionExperienceImportServiceTest : StringSpec({
     val service = NotionExperienceImportService(
         notionPageService = notionPageService,
         workspaceAccessValidationService = workspaceAccessValidationService,
-        creditService = creditService,
         experienceTextImportService = experienceTextImportService,
     )
 

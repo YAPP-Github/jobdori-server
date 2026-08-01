@@ -5,9 +5,7 @@ import com.jobdori.core.application.ai.jd.ExtractJdMetaService
 import com.jobdori.core.application.ai.jd.ExtractJdStrategyService
 import com.jobdori.core.application.ai.jd.SplitJdPostingsService
 import com.jobdori.core.application.ai.jd.result.JdMetaResult
-import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.jd.client.JdCrawlerClient
-import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.experience.error.ExperienceRequiredException
 import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.jd.Jd
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service
 class RegisterJdService(
     private val crawler: JdCrawlerClient,
     private val splitter: SplitJdPostingsService,
-    private val creditService: CreditService,
     private val extractJdMetaService: ExtractJdMetaService,
     private val extractJdStrategyService: ExtractJdStrategyService,
     private val profileReader: ProfileReader,
@@ -30,14 +27,14 @@ class RegisterJdService(
     private val jdRepository: JdRepository,
 ) {
     // 크롤 실패 시 JdCrawlException 전파 -> API가 422로 붙여넣기 유도
-    fun registerByUrl(workspaceId: Long, userId: Long, url: String): JdRegisterResult {
+    fun registerByUrl(workspaceId: Long, url: String): JdRegisterResult {
         validateActiveExperienceExists(workspaceId)
-        return register(workspaceId, userId, sourceUrl = url, body = crawler.fetchBody(url))
+        return register(workspaceId, sourceUrl = url, body = crawler.fetchBody(url))
     }
 
-    fun registerByText(workspaceId: Long, userId: Long, body: String, sourceUrl: String? = null): JdRegisterResult {
+    fun registerByText(workspaceId: Long, body: String, sourceUrl: String? = null): JdRegisterResult {
         validateActiveExperienceExists(workspaceId)
-        return register(workspaceId, userId, sourceUrl = sourceUrl, body = body)
+        return register(workspaceId, sourceUrl = sourceUrl, body = body)
     }
 
     private fun validateActiveExperienceExists(workspaceId: Long) {
@@ -46,7 +43,7 @@ class RegisterJdService(
         }
     }
 
-    private fun register(workspaceId: Long, userId: Long, sourceUrl: String?, body: String): JdRegisterResult {
+    private fun register(workspaceId: Long, sourceUrl: String?, body: String): JdRegisterResult {
         if (body.length !in JdPolicy.MIN_JD_BODY_LENGTH..JdPolicy.MAX_JD_LENGTH) {
             throw InvalidArgumentsException(
                 "JD 본문은 ${JdPolicy.MIN_JD_BODY_LENGTH}자 이상 ${JdPolicy.MAX_JD_LENGTH}자 이하여야 합니다",
@@ -55,9 +52,6 @@ class RegisterJdService(
         val postings = splitter.split(body)   // 최소 1건 보장
         if (postings.size > 1) return JdRegisterResult.MultiplePostings(postings)
 
-        // 후보만 돌려준 시점에는 사용자가 JD를 받지 못했으므로, 단일 공고로 확정된 뒤에 차감한다.
-        // 후보를 body로 재등록할 때 1회만 차감되고, 잔여 0이면 여기서 끊겨 아래 추출 AI가 돌지 않는다.
-        creditService.consume(userId, CreditFeature.JD_ANALYSIS)
         val singleBody = postings.first().body
         val meta = extractJdMetaService.extractFromBody(singleBody)
         // JD가 아닌 URL/본문(예: 검색 페이지)이면 저장하지 않아 이후 추천까지 차단한다.

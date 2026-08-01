@@ -53,7 +53,7 @@ internal class JdResolverTest(
     }
 
     "URL로 등록하면 추출된 단일 JD를 반환한다" {
-        every { registerJdService.registerByUrl(10L, 1L, "https://example.com/jd") } returns
+        every { registerJdService.registerByUrl(10L, "https://example.com/jd") } returns
             JdRegisterResult.Registered(
                 graphQlJd(publicId = "jd-pub-1", companyName = "잡도리", positionTitle = "백엔드 개발자"),
             )
@@ -81,12 +81,12 @@ internal class JdResolverTest(
             .path("registerJd.jd.positionTitle").entity<String>().isEqualTo("백엔드 개발자")
             .path("registerJd.candidates").valueIsNull()
 
-        verify(exactly = 1) { registerJdService.registerByUrl(10L, 1L, "https://example.com/jd") }
+        verify(exactly = 1) { registerJdService.registerByUrl(10L, "https://example.com/jd") }
     }
 
     "경험이 없으면 JD 등록의 422 에러를 BAD_REQUEST로 매핑한다" {
         every {
-            registerJdService.registerByUrl(10L, 1L, "https://example.com/jd")
+            registerJdService.registerByUrl(10L, "https://example.com/jd")
         } throws ExperienceRequiredException()
 
         authenticatedTester(graphQlTester)
@@ -113,12 +113,12 @@ internal class JdResolverTest(
                 )
             }
 
-        verify(exactly = 1) { registerJdService.registerByUrl(10L, 1L, "https://example.com/jd") }
+        verify(exactly = 1) { registerJdService.registerByUrl(10L, "https://example.com/jd") }
     }
 
     "붙여넣기 본문에 여러 공고가 있으면 후보 목록을 반환한다" {
         val multiBody = "여러 공고가 섞인 본문 ".repeat(50)   // @Size(min) 통과용 유효 길이
-        every { registerJdService.registerByText(10L, 1L, multiBody) } returns
+        every { registerJdService.registerByText(10L, multiBody) } returns
             JdRegisterResult.MultiplePostings(
                 listOf(
                     JdPosting(title = "백엔드 개발자", body = "본문 A"),
@@ -148,7 +148,7 @@ internal class JdResolverTest(
             .path("registerJd.candidates[0].body").entity<String>().isEqualTo("본문 A")
             .path("registerJd.candidates[1].title").entity<String>().isEqualTo("프론트 개발자")
 
-        verify(exactly = 1) { registerJdService.registerByText(10L, 1L, multiBody) }
+        verify(exactly = 1) { registerJdService.registerByText(10L, multiBody) }
     }
 
     "publicId로 워크스페이스의 JD 단건을 조회한다" {

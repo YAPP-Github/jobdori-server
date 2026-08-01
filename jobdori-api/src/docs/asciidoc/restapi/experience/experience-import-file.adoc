@@ -19,7 +19,3 @@ include::{snippets}/experience-import-from-file/http-request.adoc[]
 include::{snippets}/experience-import-from-file/http-response.adoc[]
 
 include::{snippets}/experience-import-from-file/curl-request.adoc[]
-
-===== Error Codes
-
-include::{snippets}/experience-import-from-file/error-codes.adoc[]

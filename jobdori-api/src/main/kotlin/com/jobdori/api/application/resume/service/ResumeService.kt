@@ -12,10 +12,8 @@ import com.jobdori.api.application.resume.dto.response.ResumeStatusCountResponse
 import com.jobdori.api.application.resume.dto.response.ResumeSummaryResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
-import com.jobdori.core.application.credit.CreditService
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.application.resume.ResumeExperiencePolishService
-import com.jobdori.core.domain.credit.CreditFeature
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.resume.Resume
@@ -32,7 +30,6 @@ import org.springframework.stereotype.Service
 @Service
 class ResumeService(
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
-    private val creditService: CreditService,
     private val resumeCreator: ResumeCreator,
     private val resumeReader: ResumeReader,
     private val resumeRemover: ResumeRemover,
@@ -163,7 +160,7 @@ class ResumeService(
                     },
                 )
             }
-        }.let { polishExperienceContents(userId, it, request.optimizationMode, targetJd) }
+        }.let { polishExperienceContents(it, request.optimizationMode, targetJd) }
 
         return toResponse(
             workspaceId = workspace.id,
@@ -191,7 +188,7 @@ class ResumeService(
         val targetJd = request.targetJdId?.let { publicId ->
             getJdService.getJd(workspaceId = workspace.id, publicId = publicId)
         }
-        val command = polishExperienceContents(userId, request.toCommand(targetJd?.id), request.optimizationMode, targetJd)
+        val command = polishExperienceContents(request.toCommand(targetJd?.id), request.optimizationMode, targetJd)
 
         return toResponse(
             workspaceId = workspace.id,
@@ -223,7 +220,6 @@ class ResumeService(
     }
 
     private fun polishExperienceContents(
-        userId: Long,
         command: ResumeSaveCommand,
         optimizationMode: ResumeOptimizationMode,
         targetJd: Jd?,
@@ -239,7 +235,6 @@ class ResumeService(
             return command
         }
 
-        creditService.consume(userId, CreditFeature.RESUME_DRAFT)
         val polishedContents = resumeExperiencePolishService.polish(polishTargets, targetJd).iterator()
         return command.copy(
             sections = command.sections.map { section ->

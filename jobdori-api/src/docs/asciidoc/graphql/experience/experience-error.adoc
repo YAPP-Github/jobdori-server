@@ -5,6 +5,10 @@
 |===
 | Code | Message | Description
 
+| empty_experience_imported
+| 내용이 적어서 추출할 경험이 없어요
+| 경험이 부실할때 나옴
+
 | experience_limit_exceeded
 | 경험은 프로젝트마다 10개까지 저장할 수 있어요. 기존 경험을 지운 뒤 다시 저장해 주세요.
 | 프로젝트의 경험 저장 개수가 최대 허용 개수를 초과한 경우

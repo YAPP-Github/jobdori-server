@@ -5,16 +5,20 @@ import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorCode
 import com.jobdori.common.error.ErrorDetail
 import com.jobdori.common.logger.LoggerExtension.log
+import com.jobdori.api.support.notification.AsyncErrorNotifier
 import graphql.GraphQLError
 import graphql.schema.DataFetchingEnvironment
 import jakarta.validation.ConstraintViolationException
 import org.springframework.graphql.data.method.annotation.GraphQlExceptionHandler
 import org.springframework.graphql.execution.ErrorType
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.validation.BindException
 import org.springframework.web.bind.annotation.ControllerAdvice
 
 @ControllerAdvice
-class GraphQLExceptionAdvice {
+class GraphQLExceptionAdvice(
+    private val errorNotifierProvider: ObjectProvider<AsyncErrorNotifier>,
+) {
 
     @GraphQlExceptionHandler
     fun handleConstraintViolationException(
@@ -55,7 +59,12 @@ class GraphQLExceptionAdvice {
         exception: BaseException,
         env: DataFetchingEnvironment,
     ): GraphQLError {
-        log.error(exception) { exception.message }
+        if (exception.errorCode.httpStatusCode >= 500) {
+            log.error(exception) { exception.message }
+            errorNotifierProvider.ifAvailable?.notify(exception.errorCode.code, exception)
+        } else {
+            log.warn { "${exception.errorCode.code}: ${exception.message}" }
+        }
         return generateGraphQLError(
             errorCode = exception.errorCode,
             env = env,
@@ -68,6 +77,7 @@ class GraphQLExceptionAdvice {
         env: DataFetchingEnvironment,
     ): GraphQLError {
         log.error(exception) { exception.message }
+        errorNotifierProvider.ifAvailable?.notify(CommonErrorCode.E500_INTERNAL_ERROR.code, exception)
         return generateGraphQLError(
             errorCode = CommonErrorCode.E500_INTERNAL_ERROR,
             env = env,

@@ -1,5 +1,6 @@
 package com.jobdori.api.support.graphql
 
+import com.jobdori.api.support.notification.AsyncErrorNotifier
 import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.core.domain.user.error.UserErrorCode
 import com.jobdori.core.domain.user.error.UserNotFoundException
@@ -14,9 +15,11 @@ import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import jakarta.validation.ConstraintViolation
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.Path
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.graphql.execution.ErrorType
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.BindException
@@ -24,7 +27,11 @@ import org.springframework.validation.FieldError
 
 internal class GraphQLExceptionHandlerTest : StringSpec({
 
-    val handler = GraphQLExceptionAdvice()
+    val errorNotifier = mockk<AsyncErrorNotifier>(relaxed = true)
+    val errorNotifierProvider = mockk<ObjectProvider<AsyncErrorNotifier>> {
+        every { ifAvailable } returns errorNotifier
+    }
+    val handler = GraphQLExceptionAdvice(errorNotifierProvider)
 
     "ConstraintViolationException은 invalid_arguments와 details를 GraphQL error로 변환한다" {
         // given
@@ -109,6 +116,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         error.extensions shouldContainExactly mapOf(
             "code" to UserErrorCode.E404_USER_NOT_FOUND.code,
         )
+        verify(exactly = 0) { errorNotifier.notify(any(), any()) }
     }
 
     "BaseException이 아니면 internal error로 변환한다" {
@@ -127,6 +135,9 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
         error.extensions shouldContainExactly mapOf(
             "code" to CommonErrorCode.E500_INTERNAL_ERROR.code,
         )
+        verify(exactly = 1) {
+            errorNotifier.notify(CommonErrorCode.E500_INTERNAL_ERROR.code, exception)
+        }
     }
 
 })

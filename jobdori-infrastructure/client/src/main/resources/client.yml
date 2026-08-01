@@ -12,6 +12,11 @@ notion:
   client-secret: ${NOTION_OAUTH_CLIENT_SECRET}
   api-version: ${NOTION_API_VERSION:2026-03-11}
 
+discord:
+  error-notification:
+    enabled: ${DISCORD_ERROR_NOTIFICATION_ENABLED:false}
+    webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
+
 ---
 spring.config:
   activate:

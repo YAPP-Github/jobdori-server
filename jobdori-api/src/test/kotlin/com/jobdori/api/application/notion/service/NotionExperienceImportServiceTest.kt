@@ -120,7 +120,7 @@ class NotionExperienceImportServiceTest : StringSpec({
         every { profileReader.getOrCreateProfile(10L) } returns profile
         every { profileReader.getDetail(profile) } returns profileDetail
         every { profileModifier.modify(profile, any()) } returns profileDetail
-        every { experienceReader.findAllActive(10L) } returnsMany listOf(emptyList(), emptyList())
+        every { experienceReader.findAllActive(10L) } returns emptyList()
         every {
             firstExperienceCoreCompetencyService.generateIfAbsent(10L, emptyList())
         } returns Unit

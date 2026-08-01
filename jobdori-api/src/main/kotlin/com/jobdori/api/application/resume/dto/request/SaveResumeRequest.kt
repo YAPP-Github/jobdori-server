@@ -149,7 +149,7 @@ data class SaveResumeSectionRequest(
         }
 
         val itemCommands = items.map { it.toCommand() }
-        if (itemCommands.isEmpty() && !useDefaultItems) {
+        if (itemCommands.isEmpty() && !visible && !useDefaultItems) {
             throw ResumeSectionItemRequiredException("이력서 섹션 내의 아이템이 비어있습니다 [${JsonUtils.toJson(this)}}}")
         }
         validateItemDisplayOrders(itemCommands)

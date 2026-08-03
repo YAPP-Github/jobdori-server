@@ -4,7 +4,7 @@
 
 ## 링크
 
-- [API Docs](https://yapp-github.github.io/jobdori-server)
+- https://scoop.me.kr
 
 ## 기술 스택
 

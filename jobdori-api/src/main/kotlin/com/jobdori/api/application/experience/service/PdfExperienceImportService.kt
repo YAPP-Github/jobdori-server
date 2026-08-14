@@ -45,9 +45,7 @@ class PdfExperienceImportService(
             extractedText
         }
 
-        if (isLowQualityText(text)) throw InvalidArgumentsException(
-            message = "PDF에서 가져올 텍스트가 없습니다 [userId=$userId]",
-        )
+        if (isLowQualityText(text)) throw InvalidArgumentsException(message = "PDF에서 가져올 텍스트가 없습니다 [userId=$userId]")
 
         experienceTextImportService.import(
             workspaceId = workspace.id,

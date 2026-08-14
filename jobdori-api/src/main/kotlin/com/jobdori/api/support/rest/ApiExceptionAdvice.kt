@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.multipart.MaxUploadSizeExceededException
+import org.springframework.web.multipart.MultipartException
 import org.springframework.web.servlet.NoHandlerFoundException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import tools.jackson.databind.exc.MismatchedInputException
@@ -92,6 +93,20 @@ class ApiExceptionAdvice(
         return ApiResponse.fail(FileErrorCode.E400_FILE_SIZE_EXCEEDED)
     }
 
+    @ExceptionHandler(MultipartException::class)
+    fun handleMultipartException(exception: MultipartException): ResponseEntity<ApiResponse<Nothing>> {
+        log.atError {
+            message = exception.message
+            cause = exception
+            payload = mapOf("errorCode" to CommonErrorCode.E500_INTERNAL_ERROR.code)
+        }
+        if (exception.message != MULTIPART_PARSE_FAILURE_MESSAGE) {
+            errorNotifierProvider.ifAvailable?.notify(CommonErrorCode.E500_INTERNAL_ERROR.code, exception)
+        }
+        return ResponseEntity.internalServerError()
+            .body(ApiResponse.fail(CommonErrorCode.E500_INTERNAL_ERROR))
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException::class, NoHandlerFoundException::class)
     fun handleNoResourceFoundException(exception: Exception): ResponseEntity<Nothing> {
@@ -132,6 +147,10 @@ class ApiExceptionAdvice(
         errorNotifierProvider.ifAvailable?.notify(CommonErrorCode.E500_INTERNAL_ERROR.code, throwable)
         return ResponseEntity.internalServerError()
             .body(ApiResponse.fail(CommonErrorCode.E500_INTERNAL_ERROR))
+    }
+
+    private companion object {
+        const val MULTIPART_PARSE_FAILURE_MESSAGE = "Failed to parse multipart servlet request"
     }
 
 }

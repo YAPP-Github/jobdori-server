@@ -6,10 +6,13 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
+import io.mockk.verify
 import org.springframework.beans.factory.ObjectProvider
+import org.springframework.http.HttpStatus
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.BindException
 import org.springframework.validation.FieldError
+import org.springframework.web.multipart.MultipartException
 
 internal class ApiExceptionAdviceTest : StringSpec({
 
@@ -38,5 +41,27 @@ internal class ApiExceptionAdviceTest : StringSpec({
         error.details shouldHaveSize 1
         error.details.single().field shouldBe "name"
         error.details.single().reason shouldBe "이름을 입력해 주세요."
+    }
+
+    "multipart 파싱 실패는 internal error를 반환하되 알림은 보내지 않는다" {
+        val response = advice.handleMultipartException(MultipartException("Failed to parse multipart servlet request"))
+
+        response.statusCode shouldBe HttpStatus.INTERNAL_SERVER_ERROR
+        response.body?.error?.code shouldBe CommonErrorCode.E500_INTERNAL_ERROR.code
+        verify(exactly = 0) { errorNotifierProvider.ifAvailable }
+    }
+
+    "다른 multipart 오류는 알림을 보낸다" {
+        val notifier = mockk<AsyncErrorNotifier>(relaxed = true)
+        val notifierProvider = mockk<ObjectProvider<AsyncErrorNotifier>>()
+        val multipartAdvice = ApiExceptionAdvice(notifierProvider)
+        io.mockk.every { notifierProvider.ifAvailable } returns notifier
+        val exception = MultipartException("Other multipart error")
+
+        multipartAdvice.handleMultipartException(exception)
+
+        verify(exactly = 1) {
+            notifier.notify(CommonErrorCode.E500_INTERNAL_ERROR.code, exception)
+        }
     }
 })

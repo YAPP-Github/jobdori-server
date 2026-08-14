@@ -3,6 +3,7 @@ package com.jobdori.api.application.experience.service
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
+import com.jobdori.core.application.ai.client.DocumentVisionClient
 import com.jobdori.core.application.experience.ExperienceImportService
 import com.jobdori.core.application.experience.ExperienceStarExtractionResult
 import com.jobdori.core.application.experience.command.ImportedExperienceCommandGroup
@@ -17,6 +18,10 @@ import com.jobdori.core.domain.profile.ProfileSections
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
 import com.jobdori.core.domain.profile.service.command.ProfileUpdateCommand
+import com.jobdori.core.domain.prompt.PromptTemplate
+import com.jobdori.core.domain.prompt.PromptType
+import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
+import com.jobdori.core.application.ai.command.AiParameters
 import com.jobdori.core.domain.workspace.Workspace
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
@@ -44,6 +49,8 @@ internal class PdfExperienceImportServiceTest : StringSpec({
     val profileModifier = mockk<ProfileModifier>()
     val experienceReader = mockk<ExperienceReader>()
     val experienceCoreCompetencyService = mockk<ExperienceCoreCompetencyService>()
+    val documentVisionClient = mockk<DocumentVisionClient>()
+    val promptTemplateRepository = mockk<PromptTemplateRepository>()
     val experienceTextImportService = ExperienceTextImportService(
         experienceImportService = experienceImportService,
         experienceAiExtractionService = experienceAiExtractionService,
@@ -56,6 +63,8 @@ internal class PdfExperienceImportServiceTest : StringSpec({
         workspaceAccessValidationService = workspaceAccessValidationService,
         pdfValidationService = pdfValidationService,
         experienceTextImportService = experienceTextImportService,
+        documentVisionClient = documentVisionClient,
+        promptTemplateRepository = promptTemplateRepository,
     )
 
     beforeTest {
@@ -68,6 +77,8 @@ internal class PdfExperienceImportServiceTest : StringSpec({
             profileModifier,
             experienceReader,
             experienceCoreCompetencyService,
+            documentVisionClient,
+            promptTemplateRepository,
         )
         every {
             workspaceAccessValidationService.validateAccessible(
@@ -78,7 +89,7 @@ internal class PdfExperienceImportServiceTest : StringSpec({
     }
 
     "유효한 PDF는 파일 스캔 후 가져온 경험을 저장한다" {
-        val pdfBytes = samplePdfBytes("Hello Jobdori")
+        val pdfBytes = samplePdfBytes("Hello Jobdori resume experience text with enough meaningful characters")
         val file = MockMultipartFile(
             "file",
             "resume.pdf",
@@ -126,6 +137,7 @@ internal class PdfExperienceImportServiceTest : StringSpec({
         verify(exactly = 1) { experienceAiExtractionService.extract(match { text -> text.contains("Hello Jobdori") }) }
         verify(exactly = 1) { experienceImportService.saveAll(workspaceId = 1L, groups = groups) }
         verify(exactly = 1) { profileModifier.modify(profile, any()) }
+        verify(exactly = 0) { documentVisionClient.extractText(any(), any()) }
     }
 
     "PDF 검증에 실패하면 가져온 경험을 저장하지 않는다" {
@@ -146,6 +158,37 @@ internal class PdfExperienceImportServiceTest : StringSpec({
 
         exception.message shouldBe "유효한 PDF 파일을 첨부해 주세요"
         verify(exactly = 1) { pdfValidationService.validate(file = file, userId = 1L) }
+        verify(exactly = 0) { experienceAiExtractionService.extract(any()) }
+        verify(exactly = 0) { experienceImportService.saveAll(workspaceId = any(), groups = any()) }
+    }
+
+    "PDF 텍스트가 비어 있으면 페이지 이미지를 AI로 전사한다" {
+        val pdfBytes = samplePdfBytes("")
+        val file = MockMultipartFile(
+            "file",
+            "scanned-resume.pdf",
+            MediaType.APPLICATION_PDF_VALUE,
+            pdfBytes,
+        )
+        every { pdfValidationService.validate(file = file, userId = 1L) } returns pdfBytes
+        every { promptTemplateRepository.findByType(PromptType.DOCUMENT_TEXT_EXTRACTION) } returns PromptTemplate(
+            type = PromptType.DOCUMENT_TEXT_EXTRACTION,
+            modelName = "gpt-4o-mini",
+            parameters = AiParameters(temperature = 0.0, maxTokens = 4096),
+            systemPrompt = "문서를 전사한다",
+            jsonSchema = null,
+        )
+        every { documentVisionClient.extractText(any(), any()) } returns ""
+
+        shouldThrow<InvalidArgumentsException> {
+            service.importExperiences(file = file, workspaceId = "workspace-id", userId = 1L)
+        }
+
+        verify(exactly = 1) {
+            documentVisionClient.extractText(any(), match { pages ->
+                pages.size == 1 && pages.single().pageNumber == 1 && pages.single().bytes.isNotEmpty()
+            })
+        }
         verify(exactly = 0) { experienceAiExtractionService.extract(any()) }
         verify(exactly = 0) { experienceImportService.saveAll(workspaceId = any(), groups = any()) }
     }

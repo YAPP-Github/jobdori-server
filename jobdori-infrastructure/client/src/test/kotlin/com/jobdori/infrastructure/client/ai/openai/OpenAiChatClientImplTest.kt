@@ -4,6 +4,7 @@ import com.jobdori.common.json.JsonUtils
 import com.jobdori.core.application.ai.command.AiGenerationRequest
 import com.jobdori.core.application.ai.command.AiParameters
 import com.jobdori.core.application.ai.command.AiStructuredRequest
+import com.jobdori.core.application.ai.client.DocumentPageImage
 import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
 import io.kotest.assertions.throwables.shouldThrow
@@ -68,6 +69,29 @@ class OpenAiChatClientImplTest : StringSpec() {
 
             // when / then
             client.generateText(request) shouldBe ""
+        }
+
+        "문서 이미지 전사는 요청에 지정된 모델과 이미지 data URL을 사용한다" {
+            server.enqueue(jsonResponse("""{"choices":[{"message":{"role":"assistant","content":"전사된 이력서"}}]}"""))
+            val request = AiGenerationRequest(
+                model = "gpt-4o-mini",
+                systemPrompt = "문서를 전사한다",
+                userPrompt = "페이지 순서대로 전사해라",
+                parameters = AiParameters(temperature = 0.0, maxTokens = 4096),
+                useCase = "documentTextExtraction",
+            )
+
+            val result = client.extractText(
+                request = request,
+                pageImages = listOf(DocumentPageImage(1, "image/png", byteArrayOf(1, 2, 3))),
+            )
+
+            result shouldBe "전사된 이력서"
+            val sent = server.takeRequest().body.readUtf8()
+            sent shouldContain "\"model\":\"gpt-4o-mini\""
+            sent shouldContain "\"type\":\"image_url\""
+            sent shouldContain "data:image/png;base64,AQID"
+            sent shouldContain "\"max_tokens\":4096"
         }
 
         "generateStructured는 response_format(json_schema)를 보내고 content JSON을 타입으로 역직렬화한다" {

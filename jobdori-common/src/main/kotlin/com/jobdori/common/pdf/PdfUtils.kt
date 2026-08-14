@@ -1,9 +1,13 @@
 package com.jobdori.common.pdf
 
 import org.apache.pdfbox.Loader
+import org.apache.pdfbox.rendering.ImageType
+import org.apache.pdfbox.rendering.PDFRenderer
 import org.apache.pdfbox.text.PDFTextStripper
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
+import javax.imageio.ImageIO
 
 object PdfUtils {
 
@@ -83,6 +87,39 @@ object PdfUtils {
             }
         } catch (exception: Exception) {
             throw IllegalArgumentException("PDF 텍스트 추출 중 에러가 발생하였습니다. file: (${file.name})", exception)
+        }
+    }
+
+    fun renderPagesAsPng(
+        input: ByteArray,
+        maxPageCount: Int,
+        dpi: Float,
+    ): List<ByteArray> {
+        require(maxPageCount > 0) { "최대 페이지 수는 1 이상이어야 합니다." }
+        require(dpi > 0) { "DPI는 0보다 커야 합니다." }
+
+        return try {
+            Loader.loadPDF(input).use { document ->
+                if (document.isEncrypted) {
+                    throw IllegalArgumentException("암호화된 PDF는 지원하지 않습니다.")
+                }
+                if (document.numberOfPages > maxPageCount) {
+                    throw IllegalArgumentException("이미지 변환 가능한 PDF 페이지 수 제한을 초과했습니다.")
+                }
+
+                val renderer = PDFRenderer(document)
+                (0 until document.numberOfPages).map { pageIndex ->
+                    val image = renderer.renderImageWithDPI(pageIndex, dpi, ImageType.RGB)
+                    ByteArrayOutputStream().use { output ->
+                        check(ImageIO.write(image, "png", output)) { "PDF 페이지 PNG 변환에 실패했습니다." }
+                        output.toByteArray()
+                    }
+                }
+            }
+        } catch (exception: IllegalArgumentException) {
+            throw exception
+        } catch (exception: Exception) {
+            throw IllegalArgumentException("PDF 페이지 이미지 변환 중 에러가 발생하였습니다.", exception)
         }
     }
 

@@ -50,7 +50,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
         // then
         error.errorType shouldBe ErrorType.BAD_REQUEST
-        error.message shouldBe CommonErrorCode.E400_INVALID_ARGUMENTS.message
+        error.message shouldBe "sampleId is blank"
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(
@@ -86,7 +86,7 @@ internal class GraphQLExceptionHandlerTest : StringSpec({
 
         // then
         error.errorType shouldBe ErrorType.BAD_REQUEST
-        error.message shouldBe CommonErrorCode.E400_INVALID_ARGUMENTS.message
+        error.message shouldBe "sampleId is blank"
         error.locations shouldContainExactly listOf(SOURCE_LOCATION)
         error.path shouldBe RESULT_PATH
         error.extensions shouldContainExactly mapOf(

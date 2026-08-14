@@ -16,7 +16,7 @@ data class ExperienceContentsRequest(
     val free: FreeExperienceContentsRequest? = null,
 ) {
 
-    @AssertTrue(message = "STAR contents require only star. FREE contents require only free.")
+    @AssertTrue(message = "STAR 형식은 STAR 내용만, FREE 형식은 자유 형식 내용만 입력해 주세요.")
     @JsonIgnore
     fun isValidByType(): Boolean {
         return when (type) {

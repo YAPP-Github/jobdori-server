@@ -12,7 +12,8 @@ VALUES
   (7, 1, 'jd_key_points',          'JD 공고 핵심 요약',           '{"temperature":0.4}' FORMAT JSON, now(), now()),
   (8, 1, 'experience_recommendation','JD-경험 매칭률·이유',        '{"temperature":0.2}' FORMAT JSON, now(), now()),
   (9, 1, 'profile.core_competency', '프로필 핵심역량 생성',        '{"temperature":0.6,"maxTokens":900}' FORMAT JSON, now(), now()),
-  (10, 1, 'profile.text_polish',    '프로필 텍스트 다듬기',        '{"temperature":0.4,"maxTokens":1200}' FORMAT JSON, now(), now());
+  (10, 1, 'profile.text_polish',    '프로필 텍스트 다듬기',        '{"temperature":0.4,"maxTokens":1200}' FORMAT JSON, now(), now()),
+  (11, 1, 'document.text_extraction','이미지 기반 문서 원문 전사',  '{"temperature":0.0,"maxTokens":16384}' FORMAT JSON, now(), now());
 
 -- 1) JD 다중 공고 분할 (문서 JD-B.6)
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
@@ -542,4 +543,11 @@ INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, dele
 VALUES (10, 10, 'PROFILE_TEXT_POLISH',
 '당신은 채용 도메인 경력 코치다. 입력의 [원문]을 이력서의 [항목]에 어울리는 표현으로 다듬는다. 원문의 사실·수치·기술·기간을 절대 바꾸거나 지어내지 말고, 문장을 간결하고 전문적인 한국어로 정리한다. [작성 구조]가 주어지면 결과를 그 구조로 작성하고, 없으면 원문의 형식을 유지한다. [추가 지침]이 주어지면 어투·강조 등 지침을 우선 반영한다. [지원 전략]이 주어지면 전략과 맞닿는 표현을 앞쪽에 배치하고 관련 키워드를 자연스럽게 녹인다. 결과는 각 항목에 주어진 결과 글자수 제한 이내로 작성한다. [경험명]과 [경험 내용]이 주어지지 않은 경우 [원문]이 [결과 글자수 제한]보다 길면 핵심을 남기고 제한 이내로 압축한다. 이 경우 반드시 다듬은 텍스트만 반환하고 설명·머리말·따옴표를 붙이지 마라. [경험명]과 [경험 내용]이 함께 주어진 경우 경험 내용을 그 경험명의 세부 내용이라는 맥락에 맞게 다듬고, 다듬은 경험명을 title에, 다듬은 경험 내용을 description에 담아 제공된 JSON 스키마를 100% 준수해 반환한다. [경험 내용 작성 구조]가 주어지면 경험 내용만 그 구조로 작성하고 경험명에는 적용하지 않는다. [경험 내용]이 [경험 내용 결과 글자수 제한]보다 길면 핵심을 남기고 제한 이내로 압축한다. 이때 [추가 지침]에 경험명을 바꾸라는 내용이 없으면 [경험명]을 한 글자도 고치지 말고 원문 그대로 title에 담는다.',
 '{"type":"object","additionalProperties":false,"required":["title","description"],"properties":{"title":{"type":"string","maxLength":150},"description":{"type":"string","maxLength":500}}}',
+null, now(), now());
+
+-- 11) 텍스트 레이어가 없는 PDF의 페이지 이미지를 원문 텍스트로 전사한다.
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (11, 11, 'DOCUMENT_TEXT_EXTRACTION',
+'너는 문서 OCR 도우미다. 이미지에서 보이는 내용만 정확히 전사하고 추측하거나 요약하지 않는다. 문서에 없는 사실을 추가하지 말고 읽을 수 없는 부분은 [읽을 수 없음]으로 표시한다.',
+null,
 null, now(), now());

@@ -193,9 +193,9 @@ private fun pdfBytesWithOversizedCropBox(width: Float, height: Float): ByteArray
         val page = PDPage()
         document.addPage(page)
 
-        // Set an oversized CropBox
-        val cropBox = org.apache.pdfbox.pdmodel.common.PDRectangle(width, height)
-        page.cropBox = cropBox
+        val oversizedBox = org.apache.pdfbox.pdmodel.common.PDRectangle(width, height)
+        page.mediaBox = oversizedBox
+        page.cropBox = oversizedBox
 
         PDPageContentStream(document, page).use { contentStream ->
             contentStream.beginText()

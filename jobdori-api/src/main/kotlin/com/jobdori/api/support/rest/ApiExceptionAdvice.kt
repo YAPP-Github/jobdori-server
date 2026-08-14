@@ -32,14 +32,16 @@ class ApiExceptionAdvice(
     @ExceptionHandler(BindException::class)
     fun handleBadRequest(exception: BindException): ApiResponse<Nothing> {
         log.warn(exception) { exception.message }
+        val details = exception.bindingResult.fieldErrors.map { fieldError: FieldError ->
+            ErrorDetail(
+                field = fieldError.field,
+                reason = fieldError.defaultMessage.orEmpty(),
+            )
+        }
         return ApiResponse.fail(
             error = CommonErrorCode.E400_INVALID_ARGUMENTS,
-            details = exception.bindingResult.fieldErrors.map { fieldError: FieldError ->
-                ErrorDetail(
-                    field = fieldError.field,
-                    reason = fieldError.defaultMessage.orEmpty(),
-                )
-            }
+            message = details.firstOrNull()?.reason ?: CommonErrorCode.E400_INVALID_ARGUMENTS.message,
+            details = details,
         )
     }
 

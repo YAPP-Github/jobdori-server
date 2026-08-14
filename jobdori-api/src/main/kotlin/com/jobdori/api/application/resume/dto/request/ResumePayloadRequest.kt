@@ -25,10 +25,10 @@ sealed interface ResumePayloadRequest<out T : ResumeSectionItemPayload> {
 }
 
 data class ResumeBasicInfoPayloadRequest(
-    @field:Size(max = 50)
+    @field:Size(max = 50, message = "입력 가능한 이름의 최대 길이는 {max}자입니다.")
     val name: String?,
     @field:Email(message = "올바른 이메일 형식이 아닙니다.")
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 이메일의 최대 길이는 {max}자입니다.")
     val email: String?,
     @field:Pattern(regexp = "^$|^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)")
     val phone: String?,
@@ -43,7 +43,7 @@ data class ResumeBasicInfoPayloadRequest(
 }
 
 data class ResumeCoreSkillPayloadRequest(
-    @field:Size(max = 2000)
+    @field:Size(max = 2000, message = "입력 가능한 내용의 최대 길이는 {max}자입니다.")
     val content: String?,
     val isInitialItem: Boolean = false,
 ) : ResumePayloadRequest<ResumeCoreSkillPayload> {
@@ -54,13 +54,13 @@ data class ResumeCoreSkillPayloadRequest(
 }
 
 data class ResumeCareerPayloadRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 회사명의 최대 길이는 {max}자입니다.")
     val companyName: String?,
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 역할의 최대 길이는 {max}자입니다.")
     val role: String?,
     @field:Valid
     val period: PeriodRequest?,
-    @field:Size(max = 2000)
+    @field:Size(max = 2000, message = "입력 가능한 내용의 최대 길이는 {max}자입니다.")
     val contents: String?,
 ) : ResumePayloadRequest<ResumeCareerPayload> {
     override fun toPayload() = ResumeCareerPayload(
@@ -72,13 +72,13 @@ data class ResumeCareerPayloadRequest(
 }
 
 data class ResumeExperiencePayloadRequest(
-    @field:Size(max = ProfilePolicy.MAX_TITLE_LENGTH)
+    @field:Size(max = ProfilePolicy.MAX_TITLE_LENGTH, message = "입력 가능한 이름의 최대 길이는 {max}자입니다.")
     val name: String?,
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 역할의 최대 길이는 {max}자입니다.")
     val role: String?,
     @field:Valid
     val period: PeriodRequest?,
-    @field:Size(max = ProfilePolicy.MAX_CONTENTS_LENGTH)
+    @field:Size(max = ProfilePolicy.MAX_CONTENTS_LENGTH, message = "입력 가능한 내용의 최대 길이는 {max}자입니다.")
     val contents: String?,
 ) : ResumePayloadRequest<ResumeExperiencePayload> {
     override fun toPayload() = ResumeExperiencePayload(
@@ -90,13 +90,13 @@ data class ResumeExperiencePayloadRequest(
 }
 
 data class ResumeEducationPayloadRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 학교명의 최대 길이는 {max}자입니다.")
     val schoolName: String?,
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 전공의 최대 길이는 {max}자입니다.")
     val major: String?,
-    @field:Size(max = 50)
+    @field:Size(max = 50, message = "입력 가능한 학위의 최대 길이는 {max}자입니다.")
     val degree: String?,
-    @field:Size(max = 50)
+    @field:Size(max = 50, message = "입력 가능한 졸업 상태의 최대 길이는 {max}자입니다.")
     val status: String?,
     @field:Valid
     val period: PeriodRequest?,
@@ -111,9 +111,9 @@ data class ResumeEducationPayloadRequest(
 }
 
 data class ResumeAwardPayloadRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 이름의 최대 길이는 {max}자입니다.")
     val name: String?,
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 기관명의 최대 길이는 {max}자입니다.")
     val organization: String?,
     val awardedAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeAwardPayload> {
@@ -125,9 +125,9 @@ data class ResumeAwardPayloadRequest(
 }
 
 data class ResumeCertificatePayloadRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 이름의 최대 길이는 {max}자입니다.")
     val name: String?,
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 기관명의 최대 길이는 {max}자입니다.")
     val organization: String?,
     val acquiredAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeCertificatePayload> {
@@ -139,18 +139,18 @@ data class ResumeCertificatePayloadRequest(
 }
 
 data class ResumeSkillPayloadRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 이름의 최대 길이는 {max}자입니다.")
     val name: String?,
-    @field:Size(max = 50)
+    @field:Size(max = 50, message = "입력 가능한 숙련도의 최대 길이는 {max}자입니다.")
     val level: String?,
 ) : ResumePayloadRequest<ResumeSkillPayload> {
     override fun toPayload() = ResumeSkillPayload(name = name, level = level)
 }
 
 data class ResumeLanguagePayloadRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "입력 가능한 어학 시험명의 최대 길이는 {max}자입니다.")
     val examName: String?,
-    @field:Size(max = 50)
+    @field:Size(max = 50, message = "입력 가능한 점수 또는 등급의 최대 길이는 {max}자입니다.")
     val scoreOrGrade: String?,
     val acquiredAt: LocalDate?,
 ) : ResumePayloadRequest<ResumeLanguagePayload> {

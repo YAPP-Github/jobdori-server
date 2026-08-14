@@ -23,12 +23,13 @@ data class ApiResponse<T>(
 
         fun <T> fail(
             error: ErrorCode,
+            message: String = error.message,
             details: List<ErrorDetail> = emptyList(),
         ): ApiResponse<T> = ApiResponse(
             ok = false,
             error = ApiError(
                 code = error.code,
-                message = error.message,
+                message = message,
                 details = details,
             ),
             result = null,

@@ -25,14 +25,16 @@ class GraphQLExceptionAdvice(
         exception: ConstraintViolationException,
         env: DataFetchingEnvironment,
     ): GraphQLError {
+        val details = exception.constraintViolations.map {
+            ErrorDetail(
+                field = it.propertyPath.lastOrNull()?.name.orEmpty(),
+                reason = it.message,
+            )
+        }
         return generateGraphQLError(
             errorCode = CommonErrorCode.E400_INVALID_ARGUMENTS,
-            details = exception.constraintViolations.map {
-                ErrorDetail(
-                    field = it.propertyPath.lastOrNull()?.name.orEmpty(),
-                    reason = it.message,
-                )
-            },
+            message = details.firstOrNull()?.reason ?: CommonErrorCode.E400_INVALID_ARGUMENTS.message,
+            details = details,
             env = env,
         )
     }
@@ -42,14 +44,16 @@ class GraphQLExceptionAdvice(
         exception: BindException,
         env: DataFetchingEnvironment,
     ): GraphQLError {
+        val details = exception.fieldErrors.map {
+            ErrorDetail(
+                field = it.field,
+                reason = it.defaultMessage.orEmpty(),
+            )
+        }
         return generateGraphQLError(
             errorCode = CommonErrorCode.E400_INVALID_ARGUMENTS,
-            details = exception.fieldErrors.map {
-                ErrorDetail(
-                    field = it.field,
-                    reason = it.defaultMessage.orEmpty(),
-                )
-            },
+            message = details.firstOrNull()?.reason ?: CommonErrorCode.E400_INVALID_ARGUMENTS.message,
+            details = details,
             env = env,
         )
     }
@@ -86,10 +90,11 @@ class GraphQLExceptionAdvice(
 
     private fun generateGraphQLError(
         errorCode: ErrorCode,
+        message: String = errorCode.message,
         details: List<ErrorDetail> = emptyList(),
         env: DataFetchingEnvironment,
     ): GraphQLError {
-        return GraphQLError.newError().errorType(toGraphQlErrorType(errorCode)).message(errorCode.message)
+        return GraphQLError.newError().errorType(toGraphQlErrorType(errorCode)).message(message)
             .extensions(generateExtensions(errorCode, details)).location(env.field.sourceLocation)
             .path(env.executionStepInfo.path).build()
     }

@@ -103,7 +103,7 @@ data class CreateResumeRequest(
 }
 
 data class SaveResumeSectionRequest(
-    @field:Positive
+    @field:Positive(message = "올바른 섹션 ID를 입력해 주세요.")
     val sectionId: Long?,
     val type: ResumeSectionType,
     val displayOrder: Double,
@@ -222,7 +222,7 @@ data class SaveResumeSectionRequest(
 }
 
 data class SaveResumeSectionItemRequest(
-    @field:Positive
+    @field:Positive(message = "올바른 아이템 ID를 입력해 주세요.")
     val itemId: Long?,
     val displayOrder: Double,
     val visible: Boolean,

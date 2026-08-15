@@ -3,6 +3,7 @@ package com.jobdori.common.pdf
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -150,6 +151,19 @@ internal class PdfUtilsTest : StringSpec({
         exception.message shouldBe "PDF 페이지 수 확인 중 에러가 발생하였습니다."
     }
 
+    "renderPagesAsPng는 과도하게 큰 CropBox 페이지를 거부한다" {
+        // given: Create a PDF with an oversized CropBox (e.g., 20000x20000 points at 150 DPI = ~125M pixels)
+        val input = pdfBytesWithOversizedCropBox(width = 20000f, height = 20000f)
+
+        // when
+        val exception = shouldThrow<IllegalArgumentException> {
+            PdfUtils.renderPagesAsPng(input = input, maxPageCount = 10, dpi = 150f)
+        }
+
+        // then
+        exception.message!! shouldContain "PDF 페이지 픽셀 수가 제한을 초과했습니다"
+    }
+
 })
 
 private fun samplePdfBytes(vararg texts: String): ByteArray {
@@ -165,6 +179,30 @@ private fun samplePdfBytes(vararg texts: String): ByteArray {
                 contentStream.showText(text)
                 contentStream.endText()
             }
+        }
+
+        ByteArrayOutputStream().use { outputStream ->
+            document.save(outputStream)
+            outputStream.toByteArray()
+        }
+    }
+}
+
+private fun pdfBytesWithOversizedCropBox(width: Float, height: Float): ByteArray {
+    return PDDocument().use { document ->
+        val page = PDPage()
+        document.addPage(page)
+
+        val oversizedBox = org.apache.pdfbox.pdmodel.common.PDRectangle(width, height)
+        page.mediaBox = oversizedBox
+        page.cropBox = oversizedBox
+
+        PDPageContentStream(document, page).use { contentStream ->
+            contentStream.beginText()
+            contentStream.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA), 12f)
+            contentStream.newLineAtOffset(50f, height - 50f)
+            contentStream.showText("Oversized page")
+            contentStream.endText()
         }
 
         ByteArrayOutputStream().use { outputStream ->

@@ -11,7 +11,7 @@ data class PeriodRequest(
 ) {
 
     @JsonIgnore
-    @AssertTrue(message = "startAt must be before or equal to endAt")
+    @AssertTrue(message = "시작일이 종료일보다 늦어요. 날짜를 다시 확인해 주세요.")
     fun isValidPeriod(): Boolean {
         if (startAt == null || endAt == null) {
             return true

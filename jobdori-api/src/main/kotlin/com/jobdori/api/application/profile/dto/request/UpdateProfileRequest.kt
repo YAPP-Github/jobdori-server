@@ -8,17 +8,17 @@ import jakarta.validation.constraints.Size
 
 // null = 미변경, 빈 리스트/빈 문자열 = 비우기
 data class UpdateProfileRequest(
-    @field:Size(max = 50)
+    @field:Size(max = 50, message = "이름은 최대 {max}자까지 입력할 수 있어요.")
     val name: String? = null,
 
     // 형식은 동료 ResumeBasicInfoPayload와 동일. 빈 문자열은 "비우기" 의미라 허용
-    @field:Pattern(regexp = """^$|^\d{2,3}-\d{3,4}-\d{4}$""", message = "올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)")
+    @field:Pattern(regexp = """^$|^\d{2,3}-\d{3,4}-\d{4}$""", message = "전화번호 형식이 올바르지 않아요.")
     val phone: String? = null,
 
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "이메일은 최대 {max}자까지 입력할 수 있어요.")
     val email: String? = null,
 
-    @field:Size(max = ProfilePolicy.MAX_CORE_COMPETENCY_LENGTH)
+    @field:Size(max = ProfilePolicy.MAX_CORE_COMPETENCY_LENGTH, message = "핵심 역량은 최대 {max}자까지 입력할 수 있어요.")
     val coreCompetency: String? = null,
 
     @field:Valid

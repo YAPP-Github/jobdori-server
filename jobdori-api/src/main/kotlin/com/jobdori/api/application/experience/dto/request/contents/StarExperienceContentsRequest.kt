@@ -2,24 +2,19 @@ package com.jobdori.api.application.experience.dto.request.contents
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.jobdori.core.domain.experience.StarExperienceContents
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class StarExperienceContentsRequest(
-    @field:NotBlank
-    @field:Size(max = 500)
+    @field:Size(max = 500, message = "내용은 최대 {max}자까지 입력할 수 있어요.")
     val situation: String = "",
 
-    @field:NotBlank
-    @field:Size(max = 500)
+    @field:Size(max = 500, message = "내용은 최대 {max}자까지 입력할 수 있어요.")
     val task: String = "",
 
-    @field:NotBlank
-    @field:Size(max = 500)
+    @field:Size(max = 500, message = "내용은 최대 {max}자까지 입력할 수 있어요.")
     val action: String = "",
 
-    @field:NotBlank
-    @field:Size(max = 500)
+    @field:Size(max = 500, message = "내용은 최대 {max}자까지 입력할 수 있어요.")
     val result: String = "",
 ) {
 

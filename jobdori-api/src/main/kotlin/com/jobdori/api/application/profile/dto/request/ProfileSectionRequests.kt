@@ -16,10 +16,10 @@ import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 data class ProfileEducationRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "학교명은 최대 {max}자까지 입력할 수 있어요.")
     val school: String? = null,
 
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "전공명은 최대 {max}자까지 입력할 수 있어요.")
     val major: String? = null,
 
     val degree: Degree? = null,
@@ -39,16 +39,16 @@ data class ProfileEducationRequest(
 }
 
 data class ProfileCareerRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "회사명은 최대 {max}자까지 입력할 수 있어요.")
     val company: String? = null,
 
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "직무명은 최대 {max}자까지 입력할 수 있어요.")
     val position: String? = null,
 
     @field:Valid
     val period: PeriodRequest? = null,
 
-    @field:Size(max = ProfilePolicy.MAX_CAREER_DESCRIPTION_LENGTH)
+    @field:Size(max = ProfilePolicy.MAX_CAREER_DESCRIPTION_LENGTH, message = "세부 내용은 최대 {max}자까지 입력할 수 있어요.")
     val description: String? = null,
 ) {
     fun toDomain() = Career(
@@ -60,10 +60,10 @@ data class ProfileCareerRequest(
 }
 
 data class ProfileLanguageTestRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "시험명은 최대 {max}자까지 입력할 수 있어요.")
     val testName: String? = null,
 
-    @field:Size(max = 50)
+    @field:Size(max = 50, message = "점수는 최대 {max}자까지 입력할 수 있어요.")
     val score: String? = null,
 
     val acquiredAt: LocalDate? = null,
@@ -76,10 +76,10 @@ data class ProfileLanguageTestRequest(
 }
 
 data class ProfileAwardRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "제목은 최대 {max}자까지 입력할 수 있어요.")
     val title: String? = null,
 
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "기관명은 최대 {max}자까지 입력할 수 있어요.")
     val organization: String? = null,
 
     val awardedAt: LocalDate? = null,
@@ -92,10 +92,10 @@ data class ProfileAwardRequest(
 }
 
 data class ProfileCertificationRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "이름은 최대 {max}자까지 입력할 수 있어요.")
     val name: String? = null,
 
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "발급 기관명은 최대 {max}자까지 입력할 수 있어요.")
     val issuer: String? = null,
 
     val acquiredAt: LocalDate? = null,
@@ -108,7 +108,7 @@ data class ProfileCertificationRequest(
 }
 
 data class ProfileSkillRequest(
-    @field:Size(max = 100)
+    @field:Size(max = 100, message = "이름은 최대 {max}자까지 입력할 수 있어요.")
     val name: String? = null,
 
     val level: SkillLevel? = null,

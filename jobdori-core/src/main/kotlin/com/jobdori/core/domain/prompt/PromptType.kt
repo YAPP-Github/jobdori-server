@@ -7,6 +7,7 @@ enum class PromptType {
     JD_APPLICATION_STRATEGY,       // jd 지원 전략 생성(서술형) — JD 등록 시 워크스페이스 프로필과 함께 생성해 jd.strategy에 저장
     EXPERIENCE_RECOMMENDATION,     // jd-경험 매칭률(전량) + 상위 이유(구조화)
     EXPERIENCE_STAR_EXTRACTION,    // 경험 STAR 추출
+    DOCUMENT_TEXT_EXTRACTION,      // 이미지 기반 문서 원문 전사
     RESUME_EXPERIENCE_REWRITE,     // 이력서 문장 생성
     EXPERIENCE_CONTENTS_POLISH,    // Free Style 경험 내용을 STAR로 변환
     PROFILE_CORE_COMPETENCY_GENERATION, // 프로필(이력서 기본 정보) 기반 핵심역량 생성

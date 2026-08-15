@@ -21,7 +21,28 @@ data class OpenAiChatCompletionRequest(
     @JsonProperty("top_p") val topP: Double? = null,
     @JsonProperty("response_format") val responseFormat: ResponseFormat? = null,
 ) {
-    data class Message(val role: String, val content: String)
+    data class Message(val role: String, val content: Any) {
+        fun textContent(): String = when (content) {
+            is String -> content
+            is List<*> -> content.filterIsInstance<ContentPart>().mapNotNull { it.text }.joinToString("\n")
+            else -> ""
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    data class ContentPart(
+        val type: String,
+        val text: String? = null,
+        @JsonProperty("image_url") val imageUrl: ImageUrl? = null,
+    ) {
+        data class ImageUrl(val url: String, val detail: String = "high")
+
+        companion object {
+            fun text(value: String) = ContentPart(type = "text", text = value)
+            fun image(dataUrl: String) = ContentPart(type = "image_url", imageUrl = ImageUrl(dataUrl))
+        }
+    }
+
     data class ResponseFormat(
         val type: String,
         @JsonProperty("json_schema") val jsonSchema: JsonSchema,
@@ -37,6 +58,7 @@ data class OpenAiChatCompletionRequest(
             )
         }
     }
+
     data class JsonSchema(val name: String, val schema: JsonNode, val strict: Boolean = true)
 
     companion object {
@@ -57,6 +79,22 @@ data class OpenAiChatCompletionRequest(
             maxTokens = parameters.maxTokens,
             topP = parameters.topP,
             responseFormat = format,
+        )
+
+        fun vision(
+            model: String,
+            system: String,
+            userContent: List<ContentPart>,
+            parameters: AiParameters,
+        ) = OpenAiChatCompletionRequest(
+            model = model,
+            messages = listOf(
+                Message("system", system),
+                Message("user", userContent),
+            ),
+            temperature = parameters.temperature,
+            maxTokens = parameters.maxTokens,
+            topP = parameters.topP,
         )
     }
 }

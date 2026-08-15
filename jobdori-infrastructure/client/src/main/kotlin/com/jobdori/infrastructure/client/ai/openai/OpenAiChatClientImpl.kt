@@ -2,6 +2,8 @@ package com.jobdori.infrastructure.client.ai.openai
 
 import com.jobdori.common.error.ErrorCode
 import com.jobdori.core.application.ai.client.AiChatClient
+import com.jobdori.core.application.ai.client.DocumentPageImage
+import com.jobdori.core.application.ai.client.DocumentVisionClient
 import com.jobdori.core.application.ai.command.AiGenerationRequest
 import com.jobdori.core.application.ai.command.AiStructuredRequest
 import com.jobdori.core.domain.ai.error.AiErrorCode
@@ -11,6 +13,7 @@ import com.jobdori.infrastructure.client.ai.openai.dto.OpenAiChatCompletionRespo
 import datadog.trace.api.llmobs.LLMObs
 import datadog.trace.api.llmobs.LLMObsSpan
 import org.springframework.stereotype.Component
+import java.util.Base64
 
 
 /**
@@ -21,7 +24,7 @@ import org.springframework.stereotype.Component
 @Component
 class OpenAiChatClientImpl(
     private val http: OpenAiHttpClient,
-) : AiChatClient {
+) : AiChatClient, DocumentVisionClient {
 
     companion object {
         // 429(한도)/503(프로바이더 장애)만 재시도. 504(타임아웃)는 읽기 타임아웃이 60초라
@@ -66,6 +69,25 @@ class OpenAiChatClientImpl(
         return call(request.useCase, body).parseContentAs(request.responseType.java)
     }
 
+    override fun extractText(request: AiGenerationRequest, pageImages: List<DocumentPageImage>): String {
+        require(pageImages.isNotEmpty()) { "문서 페이지 이미지가 비어 있습니다." }
+        val content = buildList {
+            add(OpenAiChatCompletionRequest.ContentPart.text(request.userPrompt))
+            pageImages.forEach { page ->
+                add(OpenAiChatCompletionRequest.ContentPart.text("[PAGE ${page.pageNumber}]"))
+                val base64 = Base64.getEncoder().encodeToString(page.bytes)
+                add(OpenAiChatCompletionRequest.ContentPart.image("data:${page.mediaType};base64,$base64"))
+            }
+        }
+        val body = OpenAiChatCompletionRequest.vision(
+            model = request.model,
+            system = request.systemPrompt,
+            userContent = content,
+            parameters = request.parameters,
+        )
+        return call(request.useCase, body).textOrEmpty().trim()
+    }
+
     private fun call(useCase: String, body: OpenAiChatCompletionRequest): OpenAiChatCompletionResponse {
         val started = System.nanoTime()
         var retries = 0
@@ -106,7 +128,7 @@ class OpenAiChatClientImpl(
         res: OpenAiChatCompletionResponse,
     ) {
         span.annotateIO(
-            body.messages.map { LLMObs.LLMMessage.from(it.role, it.content.maskPii()) },
+            body.messages.map { LLMObs.LLMMessage.from(it.role, it.textContent().maskPii()) },
             res.choices.map { LLMObs.LLMMessage.from(it.message.role, it.message.content.maskPii()) },
         )
         res.usage?.let {

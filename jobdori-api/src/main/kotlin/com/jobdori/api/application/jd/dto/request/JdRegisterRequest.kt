@@ -13,14 +13,14 @@ data class JdRegisterRequest(
     @field:Size(
         min = JdPolicy.MIN_JD_BODY_LENGTH,
         max = JdPolicy.MAX_JD_LENGTH,
-        message = "채용 공고 본문은 {min}자 이상 {max}자 이하로 입력해 주세요.",
+        message = "채용 공고 본문은 {min}자 이상 {max}자 이하로 입력할 수 있어요.",
     )
     val body: String? = null,
 ) {
 
     // body가 있으면 크롤 없이 body로 처리하고 sourceUrl은 출처 메타로만 저장한다(다중 공고 후보 재등록 시 출처 보존)
     @JsonIgnore
-    @AssertTrue(message = "공고 출처 URL 또는 채용 공고 본문을 입력해 주세요.")
+    @AssertTrue(message = "채용 공고 URL 또는 본문을 입력해 주세요.")
     fun isAtLeastOne(): Boolean = !sourceUrl.isNullOrBlank() || !body.isNullOrBlank()
 
 }

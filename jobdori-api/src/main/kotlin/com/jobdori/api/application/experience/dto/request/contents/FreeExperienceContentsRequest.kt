@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size
 
 data class FreeExperienceContentsRequest(
     @field:NotBlank(message = "내용을 입력해 주세요.")
-    @field:Size(max = 2000, message = "입력 가능한 내용의 최대 길이는 {max}자입니다.")
+    @field:Size(max = 2000, message = "내용은 최대 {max}자까지 입력할 수 있어요.")
     val content: String = "",
 ) {
 

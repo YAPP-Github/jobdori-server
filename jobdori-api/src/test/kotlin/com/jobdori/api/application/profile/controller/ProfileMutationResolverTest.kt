@@ -267,7 +267,7 @@ internal class ProfileMutationResolverTest(
                 errors shouldHaveSize 1
                 val error = errors.first()
                 error.errorType shouldBe ErrorType.BAD_REQUEST
-                error.message shouldBe "경험을 첨삭하려면 제목을 입력해 주세요."
+                error.message shouldBe "경험을 다듬으려면 제목을 입력해 주세요."
                 error.extensions shouldContain (
                     "code" to CommonErrorCode.E400_INVALID_ARGUMENTS.code
                 )

@@ -9,11 +9,11 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class PolishProfileTextRequest(
-    @field:NotBlank(message = "첨삭할 내용을 입력해 주세요.")
-    @field:Size(max = ProfilePolicy.MAX_CONTENTS_LENGTH, message = "입력 가능한 설명의 최대 길이는 {max}자입니다.")
+    @field:NotBlank(message = "다듬을 내용을 입력해 주세요.")
+    @field:Size(max = ProfilePolicy.MAX_CONTENTS_LENGTH, message = "세부 내용은 최대 {max}자까지 입력할 수 있어요.")
     val description: String = "",
 
-    @field:Size(max = ProfilePolicy.MAX_TITLE_LENGTH, message = "입력 가능한 제목의 최대 길이는 {max}자입니다.")
+    @field:Size(max = ProfilePolicy.MAX_TITLE_LENGTH, message = "제목은 최대 {max}자까지 입력할 수 있어요.")
     val title: String? = null,
 
     val kind: ProfilePolishKind = ProfilePolishKind.CORE_COMPETENCY,
@@ -27,7 +27,7 @@ data class PolishProfileTextRequest(
 ) {
 
     @JsonIgnore
-    @AssertTrue(message = "경험을 첨삭하려면 제목을 입력해 주세요.")
+    @AssertTrue(message = "경험을 다듬으려면 제목을 입력해 주세요.")
     fun isExperienceTitleValid(): Boolean =
         kind != ProfilePolishKind.EXPERIENCE || !title.isNullOrBlank()
 

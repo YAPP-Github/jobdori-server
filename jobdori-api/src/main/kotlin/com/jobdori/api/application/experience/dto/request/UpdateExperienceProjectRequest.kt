@@ -8,17 +8,17 @@ import jakarta.validation.constraints.Size
 
 data class UpdateExperienceProjectRequest(
     @field:NotBlank(message = "이름을 입력해 주세요.")
-    @field:Size(max = 100, message = "입력 가능한 이름의 최대 길이는 {max}자입니다.")
+    @field:Size(max = 100, message = "이름은 최대 {max}자까지 입력할 수 있어요.")
     val name: String,
 
     @field:NotBlank(message = "프로젝트 요약을 입력해 주세요.")
-    @field:Size(max = 500, message = "입력 가능한 프로젝트 요약의 최대 길이는 {max}자입니다.")
+    @field:Size(max = 500, message = "프로젝트 요약은 최대 {max}자까지 입력할 수 있어요.")
     val summary: String,
 
     @field:Valid
     val period: PeriodRequest?,
 
     @field:Pattern(regexp = "(?s).*\\S.*", message = "역할을 입력해 주세요.")
-    @field:Size(max = 100, message = "입력 가능한 역할의 최대 길이는 {max}자입니다.")
+    @field:Size(max = 100, message = "역할은 최대 {max}자까지 입력할 수 있어요.")
     val role: String?,
 )

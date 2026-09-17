@@ -1,0 +1,12 @@
+description: "{{env.PROMPT_TYPE}} on {{env.MODEL_NAME}} (prompt {{env.PROMPT_ID}} @ {{env.PROMPT_UPDATED_AT}})"
+prompts:
+  - id: file://prompt.js
+    label: "{{env.PROMPT_TYPE}} prompt={{env.PROMPT_ID}}@{{env.PROMPT_UPDATED_AT}} model={{env.MODEL_NAME}}"
+providers:
+  - openai:chat:{{env.MODEL_NAME}}
+tests:
+  - "{{env.GOLDENSET}}"
+defaultTest:
+  assert:
+    - type: javascript
+      value: file://judge.js

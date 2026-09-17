@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dump": "./dump-prompts.sh",
+    "eval": "./run-eval.sh",
+    "agreement": "./agreement.sh",
+    "scorecard": "node scorecard.mjs"
+  },
+  "devDependencies": {
+    "@googleapis/sheets": "^13.0.0",
+    "js-yaml": "^4.1.0",
+    "promptfoo": "0.120.12"
+  }
+}

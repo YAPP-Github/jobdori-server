@@ -32,15 +32,36 @@ class ExperienceAiExtractionService(
 ) {
 
     fun extract(pdfText: String): ExperienceStarExtractionResult {
-        val prompt = promptTemplateRepository.findByType(PromptType.EXPERIENCE_STAR_EXTRACTION)
+        return extractWithPrompt(
+            pdfText = pdfText,
+            promptType = PromptType.EXPERIENCE_STAR_EXTRACTION,
+            missingPromptMessage = "경험 추출 프롬프트가 없습니다.",
+            userPrompt = buildUserPrompt(pdfText),
+        )
+    }
+
+    fun extractForResumeImport(pdfText: String): ExperienceStarExtractionResult = extractWithPrompt(
+        pdfText = pdfText,
+        promptType = PromptType.RESUME_IMPORT_EXTRACTION,
+        missingPromptMessage = "이력서 가져오기 추출 프롬프트가 없습니다.",
+        userPrompt = buildResumeImportUserPrompt(pdfText),
+    )
+
+    private fun extractWithPrompt(
+        pdfText: String,
+        promptType: PromptType,
+        missingPromptMessage: String,
+        userPrompt: String,
+    ): ExperienceStarExtractionResult {
+        val prompt = promptTemplateRepository.findByType(promptType)
             ?: throw AiException(
-                message = "경험 추출 프롬프트가 없습니다.",
+                message = missingPromptMessage,
                 errorCode = AiErrorCode.E500_AI_GENERATION_FAILED,
             )
 
         return aiChatClient.generateStructured(
             prompt.buildStructured(
-                userPrompt = buildUserPrompt(pdfText),
+                userPrompt = userPrompt,
                 responseType = ExperienceStarExtractionResult::class,
             ),
         )
@@ -51,6 +72,23 @@ class ExperienceAiExtractionService(
             다음 PDF 추출 텍스트에서 프로필 정보(인적사항/학력/경력/어학/수상/자격증/기술)와 프로젝트/경험을 추출해라.
             원문에 등장하는 모든 프로젝트와 경험을 빠짐없이 반환하고, 원문에 없는 사실은 만들지 마라.
             성과 수치나 기간이 없다는 이유로 항목을 빼지 말고, 프로젝트명을 특정할 수 없는 항목만 제외해라.
+
+            [PDF_TEXT]
+            $pdfText
+        """.trimIndent()
+    }
+
+    private fun buildResumeImportUserPrompt(pdfText: String): String {
+        return """
+            다음 PDF 이력서에서 인적사항, 학력, 경력, 어학, 수상, 자격증, 기술 스택과 프로젝트/경험을 구조화해라.
+
+            이 작업의 최우선순위는 원문 보존이다.
+            - 원문의 제목, 회사명, 역할, 기간, 설명, 수치, 기술명과 고유명사를 가능한 한 그대로 복사해라.
+            - 문장을 요약, 교정, 미사여구 추가, STAR 재작성, 이력서 문장 생성하지 마라.
+            - situation/task/action/result는 원문 문장 또는 원문 bullet을 의미상 해당 필드에 배치하되 표현을 바꾸지 마라.
+            - 원문에 없는 사실, 수치, 기간, 역할, 성과를 추론하거나 생성하지 마라.
+            - 원문 정보가 어느 필드에 속하는지 불명확하면 임의로 보정하지 말고 가장 가까운 필드에 원문 그대로 넣어라.
+            - 누락된 값은 빈 문자열 또는 null로 두고, 원문에 있는 항목은 정보가 부족해도 삭제하지 마라.
 
             [PDF_TEXT]
             $pdfText

@@ -1,0 +1,22 @@
+query JdRecommendations {
+    jdRecommendations(
+        tags: [POPULAR]
+        cursor: null
+        size: 10
+    ) {
+        recommendations {
+            id
+            tags
+            companyName
+            title
+            recruitmentStartAt
+            recruitmentEndAt
+            sourceUrl
+            displayOrder
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}

@@ -1,0 +1,6 @@
+query JdRecommendationTags {
+    jdRecommendationTags {
+        tag
+        name
+    }
+}

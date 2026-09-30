@@ -282,6 +282,28 @@ include::./operation-sample.adoc[tag=markJdCompleted]
 
 include::./operation-error.adoc[tag=markJdCompleted]
 
+=== JD Recommendation
+
+==== 추천 공고 태그 목록 조회
+
+Type: `Query`
+
+Operation: `jdRecommendationTags`
+
+include::./operation-sample.adoc[tag=jdRecommendationTags]
+
+include::./operation-error.adoc[tag=jdRecommendationTags]
+
+==== 추천 공고 목록 조회
+
+Type: `Query`
+
+Operation: `jdRecommendations`
+
+include::./operation-sample.adoc[tag=jdRecommendations]
+
+include::./operation-error.adoc[tag=jdRecommendations]
+
 === Profile
 
 ==== 이력서 기본 정보 프로필 조회

@@ -12,7 +12,6 @@ query JdRecommendations {
             recruitmentStartAt
             recruitmentEndAt
             sourceUrl
-            displayOrder
         }
         cursor {
             nextCursor

@@ -11,7 +11,6 @@ data class JdRecommendationResponse(
     val recruitmentStartAt: String?,
     val recruitmentEndAt: String?,
     val sourceUrl: String,
-    val displayOrder: Double,
 ) {
     companion object {
         fun from(recommendation: JdRecommendation) = JdRecommendationResponse(
@@ -22,7 +21,6 @@ data class JdRecommendationResponse(
             recruitmentStartAt = recommendation.recruitmentStartAt?.toString(),
             recruitmentEndAt = recommendation.recruitmentEndAt?.toString(),
             sourceUrl = recommendation.sourceUrl,
-            displayOrder = recommendation.displayOrder,
         )
     }
 }

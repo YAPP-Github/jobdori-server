@@ -88,7 +88,6 @@ type JdRecommendation {
     recruitmentStartAt: String
     recruitmentEndAt: String
     sourceUrl: String!
-    displayOrder: Float!
 }
 
 extend type Mutation {

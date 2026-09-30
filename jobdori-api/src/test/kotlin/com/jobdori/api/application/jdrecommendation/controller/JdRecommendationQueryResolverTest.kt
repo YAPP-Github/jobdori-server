@@ -59,7 +59,6 @@ internal class JdRecommendationQueryResolverTest(
                       companyName
                       recruitmentStartAt
                       recruitmentEndAt
-                      displayOrder
                     }
                     cursor { hasNext nextCursor }
                   }
@@ -93,7 +92,7 @@ internal class JdRecommendationQueryResolverTest(
                 """
                 query {
                   jdRecommendations(tags: [POPULAR, TECH_COMPANY], cursor: "1.5:4", size: 2) {
-                    recommendations { tags displayOrder }
+                    recommendations { tags }
                     cursor { hasNext nextCursor }
                   }
                 }

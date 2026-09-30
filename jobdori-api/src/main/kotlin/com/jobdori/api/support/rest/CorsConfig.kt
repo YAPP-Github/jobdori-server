@@ -17,6 +17,7 @@ class CorsConfig : WebMvcConfigurer {
             .allowedOriginPatterns(
                 "http://localhost:[*]",
                 "http://127.0.0.1:[*]",
+                "https://api.dev.scoop.me.kr",
             )
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
             .allowedHeaders("*")

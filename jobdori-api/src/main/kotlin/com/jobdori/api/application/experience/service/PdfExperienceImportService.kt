@@ -29,6 +29,15 @@ class PdfExperienceImportService(
             userId = userId,
         )
 
+        val text = extractText(file = file, userId = userId)
+        experienceTextImportService.import(
+            workspaceId = workspace.id,
+            text = text,
+        )
+    }
+
+    /** PDF 원문 추출만 수행한다. 경험/프로필 저장 없이 다른 임포트 흐름에서도 재사용한다. */
+    fun extractText(file: MultipartFile, userId: Long): String {
         val pdfBytes = pdfValidationService.validate(file = file, userId = userId)
         val extractedText = try {
             extractTextWithTimeout(pdfBytes)
@@ -46,11 +55,7 @@ class PdfExperienceImportService(
         }
 
         if (isLowQualityText(text)) throw InvalidArgumentsException(message = "PDF에서 가져올 텍스트가 없습니다 [userId=$userId]")
-
-        experienceTextImportService.import(
-            workspaceId = workspace.id,
-            text = text,
-        )
+        return text
     }
 
     private fun extractTextFromPageImages(pdfBytes: ByteArray, userId: Long, originalFilename: String?): String {

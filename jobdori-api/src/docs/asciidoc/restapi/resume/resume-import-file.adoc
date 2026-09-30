@@ -1,0 +1,25 @@
+==== PDF 파일로 이력서 불러오기
+
+PDF 파일을 분석해 이력서를 생성하는 API입니다.
+
+include::{snippets}/resume-import-from-file/request-path.adoc[]
+
+====== Request Parts
+
+include::{snippets}/resume-import-from-file/request-parts.adoc[]
+
+====== Response Fields
+
+include::{snippets}/resume-import-from-file/response-fields.adoc[]
+
+====== Examples
+
+include::{snippets}/resume-import-from-file/http-request.adoc[]
+
+include::{snippets}/resume-import-from-file/http-response.adoc[]
+
+include::{snippets}/resume-import-from-file/curl-request.adoc[]
+
+====== Error Codes
+
+include::{snippets}/resume-import-from-file/error-codes.adoc[]

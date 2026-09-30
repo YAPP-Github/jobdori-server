@@ -10,8 +10,6 @@ import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.common.logger.LoggerExtension.log
 import com.jobdori.common.model.Period
-import com.jobdori.core.application.experience.ExperienceContentsPolishService
-import com.jobdori.core.application.experience.PolishedExperience
 import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
@@ -32,7 +30,6 @@ class ExperienceService(
     private val experienceRemover: ExperienceRemover,
     private val experienceProjectReader: ExperienceProjectReader,
     private val getExperienceRecommendationService: GetExperienceRecommendationService,
-    private val experienceContentsPolishService: ExperienceContentsPolishService,
 ) {
 
     fun createExperience(
@@ -245,9 +242,7 @@ class ExperienceService(
     private fun resolveContents(request: ExperienceContentsRequest): ResolvedExperienceContents {
         return when (request.type) {
             ExperienceContentsType.STAR -> ResolvedExperienceContents(contents = request.toDomain())
-            ExperienceContentsType.FREE -> experienceContentsPolishService.polishFreeStyleToStar(
-                requireNotNull(request.free) { "FREE contents require free payload" }.content,
-            ).toResolvedContents()
+            ExperienceContentsType.FREE -> ResolvedExperienceContents(contents = request.toDomain())
         }
     }
 
@@ -259,12 +254,4 @@ private data class ResolvedExperienceContents(
     val role: String? = null,
     val tags: List<String> = emptyList(),
     val contents: ExperienceContents,
-)
-
-private fun PolishedExperience.toResolvedContents() = ResolvedExperienceContents(
-    title = title,
-    period = period,
-    role = role,
-    tags = tags,
-    contents = contents,
 )

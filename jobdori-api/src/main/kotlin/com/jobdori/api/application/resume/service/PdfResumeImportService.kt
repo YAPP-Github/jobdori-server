@@ -39,7 +39,7 @@ class PdfResumeImportService(
             userId = userId,
         )
         val text = pdfExperienceImportService.extractText(file = file, userId = userId)
-        val extraction = experienceAiExtractionService.extract(text)
+        val extraction = experienceAiExtractionService.extractForResumeImport(text)
         val detail = resumeCreator.create(
             workspaceId = workspace.id,
             command = extraction.toResumeSaveCommand(),

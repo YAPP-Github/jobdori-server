@@ -4,6 +4,10 @@ PDF 파일을 분석해 이력서를 생성하는 API입니다.
 
 include::{snippets}/resume-import-from-file/request-path.adoc[]
 
+====== Query Parameters
+
+include::{snippets}/resume-import-from-file/query-parameters.adoc[]
+
 ====== Request Parts
 
 include::{snippets}/resume-import-from-file/request-parts.adoc[]

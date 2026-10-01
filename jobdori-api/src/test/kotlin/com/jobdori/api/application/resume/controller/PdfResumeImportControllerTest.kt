@@ -27,6 +27,7 @@ import org.springframework.restdocs.request.RequestDocumentation.parameterWithNa
 import org.springframework.restdocs.request.RequestDocumentation.partWithName
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.request.RequestDocumentation.requestParts
+import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.multipart
 import java.time.Instant
@@ -63,6 +64,7 @@ internal class PdfResumeImportControllerTest(
                 file = any(),
                 workspaceId = "workspace-id",
                 userId = 1L,
+                targetJdId = null,
             )
         } returns response
 
@@ -84,6 +86,9 @@ internal class PdfResumeImportControllerTest(
                     PageHeaderSnippet.pageHeaderSnippet(),
                     pathParameters(
                         parameterWithName("workspaceId").description("워크스페이스 ID"),
+                    ),
+                    queryParameters(
+                        parameterWithName("targetJdId").optional().description("대상 JD public ID (선택)")
                     ),
                     requestParts(
                         partWithName("file").description("이력서를 가져올 PDF 파일"),
@@ -111,6 +116,7 @@ internal class PdfResumeImportControllerTest(
                 file = file,
                 workspaceId = "workspace-id",
                 userId = 1L,
+                targetJdId = null,
             )
         }
     }

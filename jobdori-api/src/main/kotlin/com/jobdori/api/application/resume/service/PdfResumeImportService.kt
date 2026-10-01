@@ -1,11 +1,13 @@
 package com.jobdori.api.application.resume.service
 
+import com.jobdori.api.application.jd.dto.response.JdResponse
 import com.jobdori.api.application.experience.service.PdfExperienceImportService
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
 import com.jobdori.core.application.experience.ExperienceStarExtractionResult
 import com.jobdori.core.application.experience.ExtractedExperienceProject
+import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeCareerPayload
 import com.jobdori.core.domain.resume.ResumeEducationPayload
@@ -28,27 +30,36 @@ import org.springframework.web.multipart.MultipartFile
 @Service
 class PdfResumeImportService(
     private val workspaceAccessValidationService: WorkspaceAccessValidationService,
+    private val getJdService: GetJdService,
     private val pdfExperienceImportService: PdfExperienceImportService,
     private val experienceAiExtractionService: ExperienceAiExtractionService,
     private val resumeCreator: ResumeCreator,
 ) {
 
-    fun importResume(file: MultipartFile, workspaceId: String, userId: Long): ResumeResponse {
+    fun importResume(
+        file: MultipartFile,
+        workspaceId: String,
+        userId: Long,
+        targetJdId: String? = null,
+    ): ResumeResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,
         )
         val text = pdfExperienceImportService.extractText(file = file, userId = userId)
         val extraction = experienceAiExtractionService.extractForResumeImport(text)
+        val targetJd = targetJdId?.let { publicId ->
+            getJdService.getJd(workspaceId = workspace.id, publicId = publicId)
+        }
         val detail = resumeCreator.create(
             workspaceId = workspace.id,
-            command = extraction.toResumeSaveCommand(),
+            command = extraction.toResumeSaveCommand(targetJd?.id),
         )
-        return ResumeResponse.from(detail, targetJd = null)
+        return ResumeResponse.from(detail, targetJd = targetJd?.let(JdResponse::from))
     }
 }
 
-private fun ExperienceStarExtractionResult.toResumeSaveCommand(): ResumeSaveCommand {
+private fun ExperienceStarExtractionResult.toResumeSaveCommand(targetJdId: Long?): ResumeSaveCommand {
     val sections = buildList {
         addSection(ResumeSectionType.BASIC_INFO, listOfNotNull(
             personalInfo.takeIf { it.name.isNotBlank() || it.email.isNotBlank() || it.phone.isNotBlank() }
@@ -75,7 +86,7 @@ private fun ExperienceStarExtractionResult.toResumeSaveCommand(): ResumeSaveComm
         })
     }
     return ResumeSaveCommand(
-        targetJdId = null,
+        targetJdId = targetJdId,
         template = ResumeTemplate.DEFAULT,
         status = ResumeStatus.DRAFT,
         sections = sections,

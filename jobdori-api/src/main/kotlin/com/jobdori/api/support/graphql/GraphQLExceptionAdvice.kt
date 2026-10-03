@@ -71,6 +71,7 @@ class GraphQLExceptionAdvice(
         }
         return generateGraphQLError(
             errorCode = exception.errorCode,
+            details = exception.details,
             env = env,
         )
     }

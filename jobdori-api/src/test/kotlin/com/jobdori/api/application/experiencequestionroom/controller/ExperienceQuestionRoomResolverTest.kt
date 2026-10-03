@@ -11,6 +11,7 @@ import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.application.experiencequestionroom.ExperienceQuestionRoomChatService
 import com.jobdori.core.application.experiencequestionroom.GetExperienceQuestionRoomsService
+import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomCardResult
 import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomDetail
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomCard
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomMessage
@@ -44,7 +45,10 @@ internal class ExperienceQuestionRoomResolverTest(
         every { workspaceAccessValidationService.validateAccessible("ws-1", 1L) } returns
             Workspace(id = 10L, publicId = "ws-1", ownerUserId = 1L)
         every { getExperienceQuestionRoomsService.get(10L, "jd-pub-1") } returns listOf(
-            ExperienceQuestionRoomCard("card-1", "장애 대응 체계를 직접 구축한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 장애 대응"),
+            ExperienceQuestionRoomCardResult(
+                ExperienceQuestionRoomCard("card-1", "장애 대응 체계를 직접 구축한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 장애 대응"),
+                applied = true,
+            ),
         )
 
         authenticatedTester(graphQlTester)
@@ -56,6 +60,7 @@ internal class ExperienceQuestionRoomResolverTest(
                     question
                     sourceType
                     sourceText
+                    applied
                   }
                 }
                 """.trimIndent(),
@@ -63,7 +68,7 @@ internal class ExperienceQuestionRoomResolverTest(
             .execute()
             .path("experienceQuestionRooms[0]").entity<ExperienceQuestionRoomCardResponse>().satisfies {
                 it shouldBe ExperienceQuestionRoomCardResponse(
-                    "card-1", "장애 대응 체계를 직접 구축한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 장애 대응",
+                    "card-1", "장애 대응 체계를 직접 구축한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 장애 대응", true,
                 )
             }
     }
@@ -74,14 +79,14 @@ internal class ExperienceQuestionRoomResolverTest(
             Workspace(id = 10L, publicId = "ws-1", ownerUserId = 1L)
         val room = ExperienceQuestionRoomCard("room-1", "직접 개선한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 개선")
         val user = ExperienceQuestionRoomMessage.user("room-1", "정리해 주세요", listOf(8L)).copy(messageId = 7L, createdAt = createdAt)
-        every { experienceQuestionRoomChatService.getDetail(10L, "room-1") } returns ExperienceQuestionRoomDetail(room, listOf(user))
+        every { experienceQuestionRoomChatService.getDetail(10L, "room-1") } returns ExperienceQuestionRoomDetail(ExperienceQuestionRoomCardResult(room, applied = false), listOf(user))
 
         authenticatedTester(graphQlTester)
             .document(
                 """
                 query {
                   experienceQuestionRoom(workspaceId: "ws-1", questionRoomId: "room-1") {
-                    room { questionRoomId question sourceType sourceText }
+                    room { questionRoomId question sourceType sourceText applied }
                     messages { messageId role content experienceIds block { title bullets } feedback { fit improvement } createdAt }
                   }
                 }

@@ -8,5 +8,7 @@ interface ExperienceQuestionRoomApplyRepository {
 
     fun findByQuestionRoomIdAndResumeId(questionRoomId: String, resumeId: Long): ExperienceQuestionRoomApply?
 
+    fun findAppliedQuestionRoomIds(questionRoomIds: Collection<String>): Set<String>
+
     fun save(apply: ExperienceQuestionRoomApply): ExperienceQuestionRoomApply
 }

@@ -40,6 +40,11 @@ type ExperienceQuestionRoomCard {
     질문의 근거가 된 JD 항목 원문입니다.
     """
     sourceText: String!
+
+    """
+    이 대화방의 블록을 이력서에 한 번이라도 적용했는지 여부입니다. 적용한 이력서 아이템을 나중에 이력서에서 지워도 true로 남습니다.
+    """
+    applied: Boolean!
 }
 
 """

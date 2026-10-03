@@ -1297,6 +1297,7 @@ query ExperienceQuestionRooms {
         question
         sourceType
         sourceText
+        applied
     }
 }
 ----
@@ -1320,6 +1321,7 @@ query ExperienceQuestionRoom {
             question
             sourceType
             sourceText
+            applied
         }
         messages {
             messageId

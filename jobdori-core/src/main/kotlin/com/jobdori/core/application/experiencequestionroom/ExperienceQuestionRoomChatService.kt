@@ -4,6 +4,7 @@ import com.jobdori.common.error.ErrorDetail
 import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.ai.client.AiChatClient
 import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomChatResult
+import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomCardResult
 import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomDetail
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.domain.ai.error.AiErrorCode
@@ -53,7 +54,11 @@ class ExperienceQuestionRoomChatService(
 
     fun getDetail(workspaceId: Long, questionRoomId: String): ExperienceQuestionRoomDetail {
         val (_, room) = findRoomWithJd(workspaceId, questionRoomId)
-        return ExperienceQuestionRoomDetail(room, messageRepository.findAllByQuestionRoomId(questionRoomId))
+        val applied = questionRoomId in applyRepository.findAppliedQuestionRoomIds(listOf(questionRoomId))
+        return ExperienceQuestionRoomDetail(
+            ExperienceQuestionRoomCardResult(room, applied),
+            messageRepository.findAllByQuestionRoomId(questionRoomId),
+        )
     }
 
     // AI 호출을 기다리는 동안 DB 커넥션을 잡지 않도록 트랜잭션을 걸지 않는다. 메시지 쌍 저장만 자기 트랜잭션을 쓴다.

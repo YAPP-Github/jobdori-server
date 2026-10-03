@@ -25,6 +25,10 @@ class ExperienceQuestionRoomApplyRepositoryImpl(
     override fun findByQuestionRoomIdAndResumeId(questionRoomId: String, resumeId: Long): ExperienceQuestionRoomApply? =
         jpa.findByQuestionRoomIdAndResumeId(questionRoomId, resumeId)?.toDomain()
 
+    @Transactional(readOnly = true)
+    override fun findAppliedQuestionRoomIds(questionRoomIds: Collection<String>): Set<String> =
+        if (questionRoomIds.isEmpty()) emptySet() else jpa.findAllByQuestionRoomIdIn(questionRoomIds).mapTo(HashSet()) { it.questionRoomId }
+
     @Transactional
     override fun save(apply: ExperienceQuestionRoomApply): ExperienceQuestionRoomApply {
         val entity = jpa.findByQuestionRoomIdAndResumeId(apply.questionRoomId, apply.resumeId)

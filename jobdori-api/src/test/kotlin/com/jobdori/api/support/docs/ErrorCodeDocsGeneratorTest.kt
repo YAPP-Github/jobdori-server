@@ -401,6 +401,22 @@ private val graphQlOperationErrors = listOf(
         ),
     ),
     GraphQlOperationError(
+        category = "JD",
+        operation = "experienceQuestionRooms",
+        title = "JD 경험 질문 대화방 목록 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("jd/experience-question-rooms.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            JdErrorCode.E404_JD_NOT_FOUND,
+            AiErrorCode.E429_AI_RATE_LIMITED,
+            AiErrorCode.E500_AI_GENERATION_FAILED,
+            AiErrorCode.E503_AI_UNAVAILABLE,
+            AiErrorCode.E504_AI_TIMEOUT,
+        ),
+    ),
+    GraphQlOperationError(
         category = "Profile",
         operation = "profile",
         title = "이력서 기본 정보 프로필 조회",

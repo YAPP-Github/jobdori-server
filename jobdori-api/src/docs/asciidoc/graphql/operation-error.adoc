@@ -722,6 +722,48 @@
 |===
 // end::markJdCompleted[]
 
+// tag::experienceQuestionRooms[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 이 워크스페이스에 접근할 권한이 없어요.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 워크스페이스를 찾을 수 없는 경우
+
+| jd_not_found
+| 등록되지 않은 채용공고예요. 목록에서 다시 확인해 주세요.
+| 존재하지 않거나 소유자가 아닌 JD 조회
+
+| ai_rate_limited
+| 요청이 많아 잠시 기다려야 해요. 입력한 내용은 그대로 있으니 잠시 후 다시 시도해 주세요.
+| AI 요청 한도 초과
+
+| ai_generation_failed
+| 생성이 중간에 멈췄어요. 입력한 내용은 그대로 있으니 다시 시도해 주세요.
+| AI 응답 생성 실패
+
+| ai_unavailable
+| 지금은 AI 기능을 이용할 수 없어요. 잠시 후 다시 시도해 주세요.
+| AI 서비스 접근 불가
+
+| ai_timeout
+| 응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.
+| AI 응답 지연/시간 초과
+
+|===
+// end::experienceQuestionRooms[]
+
 // tag::profile[]
 커스텀 에러 코드:
 

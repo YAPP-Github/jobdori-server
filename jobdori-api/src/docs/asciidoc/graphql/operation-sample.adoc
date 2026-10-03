@@ -1281,6 +1281,28 @@ mutation MarkJdCompleted {
 ====
 // end::markJdCompleted[]
 
+// tag::experienceQuestionRooms[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query ExperienceQuestionRooms {
+    experienceQuestionRooms(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        jdId: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        questionRoomId
+        question
+        sourceType
+        sourceText
+    }
+}
+----
+====
+// end::experienceQuestionRooms[]
+
 // tag::profile[]
 [.graphql-sample]
 ====

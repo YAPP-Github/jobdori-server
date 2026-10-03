@@ -6,6 +6,7 @@ import com.jobdori.common.error.ErrorCode
 import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
+import com.jobdori.core.domain.experiencequestionroom.error.ExperienceQuestionRoomErrorCode
 import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
 import com.jobdori.core.domain.jd.error.JdErrorCode
 import com.jobdori.core.domain.notion.error.NotionErrorCode
@@ -414,6 +415,50 @@ private val graphQlOperationErrors = listOf(
             AiErrorCode.E500_AI_GENERATION_FAILED,
             AiErrorCode.E503_AI_UNAVAILABLE,
             AiErrorCode.E504_AI_TIMEOUT,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "experienceQuestionRoom",
+        title = "JD 경험 질문 대화방 상세 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("jd/experience-question-room.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            ExperienceQuestionRoomErrorCode.E404_EXPERIENCE_QUESTION_ROOM_NOT_FOUND,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "sendExperienceQuestionRoomMessage",
+        title = "JD 경험 질문 대화방 메시지 전송",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("jd/send-experience-question-room-message.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            ExperienceQuestionRoomErrorCode.E404_EXPERIENCE_QUESTION_ROOM_NOT_FOUND,
+            ExperienceErrorCode.E404_EXPERIENCE_NOT_FOUND,
+            CommonErrorCode.E400_INVALID_ARGUMENTS,
+            AiErrorCode.E429_AI_RATE_LIMITED,
+            AiErrorCode.E500_AI_GENERATION_FAILED,
+            AiErrorCode.E503_AI_UNAVAILABLE,
+            AiErrorCode.E504_AI_TIMEOUT,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "JD",
+        operation = "applyExperienceQuestionRoomBlock",
+        title = "JD 경험 질문 블록 이력서 적용",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("jd/apply-experience-question-room-block.graphql"),
+        errorCodes = operationErrorCodes(
+            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
+            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
+            ExperienceQuestionRoomErrorCode.E404_EXPERIENCE_QUESTION_ROOM_NOT_FOUND,
+            ExperienceQuestionRoomErrorCode.E404_EXPERIENCE_QUESTION_ROOM_MESSAGE_NOT_FOUND,
+            ResumeErrorCode.E404_RESUME_NOT_FOUND,
         ),
     ),
     GraphQlOperationError(

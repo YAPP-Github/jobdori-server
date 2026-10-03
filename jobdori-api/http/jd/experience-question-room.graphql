@@ -1,0 +1,28 @@
+query ExperienceQuestionRoom {
+    experienceQuestionRoom(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
+    ) {
+        room {
+            questionRoomId
+            question
+            sourceType
+            sourceText
+        }
+        messages {
+            messageId
+            role
+            content
+            experienceIds
+            block {
+                title
+                bullets
+            }
+            feedback {
+                fit
+                improvement
+            }
+            createdAt
+        }
+    }
+}

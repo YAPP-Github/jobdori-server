@@ -764,6 +764,116 @@
 |===
 // end::experienceQuestionRooms[]
 
+// tag::experienceQuestionRoom[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 이 워크스페이스에 접근할 권한이 없어요.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 워크스페이스를 찾을 수 없는 경우
+
+| experience_question_room_not_found
+| 경험 질문 대화방을 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 대화방을 찾을 수 없는 경우
+
+|===
+// end::experienceQuestionRoom[]
+
+// tag::sendExperienceQuestionRoomMessage[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 이 워크스페이스에 접근할 권한이 없어요.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 워크스페이스를 찾을 수 없는 경우
+
+| experience_question_room_not_found
+| 경험 질문 대화방을 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 대화방을 찾을 수 없는 경우
+
+| experience_not_found
+| 경험을 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 경험을 찾을 수 없는 경우
+
+| invalid_arguments
+| 입력한 내용을 다시 확인해 주세요.
+| 필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우
+
+| ai_rate_limited
+| 요청이 많아 잠시 기다려야 해요. 입력한 내용은 그대로 있으니 잠시 후 다시 시도해 주세요.
+| AI 요청 한도 초과
+
+| ai_generation_failed
+| 생성이 중간에 멈췄어요. 입력한 내용은 그대로 있으니 다시 시도해 주세요.
+| AI 응답 생성 실패
+
+| ai_unavailable
+| 지금은 AI 기능을 이용할 수 없어요. 잠시 후 다시 시도해 주세요.
+| AI 서비스 접근 불가
+
+| ai_timeout
+| 응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.
+| AI 응답 지연/시간 초과
+
+|===
+// end::sendExperienceQuestionRoomMessage[]
+
+// tag::applyExperienceQuestionRoomBlock[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| workspace_access_denied
+| 이 워크스페이스에 접근할 권한이 없어요.
+| 워크스페이스 접근 권한이 없는 경우
+
+| workspace_not_found
+| 워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 워크스페이스를 찾을 수 없는 경우
+
+| experience_question_room_not_found
+| 경험 질문 대화방을 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 대화방을 찾을 수 없는 경우
+
+| experience_question_room_message_not_found
+| 대화방 메시지를 찾지 못했어요. 다시 확인해 주세요.
+| AI 메시지를 찾을 수 없는 경우
+
+| resume_not_found
+| 이력서를 찾지 못했어요. 목록에서 다시 확인해 주세요.
+| 이력서를 찾을 수 없는 경우
+
+|===
+// end::applyExperienceQuestionRoomBlock[]
+
 // tag::profile[]
 커스텀 에러 코드:
 

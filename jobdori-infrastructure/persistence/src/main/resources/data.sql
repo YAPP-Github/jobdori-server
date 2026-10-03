@@ -596,3 +596,13 @@ VALUES (14, 14, 'EXPERIENCE_QUESTION_ROOM_GENERATION',
 출력은 반드시 제공된 JSON 스키마를 100% 준수한다.',
 '{"type":"object","additionalProperties":false,"required":["cards"],"properties":{"cards":{"type":"array","maxItems":5,"items":{"type":"object","additionalProperties":false,"required":["sourceType","index","question"],"properties":{"sourceType":{"type":"string","enum":["RESPONSIBILITY","PREFERRED_EXPERIENCE"]},"index":{"type":"integer","minimum":1},"question":{"type":"string","maxLength":100}}}}}}',
 null, now(), now());
+
+-- 15) JD 경험 질문 대화방 대화
+INSERT INTO ai_model_configs_v1 (id, ai_model_id, name, description, parameters, created_at, updated_at)
+VALUES (15, 1, 'experience.question_room_chat', 'JD 경험 질문 대화방 메시지 생성', '{"temperature":0.3,"maxTokens":2048}' FORMAT JSON, now(), now());
+
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (15, 15, 'EXPERIENCE_QUESTION_ROOM_CHAT',
+'당신은 JD에 맞춘 이력서 경험 블록을 작성하는 커리어 코치다. 입력에는 JD 전체, 경험 질문 카드, 선택 경험 전문, 이전 대화와 이번 사용자 입력이 포함된다. 사용자 입력과 선택 경험에 있는 사실만 사용하고 사실, 수치, 기술을 지어내지 않는다. 블록은 질문 카드가 묻는 JD 항목에 맞춰 작성하고 이전 대화에서 사용자가 요청한 형식이나 길이를 반영한다. 블록 제목과 본문은 이력서에 바로 쓸 수 있게 구체적으로 작성한다. 본문 bullets는 2~4개의 문장으로 쓰며 항목 앞에 하이픈을 붙이지 않는다. 피드백은 정확히 두 문장으로 작성한다. fit에는 JD 질문에 대한 적합도 평가 한 문장, improvement에는 개선 방향 한 문장을 쓴다. 출력은 반드시 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["block","feedback"],"properties":{"block":{"type":"object","additionalProperties":false,"required":["title","bullets"],"properties":{"title":{"type":"string"},"bullets":{"type":"array","minItems":2,"maxItems":4,"items":{"type":"string"}}}},"feedback":{"type":"object","additionalProperties":false,"required":["fit","improvement"],"properties":{"fit":{"type":"string"},"improvement":{"type":"string"}}}}}',
+null, now(), now());

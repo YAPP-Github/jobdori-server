@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface ExperienceQuestionRoomJpaRepository : JpaRepository<ExperienceQuestionRoomEntity, Long> {
     fun findByJdId(jdId: Long): ExperienceQuestionRoomEntity?
+    fun findAllByJdIdIn(jdIds: Collection<Long>): List<ExperienceQuestionRoomEntity>
 }

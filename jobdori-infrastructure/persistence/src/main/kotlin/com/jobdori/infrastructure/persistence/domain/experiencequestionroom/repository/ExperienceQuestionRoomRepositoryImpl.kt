@@ -14,6 +14,10 @@ class ExperienceQuestionRoomRepositoryImpl(
     @Transactional(readOnly = true)
     override fun findByJdId(jdId: Long): ExperienceQuestionRoom? = jpa.findByJdId(jdId)?.toDomain()
 
+    @Transactional(readOnly = true)
+    override fun findAllByJdIdIn(jdIds: Collection<Long>): List<ExperienceQuestionRoom> =
+        if (jdIds.isEmpty()) emptyList() else jpa.findAllByJdIdIn(jdIds).map { it.toDomain() }
+
     @Transactional
     override fun save(room: ExperienceQuestionRoom): ExperienceQuestionRoom =
         jpa.save(ExperienceQuestionRoomEntity.from(room)).toDomain()

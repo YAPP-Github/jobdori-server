@@ -170,20 +170,18 @@
 <li><a href="#_jd_목록_조회">2.6.2. JD 목록 조회</a></li>
 <li><a href="#_jd_등록">2.6.3. JD 등록</a></li>
 <li><a href="#_jd_완료_처리">2.6.4. JD 완료 처리</a></li>
+<li><a href="#_jd_경험_질문_대화방_목록_조회">2.6.5. JD 경험 질문 대화방 목록 조회</a></li>
+<li><a href="#_jd_경험_질문_대화방_상세_조회">2.6.6. JD 경험 질문 대화방 상세 조회</a></li>
+<li><a href="#_jd_경험_질문_대화방_메시지_전송">2.6.7. JD 경험 질문 대화방 메시지 전송</a></li>
+<li><a href="#_jd_경험_질문_블록_이력서_적용">2.6.8. JD 경험 질문 블록 이력서 적용</a></li>
 </ul>
 </li>
-<li><a href="#_jd_recommendation">2.7. JD Recommendation</a>
+<li><a href="#_profile">2.7. Profile</a>
 <ul class="sectlevel3">
-<li><a href="#_추천_공고_태그_목록_조회">2.7.1. 추천 공고 태그 목록 조회</a></li>
-<li><a href="#_추천_공고_목록_조회">2.7.2. 추천 공고 목록 조회</a></li>
-</ul>
-</li>
-<li><a href="#_profile">2.8. Profile</a>
-<ul class="sectlevel3">
-<li><a href="#_이력서_기본_정보_프로필_조회">2.8.1. 이력서 기본 정보 프로필 조회</a></li>
-<li><a href="#_이력서_기본_정보_프로필_수정">2.8.2. 이력서 기본 정보 프로필 수정</a></li>
-<li><a href="#_핵심역량_ai_생성">2.8.3. 핵심역량 AI 생성</a></li>
-<li><a href="#_프로필_텍스트경험_ai_다듬기">2.8.4. 프로필 텍스트/경험 AI 다듬기</a></li>
+<li><a href="#_이력서_기본_정보_프로필_조회">2.7.1. 이력서 기본 정보 프로필 조회</a></li>
+<li><a href="#_이력서_기본_정보_프로필_수정">2.7.2. 이력서 기본 정보 프로필 수정</a></li>
+<li><a href="#_핵심역량_ai_생성">2.7.3. 핵심역량 AI 생성</a></li>
+<li><a href="#_프로필_텍스트경험_ai_다듬기">2.7.4. 프로필 텍스트/경험 AI 다듬기</a></li>
 </ul>
 </li>
 </ul>
@@ -3198,16 +3196,13 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </tbody>
 </table>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_jd_recommendation">2.7. JD Recommendation</h3>
 <div class="sect3">
-<h4 id="_추천_공고_태그_목록_조회">2.7.1. 추천 공고 태그 목록 조회</h4>
+<h4 id="_jd_경험_질문_대화방_목록_조회">2.6.5. JD 경험 질문 대화방 목록 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
 <div class="paragraph">
-<p>Operation: <code>jdRecommendationTags</code></p>
+<p>Operation: <code>experienceQuestionRooms</code></p>
 </div>
 <div class="exampleblock graphql-sample">
 <div class="content">
@@ -3216,56 +3211,122 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query JdRecommendationTags {
-    jdRecommendationTags {
-        tag
-        name
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>커스텀 에러 코드: 없음</p>
-</div>
-<div class="paragraph">
-<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_추천_공고_목록_조회">2.7.2. 추천 공고 목록 조회</h4>
-<div class="paragraph">
-<p>Type: <code>Query</code></p>
-</div>
-<div class="paragraph">
-<p>Operation: <code>jdRecommendations</code></p>
-</div>
-<div class="exampleblock graphql-sample">
-<div class="content">
-<div class="paragraph">
-<p>요청 샘플:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query JdRecommendations {
-    jdRecommendations(
-        tags: [POPULAR]
-        cursor: null
-        size: 10
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ExperienceQuestionRooms {
+    experienceQuestionRooms(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        jdId: "00000000-0000-0000-0000-00000000000a"
     ) {
-        recommendations {
-            id
-            tags
-            companyName
-            title
-            recruitmentStartAt
-            recruitmentEndAt
-            sourceUrl
+        questionRoomId
+        question
+        sourceType
+        sourceText
+        applied
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 채용공고예요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않거나 소유자가 아닌 JD 조회</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_rate_limited</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">요청이 많아 잠시 기다려야 해요. 입력한 내용은 그대로 있으니 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청 한도 초과</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성이 중간에 멈췄어요. 입력한 내용은 그대로 있으니 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 생성 실패</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_unavailable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">지금은 AI 기능을 이용할 수 없어요. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 서비스 접근 불가</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_timeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 지연/시간 초과</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_jd_경험_질문_대화방_상세_조회">2.6.6. JD 경험 질문 대화방 상세 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>experienceQuestionRoom</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query ExperienceQuestionRoom {
+    experienceQuestionRoom(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
+    ) {
+        room {
+            questionRoomId
+            question
+            sourceType
+            sourceText
+            applied
         }
-        cursor {
-            nextCursor
-            hasNext
+        messages {
+            messageId
+            role
+            content
+            experienceIds
+            block {
+                title
+                bullets
+            }
+            feedback {
+                fit
+                improvement
+            }
+            createdAt
         }
     }
 }</code></pre>
@@ -3274,17 +3335,247 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="paragraph">
-<p>커스텀 에러 코드: 없음</p>
+<p>커스텀 에러 코드:</p>
 </div>
 <div class="paragraph">
-<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
 </div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_question_room_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 질문 대화방을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">대화방을 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_jd_경험_질문_대화방_메시지_전송">2.6.7. JD 경험 질문 대화방 메시지 전송</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>sendExperienceQuestionRoomMessage</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation SendExperienceQuestionRoomMessage {
+    sendExperienceQuestionRoomMessage(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
+        request: {
+            content: "이 경험을 JD에 맞게 정리해 주세요"
+            experienceIds: ["1"]
+        }
+    ) {
+        messageId
+        role
+        block {
+            title
+            bullets
+        }
+        feedback {
+            fit
+            improvement
+        }
+        createdAt
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_question_room_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 질문 대화방을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">대화방을 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험을 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">invalid_arguments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">입력한 내용을 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_rate_limited</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">요청이 많아 잠시 기다려야 해요. 입력한 내용은 그대로 있으니 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 요청 한도 초과</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_generation_failed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성이 중간에 멈췄어요. 입력한 내용은 그대로 있으니 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 생성 실패</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_unavailable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">지금은 AI 기능을 이용할 수 없어요. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 서비스 접근 불가</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ai_timeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 지연/시간 초과</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_jd_경험_질문_블록_이력서_적용">2.6.8. JD 경험 질문 블록 이력서 적용</h4>
+<div class="paragraph">
+<p>Type: <code>Mutation</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>applyExperienceQuestionRoomBlock</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation ApplyExperienceQuestionRoomBlock {
+    applyExperienceQuestionRoomBlock(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
+        messageId: "1"
+        resumeId: "1"
+    ) {
+        itemId
+        displayOrder
+        visible
+        payload {
+            experience {
+                name
+                role
+                contents
+            }
+        }
+        createdAt
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드:</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch api-table">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 32%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Message</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_question_room_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 질문 대화방을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">대화방을 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_question_room_message_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">대화방 메시지를 찾지 못했어요. 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AI 메시지를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">resume_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾을 수 없는 경우</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_profile">2.8. Profile</h3>
+<h3 id="_profile">2.7. Profile</h3>
 <div class="sect3">
-<h4 id="_이력서_기본_정보_프로필_조회">2.8.1. 이력서 기본 정보 프로필 조회</h4>
+<h4 id="_이력서_기본_정보_프로필_조회">2.7.1. 이력서 기본 정보 프로필 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -3384,7 +3675,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_이력서_기본_정보_프로필_수정">2.8.2. 이력서 기본 정보 프로필 수정</h4>
+<h4 id="_이력서_기본_정보_프로필_수정">2.7.2. 이력서 기본 정보 프로필 수정</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -3512,7 +3803,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_핵심역량_ai_생성">2.8.3. 핵심역량 AI 생성</h4>
+<h4 id="_핵심역량_ai_생성">2.7.3. 핵심역량 AI 생성</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -3595,7 +3886,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_프로필_텍스트경험_ai_다듬기">2.8.4. 프로필 텍스트/경험 AI 다듬기</h4>
+<h4 id="_프로필_텍스트경험_ai_다듬기">2.7.4. 프로필 텍스트/경험 AI 다듬기</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -3684,7 +3975,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-10-01<br>
+Version 2026-10-04<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

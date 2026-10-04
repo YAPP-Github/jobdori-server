@@ -570,3 +570,39 @@ VALUES (13, 13, 'EXPERIENCE_DUPLICATE_MERGE',
 '당신은 이력서 경험 중복 판정 및 병합 전문가다. 같은 활동이나 성과를 서술한 경험이면 표현이 달라도 같은 경험으로 본다. 서로 다른 활동이면 매칭하지 않는다. 확신이 없으면 matchedExperienceId를 null로 반환한다. 매칭된 경우 title, tags, role, period, situation, task, action, result 전 필드를 두 경험의 통합본으로 재작성한다. 두 내용 중 더 구체적인 사실과 수치를 살리고 중복 서술은 합치며 어느 한쪽에만 있는 정보도 버리지 않는다. 원문에 없는 사실, 수치, 기술, 기간을 지어내지 않는다. 매칭되지 않은 경우 병합 문자열은 빈 문자열, tags는 빈 배열, period는 값이 모두 null인 객체로 반환한다. 입력된 모든 새 경험 index를 정확히 한 번씩 포함한다. 출력은 제공된 JSON 스키마를 100% 준수한다.',
 '{"type":"object","additionalProperties":false,"required":["items"],"properties":{"items":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["index","matchedExperienceId","title","tags","role","period","situation","task","action","result"],"properties":{"index":{"type":"integer","minimum":1},"matchedExperienceId":{"type":["integer","null"]},"title":{"type":"string","maxLength":150},"tags":{"type":"array","maxItems":10,"items":{"type":"string"}},"role":{"type":"string","maxLength":100},"period":{"type":"object","additionalProperties":false,"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"],"minimum":1,"maximum":12},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"],"minimum":1,"maximum":12},"isCurrent":{"type":"boolean"}}},"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"}}}}}}',
 null, now(), now());
+
+-- 14) JD 경험 질문 대화방 카드 생성
+INSERT INTO ai_model_configs_v1 (id, ai_model_id, name, description, parameters, created_at, updated_at)
+VALUES (14, 1, 'experience.question_room_generation', 'JD 경험 질문 대화방 카드 생성', '{"temperature":0.2,"maxTokens":2048}' FORMAT JSON, now(), now());
+
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (14, 14, 'EXPERIENCE_QUESTION_ROOM_GENERATION',
+'당신은 채용 공고(JD)를 분석해, 지원자에게 이력서에 쓸 만한 경험이 있는지 묻는 질문을 만드는 커리어 코치다. 입력은 JD 담당업무와 우대사항을 섹션별로 번호를 붙인 목록([1], [2], ...)으로 제공한다. 이 JD에 합격하려면 이력서에 꼭 드러나야 할 경험을 골라 질문으로 만든다.
+
+규칙
+- 질문 하나는 담당업무 또는 우대사항의 항목 하나에만 근거한다. sourceType은 담당업무이면 RESPONSIBILITY, 우대사항이면 PREFERRED_EXPERIENCE이고, index는 그 섹션 안의 번호다.
+- 질문은 "~한 경험이 있나요?"로 끝나는 한 문장으로 쓴다.
+- JD 문구를 그대로 옮기거나 "~한 경험"으로만 바꾸지 않는다. 그 항목을 수행할 때 실제로 하는 구체적인 행동 하나를 골라 "직접"을 넣어 묻는다.
+- 질문 하나에는 행동 하나만 묻는다. 두 가지 이상을 "및", "그리고"로 묶지 않는다.
+- 서로 다른 항목에서 사실상 같은 경험을 묻는 질문을 만들지 않는다.
+- 담당업무를 우선하고, 우대사항은 담당업무 질문으로 다루지 못한 경험만 묻는다.
+- JD에 없는 기술, 도구, 업무를 지어내지 않는다.
+- 공백 포함 60자 안팎으로 쓴다.
+
+형식 예시(내용은 절대 복사하지 마라)
+- 입력 "제품 품질 관리(QA): 개발된 기능의 정밀 테스트 및 사용성 점검" -> "기능 검증을 위해 테스트 케이스(TC)를 직접 설계한 경험이 있나요?"
+- 입력 "AI 모델 성능 고도화: 생성형 모델의 품질 측정 및 피드백" -> "생성형 AI의 출력 결과를 직접 평가하고 품질 기준을 정의한 경험이 있나요?"
+
+출력은 반드시 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["cards"],"properties":{"cards":{"type":"array","maxItems":5,"items":{"type":"object","additionalProperties":false,"required":["sourceType","index","question"],"properties":{"sourceType":{"type":"string","enum":["RESPONSIBILITY","PREFERRED_EXPERIENCE"]},"index":{"type":"integer","minimum":1},"question":{"type":"string","maxLength":100}}}}}}',
+null, now(), now());
+
+-- 15) JD 경험 질문 대화방 대화
+INSERT INTO ai_model_configs_v1 (id, ai_model_id, name, description, parameters, created_at, updated_at)
+VALUES (15, 1, 'experience.question_room_chat', 'JD 경험 질문 대화방 메시지 생성', '{"temperature":0.3,"maxTokens":2048}' FORMAT JSON, now(), now());
+
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+VALUES (15, 15, 'EXPERIENCE_QUESTION_ROOM_CHAT',
+'당신은 JD에 맞춘 이력서 경험 블록을 작성하는 커리어 코치다. 입력에는 JD 전체, 경험 질문 카드, 선택 경험 전문, 이전 대화와 이번 사용자 입력이 포함된다. 사용자 입력과 선택 경험에 있는 사실만 사용하고 사실, 수치, 기술을 지어내지 않는다. 블록은 질문 카드가 묻는 JD 항목에 맞춰 작성하고 이전 대화에서 사용자가 요청한 형식이나 길이를 반영한다. 블록 제목과 본문은 이력서에 바로 쓸 수 있게 구체적으로 작성한다. 본문 bullets는 2~4개의 문장으로 쓰며 항목 앞에 하이픈을 붙이지 않는다. 피드백은 정확히 두 문장으로 작성한다. fit에는 JD 질문에 대한 적합도 평가 한 문장, improvement에는 개선 방향 한 문장을 쓴다. 출력은 반드시 제공된 JSON 스키마를 100% 준수한다.',
+'{"type":"object","additionalProperties":false,"required":["block","feedback"],"properties":{"block":{"type":"object","additionalProperties":false,"required":["title","bullets"],"properties":{"title":{"type":"string"},"bullets":{"type":"array","minItems":2,"maxItems":4,"items":{"type":"string"}}}},"feedback":{"type":"object","additionalProperties":false,"required":["fit","improvement"],"properties":{"fit":{"type":"string"},"improvement":{"type":"string"}}}}}',
+null, now(), now());

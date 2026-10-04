@@ -5,8 +5,7 @@ import com.jobdori.core.application.experiencerecommendation.result.ExperienceRe
 import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
 import com.jobdori.core.domain.experience.Experience
-import com.jobdori.core.domain.experience.FreeExperienceContents
-import com.jobdori.core.domain.experience.StarExperienceContents
+import com.jobdori.core.domain.experience.ExperiencePromptText
 import com.jobdori.core.domain.experiencerecommendation.RecommendedExperience
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdPromptText
@@ -74,13 +73,8 @@ class GenerateExperienceRecommendationService(
         experiences.forEachIndexed { i, experience ->
             appendLine("[${i + 1}] ${experience.title}")
             if (experience.tags.isNotEmpty()) appendLine("태그: ${experience.tags.joinToString(", ")}")
-            appendLine(renderContents(experience))
+            appendLine(ExperiencePromptText.contentsOf(experience))
             appendLine()
         }
     }.trim()
-
-    private fun renderContents(experience: Experience): String = when (val c = experience.contents) {
-        is StarExperienceContents -> "상황: ${c.situation}\n과제: ${c.task}\n행동: ${c.action}\n결과: ${c.result}"
-        is FreeExperienceContents -> c.content
-    }
 }

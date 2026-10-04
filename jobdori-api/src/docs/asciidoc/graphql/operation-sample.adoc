@@ -1281,6 +1281,133 @@ mutation MarkJdCompleted {
 ====
 // end::markJdCompleted[]
 
+// tag::experienceQuestionRooms[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query ExperienceQuestionRooms {
+    experienceQuestionRooms(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        jdId: "00000000-0000-0000-0000-00000000000a"
+    ) {
+        questionRoomId
+        question
+        sourceType
+        sourceText
+        applied
+    }
+}
+----
+====
+// end::experienceQuestionRooms[]
+
+// tag::experienceQuestionRoom[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query ExperienceQuestionRoom {
+    experienceQuestionRoom(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
+    ) {
+        room {
+            questionRoomId
+            question
+            sourceType
+            sourceText
+            applied
+        }
+        messages {
+            messageId
+            role
+            content
+            experienceIds
+            block {
+                title
+                bullets
+            }
+            feedback {
+                fit
+                improvement
+            }
+            createdAt
+        }
+    }
+}
+----
+====
+// end::experienceQuestionRoom[]
+
+// tag::sendExperienceQuestionRoomMessage[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation SendExperienceQuestionRoomMessage {
+    sendExperienceQuestionRoomMessage(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
+        request: {
+            content: "이 경험을 JD에 맞게 정리해 주세요"
+            experienceIds: ["1"]
+        }
+    ) {
+        messageId
+        role
+        block {
+            title
+            bullets
+        }
+        feedback {
+            fit
+            improvement
+        }
+        createdAt
+    }
+}
+----
+====
+// end::sendExperienceQuestionRoomMessage[]
+
+// tag::applyExperienceQuestionRoomBlock[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation ApplyExperienceQuestionRoomBlock {
+    applyExperienceQuestionRoomBlock(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
+        messageId: "1"
+        resumeId: "1"
+    ) {
+        itemId
+        displayOrder
+        visible
+        payload {
+            experience {
+                name
+                role
+                contents
+            }
+        }
+        createdAt
+    }
+}
+----
+====
+// end::applyExperienceQuestionRoomBlock[]
+
 // tag::profile[]
 [.graphql-sample]
 ====

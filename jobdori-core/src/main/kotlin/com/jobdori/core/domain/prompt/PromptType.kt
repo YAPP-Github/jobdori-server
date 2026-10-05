@@ -9,6 +9,7 @@ enum class PromptType {
     EXPERIENCE_QUESTION_ROOM_GENERATION,
     EXPERIENCE_QUESTION_ROOM_CHAT,
     EXPERIENCE_STAR_EXTRACTION,    // 경험 STAR 추출
+    RESUME_IMPORT_EXTRACTION,      // 이력서 원문 보존형 구조화 추출
     DOCUMENT_TEXT_EXTRACTION,      // 이미지 기반 문서 원문 전사
     RESUME_EXPERIENCE_REWRITE,     // 이력서 문장 생성
     EXPERIENCE_CONTENTS_POLISH,    // Free Style 경험 내용을 STAR로 변환

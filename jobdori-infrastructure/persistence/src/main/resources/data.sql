@@ -329,7 +329,33 @@ level은 아래 값 중 하나만 사용한다.
 '{"type":"object","properties":{"personalInfo":{"type":"object","properties":{"name":{"type":"string"},"phone":{"type":"string"},"email":{"type":"string"}},"required":["name","phone","email"],"additionalProperties":false},"education":{"type":"array","items":{"type":"object","properties":{"school":{"type":"string"},"major":{"type":"string"},"degree":{"type":"string","enum":["BACHELOR","MASTER","DOCTOR",""]},"status":{"type":"string","enum":["ENROLLED","ON_LEAVE","GRADUATED","EXPECTED_GRADUATION","COMPLETED",""]},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"}},"required":["school","major","degree","status","period","periodText"],"additionalProperties":false}},"careers":{"type":"array","items":{"type":"object","properties":{"company":{"type":"string"},"position":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"description":{"type":"string"}},"required":["company","position","period","periodText","description"],"additionalProperties":false}},"languageTests":{"type":"array","items":{"type":"object","properties":{"testName":{"type":"string"},"score":{"type":"string"},"acquiredAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["testName","score","acquiredAt"],"additionalProperties":false}},"awards":{"type":"array","items":{"type":"object","properties":{"title":{"type":"string"},"organization":{"type":"string"},"awardedAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["title","organization","awardedAt"],"additionalProperties":false}},"certifications":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"issuer":{"type":"string"},"acquiredAt":{"type":"object","properties":{"year":{"type":["integer","null"]},"month":{"type":["integer","null"]}},"required":["year","month"],"additionalProperties":false}},"required":["name","issuer","acquiredAt"],"additionalProperties":false}},"skills":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"level":{"type":"string","enum":["HIGH","MEDIUM","LOW",""]}},"required":["name","level"],"additionalProperties":false}},"projects":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"summary":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"role":{"type":"string"},"company":{"type":"string"},"experiences":{"type":"array","items":{"type":"object","properties":{"title":{"type":"string"},"period":{"type":"object","properties":{"startYear":{"type":["integer","null"]},"startMonth":{"type":["integer","null"]},"endYear":{"type":["integer","null"]},"endMonth":{"type":["integer","null"]},"isCurrent":{"type":"boolean"}},"required":["startYear","startMonth","endYear","endMonth","isCurrent"],"additionalProperties":false},"periodText":{"type":"string"},"role":{"type":"string"},"situation":{"type":"string"},"task":{"type":"string"},"action":{"type":"string"},"result":{"type":"string"},"competencyTags":{"type":"array","items":{"type":"string"}}},"required":["title","period","periodText","role","situation","task","action","result","competencyTags"],"additionalProperties":false}}},"required":["name","summary","period","periodText","role","company","experiences"],"additionalProperties":false}}},"required":["personalInfo","education","careers","languageTests","awards","certifications","skills","projects"],"additionalProperties":false}',
 null, now(), now());
 
--- 5) 경험 문장 일괄 자동 작성 (동료 담당 — 로컬 테스트 편의) — structured 모드. 서비스의 {tone} 치환은 이 content에 자리표시자가 없어 no-op.
+-- 5) 이력서 가져오기 원문 보존형 구조화 추출
+-- 기존 경험 추출 결과 스키마는 재사용하되, 이력서 import 전용 지침으로 분리한다.
+INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
+SELECT
+    14,
+    ai_model_config_id,
+    'RESUME_IMPORT_EXTRACTION',
+    '당신은 이력서 원문을 손실 없이 구조화하는 문서 분석기다.
+
+이 작업의 최우선순위는 원문 보존이다.
+
+- 원문의 제목, 회사명, 역할, 기간, 설명, 수치, 기술명과 고유명사를 가능한 한 그대로 복사하라.
+- 문장을 요약, 교정, 미사여구 추가, STAR 재작성, 이력서 문장 생성하지 마라.
+- situation/task/action/result는 원문 문장 또는 원문 bullet을 의미상 해당 필드에 배치하되 표현을 바꾸지 마라.
+- 원문에 없는 사실, 수치, 기간, 역할, 성과를 추론하거나 생성하지 마라.
+- 원문 정보가 어느 필드에 속하는지 불명확하면 임의로 보정하지 말고 가장 가까운 필드에 원문 그대로 넣어라.
+- 누락된 값은 빈 문자열 또는 null로 두고, 원문에 있는 항목은 정보가 부족해도 삭제하지 마라.
+- 모든 프로젝트와 경험을 빠짐없이 반환하라. 프로젝트명을 특정할 수 없는 항목도 가능한 경우 원문 제목이나 설명을 사용하라.
+- 출력은 제공된 JSON Schema를 100% 준수하고 JSON 외의 설명은 출력하지 마라.',
+    json_schema,
+    null,
+    now(),
+    now()
+FROM prompts_v1
+WHERE type = 'EXPERIENCE_STAR_EXTRACTION';
+
+-- 6) 경험 문장 일괄 자동 작성 (동료 담당 — 로컬 테스트 편의) — structured 모드. 서비스의 {tone} 치환은 이 content에 자리표시자가 없어 no-op.
 INSERT INTO prompts_v1 (id, ai_model_config_id, type, content, json_schema, deleted_at, created_at, updated_at)
 VALUES (5, 5, 'RESUME_EXPERIENCE_REWRITE',
 '당신은 이력서 작성 코치다.

@@ -370,6 +370,22 @@ private val graphQlOperationErrors = listOf(
         ),
     ),
     GraphQlOperationError(
+        category = "JD Recommendation",
+        operation = "jdRecommendationTags",
+        title = "추천 공고 태그 목록 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("jd/jd-recommendation-tags.graphql"),
+        errorCodes = emptyList(),
+    ),
+    GraphQlOperationError(
+        category = "JD Recommendation",
+        operation = "jdRecommendations",
+        title = "추천 공고 목록 조회",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("jd/jd-recommendations.graphql"),
+        errorCodes = emptyList(),
+    ),
+    GraphQlOperationError(
         category = "JD",
         operation = "registerJd",
         title = "JD 등록",

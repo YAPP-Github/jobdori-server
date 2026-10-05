@@ -1,5 +1,20 @@
 extend type Query {
     """
+    추천 공고 태그 목록과 화면 표시명을 조회합니다.
+    """
+    jdRecommendationTags: [JdRecommendationTagInfo!]!
+
+    """
+    활성화된 추천 공고 목록을 조회합니다.
+    tags가 비어 있으면 전체 추천 공고를 조회하고, 여러 tags가 오면 모두 포함한 공고를 조회합니다.
+    """
+    jdRecommendations(
+        tags: [JdRecommendationTag!]! = [],
+        cursor: String = null,
+        size: Int! = 10
+    ): JdRecommendationPage!
+
+    """
     등록된 JD 단건을 조회합니다.
     """
     jd(
@@ -46,6 +61,33 @@ extend type Query {
         status: JdStatus = null
     ): [Jd!]!
 
+}
+
+enum JdRecommendationTag {
+    POPULAR
+    MAJOR_COMPANY
+    TECH_COMPANY
+    EXTERNAL_ACTIVITY
+}
+
+type JdRecommendationPage {
+    recommendations: [JdRecommendation!]!
+    cursor: Cursor!
+}
+
+type JdRecommendationTagInfo {
+    tag: JdRecommendationTag!
+    name: String!
+}
+
+type JdRecommendation {
+    id: ID!
+    tags: [JdRecommendationTag!]
+    companyName: String!
+    title: String!
+    recruitmentStartAt: String
+    recruitmentEndAt: String
+    sourceUrl: String!
 }
 
 extend type Mutation {

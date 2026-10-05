@@ -1230,6 +1230,56 @@ query Jds {
 ====
 // end::jds[]
 
+// tag::jdRecommendationTags[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query JdRecommendationTags {
+    jdRecommendationTags {
+        tag
+        name
+    }
+}
+----
+====
+// end::jdRecommendationTags[]
+
+// tag::jdRecommendations[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query JdRecommendations {
+    jdRecommendations(
+        tags: [POPULAR]
+        cursor: null
+        size: 10
+    ) {
+        recommendations {
+            id
+            tags
+            companyName
+            title
+            recruitmentStartAt
+            recruitmentEndAt
+            sourceUrl
+            displayOrder
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}
+----
+====
+// end::jdRecommendations[]
+
 // tag::registerJd[]
 [.graphql-sample]
 ====

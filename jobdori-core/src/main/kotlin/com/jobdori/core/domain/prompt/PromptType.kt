@@ -6,7 +6,10 @@ enum class PromptType {
     JD_KEY_POINTS,                 // jd 공고 핵심(인재상/요구) 요약(서술형) — 서비스에선 JD_META_EXTRACTION에 통합(#73), DB 프롬프트 테스트용으로 유지
     JD_APPLICATION_STRATEGY,       // jd 지원 전략 생성(서술형) — JD 등록 시 워크스페이스 프로필과 함께 생성해 jd.strategy에 저장
     EXPERIENCE_RECOMMENDATION,     // jd-경험 매칭률(전량) + 상위 이유(구조화)
+    EXPERIENCE_QUESTION_ROOM_GENERATION,
+    EXPERIENCE_QUESTION_ROOM_CHAT,
     EXPERIENCE_STAR_EXTRACTION,    // 경험 STAR 추출
+    RESUME_IMPORT_EXTRACTION,      // 이력서 원문 보존형 구조화 추출
     DOCUMENT_TEXT_EXTRACTION,      // 이미지 기반 문서 원문 전사
     RESUME_EXPERIENCE_REWRITE,     // 이력서 문장 생성
     EXPERIENCE_CONTENTS_POLISH,    // Free Style 경험 내용을 STAR로 변환

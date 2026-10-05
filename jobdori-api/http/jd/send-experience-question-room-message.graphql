@@ -1,0 +1,22 @@
+mutation SendExperienceQuestionRoomMessage {
+    sendExperienceQuestionRoomMessage(
+        workspaceId: "00000000-0000-0000-0000-000000000002"
+        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
+        request: {
+            content: "이 경험을 JD에 맞게 정리해 주세요"
+            experienceIds: ["1"]
+        }
+    ) {
+        messageId
+        role
+        block {
+            title
+            bullets
+        }
+        feedback {
+            fit
+            improvement
+        }
+        createdAt
+    }
+}

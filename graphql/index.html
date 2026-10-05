@@ -176,12 +176,18 @@
 <li><a href="#_jd_경험_질문_블록_이력서_적용">2.6.8. JD 경험 질문 블록 이력서 적용</a></li>
 </ul>
 </li>
-<li><a href="#_profile">2.7. Profile</a>
+<li><a href="#_jd_recommendation">2.7. JD Recommendation</a>
 <ul class="sectlevel3">
-<li><a href="#_이력서_기본_정보_프로필_조회">2.7.1. 이력서 기본 정보 프로필 조회</a></li>
-<li><a href="#_이력서_기본_정보_프로필_수정">2.7.2. 이력서 기본 정보 프로필 수정</a></li>
-<li><a href="#_핵심역량_ai_생성">2.7.3. 핵심역량 AI 생성</a></li>
-<li><a href="#_프로필_텍스트경험_ai_다듬기">2.7.4. 프로필 텍스트/경험 AI 다듬기</a></li>
+<li><a href="#_추천_공고_태그_목록_조회">2.7.1. 추천 공고 태그 목록 조회</a></li>
+<li><a href="#_추천_공고_목록_조회">2.7.2. 추천 공고 목록 조회</a></li>
+</ul>
+</li>
+<li><a href="#_profile">2.8. Profile</a>
+<ul class="sectlevel3">
+<li><a href="#_이력서_기본_정보_프로필_조회">2.8.1. 이력서 기본 정보 프로필 조회</a></li>
+<li><a href="#_이력서_기본_정보_프로필_수정">2.8.2. 이력서 기본 정보 프로필 수정</a></li>
+<li><a href="#_핵심역량_ai_생성">2.8.3. 핵심역량 AI 생성</a></li>
+<li><a href="#_프로필_텍스트경험_ai_다듬기">2.8.4. 프로필 텍스트/경험 AI 다듬기</a></li>
 </ul>
 </li>
 </ul>
@@ -3573,9 +3579,91 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 </div>
 <div class="sect2">
-<h3 id="_profile">2.7. Profile</h3>
+<h3 id="_jd_recommendation">2.7. JD Recommendation</h3>
 <div class="sect3">
-<h4 id="_이력서_기본_정보_프로필_조회">2.7.1. 이력서 기본 정보 프로필 조회</h4>
+<h4 id="_추천_공고_태그_목록_조회">2.7.1. 추천 공고 태그 목록 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>jdRecommendationTags</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query JdRecommendationTags {
+    jdRecommendationTags {
+        tag
+        name
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드: 없음</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_추천_공고_목록_조회">2.7.2. 추천 공고 목록 조회</h4>
+<div class="paragraph">
+<p>Type: <code>Query</code></p>
+</div>
+<div class="paragraph">
+<p>Operation: <code>jdRecommendations</code></p>
+</div>
+<div class="exampleblock graphql-sample">
+<div class="content">
+<div class="paragraph">
+<p>요청 샘플:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">query JdRecommendations {
+    jdRecommendations(
+        tags: [POPULAR]
+        cursor: null
+        size: 10
+    ) {
+        recommendations {
+            id
+            tags
+            companyName
+            title
+            recruitmentStartAt
+            recruitmentEndAt
+            sourceUrl
+        }
+        cursor {
+            nextCursor
+            hasNext
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>커스텀 에러 코드: 없음</p>
+</div>
+<div class="paragraph">
+<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_profile">2.8. Profile</h3>
+<div class="sect3">
+<h4 id="_이력서_기본_정보_프로필_조회">2.8.1. 이력서 기본 정보 프로필 조회</h4>
 <div class="paragraph">
 <p>Type: <code>Query</code></p>
 </div>
@@ -3675,7 +3763,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_이력서_기본_정보_프로필_수정">2.7.2. 이력서 기본 정보 프로필 수정</h4>
+<h4 id="_이력서_기본_정보_프로필_수정">2.8.2. 이력서 기본 정보 프로필 수정</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -3803,7 +3891,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_핵심역량_ai_생성">2.7.3. 핵심역량 AI 생성</h4>
+<h4 id="_핵심역량_ai_생성">2.8.3. 핵심역량 AI 생성</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -3886,7 +3974,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </table>
 </div>
 <div class="sect3">
-<h4 id="_프로필_텍스트경험_ai_다듬기">2.7.4. 프로필 텍스트/경험 AI 다듬기</h4>
+<h4 id="_프로필_텍스트경험_ai_다듬기">2.8.4. 프로필 텍스트/경험 AI 다듬기</h4>
 <div class="paragraph">
 <p>Type: <code>Mutation</code></p>
 </div>
@@ -3975,7 +4063,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-10-04<br>
+Version 2026-10-06<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

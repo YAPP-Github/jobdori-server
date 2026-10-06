@@ -1268,7 +1268,6 @@ query JdRecommendations {
             recruitmentStartAt
             recruitmentEndAt
             sourceUrl
-            displayOrder
         }
         cursor {
             nextCursor
@@ -1347,7 +1346,6 @@ query ExperienceQuestionRooms {
         question
         sourceType
         sourceText
-        applied
     }
 }
 ----
@@ -1371,7 +1369,6 @@ query ExperienceQuestionRoom {
             question
             sourceType
             sourceText
-            applied
         }
         messages {
             messageId
@@ -1426,37 +1423,6 @@ mutation SendExperienceQuestionRoomMessage {
 ----
 ====
 // end::sendExperienceQuestionRoomMessage[]
-
-// tag::applyExperienceQuestionRoomBlock[]
-[.graphql-sample]
-====
-요청 샘플:
-
-[source,graphql]
-----
-mutation ApplyExperienceQuestionRoomBlock {
-    applyExperienceQuestionRoomBlock(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
-        messageId: "1"
-        resumeId: "1"
-    ) {
-        itemId
-        displayOrder
-        visible
-        payload {
-            experience {
-                name
-                role
-                contents
-            }
-        }
-        createdAt
-    }
-}
-----
-====
-// end::applyExperienceQuestionRoomBlock[]
 
 // tag::profile[]
 [.graphql-sample]

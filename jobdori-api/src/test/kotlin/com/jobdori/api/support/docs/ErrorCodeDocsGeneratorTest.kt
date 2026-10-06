@@ -464,20 +464,6 @@ private val graphQlOperationErrors = listOf(
         ),
     ),
     GraphQlOperationError(
-        category = "JD",
-        operation = "applyExperienceQuestionRoomBlock",
-        title = "JD 경험 질문 블록 이력서 적용",
-        type = GraphQlOperationType.MUTATION,
-        sampleFile = graphQlSample("jd/apply-experience-question-room-block.graphql"),
-        errorCodes = operationErrorCodes(
-            WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
-            WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
-            ExperienceQuestionRoomErrorCode.E404_EXPERIENCE_QUESTION_ROOM_NOT_FOUND,
-            ExperienceQuestionRoomErrorCode.E404_EXPERIENCE_QUESTION_ROOM_MESSAGE_NOT_FOUND,
-            ResumeErrorCode.E404_RESUME_NOT_FOUND,
-        ),
-    ),
-    GraphQlOperationError(
         category = "Profile",
         operation = "profile",
         title = "이력서 기본 정보 프로필 조회",

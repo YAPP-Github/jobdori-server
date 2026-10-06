@@ -4,21 +4,17 @@ import com.jobdori.api.GraphQLTest
 import com.jobdori.api.application.experiencequestionroom.dto.response.ExperienceQuestionRoomCardResponse
 import com.jobdori.api.application.experiencequestionroom.dto.response.ExperienceQuestionRoomDetailResponse
 import com.jobdori.api.application.experiencequestionroom.dto.response.ExperienceQuestionRoomMessageResponse
-import com.jobdori.api.application.resume.dto.response.ResumeSectionItemResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.api.support.auth.graphql.AuthGraphQlContext
 import com.jobdori.api.support.auth.graphql.UserIdArgumentGraphqlResolver
 import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.application.experiencequestionroom.ExperienceQuestionRoomChatService
 import com.jobdori.core.application.experiencequestionroom.GetExperienceQuestionRoomsService
-import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomCardResult
 import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomDetail
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomCard
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomMessage
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomMessageRole
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomSourceType
-import com.jobdori.core.domain.resume.ResumeExperiencePayload
-import com.jobdori.core.domain.resume.ResumeSectionItem
 import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
@@ -45,10 +41,7 @@ internal class ExperienceQuestionRoomResolverTest(
         every { workspaceAccessValidationService.validateAccessible("ws-1", 1L) } returns
             Workspace(id = 10L, publicId = "ws-1", ownerUserId = 1L)
         every { getExperienceQuestionRoomsService.get(10L, "jd-pub-1") } returns listOf(
-            ExperienceQuestionRoomCardResult(
-                ExperienceQuestionRoomCard("card-1", "장애 대응 체계를 직접 구축한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 장애 대응"),
-                applied = true,
-            ),
+            ExperienceQuestionRoomCard("card-1", "장애 대응 체계를 직접 구축한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 장애 대응"),
         )
 
         authenticatedTester(graphQlTester)
@@ -60,7 +53,6 @@ internal class ExperienceQuestionRoomResolverTest(
                     question
                     sourceType
                     sourceText
-                    applied
                   }
                 }
                 """.trimIndent(),
@@ -68,7 +60,7 @@ internal class ExperienceQuestionRoomResolverTest(
             .execute()
             .path("experienceQuestionRooms[0]").entity<ExperienceQuestionRoomCardResponse>().satisfies {
                 it shouldBe ExperienceQuestionRoomCardResponse(
-                    "card-1", "장애 대응 체계를 직접 구축한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 장애 대응", true,
+                    "card-1", "장애 대응 체계를 직접 구축한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 장애 대응",
                 )
             }
     }
@@ -79,14 +71,14 @@ internal class ExperienceQuestionRoomResolverTest(
             Workspace(id = 10L, publicId = "ws-1", ownerUserId = 1L)
         val room = ExperienceQuestionRoomCard("room-1", "직접 개선한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 개선")
         val user = ExperienceQuestionRoomMessage.user("room-1", "정리해 주세요", listOf(8L)).copy(messageId = 7L, createdAt = createdAt)
-        every { experienceQuestionRoomChatService.getDetail(10L, "room-1") } returns ExperienceQuestionRoomDetail(ExperienceQuestionRoomCardResult(room, applied = false), listOf(user))
+        every { experienceQuestionRoomChatService.getDetail(10L, "room-1") } returns ExperienceQuestionRoomDetail(room, listOf(user))
 
         authenticatedTester(graphQlTester)
             .document(
                 """
                 query {
                   experienceQuestionRoom(workspaceId: "ws-1", questionRoomId: "room-1") {
-                    room { questionRoomId question sourceType sourceText applied }
+                    room { questionRoomId question sourceType sourceText }
                     messages { messageId role content experienceIds block { title bullets } feedback { fit improvement } createdAt }
                   }
                 }
@@ -129,37 +121,6 @@ internal class ExperienceQuestionRoomResolverTest(
             .path("sendExperienceQuestionRoomMessage").entity<ExperienceQuestionRoomMessageResponse>().satisfies {
                 it.messageId shouldBe 9L
                 it.block?.title shouldBe "운영 개선"
-            }
-    }
-
-    "AI 블록을 이력서에 적용한다" {
-        every { accessTokenService.getUserId("access-token") } returns 1L
-        every { workspaceAccessValidationService.validateAccessible("ws-1", 1L) } returns
-            Workspace(id = 10L, publicId = "ws-1", ownerUserId = 1L)
-        val item = ResumeSectionItem(
-            id = 12L,
-            sectionId = 3L,
-            payload = ResumeExperiencePayload("운영 개선", null, null, "- 모니터링을 개선했다.\n- 장애 대응 시간을 줄였다."),
-            displayOrder = 2.0,
-            visible = true,
-            createdAt = createdAt,
-            updatedAt = createdAt,
-        )
-        every { experienceQuestionRoomChatService.apply(10L, "room-1", 9L, 4L) } returns item
-
-        authenticatedTester(graphQlTester)
-            .document(
-                """
-                mutation {
-                  applyExperienceQuestionRoomBlock(workspaceId: "ws-1", questionRoomId: "room-1", messageId: "9", resumeId: "4") {
-                    itemId displayOrder visible payload { experience { name contents } } createdAt
-                  }
-                }
-                """.trimIndent(),
-            )
-            .execute()
-            .path("applyExperienceQuestionRoomBlock").entity<ResumeSectionItemResponse>().satisfies {
-                it.itemId shouldBe 12L
             }
     }
 })

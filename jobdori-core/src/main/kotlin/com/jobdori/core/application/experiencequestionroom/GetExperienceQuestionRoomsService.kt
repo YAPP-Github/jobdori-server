@@ -1,7 +1,6 @@
 package com.jobdori.core.application.experiencequestionroom
 
 import com.jobdori.core.application.ai.client.AiChatClient
-import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomCardResult
 import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomResult
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.domain.ai.error.AiErrorCode
@@ -9,7 +8,6 @@ import com.jobdori.core.domain.ai.error.AiException
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoom
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomCard
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomSourceType
-import com.jobdori.core.domain.experiencequestionroom.repository.ExperienceQuestionRoomApplyRepository
 import com.jobdori.core.domain.experiencequestionroom.repository.ExperienceQuestionRoomRepository
 import com.jobdori.core.domain.prompt.PromptType
 import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
@@ -21,18 +19,11 @@ import java.util.UUID
 class GetExperienceQuestionRoomsService(
     private val getJdService: GetJdService,
     private val repository: ExperienceQuestionRoomRepository,
-    private val applyRepository: ExperienceQuestionRoomApplyRepository,
     private val promptTemplateRepository: PromptTemplateRepository,
     private val aiChatClient: AiChatClient,
 ) {
 
-    fun get(workspaceId: Long, jdPublicId: String): List<ExperienceQuestionRoomCardResult> {
-        val cards = getCards(workspaceId, jdPublicId)
-        val appliedIds = applyRepository.findAppliedQuestionRoomIds(cards.map { it.id })
-        return cards.map { ExperienceQuestionRoomCardResult(it, it.id in appliedIds) }
-    }
-
-    private fun getCards(workspaceId: Long, jdPublicId: String): List<ExperienceQuestionRoomCard> {
+    fun get(workspaceId: Long, jdPublicId: String): List<ExperienceQuestionRoomCard> {
         val jd = getJdService.getJd(workspaceId, jdPublicId)
         repository.findByJdId(jd.id)?.let { return it.cards }
 

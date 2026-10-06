@@ -282,27 +282,6 @@ include::./operation-sample.adoc[tag=markJdCompleted]
 
 include::./operation-error.adoc[tag=markJdCompleted]
 
-=== JD Recommendation
-
-==== 추천 공고 태그 목록 조회
-
-Type: `Query`
-
-Operation: `jdRecommendationTags`
-
-include::./operation-sample.adoc[tag=jdRecommendationTags]
-
-include::./operation-error.adoc[tag=jdRecommendationTags]
-
-==== 추천 공고 목록 조회
-
-Type: `Query`
-
-Operation: `jdRecommendations`
-
-include::./operation-sample.adoc[tag=jdRecommendations]
-
-include::./operation-error.adoc[tag=jdRecommendations]
 ==== JD 경험 질문 대화방 목록 조회
 
 Type: `Query`
@@ -333,15 +312,27 @@ include::./operation-sample.adoc[tag=sendExperienceQuestionRoomMessage]
 
 include::./operation-error.adoc[tag=sendExperienceQuestionRoomMessage]
 
-==== JD 경험 질문 블록 이력서 적용
+=== JD Recommendation
 
-Type: `Mutation`
+==== 추천 공고 태그 목록 조회
 
-Operation: `applyExperienceQuestionRoomBlock`
+Type: `Query`
 
-include::./operation-sample.adoc[tag=applyExperienceQuestionRoomBlock]
+Operation: `jdRecommendationTags`
 
-include::./operation-error.adoc[tag=applyExperienceQuestionRoomBlock]
+include::./operation-sample.adoc[tag=jdRecommendationTags]
+
+include::./operation-error.adoc[tag=jdRecommendationTags]
+
+==== 추천 공고 목록 조회
+
+Type: `Query`
+
+Operation: `jdRecommendations`
+
+include::./operation-sample.adoc[tag=jdRecommendations]
+
+include::./operation-error.adoc[tag=jdRecommendations]
 
 === Profile
 

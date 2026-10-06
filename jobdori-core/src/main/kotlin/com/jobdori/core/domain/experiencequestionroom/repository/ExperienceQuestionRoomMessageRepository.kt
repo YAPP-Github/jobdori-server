@@ -6,6 +6,4 @@ interface ExperienceQuestionRoomMessageRepository {
     fun findAllByQuestionRoomId(questionRoomId: String): List<ExperienceQuestionRoomMessage>
 
     fun savePair(user: ExperienceQuestionRoomMessage, ai: ExperienceQuestionRoomMessage): List<ExperienceQuestionRoomMessage>
-
-    fun findAiMessage(questionRoomId: String, messageId: Long): ExperienceQuestionRoomMessage?
 }

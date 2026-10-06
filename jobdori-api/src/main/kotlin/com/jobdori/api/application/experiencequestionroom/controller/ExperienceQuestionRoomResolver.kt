@@ -4,7 +4,6 @@ import com.jobdori.api.application.experiencequestionroom.dto.request.SendExperi
 import com.jobdori.api.application.experiencequestionroom.dto.response.ExperienceQuestionRoomCardResponse
 import com.jobdori.api.application.experiencequestionroom.dto.response.ExperienceQuestionRoomDetailResponse
 import com.jobdori.api.application.experiencequestionroom.dto.response.ExperienceQuestionRoomMessageResponse
-import com.jobdori.api.application.resume.dto.response.ResumeSectionItemResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.api.support.auth.UserId
 import com.jobdori.core.application.experiencequestionroom.ExperienceQuestionRoomChatService
@@ -57,18 +56,5 @@ class ExperienceQuestionRoomResolver(
             experienceIds = request.experienceIds,
         )
         return ExperienceQuestionRoomMessageResponse.from(message)
-    }
-
-    @MutationMapping
-    fun applyExperienceQuestionRoomBlock(
-        @UserId userId: Long,
-        @Argument workspaceId: String,
-        @Argument questionRoomId: String,
-        @Argument messageId: Long,
-        @Argument resumeId: Long,
-    ): ResumeSectionItemResponse {
-        val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
-        val item = experienceQuestionRoomChatService.apply(workspace.id, questionRoomId, messageId, resumeId)
-        return ResumeSectionItemResponse.from(item)
     }
 }

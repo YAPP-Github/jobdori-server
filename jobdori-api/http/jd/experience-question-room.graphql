@@ -8,7 +8,6 @@ query ExperienceQuestionRoom {
             question
             sourceType
             sourceText
-            applied
         }
         messages {
             messageId

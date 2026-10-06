@@ -49,9 +49,3 @@ data class ExperienceQuestionRoomMessage(
         )
     }
 }
-
-data class ExperienceQuestionRoomApply(
-    val questionRoomId: String,
-    val resumeId: Long,
-    val itemId: Long,
-)

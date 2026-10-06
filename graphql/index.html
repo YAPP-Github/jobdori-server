@@ -173,7 +173,6 @@
 <li><a href="#_jd_경험_질문_대화방_목록_조회">2.6.5. JD 경험 질문 대화방 목록 조회</a></li>
 <li><a href="#_jd_경험_질문_대화방_상세_조회">2.6.6. JD 경험 질문 대화방 상세 조회</a></li>
 <li><a href="#_jd_경험_질문_대화방_메시지_전송">2.6.7. JD 경험 질문 대화방 메시지 전송</a></li>
-<li><a href="#_jd_경험_질문_블록_이력서_적용">2.6.8. JD 경험 질문 블록 이력서 적용</a></li>
 </ul>
 </li>
 <li><a href="#_jd_recommendation">2.7. JD Recommendation</a>
@@ -3226,7 +3225,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
         question
         sourceType
         sourceText
-        applied
     }
 }</code></pre>
 </div>
@@ -3317,7 +3315,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
             question
             sourceType
             sourceText
-            applied
         }
         messages {
             messageId
@@ -3485,94 +3482,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">ai_timeout</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AI 응답 지연/시간 초과</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_jd_경험_질문_블록_이력서_적용">2.6.8. JD 경험 질문 블록 이력서 적용</h4>
-<div class="paragraph">
-<p>Type: <code>Mutation</code></p>
-</div>
-<div class="paragraph">
-<p>Operation: <code>applyExperienceQuestionRoomBlock</code></p>
-</div>
-<div class="exampleblock graphql-sample">
-<div class="content">
-<div class="paragraph">
-<p>요청 샘플:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation ApplyExperienceQuestionRoomBlock {
-    applyExperienceQuestionRoomBlock(
-        workspaceId: "00000000-0000-0000-0000-000000000002"
-        questionRoomId: "00000000-0000-0000-0000-0000000000b1"
-        messageId: "1"
-        resumeId: "1"
-    ) {
-        itemId
-        displayOrder
-        visible
-        payload {
-            experience {
-                name
-                role
-                contents
-            }
-        }
-        createdAt
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>커스텀 에러 코드:</p>
-</div>
-<div class="paragraph">
-<p>전역 공통 에러 코드는 <a href="#graphql-common-error-codes">공통 에러 코드</a>를 참고해 주세요.<br>
-아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch api-table">
-<colgroup>
-<col style="width: 28%;">
-<col style="width: 32%;">
-<col style="width: 40%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">Message</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experience_question_room_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">경험 질문 대화방을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">대화방을 찾을 수 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experience_question_room_message_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">대화방 메시지를 찾지 못했어요. 다시 확인해 주세요.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">AI 메시지를 찾을 수 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">resume_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾을 수 없는 경우</p></td>
 </tr>
 </tbody>
 </table>
@@ -4063,7 +3972,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-10-06<br>
+Version 2026-10-07<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

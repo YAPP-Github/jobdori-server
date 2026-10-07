@@ -27,7 +27,8 @@ extend type Mutation {
     ): Profile!
 
     """
-    프로필 정보와 이력서에서 선택한 경험을 바탕으로 핵심역량을 AI로 생성합니다.
+    JD를 바탕으로 지원자가 직접 채워 완성하는 핵심역량 뼈대를 AI로 생성합니다.
+    결과에는 [[채울 내용 (예: 예시1, 예시2)]] 형식의 자리표시자와 헤드라인 끝의 [[이름]]이 들어갑니다.
     생성 결과는 응답으로만 반환합니다.
     """
     generateCoreCompetency(
@@ -36,13 +37,13 @@ extend type Mutation {
         """
         workspaceId: ID!,
         """
-        선택된 경험을 조회할 이력서 ID입니다.
+        더 이상 사용하지 않습니다. 기존 클라이언트 호환을 위해 받기만 하고 무시합니다.
         """
-        resumeId: ID!,
+        resumeId: ID = null,
         """
-        JD ID입니다. 주면 해당 JD 내용을 반영해 핵심역량을 생성하고 화면 표시용 지원 전략(strategy)을 함께 반환합니다. (선택)
+        뼈대를 만들 JD ID입니다. 화면 표시용 지원 전략(strategy)도 이 JD에서 함께 반환합니다.
         """
-        jdId: ID = null
+        jdId: ID!
     ): GeneratedCoreCompetency!
 
     """

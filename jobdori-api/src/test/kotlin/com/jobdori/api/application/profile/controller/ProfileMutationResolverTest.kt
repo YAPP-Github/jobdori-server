@@ -111,16 +111,15 @@ internal class ProfileMutationResolverTest(
         }
     }
 
-    "핵심역량을 AI로 생성한다 (jdId를 주면 표시용 지원 전략 함께 반환)" {
+    "JD로 핵심역량 뼈대를 AI로 생성하고 표시용 지원 전략을 함께 반환한다" {
         every {
             profileService.generateCoreCompetency(
                 userId = 1L,
                 workspaceId = "workspace-id",
-                resumeId = 100L,
                 jdId = "jd-pub-1",
             )
         } returns GenerateCoreCompetencyResponse(
-            coreCompetency = "콘텐츠 기획과 데이터 기반 개선에 강점이 있는 마케터입니다.",
+            coreCompetency = "[[문제를 찾을 때 먼저 보는 것 (예: 퍼널 데이터, 사용자 인터뷰)]]에서 출발해 캠페인을 개선하는 마케터 [[이름]]입니다.",
             strategy = "데이터 기반 개선 경험을 강조해서 지원하는 게 좋겠어요.",
         )
 
@@ -128,7 +127,7 @@ internal class ProfileMutationResolverTest(
             .document(
                 """
                 mutation {
-                  generateCoreCompetency(workspaceId: "workspace-id", resumeId: 100, jdId: "jd-pub-1") {
+                  generateCoreCompetency(workspaceId: "workspace-id", jdId: "jd-pub-1") {
                     coreCompetency
                     strategy
                   }
@@ -137,7 +136,7 @@ internal class ProfileMutationResolverTest(
             )
             .execute()
             .path("generateCoreCompetency.coreCompetency").entity<String>()
-            .isEqualTo("콘텐츠 기획과 데이터 기반 개선에 강점이 있는 마케터입니다.")
+            .isEqualTo("[[문제를 찾을 때 먼저 보는 것 (예: 퍼널 데이터, 사용자 인터뷰)]]에서 출발해 캠페인을 개선하는 마케터 [[이름]]입니다.")
             .path("generateCoreCompetency.strategy").entity<String>()
             .isEqualTo("데이터 기반 개선 경험을 강조해서 지원하는 게 좋겠어요.")
 
@@ -145,7 +144,6 @@ internal class ProfileMutationResolverTest(
             profileService.generateCoreCompetency(
                 userId = 1L,
                 workspaceId = "workspace-id",
-                resumeId = 100L,
                 jdId = "jd-pub-1",
             )
         }

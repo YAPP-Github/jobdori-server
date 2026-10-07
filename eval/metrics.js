@@ -103,6 +103,12 @@ export function pairwiseScore(firstWinner, secondWinner) {
 }
 
 /** promptfoo 결과에서 축 점수만 뽑는다. componentResults는 assert 배열 때문에 한 겹 더 중첩된다. */
+// file:// 로 건 javascript assertion(rules.js)은 componentResults에 assertion이 비어서 온다.
+// judge 축은 component 이름이, judge 요약은 하위 componentResults가 있으므로 둘 다 없는 실패를 룰 실패로 본다.
+export function isRuleFailure(component) {
+  return component.pass === false && !component.component && !component.componentResults;
+}
+
 export function collectAxisScores(gradingResult, into) {
   for (const component of gradingResult?.componentResults ?? []) {
     const matched = /^(.*) \[(gate|core|diag)\]$/.exec(component.component ?? '');
@@ -172,7 +178,7 @@ export function summarizeCases(axes, results, { errorReason, axisColumn = (axis)
       에러: runs.length - graded.length,
       '게이트 실패': scores.filter((m) => axes.some((a) => a.tier === 'gate' && m.get(a.name) === 1)).length,
       '룰 실패': graded.filter((r) =>
-        (r.gradingResult?.componentResults ?? []).some((c) => c.assertion?.type && c.pass === false)).length,
+        (r.gradingResult?.componentResults ?? []).some(isRuleFailure)).length,
       '핵심 평균': mean(coreAverages),
     };
     for (const axis of axes) {

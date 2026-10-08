@@ -102,9 +102,12 @@ private val graphQlOperationErrors = listOf(
         type = GraphQlOperationType.QUERY,
         sampleFile = graphQlSample("experience/experiences.graphql"),
         errorCodes = operationErrorCodes(
+            CommonErrorCode.E400_INVALID_ARGUMENTS to "jdId를 주고 tab을 누락했거나, AI_RECOMMENDATION 탭에서 questionRoomId를 누락했거나 cursor가 0 이상의 정수가 아닌 경우",
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
             ExperienceProjectErrorCode.E404_EXPERIENCE_PROJECT_NOT_FOUND to "`projectId`로 특정 프로젝트의 경험 목록을 조회했으나 프로젝트를 찾을 수 없는 경우",
+            JdErrorCode.E404_JD_NOT_FOUND to "존재하지 않는 JD ID로 AI_RECOMMENDATION 탭을 조회한 경우",
+            ExperienceQuestionRoomErrorCode.E404_EXPERIENCE_QUESTION_ROOM_NOT_FOUND to "questionRoomId가 해당 JD의 질문 카드가 아닌 경우",
         ),
     ),
     GraphQlOperationError(

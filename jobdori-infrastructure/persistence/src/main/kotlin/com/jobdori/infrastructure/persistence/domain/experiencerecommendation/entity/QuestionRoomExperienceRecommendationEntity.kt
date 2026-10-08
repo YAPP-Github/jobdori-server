@@ -1,6 +1,6 @@
 package com.jobdori.infrastructure.persistence.domain.experiencerecommendation.entity
 
-import com.jobdori.core.domain.experiencerecommendation.JdExperienceRecommendation
+import com.jobdori.core.domain.experiencerecommendation.QuestionRoomExperienceRecommendation
 import com.jobdori.core.domain.experiencerecommendation.RecommendedExperience
 import com.jobdori.infrastructure.persistence.support.jpa.AuditableEntity
 import jakarta.persistence.Column
@@ -12,11 +12,11 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 
-@Table(name = "jd_experience_recommendation_v1")
+@Table(name = "question_room_experience_recommendation_v1")
 @Entity
-class JdExperienceRecommendationEntity(
-    @Column(nullable = false, unique = true, updatable = false)
-    var jdId: Long,
+class QuestionRoomExperienceRecommendationEntity(
+    @Column(nullable = false, unique = true, updatable = false, length = 36)
+    var questionRoomId: String,
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "jsonb")
@@ -30,17 +30,17 @@ class JdExperienceRecommendationEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 
-    fun toDomain() = JdExperienceRecommendation(
+    fun toDomain() = QuestionRoomExperienceRecommendation(
         id = id,
-        jdId = jdId,
+        questionRoomId = questionRoomId,
         items = items,
         sourceSignature = sourceSignature,
         createdAt = createdAt,
     )
 
     companion object {
-        fun from(domain: JdExperienceRecommendation) = JdExperienceRecommendationEntity(
-            jdId = domain.jdId,
+        fun from(domain: QuestionRoomExperienceRecommendation) = QuestionRoomExperienceRecommendationEntity(
+            questionRoomId = domain.questionRoomId,
             items = domain.items,
             sourceSignature = domain.sourceSignature,
         ).also { it.id = domain.id }

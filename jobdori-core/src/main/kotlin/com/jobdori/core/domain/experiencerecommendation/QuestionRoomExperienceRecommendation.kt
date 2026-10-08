@@ -2,9 +2,9 @@ package com.jobdori.core.domain.experiencerecommendation
 
 import java.time.LocalDateTime
 
-data class JdExperienceRecommendation(
+data class QuestionRoomExperienceRecommendation(
     val id: Long,
-    val jdId: Long,
+    val questionRoomId: String,
     val items: List<RecommendedExperience>,
     // 생성 시점의 경험 세트 시그니처. 현재 시그니처와 다르면 경험이 바뀐 것 -> 재생성.
     val sourceSignature: String,
@@ -13,12 +13,12 @@ data class JdExperienceRecommendation(
 
     companion object {
         fun newInstance(
-            jdId: Long,
+            questionRoomId: String,
             items: List<RecommendedExperience>,
             sourceSignature: String,
-        ) = JdExperienceRecommendation(
+        ) = QuestionRoomExperienceRecommendation(
             id = 0L,
-            jdId = jdId,
+            questionRoomId = questionRoomId,
             items = items,
             sourceSignature = sourceSignature,
         )

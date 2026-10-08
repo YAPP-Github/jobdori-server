@@ -6,7 +6,6 @@ import com.jobdori.core.application.ai.jd.SplitJdPostingsService
 import com.jobdori.core.application.ai.jd.result.JdMetaResult
 import com.jobdori.core.application.ai.jd.result.JdPosting
 import com.jobdori.core.application.jd.client.JdCrawlerClient
-import com.jobdori.core.domain.experience.service.ExperienceReader
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdPolicy
 import com.jobdori.core.domain.jd.repository.JdRepository
@@ -29,7 +28,6 @@ class RegisterJdServiceTest : StringSpec({
     val extractJdMetaService = mockk<ExtractJdMetaService>()
     val extractJdStrategyService = mockk<ExtractJdStrategyService>()
     val profileReader = mockk<ProfileReader>()
-    val experienceReader = mockk<ExperienceReader>()
     val jdRepository = mockk<JdRepository>()
     val service = RegisterJdService(
         crawler = crawler,
@@ -37,7 +35,6 @@ class RegisterJdServiceTest : StringSpec({
         extractJdMetaService = extractJdMetaService,
         extractJdStrategyService = extractJdStrategyService,
         profileReader = profileReader,
-        experienceReader = experienceReader,
         jdRepository = jdRepository,
     )
     val body = "가".repeat(JdPolicy.MIN_JD_BODY_LENGTH)
@@ -54,10 +51,8 @@ class RegisterJdServiceTest : StringSpec({
             extractJdMetaService,
             extractJdStrategyService,
             profileReader,
-            experienceReader,
             jdRepository,
         )
-        every { experienceReader.findAllActive(10L) } returns listOf(mockk())
         every { splitter.split(body) } returns listOf(JdPosting(body = body))
         every { extractJdMetaService.extractFromBody(body) } returns JdMetaResult(
             isJobPosting = true,

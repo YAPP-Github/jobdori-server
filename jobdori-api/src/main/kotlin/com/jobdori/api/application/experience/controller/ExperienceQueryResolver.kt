@@ -2,6 +2,7 @@ package com.jobdori.api.application.experience.controller
 
 import com.jobdori.api.application.experience.dto.request.ListExperienceProjectRequest
 import com.jobdori.api.application.experience.dto.request.ListExperienceRequest
+import com.jobdori.api.application.experience.dto.request.ExperienceListTab
 import com.jobdori.api.application.experience.dto.request.SearchExperienceRequest
 import com.jobdori.api.application.experience.dto.response.ExperienceListResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectListResponse
@@ -42,6 +43,8 @@ class ExperienceQueryResolver(
         @Argument workspaceId: String,
         @Argument projectId: Long?,
         @Argument jdId: String?,
+        @Argument questionRoomId: String?,
+        @Argument tab: ExperienceListTab?,
         @Valid @Arguments request: ListExperienceRequest,
         env: DataFetchingEnvironment,
     ): ExperienceListResponse = experienceService.getExperiences(
@@ -52,6 +55,8 @@ class ExperienceQueryResolver(
         size = request.size,
         includeProjects = env.selectionSet.contains("experiences/project"),
         jdId = jdId,
+        questionRoomId = questionRoomId,
+        tab = tab,
     )
 
     @QueryMapping

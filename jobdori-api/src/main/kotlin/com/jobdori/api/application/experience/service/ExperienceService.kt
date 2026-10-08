@@ -8,11 +8,10 @@ import com.jobdori.api.application.experience.dto.response.ExperienceListRespons
 import com.jobdori.api.application.experience.dto.response.ExperienceProjectResponse
 import com.jobdori.api.application.experience.dto.response.ExperienceResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
-import com.jobdori.common.logger.LoggerExtension.log
+import com.jobdori.api.application.experience.dto.request.ExperienceListTab
 import com.jobdori.common.model.Period
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.application.experience.PolishedExperience
-import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
 import com.jobdori.core.domain.experience.service.ExperienceCreator
@@ -31,7 +30,7 @@ class ExperienceService(
     private val experienceModifier: ExperienceModifier,
     private val experienceRemover: ExperienceRemover,
     private val experienceProjectReader: ExperienceProjectReader,
-    private val getExperienceRecommendationService: GetExperienceRecommendationService,
+    private val experienceRecommendationListService: ExperienceRecommendationListService,
     private val experienceContentsPolishService: ExperienceContentsPolishService,
 ) {
 
@@ -153,6 +152,8 @@ class ExperienceService(
         size: Int,
         includeProjects: Boolean,
         jdId: String? = null,
+        questionRoomId: String? = null,
+        tab: ExperienceListTab? = null,
     ): ExperienceListResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
@@ -179,23 +180,23 @@ class ExperienceService(
             emptyMap()
         }
 
-        // jdId가 있으면 해당 JD 기준 지원 전략/매칭률/이유를 조인(경험 세트 변경 시 자동 재생성).
-        // 매칭은 부가 정보이므로 재생성(AI 호출 등) 실패가 경험 목록 응답 자체를 깨지 않게 격리한다.
-        val recommendation = jdId?.let {
-            runCatching { getExperienceRecommendationService.getOrRefresh(workspace.id, it) }
-                .onFailure { e -> log.warn(e) { "JD 매칭 조회 실패, 매칭 없이 응답: jdId=$jdId" } }
-                .getOrNull()
-        }
-        val matchByExperienceId = recommendation?.items?.associateBy { it.experienceId }.orEmpty()
+        // AI_RECOMMENDATION 탭은 순서와 커서가 달라 별도 응답을 만든다. 위의 기본 조회 결과는 이 경우 쓰지 않는다.
+        experienceRecommendationListService.getList(
+            workspaceId = workspace.id,
+            jdId = jdId,
+            questionRoomId = questionRoomId,
+            tab = tab,
+            projectId = projectId,
+            cursor = cursor,
+            size = size,
+            includeProjects = includeProjects,
+        )?.let { return it }
 
         return ExperienceListResponse(
             experiences = experiences.items.map { experience ->
-                val match = matchByExperienceId[experience.id]
                 ExperienceResponse.from(
                     experience = experience,
                     project = projects[experience.projectId],
-                    matchRate = match?.matchRate,
-                    reason = match?.reason,
                 )
             },
             cursor = CursorResponse(nextCursor = experiences.nextCursor),

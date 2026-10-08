@@ -9,7 +9,6 @@ import com.jobdori.common.model.Period
 import com.jobdori.common.model.SliceResult
 import com.jobdori.core.application.experience.ExperienceContentsPolishService
 import com.jobdori.core.application.experience.PolishedExperience
-import com.jobdori.core.application.experiencerecommendation.GetExperienceRecommendationService
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperienceContents
 import com.jobdori.core.domain.experience.ExperienceContentsType
@@ -41,7 +40,9 @@ class ExperienceServiceTest : StringSpec({
     val experienceRemover = mockk<ExperienceRemover>()
     val experienceProjectReader = mockk<ExperienceProjectReader>()
     val workspaceAccessValidationService = mockk<WorkspaceAccessValidationService>()
-    val getExperienceRecommendationService = mockk<GetExperienceRecommendationService>()
+    val experienceRecommendationListService = mockk<ExperienceRecommendationListService> {
+        every { getList(any(), any(), any(), any(), any(), any(), any(), any()) } returns null
+    }
     val experienceContentsPolishService = mockk<ExperienceContentsPolishService>()
     val experienceService = ExperienceService(
         workspaceAccessValidationService = workspaceAccessValidationService,
@@ -50,7 +51,7 @@ class ExperienceServiceTest : StringSpec({
         experienceModifier = experienceModifier,
         experienceRemover = experienceRemover,
         experienceProjectReader = experienceProjectReader,
-        getExperienceRecommendationService = getExperienceRecommendationService,
+        experienceRecommendationListService = experienceRecommendationListService,
         experienceContentsPolishService = experienceContentsPolishService,
     )
 

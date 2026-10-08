@@ -3,6 +3,8 @@ query Experiences {
         workspaceId: "00000000-0000-0000-0000-000000000002"
         projectId: 1
         jdId: "00000000-0000-0000-0000-000000000003"
+        questionRoomId: "00000000-0000-0000-0000-000000000004"
+        tab: AI_RECOMMENDATION
         cursor: null
         size: 10
     ) {

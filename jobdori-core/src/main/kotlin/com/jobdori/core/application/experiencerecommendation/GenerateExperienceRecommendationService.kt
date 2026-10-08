@@ -6,6 +6,7 @@ import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
 import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.ExperiencePromptText
+import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomCard
 import com.jobdori.core.domain.experiencerecommendation.RecommendedExperience
 import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.jd.JdPromptText
@@ -19,7 +20,7 @@ class GenerateExperienceRecommendationService(
     private val aiChatClient: AiChatClient,
 ) {
 
-    fun generate(jd: Jd, experiences: List<Experience>): List<RecommendedExperience> {
+    fun generate(jd: Jd, card: ExperienceQuestionRoomCard, experiences: List<Experience>): List<RecommendedExperience> {
         if (experiences.isEmpty()) return emptyList()
 
         val template = promptTemplateRepository.findByType(PromptType.EXPERIENCE_RECOMMENDATION)
@@ -28,7 +29,7 @@ class GenerateExperienceRecommendationService(
                 AiErrorCode.E500_AI_GENERATION_FAILED,
             )
 
-        val structured = template.buildStructured(buildUserPrompt(jd, experiences), ExperienceRecommendationResult::class)
+        val structured = template.buildStructured(buildUserPrompt(jd, card, experiences), ExperienceRecommendationResult::class)
 
         // 모델이 reasons의 "상위 5개" 규칙을 scores에도 적용해 일부만 채점하는 경우가 있어 1회 재시도한다.
         var lastMissing = emptyList<Int>()
@@ -59,7 +60,7 @@ class GenerateExperienceRecommendationService(
         )
     }
 
-    private fun buildUserPrompt(jd: Jd, experiences: List<Experience>): String = buildString {
+    private fun buildUserPrompt(jd: Jd, card: ExperienceQuestionRoomCard, experiences: List<Experience>): String = buildString {
         appendLine("## JD")
         appendLine(JdPromptText.of(jd))
         appendLine()
@@ -68,6 +69,11 @@ class GenerateExperienceRecommendationService(
             appendLine(jd.strategy)
             appendLine()
         }
+        appendLine("## 질문 카드")
+        appendLine("질문: ${card.question}")
+        appendLine("근거 JD 항목 종류: ${if (card.sourceType.name == "PREFERRED_EXPERIENCE") "우대사항" else "담당업무"}")
+        appendLine("근거 원문: ${card.sourceText}")
+        appendLine()
         appendLine("## 경험 목록 (총 ${experiences.size}개)")
         appendLine("scores에는 아래 ${experiences.size}개 경험을 하나도 빠짐없이 전부 채점해 정확히 ${experiences.size}개 항목을 반환한다. 상위 5개 제한은 reasons에만 적용된다.")
         experiences.forEachIndexed { i, experience ->

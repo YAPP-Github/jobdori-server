@@ -136,17 +136,17 @@ internal class ExperienceQueryResolverTest(
         verify(exactly = 0) { experienceProjectService.getProjects(any(), any(), any(), any(), any()) }
     }
 
-    "experiences에 jdId를 주면 지원 전략과 각 경험의 매칭률/이유를 함께 반환한다" {
+    "experiences에 AI_RECOMMENDATION 탭과 질문 카드 ID를 주면 카드 매칭률/이유를 반환한다" {
         every { accessTokenService.getUserId("access-token") } returns 1L
         every {
-            experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1")
+            experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1", "room-id-1", com.jobdori.api.application.experience.dto.request.ExperienceListTab.AI_RECOMMENDATION)
         } returns ExperienceListResponse(
             experiences = listOf(
                 ExperienceResponse.from(
                     experience = graphQlExperience(5L, ExperienceContents.star("s", "t", "a", "r")),
                     project = null,
                     matchRate = 87,
-                    reason = "이 JD의 핵심 역량과 맞닿는 경험이에요.",
+                    reason = "질문 카드의 업무를 직접 수행한 경험이에요.",
                 ),
                 ExperienceResponse.from(
                     experience = graphQlExperience(4L, ExperienceContents.free("free")),
@@ -163,7 +163,7 @@ internal class ExperienceQueryResolverTest(
             .document(
                 """
                 {
-                  experiences(workspaceId: "workspace-id", jdId: "jd-pub-1", cursor: null, size: 2) {
+                  experiences(workspaceId: "workspace-id", jdId: "jd-pub-1", questionRoomId: "room-id-1", tab: AI_RECOMMENDATION, cursor: null, size: 2) {
                     experiences {
                       experienceId
                       matchRate
@@ -179,11 +179,26 @@ internal class ExperienceQueryResolverTest(
             .execute()
             .path("experiences.experiences[0].experienceId").entity<String>().isEqualTo("5")
             .path("experiences.experiences[0].matchRate").entity<Int>().isEqualTo(87)
-            .path("experiences.experiences[0].recommendedReason").entity<String>().isEqualTo("이 JD의 핵심 역량과 맞닿는 경험이에요.")
+            .path("experiences.experiences[0].recommendedReason").entity<String>().isEqualTo("질문 카드의 업무를 직접 수행한 경험이에요.")
             .path("experiences.experiences[1].matchRate").entity<Int>().isEqualTo(40)
             .path("experiences.experiences[1].recommendedReason").valueIsNull()
 
-        verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1") }
+        verify(exactly = 1) { experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1", "room-id-1", com.jobdori.api.application.experience.dto.request.ExperienceListTab.AI_RECOMMENDATION) }
+    }
+
+    "experiences에 jdId를 주고 tab을 생략하면 인자 오류를 반환한다" {
+        every { accessTokenService.getUserId("access-token") } returns 1L
+        every {
+            experienceService.getExperiences(1L, "workspace-id", null, null, 2, false, "jd-pub-1", null, null)
+        } throws com.jobdori.common.error.InvalidArgumentsException(
+            message = "JD 매칭 조회에는 tab이 필요합니다.",
+            details = listOf(com.jobdori.common.error.ErrorDetail("tab", "JD 매칭 조회에는 tab이 필요합니다.")),
+        )
+
+        authenticatedTester(graphQlTester)
+            .document("""{ experiences(workspaceId: "workspace-id", jdId: "jd-pub-1", size: 2) { experiences { experienceId } } }""")
+            .execute()
+            .errors().satisfy { errors -> assert(errors.isNotEmpty()) }
     }
 
     "경험 프로젝트 단건을 조회한다" {

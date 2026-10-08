@@ -26,9 +26,17 @@ extend type Query {
         """
         projectId: ID = null,
         """
-        JD ID입니다. 주면 지원 전략(strategy)과 각 경험에 해당 JD 기준 matchRate와 recommendedReason(상위 5개)을 채웁니다. (선택)
+        JD ID입니다. 입력하면 tab이 필수입니다. (선택)
         """
         jdId: ID = null,
+        """
+        질문 카드 ID입니다. tab이 AI_RECOMMENDATION일 때 필수입니다.
+        """
+        questionRoomId: ID = null,
+        """
+        JD 매칭 결과 탭입니다. jdId를 입력하면 필수입니다. AI_RECOMMENDATION은 카드 매칭률 내림차순, 경험 ID 내림차순으로 정렬하고 offset 커서를 사용합니다.
+        """
+        tab: ExperienceListTab = null,
         """
         다음 페이지를 조회할 때 사용하는 커서입니다. (첫 페이지는 null)
         """
@@ -421,12 +429,12 @@ type Experience {
     role: String
 
     """
-    JD 기준 매칭률(0~100)입니다. experiences 조회에 jdId를 준 경우에만 채워집니다.
+    질문 카드 기준 매칭률(0~100)입니다. AI_RECOMMENDATION 탭에서만 채워집니다.
     """
     matchRate: Int
 
     """
-    선정 이유입니다. 매칭률 상위 5개 경험에만 채워집니다. (그 외 null)
+    질문 카드 기준 선정 이유입니다. AI_RECOMMENDATION 탭의 매칭률 상위 5개 경험에만 채워집니다. (그 외 null)
     """
     recommendedReason: String
 }
@@ -534,4 +542,15 @@ enum ExperienceContentsType {
     자유 서술 형식입니다.
     """
     FREE
+}
+
+"""
+경험 목록 조회 탭입니다.
+"""
+enum ExperienceListTab {
+    """질문 카드 기준 AI 매칭 순으로 조회합니다. questionRoomId가 필수입니다."""
+    AI_RECOMMENDATION
+
+    """기존 커서 페이징 순서로 직접 작성한 경험을 조회합니다."""
+    MANUAL
 }

@@ -9,7 +9,7 @@ import com.jobdori.core.domain.resume.ResumeTemplate
 import java.time.Instant
 
 data class ResumeResponse(
-    val resumeId: Long,
+    val resumeId: String,
     val targetJd: JdResponse?,
     val template: ResumeTemplate,
     val status: ResumeStatusType,
@@ -22,7 +22,7 @@ data class ResumeResponse(
             resume: Resume,
             targetJd: JdResponse?,
         ) = ResumeResponse(
-            resumeId = resume.id,
+            resumeId = resume.id.toString(),
             targetJd = targetJd,
             template = resume.template,
             status = ResumeStatusType.from(resume.status),
@@ -34,7 +34,7 @@ data class ResumeResponse(
             detail: ResumeDetail,
             targetJd: JdResponse?,
         ) = ResumeResponse(
-            resumeId = detail.resume.id,
+            resumeId = detail.resume.id.toString(),
             targetJd = targetJd,
             template = detail.resume.template,
             status = ResumeStatusType.from(detail.resume.status),

@@ -50,7 +50,7 @@ internal class PdfResumeImportControllerTest(
             "%PDF-1.4 sample".toByteArray(),
         )
         val response = ResumeResponse(
-            resumeId = 100L,
+            resumeId = "100",
             targetJd = null,
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,
@@ -95,7 +95,7 @@ internal class PdfResumeImportControllerTest(
                     ),
                     responseFields(
                         fieldWithPath("ok").type(JsonFieldType.BOOLEAN).description("API 처리 성공 여부"),
-                        fieldWithPath("result.resumeId").type(JsonFieldType.NUMBER).description("생성된 이력서 ID"),
+                        fieldWithPath("result.resumeId").type(JsonFieldType.STRING).description("생성된 이력서 ID"),
                         fieldWithPath("result.template").type(JsonFieldType.STRING).description("이력서 템플릿"),
                         fieldWithPath("result.status").type(JsonFieldType.STRING).description("이력서 상태"),
                         fieldWithPath("result.sections").type(JsonFieldType.ARRAY).description("이력서 섹션 목록"),

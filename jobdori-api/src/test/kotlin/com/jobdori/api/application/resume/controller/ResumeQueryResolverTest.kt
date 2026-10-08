@@ -69,7 +69,7 @@ internal class ResumeQueryResolverTest(
                 includeTargetJd = false,
             )
         } returns ResumeResponse(
-            resumeId = 100L,
+            resumeId = "100",
             targetJd = null,
             template = ResumeTemplate.DEFAULT,
             status = ResumeStatusType.DRAFT,

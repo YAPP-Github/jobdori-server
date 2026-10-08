@@ -283,7 +283,7 @@ class ResumeServiceTest : StringSpec({
         )
 
         // then
-        response.resumeId shouldBe 100L
+        response.resumeId shouldBe "100"
         response.sections.single().items.single().payload.basicInfo?.name shouldBe "홍길동"
         verify(exactly = 1) {
             resumeModifier.modifyDetail(

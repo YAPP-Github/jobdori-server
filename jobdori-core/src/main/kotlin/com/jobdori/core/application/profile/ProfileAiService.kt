@@ -7,6 +7,7 @@ import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experience.FreeExperienceContents
 import com.jobdori.core.domain.experience.StarExperienceContents
 import com.jobdori.core.domain.jd.Jd
+import com.jobdori.core.domain.jd.JdPromptText
 import com.jobdori.core.domain.jd.error.JdNotFoundException
 import com.jobdori.core.domain.jd.repository.JdRepository
 import com.jobdori.core.domain.prompt.PromptTemplate
@@ -15,9 +16,6 @@ import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
 import com.jobdori.core.domain.profile.ProfileDetail
 import com.jobdori.core.domain.profile.ProfilePolicy
 import com.jobdori.core.domain.profile.ProfileSummaryText
-import com.jobdori.core.domain.resume.ResumeDetail
-import com.jobdori.core.domain.resume.ResumeExperiencePayload
-import com.jobdori.core.domain.resume.ResumeSectionType
 import org.springframework.stereotype.Service
 
 // 생성 결과 + FE 표시용 JD 지원 전략(jd.strategy)을 함께 노출한다. 전략은 프롬프트 입력에는 쓰지 않는다.
@@ -39,19 +37,12 @@ class ProfileAiService(
     private val jdRepository: JdRepository,
 ) {
 
-    fun generateCoreCompetency(
-        detail: ProfileDetail,
-        resumeDetail: ResumeDetail,
-        workspaceId: Long,
-        jdPublicId: String?,
-    ): CoreCompetencyGeneration {
-        val jd = findJd(workspaceId, jdPublicId)
-        val strategy = jd?.strategy?.takeIf { it.isNotBlank() }
+    fun generateCoreCompetency(workspaceId: Long, jdPublicId: String): CoreCompetencyGeneration {
+        val jd = requireNotNull(findJd(workspaceId, jdPublicId))
+        val strategy = jd.strategy.takeIf { it.isNotBlank() }
 
-        val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_GENERATION)
-        val text = aiChatClient.generateText(
-            template.build(userPrompt = buildProfileSummaryPrompt(detail, resumeDetail, jd?.sourceBody)),
-        )
+        val template = getTemplate(PromptType.PROFILE_CORE_COMPETENCY_JD_TEMPLATE)
+        val text = aiChatClient.generateText(template.build(userPrompt = JdPromptText.of(jd))).trim()
         return CoreCompetencyGeneration(strategy, text)
     }
 
@@ -183,62 +174,6 @@ class ProfileAiService(
         return promptTemplateRepository.findByType(type)
             ?: throw AiException("이력서 AI 프롬프트를 찾을 수 없습니다. [type=$type]", AiErrorCode.E500_AI_GENERATION_FAILED)
     }
-
-    private fun buildProfileSummaryPrompt(
-        detail: ProfileDetail,
-        resumeDetail: ResumeDetail,
-        jdBody: String?,
-    ): String {
-        val blocks = mutableListOf<String>()
-
-        // sourceBody는 기능 이전 레거시 JD 행에서 null → 그 경우 [JD] 섹션 생략
-        jdBody?.takeIf { it.isNotBlank() }?.let { blocks += "[JD]\n$it" }
-        ProfileSummaryText.of(detail).takeIf { it.isNotBlank() }?.let { blocks += it }
-        buildSelectedExperienceText(resumeDetail)?.let { blocks += it }
-
-        return blocks.joinToString("\n\n")
-    }
-
-    private fun buildSelectedExperienceText(resumeDetail: ResumeDetail): String? {
-        val experiences = resumeDetail.sections
-            .asSequence()
-            .filter { it.section.type == ResumeSectionType.EXPERIENCE && it.section.visible }
-            .sortedBy { it.section.displayOrder }
-            .flatMap { section ->
-                section.items
-                    .asSequence()
-                    .filter { it.visible }
-                    .sortedBy { it.displayOrder }
-            }
-            .mapNotNull { it.payload as? ResumeExperiencePayload }
-            .filter(::hasContent)
-            .toList()
-
-        if (experiences.isEmpty()) return null
-        return buildString {
-            appendLine("[이력서에서 선택한 경험]")
-            experiences.forEachIndexed { index, experience ->
-                if (index > 0) appendLine()
-                appendLine("[${index + 1}]")
-                experience.name.nonBlank()?.let { appendLine("경험명: $it") }
-                experience.role.nonBlank()?.let { appendLine("역할: $it") }
-                experience.period?.let { period ->
-                    if (period.startAt != null || period.endAt != null) {
-                        appendLine("기간: ${period.startAt ?: ""} - ${period.endAt ?: ""}")
-                    }
-                }
-                experience.contents.nonBlank()?.let { appendLine("내용: $it") }
-            }
-        }.trim()
-    }
-
-    private fun hasContent(experience: ResumeExperiencePayload): Boolean =
-        experience.name.nonBlank() != null ||
-            experience.role.nonBlank() != null ||
-            experience.contents.nonBlank() != null ||
-            experience.period?.let { it.startAt != null || it.endAt != null } == true
-
-    private fun String?.nonBlank(): String? = this?.takeIf { it.isNotBlank() }
 
 }
 

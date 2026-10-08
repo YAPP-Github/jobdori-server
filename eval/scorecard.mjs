@@ -3,7 +3,7 @@
 
 import fs from 'node:fs/promises';
 import { ResultFailureReason } from 'promptfoo';
-import { collectAxisScores, summarizeCases } from './metrics.js';
+import { collectAxisScores, isRuleFailure, summarizeCases } from './metrics.js';
 import { loadAxes } from './judge.js';
 
 const TIER_LABEL = { gate: '게이트', core: '핵심', diag: '진단' };
@@ -50,8 +50,8 @@ export function buildRows(axes, data) {
       row[`${axis.name} [${TIER_LABEL[axis.tier]}]`] = scores.get(axis.name)?.score ?? '';
     }
     const ruleFailures = (result.gradingResult?.componentResults ?? [])
-      .filter((c) => c.assertion?.type && c.pass === false)
-      .map((c) => `룰(${c.assertion.type}) 실패: ${c.reason}`);
+      .filter(isRuleFailure)
+      .map((c) => `룰(${c.assertion?.type ?? 'rules.js'}) 실패: ${c.reason}`);
     row['판정 근거'] = errored
       ? `채점하지 못했다(프롬프트 품질 문제가 아니다): ${String(result.error ?? '').split('\n')[0].slice(0, 300)}`
       : [

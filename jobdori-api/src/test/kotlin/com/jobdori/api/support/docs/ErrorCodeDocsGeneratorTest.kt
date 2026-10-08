@@ -495,7 +495,6 @@ private val graphQlOperationErrors = listOf(
             CommonErrorCode.E400_INVALID_ARGUMENTS,
             WorkspaceErrorCode.E403_WORKSPACE_ACCESS_DENIED,
             WorkspaceErrorCode.E404_WORKSPACE_NOT_FOUND,
-            ResumeErrorCode.E404_RESUME_NOT_FOUND,
             JdErrorCode.E404_JD_NOT_FOUND,
             AiErrorCode.E500_AI_GENERATION_FAILED,
         ),

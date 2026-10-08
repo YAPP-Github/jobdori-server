@@ -1,6 +1,6 @@
 # 프롬프트 평가 파이프라인
 
-이 파이프라인은 Scoop 백엔드의 11개 AI 프롬프트를 골든셋으로 평가한다. 대상은 JD_MULTI_POSTING_SPLIT, JD_META_EXTRACTION, JD_APPLICATION_STRATEGY, EXPERIENCE_STAR_EXTRACTION, RESUME_EXPERIENCE_REWRITE, EXPERIENCE_CONTENTS_POLISH, EXPERIENCE_RECOMMENDATION, PROFILE_CORE_COMPETENCY_GENERATION, PROFILE_TEXT_POLISH, EXPERIENCE_PROJECT_DUPLICATE_MATCH, EXPERIENCE_DUPLICATE_MERGE다. DOCUMENT_TEXT_EXTRACTION과 JD_KEY_POINTS는 대상이 아니다.
+이 파이프라인은 Scoop 백엔드의 14개 AI 프롬프트를 골든셋으로 평가한다. 대상은 JD_MULTI_POSTING_SPLIT, JD_META_EXTRACTION, JD_APPLICATION_STRATEGY, EXPERIENCE_STAR_EXTRACTION, RESUME_EXPERIENCE_REWRITE, EXPERIENCE_CONTENTS_POLISH, EXPERIENCE_RECOMMENDATION, PROFILE_CORE_COMPETENCY_GENERATION, PROFILE_CORE_COMPETENCY_JD_TEMPLATE, PROFILE_TEXT_POLISH, EXPERIENCE_PROJECT_DUPLICATE_MATCH, EXPERIENCE_DUPLICATE_MERGE, EXPERIENCE_QUESTION_ROOM_GENERATION, EXPERIENCE_QUESTION_ROOM_CHAT이다. DOCUMENT_TEXT_EXTRACTION과 JD_KEY_POINTS는 대상이 아니다.
 
 ## 사전 준비
 
@@ -8,7 +8,7 @@ eval 디렉터리에서 `npm install`을 실행한다. `OPENAI_API_KEY`를 설�
 
 ## 프롬프트 스냅샷
 
-`npm run dump`로 DB의 현재 프롬프트를 `prompts.json`에 저장한다. 이 파일은 prompt_id와 prompt_updated_at을 포함한 스냅샷이라 어느 프롬프트 버전의 결과인지 추적할 수 있어 커밋한다. 커밋된 스냅샷은 **운영 DB 기준**이며 11종 전부를 담고 있다. 프롬프트를 배포한 뒤에는 덤프를 다시 떠서 스냅샷을 갱신한다. 갱신하지 않으면 예전 버전을 평가하게 된다.
+`npm run dump`로 DB의 현재 프롬프트를 `prompts.json`에 저장한다. 이 파일은 prompt_id와 prompt_updated_at을 포함한 스냅샷이라 어느 프롬프트 버전의 결과인지 추적할 수 있어 커밋한다. 커밋된 스냅샷은 **로컬 DB 기준**이며 14종 전부를 담고 있다. 운영에 아직 없는 프롬프트(EXPERIENCE_QUESTION_ROOM_GENERATION, EXPERIENCE_QUESTION_ROOM_CHAT, PROFILE_CORE_COMPETENCY_JD_TEMPLATE)와 운영보다 앞선 개선본을 배포 전에 평가하기 위해서다. 모델과 파라미터는 운영 DB와 같고, JD_META_EXTRACTION, JD_APPLICATION_STRATEGY, EXPERIENCE_STAR_EXTRACTION, RESUME_EXPERIENCE_REWRITE, EXPERIENCE_CONTENTS_POLISH, EXPERIENCE_RECOMMENDATION 6종은 프롬프트 본문이 운영과 다르다. 운영 버전을 평가하려면 운영 DB 접속 정보로 덤프를 다시 뜬다. 프롬프트를 배포한 뒤에는 덤프를 다시 떠서 스냅샷을 갱신한다. 갱신하지 않으면 예전 버전을 평가하게 된다.
 
 접속 정보는 psql 표준 환경변수로 넘긴다. 파일에는 프롬프트 본문, json_schema, 모델명, 파라미터, 버전만 들어가고 접속 정보는 저장되지 않는다.
 
@@ -20,7 +20,7 @@ eval 디렉터리에서 `npm install`을 실행한다. `OPENAI_API_KEY`를 설�
 | PROFILE_CORE_COMPETENCY_GENERATION | gpt-4o | gpt-4o-mini, maxTokens 900 |
 | RESUME_EXPERIENCE_REWRITE | maxTokens 미기재 | maxTokens 900 |
 
-나머지 8개 타입은 문서와 DB가 일치한다. 결과적으로 11개 타입 모두 gpt-4o-mini다.
+나머지 8개 타입은 문서와 DB가 일치한다. 결과적으로 11개 타입 모두 gpt-4o-mini다. EXPERIENCE_QUESTION_ROOM_GENERATION과 EXPERIENCE_QUESTION_ROOM_CHAT도 gpt-4o-mini이고 temperature는 각각 0.2, 0.3, maxTokens는 둘 다 2048이다.
 
 ## 평가 실행
 
@@ -40,7 +40,7 @@ release 임계치는 아직 정하지 않았으므로 어떤 값도 걸려 있�
 
 ## 채점
 
-judge는 평가 대상과 별도의 모델로 호출한다. 기본값은 gpt-4o이고 `JUDGE_MODEL`로 바꿀 수 있다. 대상 11종이 모두 gpt-4o-mini이므로 judge가 한 급 위라는 설계서 조건을 전 타입에서 만족한다. 나중에 어떤 타입을 gpt-4o로 올리면 그 타입은 judge도 함께 올려야 한다. temperature 0, 구조화 출력 강제이며, 한 번의 호출로 그 타입의 모든 축을 채점한다. 대상과 같은 모델로 자기 출력을 채점하면 self-preference bias가 붙기 때문에 대상 provider를 재사용하지 않는다.
+judge는 평가 대상과 별도의 모델로 호출한다. 기본값은 gpt-4o이고 `JUDGE_MODEL`로 바꿀 수 있다. 대상 14종이 모두 gpt-4o-mini이므로 judge가 한 급 위라는 설계서 조건을 전 타입에서 만족한다. 나중에 어떤 타입을 gpt-4o로 올리면 그 타입은 judge도 함께 올려야 한다. temperature 0, 구조화 출력 강제이며, 한 번의 호출로 그 타입의 모든 축을 채점한다. 대상과 같은 모델로 자기 출력을 채점하면 self-preference bias가 붙기 때문에 대상 provider를 재사용하지 않는다.
 
 축의 tier(gate/core/diag)는 judge 응답이 아니라 루브릭 파일을 신뢰한다. judge가 축을 빠뜨리면 그 케이스는 조용히 통과하지 않고 에러로 끝난다.
 
@@ -158,7 +158,7 @@ case_id	input	note	__expected	__metadata:expected
 
 ### input 형식
 
-system 프롬프트는 DB 실물을 쓰므로 input도 서비스가 만드는 형식과 같아야 한다. 형식이 다르면 실제로 발생하지 않는 조합을 평가하게 된다. 각 타입의 형식은 해당 서비스의 buildUserPrompt를 따른다. 예를 들어 RESUME_EXPERIENCE_REWRITE는 `## 대상 JD` 아래 회사/포지션/주요 업무/필요 경험/우대 경험/핵심 역량/공고 핵심/지원 전략, `## 첨삭할 경험 contents 목록` 아래 `[1]`, `[2]` 번호 형식이다(ResumeExperiencePolishService.kt). 줄바꿈은 시트 셀 안에서 실제 줄바꿈(alt+enter)으로 넣는다. 문자 그대로의 백슬래시 n은 그 두 글자가 모델에 전달된다.
+system 프롬프트는 DB 실물을 쓰므로 input도 서비스가 만드는 형식과 같아야 한다. 형식이 다르면 실제로 발생하지 않는 조합을 평가하게 된다. 각 타입의 형식은 해당 서비스의 buildUserPrompt를 따른다. 예를 들어 RESUME_EXPERIENCE_REWRITE는 `## 대상 JD` 아래 회사/포지션/주요 업무/필요 경험/우대 경험/핵심 역량/공고 핵심/지원 전략, `## 첨삭할 경험 contents 목록` 아래 `[1]`, `[2]` 번호 형식이다(ResumeExperiencePolishService.kt). PROFILE_CORE_COMPETENCY_JD_TEMPLATE은 JdPromptText 형식(`[기업명]`, `[포지션]`, `[기업/팀 소개]` 한 줄씩, `[업무 내용]`, `[필요 경험]`, `[우대 경험]`, `[전형 절차]`는 `- ` 목록이고 비면 빠짐)이다(ProfileAiService.generateCoreCompetency). EXPERIENCE_QUESTION_ROOM_GENERATION은 `## 담당업무`, `## 우대사항` 아래 `[1]`, `[2]` 번호 형식이고 비어 있는 섹션은 빠진다(GetExperienceQuestionRoomsService.kt). 모델은 sourceType과 index만 내고 sourceText는 서버가 붙이므로, eval에서는 transform.js가 input의 `[n]` 항목으로 sourceText를 붙인다. 없는 번호는 서버와 달리 카드를 버리지 않고 null로 남겨 judge가 보게 한다. EXPERIENCE_QUESTION_ROOM_CHAT은 `## JD`, `## 질문 카드`, `## 선택한 경험`, `## 보충된 정보`, `## 현재 블록`, `## 이번 사용자 입력` 순서다. 프롬프트의 input_description을 따른 형식이고, 아직 서비스(ExperienceQuestionRoomChatService.kt)는 `## 이전 대화`로 보내므로 서비스를 바꿀 때 이 헤더와 맞춘다. 첫 턴은 `## 보충된 정보`와 `## 현재 블록`을 빼고, 형식 규칙은 `## 현재 블록`이 없으면 첫 생성으로 본다. 줄바꿈은 시트 셀 안에서 실제 줄바꿈(alt+enter)으로 넣는다. 문자 그대로의 백슬래시 n은 그 두 글자가 모델에 전달된다.
 
 ### `__expected` 쓰는 법
 
@@ -170,6 +170,8 @@ system 프롬프트는 DB 실물을 쓰므로 input도 서비스가 만드는 �
 
 검사를 두 개 이상 걸려면 `__expected2`, `__expected3` 열을 늘린다.
 
+프롬프트가 모든 출력에 요구하는 형식 규칙은 케이스마다 적지 않고 `rules.js`에 타입별로 둔다. 모든 케이스에 자동으로 걸리고 스코어카드에서 룰 실패로 집계된다. EXPERIENCE_QUESTION_ROOM_CHAT과 PROFILE_CORE_COMPETENCY_JD_TEMPLATE에 있다. PROFILE_CORE_COMPETENCY_JD_TEMPLATE은 프롬프트의 최종 검증 목록(문단 하나, 4~5문장, 헤드라인이 `[[이름]]입니다`로 끝남, 문장마다 자리표시자 1개와 예시 2개, 자리표시자 내용 공백 제외 15자, 예시 제외 400자, 접속 표현/경험 단정/포부 표현/수치/기업명 금지)을 검사한다. EXPERIENCE_QUESTION_ROOM_CHAT은 제목 35자 이하와 "~경험" 제목 금지, 본문 문장마다 마침표 없는 개조식 종결과 한 문장, 범용 동사 금지, fit 한 문장, 첫 생성이면 changed 빈 문자열이고 아니면 한 문장, status와 question 일치를 검사한다.
+
 ### 타입별로 무엇을 정답으로 적을지
 
 | PromptType | 권장 정답 |
@@ -180,6 +182,8 @@ system 프롬프트는 DB 실물을 쓰므로 input도 서비스가 만드는 �
 | EXPERIENCE_STAR_EXTRACTION, EXPERIENCE_CONTENTS_POLISH | S/T/A/R 귀속 정답, 비어야 할 칸 |
 | EXPERIENCE_PROJECT_DUPLICATE_MATCH, EXPERIENCE_DUPLICATE_MERGE | 중복 여부 정답과 병합 시 살아남아야 할 필드 |
 | RESUME_EXPERIENCE_REWRITE | 유지해야 할 수치와 항목 수 |
+| EXPERIENCE_QUESTION_ROOM_GENERATION | 질문으로 다뤄야 할 핵심 항목. 질문 형식 규칙("경험이 있나요?"로 끝남, "및"/"그리고"로 행동을 묶지 않음)은 `__expected`의 javascript 검사로 건다 |
+| EXPERIENCE_QUESTION_ROOM_CHAT | 블록에 들어가야 할 사실과 들어가면 안 되는 사실. bullets 앞 하이픈 금지는 `javascript: !(typeof output === "string" ? JSON.parse(output) : output).block.bullets.some((b) => b.trim().startsWith("-"))`로 검사한다 |
 | JD_APPLICATION_STRATEGY, PROFILE_CORE_COMPETENCY_GENERATION, PROFILE_TEXT_POLISH | 정답이 하나로 안 떨어지므로 비워두고 judge에 맡긴다 |
 
 ### 작성 예시 (JD_META_EXTRACTION)

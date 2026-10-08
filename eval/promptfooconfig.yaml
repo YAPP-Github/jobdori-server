@@ -7,6 +7,10 @@ providers:
 tests:
   - "{{env.GOLDENSET}}"
 defaultTest:
+  options:
+    transform: file://transform.js
   assert:
     - type: javascript
       value: file://judge.js
+    - type: javascript
+      value: file://rules.js

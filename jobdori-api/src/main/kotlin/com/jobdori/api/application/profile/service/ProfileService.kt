@@ -11,7 +11,6 @@ import com.jobdori.core.application.profile.ProfileAiService
 import com.jobdori.core.application.profile.ProfilePolishKind
 import com.jobdori.core.domain.profile.service.ProfileModifier
 import com.jobdori.core.domain.profile.service.ProfileReader
-import com.jobdori.core.domain.resume.service.ResumeReader
 import org.springframework.stereotype.Service
 
 @Service
@@ -20,7 +19,6 @@ class ProfileService(
     private val profileReader: ProfileReader,
     private val profileModifier: ProfileModifier,
     private val profileAiService: ProfileAiService,
-    private val resumeReader: ResumeReader,
 ) {
 
     fun getProfile(userId: Long, workspaceId: String): ProfileResponse {
@@ -46,23 +44,18 @@ class ProfileService(
         return ProfileResponse.from(detail)
     }
 
-    // 생성 결과는 저장하지 않고 응답으로만 반환하며, 이력서에 선택된 경험은 생성 근거로만 사용한다.
+    // 생성 결과는 저장하지 않고 응답으로만 반환한다.
     fun generateCoreCompetency(
         userId: Long,
         workspaceId: String,
-        resumeId: Long,
-        jdId: String?,
+        jdId: String,
     ): GenerateCoreCompetencyResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(
             workspaceId = workspaceId,
             userId = userId,
         )
 
-        val profile = profileReader.getOrCreateProfile(workspace.id)
-        val resumeDetail = resumeReader.getDetail(workspaceId = workspace.id, resumeId = resumeId)
         val generation = profileAiService.generateCoreCompetency(
-            detail = profileReader.getDetail(profile),
-            resumeDetail = resumeDetail,
             workspaceId = workspace.id,
             jdPublicId = jdId,
         )

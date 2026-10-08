@@ -1,3 +1,5 @@
 node_modules/
 output/
 .env
+run*.json
+run*.csv

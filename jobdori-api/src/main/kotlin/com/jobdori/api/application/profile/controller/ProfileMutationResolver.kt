@@ -32,12 +32,10 @@ class ProfileMutationResolver(
     fun generateCoreCompetency(
         @UserId userId: Long,
         @Argument workspaceId: String,
-        @Argument resumeId: Long,
-        @Argument jdId: String?,
+        @Argument jdId: String,
     ): GenerateCoreCompetencyResponse = profileService.generateCoreCompetency(
         userId = userId,
         workspaceId = workspaceId,
-        resumeId = resumeId,
         jdId = jdId,
     )
 

@@ -789,6 +789,8 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
         workspaceId: "00000000-0000-0000-0000-000000000002"
         projectId: 1
         jdId: "00000000-0000-0000-0000-000000000003"
+        questionRoomId: "00000000-0000-0000-0000-000000000004"
+        tab: AI_RECOMMENDATION
         cursor: null
         size: 10
     ) {
@@ -847,6 +849,11 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">invalid_arguments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">입력한 내용을 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdId를 주고 tab을 누락했거나, AI_RECOMMENDATION 탭에서 questionRoomId를 누락했거나 cursor가 0 이상의 정수가 아닌 경우</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_access_denied</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">이 워크스페이스에 접근할 권한이 없어요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스 접근 권한이 없는 경우</p></td>
@@ -860,6 +867,16 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">experience_project_not_found</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">`projectId`로 특정 프로젝트의 경험 목록을 조회했으나 프로젝트를 찾을 수 없는 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록되지 않은 채용공고예요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 JD ID로 AI_RECOMMENDATION 탭을 조회한 경우</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experience_question_room_not_found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">경험 질문 대화방을 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">questionRoomId가 해당 JD의 질문 카드가 아닌 경우</p></td>
 </tr>
 </tbody>
 </table>
@@ -3087,11 +3104,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experience_required</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">이력서 생성을 위한 경험이 필요해요. 내 경험 탭에서 경험을 추가해 주세요.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스에 활성 상태의 경험이 없어 JD를 등록할 수 없는 경우</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_invalid_url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">링크 형식이 올바르지 않아요. 확인 후 다시 시도해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">허용되지 않은 스킴이거나 내부 네트워크 주소(SSRF 차단)</p></td>
@@ -3817,7 +3829,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <pre class="highlightjs highlight"><code class="language-graphql hljs" data-lang="graphql">mutation GenerateCoreCompetency {
     generateCoreCompetency(
         workspaceId: "00000000-0000-0000-0000-000000000002"
-        resumeId: 94123123213123123
         jdId: "00000000-0000-0000-0000-000000000003"
     ) {
         coreCompetency
@@ -3863,11 +3874,6 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 <td class="tableblock halign-left valign-top"><p class="tableblock">workspace_not_found</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">워크스페이스를 찾을 수 없는 경우</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">resume_not_found</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾지 못했어요. 목록에서 다시 확인해 주세요.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">이력서를 찾을 수 없는 경우</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jd_not_found</p></td>
@@ -3972,7 +3978,7 @@ GraphQL 응답은 일부 오류 상황에서도 HTTP status가 200으로 내려�
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2026-10-07<br>
+Version 2026-10-08<br>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

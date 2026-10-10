@@ -12,8 +12,11 @@ import com.jobdori.infrastructure.client.ai.openai.dto.OpenAiChatCompletionReque
 import com.jobdori.infrastructure.client.ai.openai.dto.OpenAiChatCompletionResponse
 import datadog.trace.api.llmobs.LLMObs
 import datadog.trace.api.llmobs.LLMObsSpan
+import org.slf4j.MDC
 import org.springframework.stereotype.Component
+import java.security.MessageDigest
 import java.util.Base64
+import java.util.HexFormat
 
 
 /**
@@ -55,7 +58,7 @@ class OpenAiChatClientImpl(
             request.parameters,
         )
 
-        return call(request.useCase, body).textOrEmpty()
+        return call(request.useCase, body) { it.textOrEmpty() }
     }
 
     override fun <T : Any> generateStructured(request: AiStructuredRequest<T>): T {
@@ -66,7 +69,7 @@ class OpenAiChatClientImpl(
         val body = OpenAiChatCompletionRequest.of(
             request.model, request.systemPrompt, request.userPrompt, request.parameters, format,
         )
-        return call(request.useCase, body).parseContentAs(request.responseType.java)
+        return call(request.useCase, body) { it.parseContentAs(request.responseType.java) }
     }
 
     override fun extractText(request: AiGenerationRequest, pageImages: List<DocumentPageImage>): String {
@@ -85,14 +88,30 @@ class OpenAiChatClientImpl(
             userContent = content,
             parameters = request.parameters,
         )
-        return call(request.useCase, body).textOrEmpty().trim()
+        return call(request.useCase, body) { it.textOrEmpty().trim() }
     }
 
-    private fun call(useCase: String, body: OpenAiChatCompletionRequest): OpenAiChatCompletionResponse {
+    private fun <R> call(
+        useCase: String,
+        body: OpenAiChatCompletionRequest,
+        postProcess: (OpenAiChatCompletionResponse) -> R,
+    ): R {
         val started = System.nanoTime()
         var retries = 0
         // 계측 실패가 AI 호출을 깨뜨리면 안 된다. DD_TRACE_ENABLED=false면 startLLMSpan이 NPE를 던진다.
         val llmSpan = runCatching { LLMObs.startLLMSpan(useCase, body.model, "openai", null, null) }.getOrNull()
+        runCatching {
+            llmSpan?.let { span ->
+                span.setTag("use_case", useCase)
+                body.messages.firstOrNull { it.role == "system" }?.textContent()?.let { prompt ->
+                    val digest = MessageDigest.getInstance("SHA-256").digest(prompt.toByteArray())
+                    span.setTag("prompt_hash", HexFormat.of().formatHex(digest).take(8))
+                }
+                // MDC 키는 api 모듈의 MdcKeys와 같아야 한다 (infra는 api를 의존할 수 없어 문자열로 둔다)
+                MDC.get("graphql.operation")?.let { span.setTag("graphql.operation", it) }
+                MDC.get("usr.id")?.let { span.setTag("usr.id", it) }
+            }
+        }
         try {
             return runCatching {
                 var result: OpenAiChatCompletionResponse? = null
@@ -110,13 +129,22 @@ class OpenAiChatClientImpl(
             }
                 .onSuccess { res ->
                     OpenAiCallMetrics.logSuccess(useCase, body.model, started, retries, res)
-                    runCatching { llmSpan?.let { annotateLlmSpan(it, body, res) } }
                 }
                 .onFailure { e ->
                     OpenAiCallMetrics.logFailure(useCase, body.model, started, retries, e)
                     runCatching { llmSpan?.addThrowable(e) }
                 }
                 .getOrThrow()
+                .let { res ->
+                    // 파싱 실패 스팬에도 원인(잘린 응답, finish_reason=length)이 남도록 파싱보다 먼저 기록한다
+                    runCatching { llmSpan?.let { annotateLlmSpan(it, body, res, retries) } }
+                    try {
+                        postProcess(res)
+                    } catch (e: Throwable) {
+                        runCatching { llmSpan?.addThrowable(e) }
+                        throw e
+                    }
+                }
         } finally {
             runCatching { llmSpan?.finish() }
         }
@@ -126,7 +154,10 @@ class OpenAiChatClientImpl(
         span: LLMObsSpan,
         body: OpenAiChatCompletionRequest,
         res: OpenAiChatCompletionResponse,
+        retries: Int,
     ) {
+        res.choices.firstOrNull()?.finishReason?.let { span.setTag("finish_reason", it) }
+        span.setMetadata(mapOf("retries" to retries))
         span.annotateIO(
             body.messages.map { LLMObs.LLMMessage.from(it.role, it.textContent().maskPii()) },
             res.choices.map { LLMObs.LLMMessage.from(it.message.role, it.message.content.maskPii()) },

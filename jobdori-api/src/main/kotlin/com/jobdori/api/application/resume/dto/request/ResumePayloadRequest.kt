@@ -80,12 +80,14 @@ data class ResumeExperiencePayloadRequest(
     val period: PeriodRequest?,
     @field:Size(max = ProfilePolicy.MAX_CONTENTS_LENGTH, message = "내용은 최대 {max}자까지 입력할 수 있어요.")
     val contents: String?,
+    val experienceQuestionRoomId: String? = null,
 ) : ResumePayloadRequest<ResumeExperiencePayload> {
     override fun toPayload() = ResumeExperiencePayload(
         name = name,
         role = role,
         period = period?.toPeriod(),
         contents = contents,
+        experienceQuestionRoomId = experienceQuestionRoomId,
     )
 }
 

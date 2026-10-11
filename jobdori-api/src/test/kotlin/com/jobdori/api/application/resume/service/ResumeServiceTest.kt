@@ -183,6 +183,7 @@ class ResumeServiceTest : StringSpec({
                 payload.name shouldBe "프로젝트"
                 payload.role shouldBe "백엔드 개발"
                 payload.contents shouldBe "생성 첨삭 내용"
+                payload.experienceQuestionRoomId shouldBe "question-room-id"
             })
         }
     }
@@ -377,6 +378,7 @@ class ResumeServiceTest : StringSpec({
                     payload.role shouldBe "백엔드 개발"
                     payload.period shouldBe null
                     payload.contents shouldBe "첨삭 내용"
+                    payload.experienceQuestionRoomId shouldBe "question-room-id"
                 },
             )
         }
@@ -396,6 +398,7 @@ class ResumeServiceTest : StringSpec({
             resumeModifier.modifyDetail(1L, 100L, withArg<ResumeSaveCommand> { command ->
                 val payload = command.sections.single().items.single().payload as ResumeExperiencePayload
                 payload.contents shouldBe "원본 내용"
+                payload.experienceQuestionRoomId shouldBe "question-room-id"
             })
         }
     }
@@ -893,6 +896,7 @@ private fun experienceSaveRequest(optimizationMode: ResumeOptimizationMode, targ
                             role = "백엔드 개발",
                             period = null,
                             contents = "원본 내용",
+                            experienceQuestionRoomId = "question-room-id",
                         ),
                         education = null,
                         award = null,

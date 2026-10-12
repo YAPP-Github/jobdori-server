@@ -141,7 +141,7 @@ type ExperienceQuestionRoomExperience {
 }
 
 """
-질문 대화방 메시지입니다. role이 USER면 content/experienceIds, AI면 block/feedback이 채워집니다.
+질문 대화방 메시지입니다. role이 USER면 content/experiences, AI면 block/feedback이 채워집니다.
 """
 type ExperienceQuestionRoomMessage {
     """
@@ -160,12 +160,7 @@ type ExperienceQuestionRoomMessage {
     content: String
 
     """
-    사용자가 선택한 경험 ID 목록입니다. (USER)
-    """
-    experienceIds: [ID!]
-
-    """
-    사용자가 선택한 경험의 ID와 경험명입니다. (USER, 삭제된 경험은 제외되므로 experienceIds보다 적을 수 있음)
+    사용자가 선택한 경험의 ID와 경험명입니다. (USER, 삭제된 경험은 제외)
     """
     experiences: [ExperienceQuestionRoomExperience!]
 

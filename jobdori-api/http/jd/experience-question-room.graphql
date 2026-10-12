@@ -24,10 +24,10 @@ query ExperienceQuestionRoom {
             }
             createdAt
             draftNumber
-        }
-        experiences {
-            experienceId
-            title
+            experiences {
+                experienceId
+                title
+            }
         }
     }
 }

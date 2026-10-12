@@ -6,23 +6,21 @@ import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomMess
 data class ExperienceQuestionRoomDetailResponse(
     val room: ExperienceQuestionRoomCardResponse,
     val messages: List<ExperienceQuestionRoomMessageResponse>,
-    val experiences: List<Experience>,
 ) {
-
-    data class Experience(val experienceId: Long, val title: String)
 
     companion object {
         fun from(detail: ExperienceQuestionRoomDetail): ExperienceQuestionRoomDetailResponse {
             var draftNumber = 0
+            val titleById = detail.experiences.associate { it.id to it.title }
             return ExperienceQuestionRoomDetailResponse(
                 room = ExperienceQuestionRoomCardResponse.from(detail.room),
                 messages = detail.messages.map {
                     ExperienceQuestionRoomMessageResponse.from(
                         it,
                         if (it.role == ExperienceQuestionRoomMessageRole.AI) ++draftNumber else null,
+                        titleById,
                     )
                 },
-                experiences = detail.experiences.map { Experience(it.id, it.title) },
             )
         }
     }

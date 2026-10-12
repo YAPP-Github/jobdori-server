@@ -123,11 +123,6 @@ type ExperienceQuestionRoomDetail {
     대화 메시지 목록입니다. (오래된 순서)
     """
     messages: [ExperienceQuestionRoomMessage!]!
-
-    """
-    대화방에서 사용자가 선택한 경험 목록입니다. 메시지의 experienceIds로 경험명을 찾을 때 사용합니다. (삭제된 경험은 제외)
-    """
-    experiences: [ExperienceQuestionRoomExperience!]!
 }
 
 """
@@ -168,6 +163,11 @@ type ExperienceQuestionRoomMessage {
     사용자가 선택한 경험 ID 목록입니다. (USER)
     """
     experienceIds: [ID!]
+
+    """
+    사용자가 선택한 경험의 ID와 경험명입니다. (USER, 삭제된 경험은 제외되므로 experienceIds보다 적을 수 있음)
+    """
+    experiences: [ExperienceQuestionRoomExperience!]
 
     """
     AI가 만든 경험 블록입니다. (AI)

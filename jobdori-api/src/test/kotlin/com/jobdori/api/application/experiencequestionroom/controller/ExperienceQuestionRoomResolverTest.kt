@@ -88,8 +88,7 @@ internal class ExperienceQuestionRoomResolverTest(
                 query {
                   experienceQuestionRoom(workspaceId: "ws-1", questionRoomId: "room-1") {
                     room { questionRoomId question sourceType sourceText }
-                    messages { messageId role content experienceIds block { title bullets } feedback { fit improvement } createdAt draftNumber }
-                    experiences { experienceId title }
+                    messages { messageId role content experienceIds block { title bullets } feedback { fit improvement } createdAt draftNumber experiences { experienceId title } }
                   }
                 }
                 """.trimIndent(),
@@ -99,7 +98,8 @@ internal class ExperienceQuestionRoomResolverTest(
                 it.room.questionRoomId shouldBe "room-1"
                 it.messages.first().experienceIds shouldBe listOf(8L)
                 it.messages.map { message -> message.draftNumber } shouldBe listOf(null, 1, 2)
-                it.experiences shouldBe listOf(ExperienceQuestionRoomDetailResponse.Experience(8L, "모니터링 개선"))
+                it.messages.map { message -> message.experiences } shouldBe
+                    listOf(listOf(ExperienceQuestionRoomMessageResponse.Experience(8L, "모니터링 개선")), null, null)
             }
     }
 

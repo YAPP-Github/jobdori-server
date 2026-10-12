@@ -13,6 +13,7 @@ data class ExperienceQuestionRoomMessageResponse(
     val block: Block?,
     val feedback: Feedback?,
     val createdAt: Instant,
+    val draftNumber: Int? = null,
 ) {
 
     data class Block(val title: String, val bullets: List<String>)
@@ -20,7 +21,7 @@ data class ExperienceQuestionRoomMessageResponse(
     data class Feedback(val fit: String, val improvement: String)
 
     companion object {
-        fun from(message: ExperienceQuestionRoomMessage): ExperienceQuestionRoomMessageResponse {
+        fun from(message: ExperienceQuestionRoomMessage, draftNumber: Int? = null): ExperienceQuestionRoomMessageResponse {
             val isAi = message.role == ExperienceQuestionRoomMessageRole.AI
             return ExperienceQuestionRoomMessageResponse(
                 messageId = message.messageId,
@@ -30,6 +31,7 @@ data class ExperienceQuestionRoomMessageResponse(
                 block = if (isAi) Block(message.blockTitle.orEmpty(), message.bullets) else null,
                 feedback = if (isAi) Feedback(message.fit.orEmpty(), message.improvement.orEmpty()) else null,
                 createdAt = requireNotNull(message.createdAt) { "저장되지 않은 메시지입니다." }.toInstantAtSystemDefaultZone(),
+                draftNumber = draftNumber,
             )
         }
     }

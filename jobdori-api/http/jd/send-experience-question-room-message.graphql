@@ -18,5 +18,6 @@ mutation SendExperienceQuestionRoomMessage {
             improvement
         }
         createdAt
+        draftNumber
     }
 }

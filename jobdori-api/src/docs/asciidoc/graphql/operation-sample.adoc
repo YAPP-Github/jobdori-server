@@ -664,6 +664,7 @@ query Resume {
                         contents
                     }
                     experience {
+                        experienceQuestionRoomId
                         name
                         role
                         period {
@@ -964,6 +965,7 @@ mutation UpdateResume {
                             visible: true
                             payload: {
                                 experience: {
+                                    experienceQuestionRoomId: null
                                     name: "이력서 관리 GraphQL API 개발"
                                     role: "Backend Developer"
                                     period: { startAt: "2025-01-01", endAt: "2025-06-30" }
@@ -1127,6 +1129,7 @@ mutation UpdateResume {
                     basicInfo { name email phone hideContact }
                     coreSkill { content }
                     experience {
+                        experienceQuestionRoomId
                         name
                         role
                         period { startAt endAt }
@@ -1386,6 +1389,11 @@ query ExperienceQuestionRoom {
                 improvement
             }
             createdAt
+            draftNumber
+        }
+        experiences {
+            experienceId
+            title
         }
     }
 }
@@ -1420,6 +1428,7 @@ mutation SendExperienceQuestionRoomMessage {
             improvement
         }
         createdAt
+        draftNumber
     }
 }
 ----

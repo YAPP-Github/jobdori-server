@@ -23,6 +23,11 @@ query ExperienceQuestionRoom {
                 improvement
             }
             createdAt
+            draftNumber
+        }
+        experiences {
+            experienceId
+            title
         }
     }
 }

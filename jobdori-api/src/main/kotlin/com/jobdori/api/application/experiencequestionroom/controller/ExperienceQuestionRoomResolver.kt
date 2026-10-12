@@ -49,12 +49,12 @@ class ExperienceQuestionRoomResolver(
         @Valid @Argument request: SendExperienceQuestionRoomMessageRequest,
     ): ExperienceQuestionRoomMessageResponse {
         val workspace = workspaceAccessValidationService.validateAccessible(workspaceId, userId)
-        val message = experienceQuestionRoomChatService.send(
+        val result = experienceQuestionRoomChatService.send(
             workspaceId = workspace.id,
             questionRoomId = questionRoomId,
             content = request.content,
             experienceIds = request.experienceIds,
         )
-        return ExperienceQuestionRoomMessageResponse.from(message)
+        return ExperienceQuestionRoomMessageResponse.from(result.message, result.draftNumber)
     }
 }

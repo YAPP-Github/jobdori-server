@@ -11,15 +11,17 @@ import com.jobdori.core.application.auth.AccessTokenService
 import com.jobdori.core.application.experiencequestionroom.ExperienceQuestionRoomChatService
 import com.jobdori.core.application.experiencequestionroom.GetExperienceQuestionRoomsService
 import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomDetail
+import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomSendResult
+import com.jobdori.core.domain.experience.Experience
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomCard
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomMessage
-import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomMessageRole
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomSourceType
 import com.jobdori.core.domain.workspace.Workspace
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
+import io.mockk.mockk
 import org.springframework.context.annotation.Import
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester
 import org.springframework.graphql.test.tester.GraphQlTester
@@ -71,7 +73,14 @@ internal class ExperienceQuestionRoomResolverTest(
             Workspace(id = 10L, publicId = "ws-1", ownerUserId = 1L)
         val room = ExperienceQuestionRoomCard("room-1", "직접 개선한 경험이 있나요?", ExperienceQuestionRoomSourceType.RESPONSIBILITY, "서비스 개선")
         val user = ExperienceQuestionRoomMessage.user("room-1", "정리해 주세요", listOf(8L)).copy(messageId = 7L, createdAt = createdAt)
-        every { experienceQuestionRoomChatService.getDetail(10L, "room-1") } returns ExperienceQuestionRoomDetail(room, listOf(user))
+        val ai = ExperienceQuestionRoomMessage.ai("room-1", "운영 개선", listOf("모니터링을 개선했다."), "요구에 부합해요.", "수치를 보강해 주세요.")
+            .copy(messageId = 8L, createdAt = createdAt)
+        val experience = mockk<Experience> {
+            every { id } returns 8L
+            every { title } returns "모니터링 개선"
+        }
+        every { experienceQuestionRoomChatService.getDetail(10L, "room-1") } returns
+            ExperienceQuestionRoomDetail(room, listOf(user, ai, ai.copy(messageId = 9L)), listOf(experience))
 
         authenticatedTester(graphQlTester)
             .document(
@@ -79,7 +88,8 @@ internal class ExperienceQuestionRoomResolverTest(
                 query {
                   experienceQuestionRoom(workspaceId: "ws-1", questionRoomId: "room-1") {
                     room { questionRoomId question sourceType sourceText }
-                    messages { messageId role content experienceIds block { title bullets } feedback { fit improvement } createdAt }
+                    messages { messageId role content experienceIds block { title bullets } feedback { fit improvement } createdAt draftNumber }
+                    experiences { experienceId title }
                   }
                 }
                 """.trimIndent(),
@@ -87,8 +97,9 @@ internal class ExperienceQuestionRoomResolverTest(
             .execute()
             .path("experienceQuestionRoom").entity<ExperienceQuestionRoomDetailResponse>().satisfies {
                 it.room.questionRoomId shouldBe "room-1"
-                it.messages.single().role shouldBe ExperienceQuestionRoomMessageRole.USER
-                it.messages.single().experienceIds shouldBe listOf(8L)
+                it.messages.first().experienceIds shouldBe listOf(8L)
+                it.messages.map { message -> message.draftNumber } shouldBe listOf(null, 1, 2)
+                it.experiences shouldBe listOf(ExperienceQuestionRoomDetailResponse.Experience(8L, "모니터링 개선"))
             }
     }
 
@@ -103,7 +114,7 @@ internal class ExperienceQuestionRoomResolverTest(
             fit = "요구에 부합해요.",
             improvement = "수치를 보강해 주세요.",
         ).copy(messageId = 9L, createdAt = createdAt)
-        every { experienceQuestionRoomChatService.send(10L, "room-1", "정리해 주세요", listOf(8L)) } returns ai
+        every { experienceQuestionRoomChatService.send(10L, "room-1", "정리해 주세요", listOf(8L)) } returns ExperienceQuestionRoomSendResult(ai, 2)
 
         authenticatedTester(graphQlTester)
             .document(
@@ -112,7 +123,7 @@ internal class ExperienceQuestionRoomResolverTest(
                   sendExperienceQuestionRoomMessage(
                     workspaceId: "ws-1", questionRoomId: "room-1", request: { content: "정리해 주세요", experienceIds: ["8"] }
                   ) {
-                    messageId role block { title bullets } feedback { fit improvement } createdAt
+                    messageId role block { title bullets } feedback { fit improvement } createdAt draftNumber
                   }
                 }
                 """.trimIndent(),
@@ -121,6 +132,7 @@ internal class ExperienceQuestionRoomResolverTest(
             .path("sendExperienceQuestionRoomMessage").entity<ExperienceQuestionRoomMessageResponse>().satisfies {
                 it.messageId shouldBe 9L
                 it.block?.title shouldBe "운영 개선"
+                it.draftNumber shouldBe 2
             }
     }
 })

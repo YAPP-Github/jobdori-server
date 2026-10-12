@@ -5,6 +5,7 @@ import com.jobdori.common.error.InvalidArgumentsException
 import com.jobdori.core.application.ai.client.AiChatClient
 import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomChatResult
 import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomDetail
+import com.jobdori.core.application.experiencequestionroom.result.ExperienceQuestionRoomSendResult
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.domain.ai.error.AiErrorCode
 import com.jobdori.core.domain.ai.error.AiException
@@ -36,10 +37,8 @@ class ExperienceQuestionRoomChatService(
 
     fun getDetail(workspaceId: Long, questionRoomId: String): ExperienceQuestionRoomDetail {
         val (_, room) = findRoomWithJd(workspaceId, questionRoomId)
-        return ExperienceQuestionRoomDetail(
-            room,
-            messageRepository.findAllByQuestionRoomId(questionRoomId),
-        )
+        val messages = messageRepository.findAllByQuestionRoomId(questionRoomId)
+        return ExperienceQuestionRoomDetail(room, messages, experiencesInRoom(workspaceId, messages, emptyList()))
     }
 
     // AI 호출을 기다리는 동안 DB 커넥션을 잡지 않도록 트랜잭션을 걸지 않는다. 메시지 쌍 저장만 자기 트랜잭션을 쓴다.
@@ -48,7 +47,7 @@ class ExperienceQuestionRoomChatService(
         questionRoomId: String,
         content: String?,
         experienceIds: List<Long>,
-    ): ExperienceQuestionRoomMessage {
+    ): ExperienceQuestionRoomSendResult {
         val (jd, room) = findRoomWithJd(workspaceId, questionRoomId)
         val userContent = content?.takeIf { it.isNotBlank() }
         val selectedIds = experienceIds.distinct()
@@ -82,7 +81,10 @@ class ExperienceQuestionRoomChatService(
             fit = generated.feedback.fit,
             improvement = generated.feedback.improvement,
         )
-        return messageRepository.savePair(user, ai).last()
+        return ExperienceQuestionRoomSendResult(
+            message = messageRepository.savePair(user, ai).last(),
+            draftNumber = history.count { it.role == ExperienceQuestionRoomMessageRole.AI } + 1,
+        )
     }
 
     // 이전 턴에서 고른 경험도 후속 요청(예: 더 짧게)에 쓰이도록 대화방에서 고른 경험 전체를 넣는다. 삭제된 경험은 건너뛴다.

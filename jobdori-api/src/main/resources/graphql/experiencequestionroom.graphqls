@@ -123,6 +123,26 @@ type ExperienceQuestionRoomDetail {
     대화 메시지 목록입니다. (오래된 순서)
     """
     messages: [ExperienceQuestionRoomMessage!]!
+
+    """
+    대화방에서 사용자가 선택한 경험 목록입니다. 메시지의 experienceIds로 경험명을 찾을 때 사용합니다. (삭제된 경험은 제외)
+    """
+    experiences: [ExperienceQuestionRoomExperience!]!
+}
+
+"""
+질문 대화방에서 선택한 경험입니다.
+"""
+type ExperienceQuestionRoomExperience {
+    """
+    경험 ID입니다.
+    """
+    experienceId: ID!
+
+    """
+    경험명입니다.
+    """
+    title: String!
 }
 
 """
@@ -158,6 +178,11 @@ type ExperienceQuestionRoomMessage {
     AI 피드백입니다. (AI)
     """
     feedback: ExperienceQuestionRoomFeedback
+
+    """
+    대화방 안에서 몇 번째 AI 초안인지 나타내는 번호입니다. 1부터 시작합니다. (AI)
+    """
+    draftNumber: Int
 
     """
     메시지가 저장된 시각입니다.

@@ -13,7 +13,6 @@ query ExperienceQuestionRoom {
             messageId
             role
             content
-            experienceIds
             block {
                 title
                 bullets

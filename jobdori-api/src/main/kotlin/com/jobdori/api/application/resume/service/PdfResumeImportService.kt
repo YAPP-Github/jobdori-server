@@ -5,8 +5,8 @@ import com.jobdori.api.application.experience.service.PdfExperienceImportService
 import com.jobdori.api.application.resume.dto.response.ResumeResponse
 import com.jobdori.api.application.workspace.service.WorkspaceAccessValidationService
 import com.jobdori.core.application.experience.ExperienceAiExtractionService
-import com.jobdori.core.application.experience.ExperienceStarExtractionResult
-import com.jobdori.core.application.experience.ExtractedExperienceProject
+import com.jobdori.core.application.experience.ResumeImportExtractionResult
+import com.jobdori.core.application.experience.ResumeImportProject
 import com.jobdori.core.application.jd.GetJdService
 import com.jobdori.core.domain.resume.ResumeBasicInfoPayload
 import com.jobdori.core.domain.resume.ResumeCareerPayload
@@ -59,7 +59,7 @@ class PdfResumeImportService(
     }
 }
 
-private fun ExperienceStarExtractionResult.toResumeSaveCommand(targetJdId: Long?): ResumeSaveCommand {
+internal fun ResumeImportExtractionResult.toResumeSaveCommand(targetJdId: Long?): ResumeSaveCommand {
     val sections = buildList {
         addSection(ResumeSectionType.BASIC_INFO, listOfNotNull(
             personalInfo.takeIf { it.name.isNotBlank() || it.email.isNotBlank() || it.phone.isNotBlank() }
@@ -111,7 +111,7 @@ private fun MutableList<ResumeSectionSaveCommand>.addSection(
     )
 }
 
-private fun List<ExtractedExperienceProject>.toResumeExperiencePayloads(): List<ResumeExperiencePayload> = flatMap { project ->
+private fun List<ResumeImportProject>.toResumeExperiencePayloads(): List<ResumeExperiencePayload> = flatMap { project ->
     val projectName = project.name.trim()
     val projectPeriod = project.period.toPeriod()
     if (project.experiences.isEmpty()) {
@@ -123,17 +123,11 @@ private fun List<ExtractedExperienceProject>.toResumeExperiencePayloads(): List<
     } else {
         project.experiences.mapNotNull { experience ->
             val name = experience.title.trim().ifBlank { projectName }.ifBlank { return@mapNotNull null }
-            val contents = listOf(
-                "상황: ${experience.situation.trim()}",
-                "과제: ${experience.task.trim()}",
-                "행동: ${experience.action.trim()}",
-                "결과: ${experience.result.trim()}",
-            ).filterNot { it.endsWith(":") }.joinToString("\n")
             ResumeExperiencePayload(
                 name = name,
-                role = experience.role.trim().ifBlank { project.role.trim().ifBlank { null } },
-                period = experience.period.toPeriod() ?: projectPeriod,
-                contents = contents.ifBlank { project.summary.trim().ifBlank { null } },
+                role = experience.role.trim().ifBlank { null },
+                period = experience.period.toPeriod(),
+                contents = experience.content.takeIf { it.isNotBlank() },
             )
         }
     }

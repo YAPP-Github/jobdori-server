@@ -104,6 +104,49 @@ class ExperienceAiExtractionServiceTest : StringSpec({
         }
     }
 
+    "이력서 가져오기는 원문 content를 가진 전용 응답 타입을 사용한다" {
+        val prompt = PromptTemplate(
+            type = PromptType.RESUME_IMPORT_EXTRACTION,
+            modelName = "gpt-4o-mini",
+            parameters = AiParameters(temperature = 0.2, maxTokens = 4096),
+            systemPrompt = "원문을 그대로 가져온다",
+            jsonSchema = """{"type":"object"}""",
+        )
+        val content = "- 연간 5조 원 규모의 결제를 처리했습니다.\n- Java, Spring, JPA를 활용했습니다."
+        val result = ResumeImportExtractionResult(
+            projects = listOf(ResumeImportProject(
+                name = "결제 시스템 개발",
+                experiences = listOf(ResumeImportExperience(
+                    title = "결제 시스템 개발 및 유지보수 경험",
+                    role = "백엔드 개발자",
+                    content = content,
+                )),
+            )),
+        )
+        every { promptTemplateRepository.findByType(PromptType.RESUME_IMPORT_EXTRACTION) } returns prompt
+        every {
+            aiChatClient.generateStructured(match<AiStructuredRequest<ResumeImportExtractionResult>> {
+                it.responseType == ResumeImportExtractionResult::class &&
+                    it.userPrompt.contains("content") && !it.userPrompt.contains("situation/task/action/result")
+            })
+        } returns result
+
+        service.extractForResumeImport("이력서 원문").projects.single()
+            .experiences.single().content shouldBe content
+        verify(exactly = 1) { promptTemplateRepository.findByType(PromptType.RESUME_IMPORT_EXTRACTION) }
+        verify(exactly = 0) { promptTemplateRepository.findByType(PromptType.EXPERIENCE_STAR_EXTRACTION) }
+    }
+
+    "이력서 가져오기 프롬프트가 없으면 AI를 호출하지 않는다" {
+        every { promptTemplateRepository.findByType(PromptType.RESUME_IMPORT_EXTRACTION) } returns null
+
+        shouldThrow<AiException> { service.extractForResumeImport("이력서 원문") }
+
+        verify(exactly = 0) {
+            aiChatClient.generateStructured(any<AiStructuredRequest<ResumeImportExtractionResult>>())
+        }
+    }
+
     "AI가 구조화한 현재 진행 프로젝트 기간을 변환한다" {
         val project = ExtractedExperienceProject(
             name = "푸시 플랫폼 개발 및 운영",

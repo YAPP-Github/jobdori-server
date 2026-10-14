@@ -24,6 +24,7 @@ import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.YearMonth
+import kotlin.reflect.KClass
 
 @Service
 class ExperienceAiExtractionService(
@@ -33,26 +34,26 @@ class ExperienceAiExtractionService(
 
     fun extract(pdfText: String): ExperienceStarExtractionResult {
         return extractWithPrompt(
-            pdfText = pdfText,
             promptType = PromptType.EXPERIENCE_STAR_EXTRACTION,
             missingPromptMessage = "경험 추출 프롬프트가 없습니다.",
             userPrompt = buildUserPrompt(pdfText),
+            responseType = ExperienceStarExtractionResult::class,
         )
     }
 
-    fun extractForResumeImport(pdfText: String): ExperienceStarExtractionResult = extractWithPrompt(
-        pdfText = pdfText,
+    fun extractForResumeImport(pdfText: String): ResumeImportExtractionResult = extractWithPrompt(
         promptType = PromptType.RESUME_IMPORT_EXTRACTION,
         missingPromptMessage = "이력서 가져오기 추출 프롬프트가 없습니다.",
         userPrompt = buildResumeImportUserPrompt(pdfText),
+        responseType = ResumeImportExtractionResult::class,
     )
 
-    private fun extractWithPrompt(
-        pdfText: String,
+    private fun <T : Any> extractWithPrompt(
         promptType: PromptType,
         missingPromptMessage: String,
         userPrompt: String,
-    ): ExperienceStarExtractionResult {
+        responseType: KClass<T>,
+    ): T {
         val prompt = promptTemplateRepository.findByType(promptType)
             ?: throw AiException(
                 message = missingPromptMessage,
@@ -62,7 +63,7 @@ class ExperienceAiExtractionService(
         return aiChatClient.generateStructured(
             prompt.buildStructured(
                 userPrompt = userPrompt,
-                responseType = ExperienceStarExtractionResult::class,
+                responseType = responseType,
             ),
         )
     }
@@ -85,7 +86,11 @@ class ExperienceAiExtractionService(
             이 작업의 최우선순위는 원문 보존이다.
             - 원문의 제목, 회사명, 역할, 기간, 설명, 수치, 기술명과 고유명사를 가능한 한 그대로 복사해라.
             - 문장을 요약, 교정, 미사여구 추가, STAR 재작성, 이력서 문장 생성하지 마라.
-            - situation/task/action/result는 원문 문장 또는 원문 bullet을 의미상 해당 필드에 배치하되 표현을 바꾸지 마라.
+            - 경험명은 title, 역할은 role, 세부 내용은 content로 추출해라.
+            - content에는 원문 문장, bullet 순서와 줄바꿈을 그대로 보존해라. STAR 항목으로 분리하지 마라.
+            - 하나의 경험명 아래 있는 여러 bullet은 하나의 경험의 content에 함께 넣어라.
+            - 경력은 회사별 재직 이력, 경험은 실제 프로젝트·업무 수행 내용으로 구분해라.
+            - 회사명 언급만으로 재직 경력을 만들거나 재직기간을 경험 수행기간으로 복사하지 마라.
             - 원문에 없는 사실, 수치, 기간, 역할, 성과를 추론하거나 생성하지 마라.
             - 원문 정보가 어느 필드에 속하는지 불명확하면 임의로 보정하지 말고 가장 가까운 필드에 원문 그대로 넣어라.
             - 누락된 값은 빈 문자열 또는 null로 두고, 원문에 있는 항목은 정보가 부족해도 삭제하지 마라.

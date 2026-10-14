@@ -5,6 +5,8 @@ import com.jobdori.core.application.jd.client.JdCrawlerClient
 import com.jobdori.core.domain.jd.error.JdCrawlErrorCode
 import com.jobdori.core.domain.jd.error.JdCrawlException
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
+import org.jsoup.nodes.TextNode
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -28,6 +30,9 @@ class StaticJdCrawlerClient(
 
     private val noiseSelector =
         "style, noscript, nav, footer, aside, iframe, svg, form, button, input, select"
+
+    private val blockSelector =
+        "br, p, li, h1, h2, h3, h4, h5, h6, div, ul, ol, dt, dd, tr, section, article, header, main"
 
     // 워드프레스 등 본문 컨테이너 우선순위(사이트 메뉴·사이드바가 nav 밖에 있는 경우 노이즈 제거)
     private val contentSelectors = listOf(".entry-content", "article", "main")
@@ -153,13 +158,21 @@ class StaticJdCrawlerClient(
         if (html == null || html.isEmpty()) return ""
         val document = Jsoup.parse(ByteArrayInputStream(html), null, url)
         document.select(noiseSelector).remove()
+        // text()는 줄바꿈까지 공백 하나로 합친다. 한 줄 본문은 다중 공고 분할(줄 범위 기반)이 모든 후보에 원문 전체를 담게 만든다
+        document.select(blockSelector).forEach { it.after(TextNode("\n")) }
         val body = document.body() ?: return ""
         // 본문 컨테이너가 충분한 길이면 사이트 크롬(메뉴·사이드바) 제외하고 그 영역만, 아니면 전체 body
         val main = contentSelectors.asSequence()
-            .mapNotNull { document.selectFirst(it)?.text()?.trim() }
+            .mapNotNull { document.selectFirst(it)?.let(::textWithLines) }
             .firstOrNull { it.length >= properties.minBodyLength }
-        return main ?: body.text().trim()
+        return main ?: textWithLines(body)
     }
+
+    private fun textWithLines(element: Element): String =
+        element.wholeText()
+            .replace(Regex("\\h+"), " ")
+            .replace(Regex("\\s*\n\\s*"), "\n")
+            .trim()
 
     private sealed interface FetchStep
     private data class Redirect(val location: String) : FetchStep

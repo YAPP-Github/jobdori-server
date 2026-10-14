@@ -23,9 +23,14 @@ class SplitJdPostingsService(
         // 모델이 본문을 재출력하지 않도록 줄 번호를 붙여 보내고 줄 범위만 받는다(레이턴시는 출력 토큰에 비례)
         val numbered = lines.mapIndexed { i, line -> "${i + 1}| $line" }.joinToString("\n")
         val result = aiChatClient.generateStructured(template.buildStructured(numbered, JdPostingSplitResult::class))
-        return result.postings
+        val postings = result.postings
             .mapNotNull { slice(it, lines) }
             .distinctBy { it.title.ifBlank { it.body } }
+        // 후보가 원문 전체를 담고 있으면(줄바꿈 없는 본문 등) 그 후보로 재등록해도 다시 다중으로 판별돼 선택이 무한 반복된다
+        if (postings.size > 1 && postings.any { it.body == body.trim() }) return listOf(JdPosting(body = body))
+        return postings
+            // 최소 길이 미달 조각은 재등록할 수 없고, 단건이어도 모델이 줄 범위를 잘못 준 것이므로 원문 폴백에 맡긴다
+            .filter { it.body.length >= JdPolicy.MIN_JD_BODY_LENGTH }
             .take(JdPolicy.MAX_SPLIT_CANDIDATES)
             .ifEmpty { listOf(JdPosting(body = body)) }
     }

@@ -10,7 +10,9 @@ import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomCard
 import com.jobdori.core.domain.experiencequestionroom.ExperienceQuestionRoomSourceType
 import com.jobdori.core.domain.experiencequestionroom.repository.ExperienceQuestionRoomRepository
 import com.jobdori.core.domain.prompt.PromptType
+import com.jobdori.core.domain.jd.Jd
 import com.jobdori.core.domain.prompt.repository.PromptTemplateRepository
+import com.jobdori.core.support.concurrent.SingleFlight
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -21,6 +23,7 @@ class GetExperienceQuestionRoomsService(
     private val repository: ExperienceQuestionRoomRepository,
     private val promptTemplateRepository: PromptTemplateRepository,
     private val aiChatClient: AiChatClient,
+    private val singleFlight: SingleFlight,
 ) {
 
     fun get(workspaceId: Long, jdPublicId: String): List<ExperienceQuestionRoomCard> {
@@ -29,6 +32,10 @@ class GetExperienceQuestionRoomsService(
 
         if (jd.responsibilities.isEmpty() && jd.preferredExperiences.isEmpty()) return emptyList()
 
+        return singleFlight.execute("questionRooms:${jd.id}") { generate(jd) }
+    }
+
+    private fun generate(jd: Jd): List<ExperienceQuestionRoomCard> {
         val promptType = PromptType.EXPERIENCE_QUESTION_ROOM_GENERATION
         val template = promptTemplateRepository.findByType(promptType)
             ?: throw AiException("프롬프트 없음: $promptType", AiErrorCode.E500_AI_GENERATION_FAILED)

@@ -1,0 +1,7 @@
+mutation UpdateOptionalConsents($request: UpdateOptionalConsentsRequest!) {
+    updateOptionalConsents(request: $request) {
+        type
+        agreed
+        changedAt
+    }
+}

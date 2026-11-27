@@ -18,6 +18,82 @@
 |===
 // end::me[]
 
+// tag::me.consents[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| user_not_found
+| 가입된 계정을 찾지 못했어요. 회원가입 후 이용해 주세요.
+| 유저를 찾을 수 없는 경우
+
+|===
+// end::me.consents[]
+
+// tag::agreeSignupConsents[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| invalid_arguments
+| 입력한 내용을 다시 확인해 주세요.
+| 필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우
+
+| consent_already_agreed
+| 이미 가입 동의를 완료했어요.
+| 가입 동의 이력이 이미 존재하는 경우
+
+|===
+// end::agreeSignupConsents[]
+
+// tag::updateOptionalConsents[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| invalid_arguments
+| 입력한 내용을 다시 확인해 주세요.
+| 필수 파라미터가 없거나, 파라미터가 유효하지 않는 경우
+
+|===
+// end::updateOptionalConsents[]
+
+// tag::markConsentSheetShown[]
+커스텀 에러 코드:
+
+전역 공통 에러 코드는 <<graphql-common-error-codes,공통 에러 코드>>를 참고해 주세요. +
+아래에는 각 GraphQL operation의 요청 샘플과 도메인 로직에 따라 발생할 수 있는 커스텀 에러 코드만 명시합니다.
+
+[.api-table]
+[cols="28%,32%,40%",options="header"]
+|===
+| Code | Message | Description
+
+| user_not_found
+| 가입된 계정을 찾지 못했어요. 회원가입 후 이용해 주세요.
+| 유저를 찾을 수 없는 경우
+
+|===
+// end::markConsentSheetShown[]
+
 // tag::experience[]
 커스텀 에러 코드:
 

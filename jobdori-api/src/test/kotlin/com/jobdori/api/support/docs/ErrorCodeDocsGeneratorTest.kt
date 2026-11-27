@@ -4,6 +4,7 @@ import com.jobdori.api.DocsTest
 import com.jobdori.common.error.CommonErrorCode
 import com.jobdori.common.error.ErrorCode
 import com.jobdori.core.domain.ai.error.AiErrorCode
+import com.jobdori.core.domain.consent.error.ConsentErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceErrorCode
 import com.jobdori.core.domain.experience.error.ExperienceProjectErrorCode
 import com.jobdori.core.domain.experiencequestionroom.error.ExperienceQuestionRoomErrorCode
@@ -81,6 +82,41 @@ private val graphQlOperationErrors = listOf(
         errorCodes = operationErrorCodes(
             UserErrorCode.E404_USER_NOT_FOUND,
         ),
+    ),
+    GraphQlOperationError(
+        category = "Consent",
+        operation = "me.consents",
+        title = "동의 상태 조회 (me 하위 필드 consents, consentSheetRequired)",
+        type = GraphQlOperationType.QUERY,
+        sampleFile = graphQlSample("consent/consents.graphql"),
+        errorCodes = operationErrorCodes(UserErrorCode.E404_USER_NOT_FOUND),
+    ),
+    GraphQlOperationError(
+        category = "Consent",
+        operation = "agreeSignupConsents",
+        title = "가입 동의 저장",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("consent/agree-signup-consents.graphql"),
+        errorCodes = operationErrorCodes(
+            CommonErrorCode.E400_INVALID_ARGUMENTS,
+            ConsentErrorCode.E409_CONSENT_ALREADY_AGREED,
+        ),
+    ),
+    GraphQlOperationError(
+        category = "Consent",
+        operation = "updateOptionalConsents",
+        title = "선택 동의 변경",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("consent/update-optional-consents.graphql"),
+        errorCodes = operationErrorCodes(CommonErrorCode.E400_INVALID_ARGUMENTS),
+    ),
+    GraphQlOperationError(
+        category = "Consent",
+        operation = "markConsentSheetShown",
+        title = "동의 시트 노출 기록",
+        type = GraphQlOperationType.MUTATION,
+        sampleFile = graphQlSample("consent/mark-consent-sheet-shown.graphql"),
+        errorCodes = operationErrorCodes(UserErrorCode.E404_USER_NOT_FOUND),
     ),
     GraphQlOperationError(
         category = "Experience",

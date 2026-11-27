@@ -12,6 +12,48 @@ include::./operation-sample.adoc[tag=me]
 
 include::./operation-error.adoc[tag=me]
 
+=== Consent
+
+==== 동의 상태 조회 (me 하위 필드 consents, consentSheetRequired)
+
+Type: `Query`
+
+Operation: `me.consents`
+
+include::./operation-sample.adoc[tag=me.consents]
+
+include::./operation-error.adoc[tag=me.consents]
+
+==== 가입 동의 저장
+
+Type: `Mutation`
+
+Operation: `agreeSignupConsents`
+
+include::./operation-sample.adoc[tag=agreeSignupConsents]
+
+include::./operation-error.adoc[tag=agreeSignupConsents]
+
+==== 선택 동의 변경
+
+Type: `Mutation`
+
+Operation: `updateOptionalConsents`
+
+include::./operation-sample.adoc[tag=updateOptionalConsents]
+
+include::./operation-error.adoc[tag=updateOptionalConsents]
+
+==== 동의 시트 노출 기록
+
+Type: `Mutation`
+
+Operation: `markConsentSheetShown`
+
+include::./operation-sample.adoc[tag=markConsentSheetShown]
+
+include::./operation-error.adoc[tag=markConsentSheetShown]
+
 === Experience
 
 ==== 경험 단건 조회

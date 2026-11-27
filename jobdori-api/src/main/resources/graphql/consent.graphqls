@@ -1,0 +1,129 @@
+extend type User {
+    """
+    동의 유형별 최신 동의 상태를 반환합니다.
+    """
+    consents: [UserConsent!]!
+    """
+    기존 가입자에게 동의 시트를 보여야 하는지 반환합니다.
+    """
+    consentSheetRequired: Boolean!
+}
+
+"""
+사용자의 특정 동의 상태입니다.
+"""
+type UserConsent {
+    """
+    동의 유형입니다.
+    """
+    type: ConsentType!
+    """
+    동의 여부입니다.
+    """
+    agreed: Boolean!
+    """
+    동의 상태가 변경된 시각입니다.
+    """
+    changedAt: String!
+}
+
+"""
+저장하는 동의 항목의 유형입니다.
+"""
+enum ConsentType {
+    """
+    이용약관 동의입니다.
+    """
+    TERMS
+    """
+    개인정보 수집/이용 동의입니다.
+    """
+    PRIVACY
+    """
+    서비스 개선 리서치 참여 안내 수신 동의입니다. (인터뷰, 설문, 사용성 테스트 참여 요청)
+    """
+    RESEARCH
+    """
+    광고성 정보 수신(이메일) 동의입니다.
+    """
+    MARKETING_EMAIL
+}
+
+"""
+선택 동의를 변경한 경로입니다.
+"""
+enum ConsentChangeSource {
+    """
+    마이페이지에서 변경했습니다.
+    """
+    MYPAGE
+    """
+    기존 가입자 동의 시트에서 변경했습니다.
+    """
+    EXISTING_USER_SHEET
+}
+
+"""
+가입 시 약관 동의 요청입니다.
+"""
+input AgreeSignupConsentsRequest {
+    """
+    이용약관 동의 여부입니다.
+    """
+    terms: Boolean!
+    """
+    개인정보 수집/이용 동의 여부입니다.
+    """
+    privacy: Boolean!
+    """
+    서비스 개선 리서치 참여 안내 수신 동의 여부입니다.
+    """
+    research: Boolean
+    """
+    광고성 정보 수신(이메일) 동의 여부입니다.
+    """
+    marketingEmail: Boolean
+}
+
+"""
+선택 동의 변경 요청입니다.
+"""
+input UpdateOptionalConsentsRequest {
+    """
+    서비스 개선 리서치 참여 안내 수신 동의 여부입니다.
+    """
+    research: Boolean
+    """
+    광고성 정보 수신(이메일) 동의 여부입니다.
+    """
+    marketingEmail: Boolean
+    """
+    선택 동의를 변경한 경로입니다.
+    """
+    source: ConsentChangeSource!
+}
+
+extend type Mutation {
+    """
+    가입에 필요한 동의와 선택 동의를 저장합니다.
+    """
+    agreeSignupConsents(
+        """
+        저장할 가입 동의 항목입니다.
+        """
+        request: AgreeSignupConsentsRequest!
+    ): [UserConsent!]!
+    """
+    선택 동의 상태를 변경합니다.
+    """
+    updateOptionalConsents(
+        """
+        변경할 선택 동의 항목입니다.
+        """
+        request: UpdateOptionalConsentsRequest!
+    ): [UserConsent!]!
+    """
+    기존 가입자 동의 시트를 노출한 것으로 기록합니다.
+    """
+    markConsentSheetShown: Boolean!
+}

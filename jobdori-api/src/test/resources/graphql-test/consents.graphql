@@ -1,0 +1,10 @@
+query Consents {
+    me {
+        consents {
+            type
+            agreed
+            changedAt
+        }
+        consentSheetRequired
+    }
+}

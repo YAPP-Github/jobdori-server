@@ -1,0 +1,7 @@
+mutation AgreeSignupConsents($request: AgreeSignupConsentsRequest!) {
+    agreeSignupConsents(request: $request) {
+        type
+        agreed
+        changedAt
+    }
+}

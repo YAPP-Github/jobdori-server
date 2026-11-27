@@ -22,6 +22,77 @@ query Me {
 ====
 // end::me[]
 
+// tag::me.consents[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+query Consents {
+    me {
+        consents {
+            type
+            agreed
+            changedAt
+        }
+        consentSheetRequired
+    }
+}
+----
+====
+// end::me.consents[]
+
+// tag::agreeSignupConsents[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation AgreeSignupConsents($request: AgreeSignupConsentsRequest!) {
+    agreeSignupConsents(request: $request) {
+        type
+        agreed
+        changedAt
+    }
+}
+----
+====
+// end::agreeSignupConsents[]
+
+// tag::updateOptionalConsents[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation UpdateOptionalConsents($request: UpdateOptionalConsentsRequest!) {
+    updateOptionalConsents(request: $request) {
+        type
+        agreed
+        changedAt
+    }
+}
+----
+====
+// end::updateOptionalConsents[]
+
+// tag::markConsentSheetShown[]
+[.graphql-sample]
+====
+요청 샘플:
+
+[source,graphql]
+----
+mutation MarkConsentSheetShown {
+    markConsentSheetShown
+}
+----
+====
+// end::markConsentSheetShown[]
+
 // tag::experience[]
 [.graphql-sample]
 ====
